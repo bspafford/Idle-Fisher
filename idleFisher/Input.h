@@ -6,12 +6,12 @@
 #include "math.h"
 #include "Hoverable.h"
 
-struct MouseButton {
-	static inline int left = GLFW_MOUSE_BUTTON_LEFT;
-	static inline int right = GLFW_MOUSE_BUTTON_RIGHT;
-	static inline int middle = GLFW_MOUSE_BUTTON_MIDDLE;
-	static inline int backwards = GLFW_MOUSE_BUTTON_4;
-	static inline int forwards = GLFW_MOUSE_BUTTON_5;
+enum MouseButton {
+	MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT,
+	MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
+	MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE,
+	MOUSE_BUTTON_BACKWARDS = GLFW_MOUSE_BUTTON_4,
+	MOUSE_BUTTON_FORWARDS = GLFW_MOUSE_BUTTON_5
 };
 
 class Input {

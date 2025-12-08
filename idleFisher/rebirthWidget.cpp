@@ -22,7 +22,7 @@ UrebirthWidget::UrebirthWidget(widget* parent) : widget(parent) {
 	xButton->addCallback<widget>(this, &UrebirthWidget::removeFromViewport);
 
 	rebirthButton = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 1, vector{ 0, 0 }, false, false);
-	rebirthText = std::make_unique<text>(this, "Rebirth", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	rebirthText = std::make_unique<text>(this, "Rebirth", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	rebirthButton->addCallback(this, &UrebirthWidget::openRebirthWorld);
 	rebirthNum = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
 
@@ -39,14 +39,14 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 	// tests if the mouse is over a button, if it is then don't scroll
 	bool mouseOverUnlock = isMouseOverUnlock();
 
-	bool mouseButtonHeld = Input::getMouseButtonHeld(MouseButton::left);
+	bool mouseButtonHeld = Input::getMouseButtonHeld(MOUSE_BUTTON_LEFT);
 	if (!mouseButtonHeld)
 		wasOverButton = false;
 	else if (mouseOverUnlock)
 		wasOverButton = true;
 
 	if (!mouseOverUnlock && !wasOverButton) {
-		if (Input::getMouseButtonDown(MouseButton::left)) {
+		if (Input::getMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 			startLoc = scrollLoc;
 			mouseStartPos = Input::getMousePos();
 		}

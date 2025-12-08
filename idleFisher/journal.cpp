@@ -37,8 +37,8 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	xButton->addCallback(this, &Ujournal::closeWidget);
 
 	if (SaveData::data.worldData.size() >= 2) {
-		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, textAlign::center);
-		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, textAlign::center);
+		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
 		worldProgress1 = std::make_unique<UprogressBar>(this, false, 100, 3);
 		worldProgress1->setForegroundColor({ 227, 120, 64, 255 }, 0);
@@ -64,37 +64,37 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	// selected fish page
 	fishThumbnail = std::make_unique<Image>("", vector{ 0, 0 }, false);
 	notesBackground = std::make_unique<Image>("./images/widget/journalNotes.png", vector{ 0, 0 }, false);
-	selectedFishName = std::make_unique<text>(this, " ", "biggerStraightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	selectedFishName = std::make_unique<text>(this, " ", "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	selectedFishDescription = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 });
 
-	statsTitle = std::make_unique<text>(this, "Stats", "biggerStraightDark", vector{ 0 , 0 }, false, false, textAlign::center);
+	statsTitle = std::make_unique<text>(this, "Stats", "biggerStraightDark", vector{ 0 , 0 }, false, false, TEXT_ALIGN_CENTER);
 	baseCurrency = std::make_unique<text>(this, "Base Currency", "straightDark", vector{ 0, 0 });
-	baseCurrencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	baseCurrencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	currency = std::make_unique<text>(this, "Currency", "straightDark", vector{ 0, 0 });
-	currencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	currencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	caught = std::make_unique<text>(this, "Caught", "straightDark", vector{ 0, 0 });
-	caughtNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	caughtNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	power = std::make_unique<text>(this, "Power", "straightDark", vector{ 0, 0 });
-	powerNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	powerNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	speed = std::make_unique<text>(this, "Speed", "straightDark", vector{ 0, 0 });
-	speedNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	speedNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	yellow = std::make_unique<text>(this, "Yellow", "straightDark", vector{ 0, 0 });
-	yellowNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	yellowNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	green = std::make_unique<text>(this, "Green", "straightDark", vector{ 0, 0 });
-	greenNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	greenNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	probability = std::make_unique<text>(this, "Probability", "straightDark", vector{ 0, 0 });
-	probabilityNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	probabilityNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	fishSize = std::make_unique<text>(this, "Biggest (Max: 0)", "straightDark", vector{ 0, 0 });
-	fishSizeNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+	fishSizeNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
 	star1 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
-	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star1Text->setTextColor(85, 177, 241);
 	star2 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
-	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star2Text->setTextColor(85, 177, 241);
 	star3 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
-	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star3Text->setTextColor(85, 177, 241);
 
 	setupLocs();

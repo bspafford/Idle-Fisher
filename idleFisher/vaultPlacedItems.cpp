@@ -35,9 +35,9 @@ void AvaultPlacedItems::draw(Shader* shaderProgram) {
 
 	sortDraw(shaderProgram);
 
-	if (inPlacingMode && Input::getMouseButtonDown(MouseButton::right) && !selectedItem)
+	if (inPlacingMode && Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT) && !selectedItem)
 		putItemInStorage();
-	if (inPlacingMode && Input::getMouseButtonDown(MouseButton::left)) {
+	if (inPlacingMode && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 		if (!selectedItem)
 			selectItem();
 		else {

@@ -511,6 +511,21 @@ struct FsettingsData {
     bool showPets = true;
     bool showRain = true;
     bool cursor = true;
+
+    // compares the struct byte by byte, so i don't have to manually update it
+    bool operator==(const FsettingsData other) {
+        size_t size = sizeof(FsettingsData);
+
+        // compare memory bit by bit
+        const unsigned char* a = reinterpret_cast<const unsigned char*>(this);
+        const unsigned char* b = reinterpret_cast<const unsigned char*>(&other);
+        
+        for (size_t i = 0; i < size; i++) {
+            if (a[i] != b[i])
+                return false;
+        }
+        return true;
+    }
 };
 
 class SaveData {

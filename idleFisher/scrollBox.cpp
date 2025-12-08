@@ -12,16 +12,16 @@ void UscrollBox::draw(Shader* shaderProgram) {
 
 	if (mouseOver()) {
 		IHoverable::setHoveredItem(this);
-		if (Input::getMouseButtonDown(MouseButton::right)) {
+		if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
 			startLoc = loc;
 			mouseStartPos = Input::getMousePos();
 		}
-		if (Input::getMouseButtonHeld(MouseButton::right)) {
-			setMouseHoverIcon("cursor3");
+		if (Input::getMouseButtonHeld(MOUSE_BUTTON_RIGHT)) {
+			setMouseHoverIcon(CURSOR_GRAB);
 			scrolling();
 		} else {
 			scrolling(Input::getMouseScrollDir());
-			setMouseHoverIcon("cursor");
+			setMouseHoverIcon(CURSOR_DEFAULT);
 		}
 	}
 

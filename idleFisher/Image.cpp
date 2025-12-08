@@ -192,19 +192,19 @@ void Image::setLoc(vector loc) {
 		//this->absoluteLoc = this->loc + vector{ 1920.f/2.f, 0 };
 		vector halfScreen = stuff::screenSize / 2.f;
 		vector newLoc;
-		if (xAnchor == anchor::left) { // if anchor left
+		if (xAnchor == IMAGE_ANCHOR_LEFT) { // if anchor left
 			newLoc.x = floorf(loc.x - halfScreen.x);
-		} else if (xAnchor == anchor::right) { // if anchor right
+		} else if (xAnchor == IMAGE_ANCHOR_RIGHT) { // if anchor right
 			newLoc.x = floorf(loc.x + halfScreen.x - w * stuff::pixelSize);
-		} else if (xAnchor == anchor::center) {
+		} else if (xAnchor == IMAGE_ANCHOR_CENTER) {
 			newLoc.x = floorf(loc.x - w * stuff::pixelSize / 2.f);
 		}
 
-		if (yAnchor == anchor::top) { // if anchor top
+		if (yAnchor == IMAGE_ANCHOR_TOP) { // if anchor top
 			newLoc.y = floorf(loc.y - halfScreen.y + h * stuff::pixelSize);
-		} else if (yAnchor == anchor::bottom) { // if anchor bottom
+		} else if (yAnchor == IMAGE_ANCHOR_BOTTOM) { // if anchor bottom
 			newLoc.y = floorf(loc.y + halfScreen.y);
-		} else if (yAnchor == anchor::center) { // if anchor bottom
+		} else if (yAnchor == IMAGE_ANCHOR_CENTER) { // if anchor bottom
 			newLoc.y = floorf(loc.y + h * stuff::pixelSize / 2.f);
 		}
 
@@ -414,7 +414,7 @@ glm::vec4 Image::GetPixelColor(const int X, const int Y) {
 	return glm::vec4(r, g, b, a);
 }
 
-void Image::setAnchor(std::string xAnchor, std::string yAnchor) {
+void Image::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 	if (useWorldPos) {
 		std::cout << "This is a world object, it doesn't work";
 		return;

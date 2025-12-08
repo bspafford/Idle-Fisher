@@ -47,9 +47,9 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	catchChanceUpgradeButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{ 0, 0 }, false, false);
 	catchChanceUpgradeButton->addCallback(this, &UfishermanWidget::upgradeCatchChance);
 
-	powerButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
-	speedButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
-	catchChanceButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	powerButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	speedButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	catchChanceButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
 	powerLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 });
 	speedLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 });
@@ -57,11 +57,11 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 
 	// fishing rod stats
 	powerStatsText = std::make_unique<text>(this, "Power", "straight", vector{ 0, 0 });
-	powerStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	powerStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	speedStatsText = std::make_unique<text>(this, "Speed", "straight", vector{ 0, 0 });
-	speedStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	speedStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	catchChanceStatsText = std::make_unique<text>(this, "Catch Chance", "straight", vector{ 0, 0 });
-	catchChanceStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	catchChanceStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
 	setup();
 	//setupLocs();

@@ -18,11 +18,11 @@ AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(par
 
 	background = std::make_unique<Image>("./images/autoFisher/moreUI/UI.png", vector{ 0, 0 }, false);
 
-	fisherNum = std::make_unique<text>(this, "#" + std::to_string(autoFisher->autoFisherNum + 1), "afScreen", vector{ 0, 0 }, false, false, textAlign::right);
+	fisherNum = std::make_unique<text>(this, "#" + std::to_string(autoFisher->autoFisherNum + 1), "afScreen", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
-	levelText = std::make_unique<text>(this, "123", "afScreen", vector{ 100, 0 }, false, false, textAlign::right);
+	levelText = std::make_unique<text>(this, "123", "afScreen", vector{ 100, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
-	fullnessText = std::make_unique<text>(this, "42/122", "afScreen", vector{ 0, 0 }, false, false, textAlign::center);
+	fullnessText = std::make_unique<text>(this, "42/122", "afScreen", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
 	closeButton = std::make_unique<Ubutton>(this, "autoFisher/moreUI/xButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->addCallback(this, &AFmoreInfoUI::closeUI);

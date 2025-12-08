@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widget.h"
+#include "saveData.h"
 
 class text;
 class UscrollBox;
@@ -8,6 +9,7 @@ class Ubutton;
 class Uslider;
 class horizontalBox;
 class UsettingsBlock;
+class ConfirmWidget;
 
 class Usettings : public widget {
 public:
@@ -16,8 +18,30 @@ public:
 	void draw(Shader* shaderProgram);
 	void setupLocs() override;
 private:
+	virtual void addedToViewport() override;
+
+	void SaveSettings();
+
+	// Updates data if the save data has changed since last open
+	void UpdateData();
+
+	virtual void removeFromViewport() override;
+
 	void goBack();
 	void cancel();
+
+	void RevertSettings();
+
+	bool checkIfSettingsChanged();
+
+	void saveConfirm();
+	void revertConfirm();
+	void cancelConfirm();
+
+	bool showingConfirmationBox = false;
+
+	// keeps track of which data was changed
+	FsettingsData prevSettingsData;
 
 	std::unique_ptr<Image> background;
 	std::unique_ptr<Ubutton> backButton;
@@ -45,4 +69,6 @@ private:
 	std::unique_ptr<UsettingsBlock> petBlock;
 	std::unique_ptr<UsettingsBlock> rainBlock;
 	std::unique_ptr<UsettingsBlock> cursorBlock;
+
+	std::unique_ptr<ConfirmWidget> confirmWidget;
 };

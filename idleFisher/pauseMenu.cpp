@@ -12,12 +12,12 @@
 
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, 3 } * stuff::pixelSize, false);
-	pauseText->setAnchor(anchor::left, anchor::top);
- 	resumeButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/continue.png", 67, 19, 1, vector{ 0, 0 }, false, false);
-	saveGameButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/saveGame.png", 70, 19, 1, vector{ 0, 0 }, false, false);
-	settingsButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/settings.png", 68, 19, 1, vector{ 0, 0 }, false, false);
-	exitToMenuButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitToMenu.png", 91, 19, 1, vector{ 0, 0 }, false, false);
-	exitToDesktopButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitGame.png", 72, 19, 1, vector{ 0, 0 }, false, false);
+	pauseText->setAnchor(IMAGE_ANCHOR_LEFT, IMAGE_ANCHOR_TOP);
+ 	resumeButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
+	saveGameButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/saveGame.png", 72, 20, 1, vector{ 0, 0 }, false, false);
+	settingsButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/settings.png", 70, 20, 1, vector{ 0, 0 }, false, false);
+	exitToMenuButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitToMenu.png", 93, 20, 1, vector{ 0, 0 }, false, false);
+	exitToDesktopButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitGame.png", 74, 20, 1, vector{ 0, 0 }, false, false);
 	
 	settingsWidget = std::make_unique<Usettings>(nullptr);
 

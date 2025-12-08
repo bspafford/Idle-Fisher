@@ -14,7 +14,7 @@ UsettingsBlock::UsettingsBlock(widget* parent, std::string optionsName, int leng
 	optionsTitle = std::make_unique<text>(this, optionsName, "straight", vector{ 0, 0 });
 	optionsButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	optionsButton->addCallback(this, &UsettingsBlock::toggleOption);
-	selectedOptionText = std::make_unique<text>(this, options[currOptionsIdx], "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	selectedOptionText = std::make_unique<text>(this, options[currOptionsIdx], "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 }
 
 void UsettingsBlock::draw(Shader* shaderProgram) {
@@ -41,8 +41,8 @@ void UsettingsBlock::toggleOption() {
 	currOptionsIdx++;
 	if (currOptionsIdx >= options.size())
 		currOptionsIdx = 0;
-	selectedOptionText->setText(options[currOptionsIdx]);
-	*settingsValue = currOptionsIdx;
+
+	SetValue(currOptionsIdx);
 	
 	if (callback_)
 		callback_();
@@ -50,4 +50,14 @@ void UsettingsBlock::toggleOption() {
 
 std::string UsettingsBlock::getSelectedOption() {
 	return options[currOptionsIdx];
+}
+
+void UsettingsBlock::UpdateValue() {
+	SetValue(*settingsValue);
+}
+
+void UsettingsBlock::SetValue(int value) {
+	selectedOptionText->setText(options[value]);
+	*settingsValue = value;
+	currOptionsIdx = value;
 }

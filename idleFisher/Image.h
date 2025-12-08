@@ -13,12 +13,12 @@
 
 #include "math.h"
 
-struct anchor {
-	static inline std::string left = "left";
-	static inline std::string right = "right";
-	static inline std::string top = "top";
-	static inline std::string bottom = "bottom";
-	static inline std::string center = "center";
+enum ImageAnchor {
+	IMAGE_ANCHOR_LEFT,
+	IMAGE_ANCHOR_RIGHT,
+	IMAGE_ANCHOR_TOP,
+	IMAGE_ANCHOR_BOTTOM,
+	IMAGE_ANCHOR_CENTER
 };
 
 class Image {
@@ -48,7 +48,7 @@ public:
 
 	glm::vec4 GetPixelColor(const int X, const int Y);
 
-	void setAnchor(std::string xAnchor, std::string yAnchor);
+	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
 	void flipHoizontally(bool flip);
 
 	// Assigns a texture unit to a texture
@@ -87,8 +87,8 @@ private:
 
 	vector loc; // relative to the screen position
 	vector absoluteLoc; // absolute position in the screen
-	std::string xAnchor = anchor::left;
-	std::string yAnchor = anchor::top;
+	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
+	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
 	
 	glm::vec4 colorMod = glm::vec4(1.f);
 

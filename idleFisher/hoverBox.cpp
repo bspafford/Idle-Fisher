@@ -12,7 +12,7 @@ UhoverBox::UhoverBox(widget* parent) : widget(parent) {
 	name = std::make_unique<text>(this, " ", "straight", vector{0, 0});
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
 	description->setLineLength(250);
-	other = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	other = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	size = img->getSize();
 }
 

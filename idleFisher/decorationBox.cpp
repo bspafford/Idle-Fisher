@@ -17,7 +17,7 @@ UdecorationBox::UdecorationBox(widget* parent, UdecoratorWidget* parentRef, widg
 	buyButton = std::make_unique<Ubutton>(parentRef, "button.png", 21, 7, 1, vector{ 0, 0 }, false, false);
 	buyButton->addCallback(this, &UdecorationBox::buyDecoration);
 	buyButton->setParent(buttonParent);
-	buttonText = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	buttonText = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 }
 
 UdecorationBox::~UdecorationBox() {

@@ -48,12 +48,12 @@ void Uslider::draw(Shader* shaderProgram) {
 		sliding = false;
 
 	if (sliding && Input::getMouseButtonHeld(GLFW_MOUSE_BUTTON_1)) {
-		setMouseHoverIcon("cursor3");
+		setMouseHoverIcon(CURSOR_GRAB);
 		handle->setLoc({ math::clamp(Input::getMousePos().x - handleHalfSize.x, min, max), backgroundLoc.y + backgroundSize.y / 2.f - handleHalfSize.y });
 		float foregroundLength = handle->getLoc().x - backgroundLoc.x + handleHalfSize.x;
 		foreground->setSize({ foregroundLength, foreground->getSize().y});
 	} else
-		setMouseHoverIcon("cursor2");
+		setMouseHoverIcon(CURSOR_HOVER);
 
 	foreground->draw(shaderProgram);
 	handle->draw(shaderProgram);
@@ -125,5 +125,9 @@ bool Uslider::mouseOver() {
 void Uslider::setTitleLength(float titleLength) {
 	this->titleLength = titleLength;
 	// update positions
+	setLoc(loc);
+}
+
+void Uslider::UpdateValue() {
 	setLoc(loc);
 }

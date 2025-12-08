@@ -130,7 +130,7 @@ int Main::createWindow() {
 	setTaskbarIcon(window);
 
 	//Load GLAD so it configures OpenGL
-	if (!gladLoadGL(glfwGetProcAddress)) {
+	if (!gladLoadGL()) {
 		return -1;
 	}
 

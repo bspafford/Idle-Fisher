@@ -119,13 +119,13 @@ void UupgradeBox::setup() {
 	buyButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{0, 0}, false, false);
 	buyButton->addCallback(this, &UupgradeBox::buyUpgrade);
 
-	buttonPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(*price), "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	buttonPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(*price), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	buttonPriceText->setTextColor(255, 0, 0);
 
 	currencyImg = std::make_unique<Image>("./images/currency/coin" + std::to_string(*currencyId) + ".png", vector{ 0, 0 }, false);
 
 	if (upgradeMax > 1) {
-		upgradeText = std::make_unique<text>(this, std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax), "straightDark", vector{ 0, 0 }, false, false, textAlign::right);
+		upgradeText = std::make_unique<text>(this, std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	}
 
 	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked && *unlocked)) {

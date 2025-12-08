@@ -148,7 +148,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	fishPileAnim->setAnimation("emptyidleSE");
 	fishPileAnim->start();
 
-	fullnessText = std::make_unique<text>(nullptr, "0/" + shortNumbers::convert2Short(maxHoldNum), "straight", loc, true, false, textAlign::center);
+	fullnessText = std::make_unique<text>(nullptr, "0/" + shortNumbers::convert2Short(maxHoldNum), "straight", loc, true, false, TEXT_ALIGN_CENTER);
 
 	collectTimer = std::make_unique<timer>();
 	collectTimer->addCallback(this, &AfishTransporter::finishCollectTimer);

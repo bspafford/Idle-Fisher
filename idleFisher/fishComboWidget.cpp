@@ -16,16 +16,16 @@ UfishComboWidget::UfishComboWidget(widget* parent) : widget(parent) {
 	std::string fishPath = "./images/widget/fish.png";
 
 	fishComboBorderImg = std::make_unique<Image>(fishComboBorderPath, vector{ 0, 0 }, false);
-	fishComboBorderImg->setAnchor(anchor::center, anchor::center);
+	fishComboBorderImg->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 	fishImg = std::make_unique<Image>(fishPath, vector{ 0, 0 }, false);
-	fishImg->setAnchor(anchor::center, anchor::center);
+	fishImg->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 
 	greenRect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.4510, 1.0, 0.0, 1.0));
-	greenRect->setAnchor(anchor::center, anchor::center);
+	greenRect->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 	yellowRect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.8863, 1.0, 0.0, 1.0));
-	yellowRect->setAnchor(anchor::center, anchor::center);
+	yellowRect->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 	backgroundRect = std::make_unique<URectangle>(vector{ 0, 0 }, fishComboBorderImg->getSize() - vector{ 4, 4 } *stuff::pixelSize, false, glm::vec4(0.3608, 0.4980, 0.6000, 1.0));
-	backgroundRect->setAnchor(anchor::center, anchor::center);
+	backgroundRect->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 
 
 	shake = std::make_unique<Eshake>(5);

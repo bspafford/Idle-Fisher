@@ -1,6 +1,7 @@
 #include "Rectangle.h"
 #include "stuff.h"
 #include "GPULoadCollector.h"
+#include "input.h"
 
 #include "debugger.h"
 
@@ -40,6 +41,8 @@ void URectangle::loadGPU() {
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	setMouseHoverIcon(CURSOR_DEFAULT);
+
 	setLoc(loc);
 }
 
@@ -71,6 +74,10 @@ void URectangle::draw(Shader* shaderProgram) {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
 	shaderProgram->setInt("isRectangle", 0);
+
+	vector mousePos = Input::getMousePos();
+	if (blockCursor && mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
+		setHoveredItem(this);
 }
 
 void URectangle::setColor(glm::vec4 color) {
@@ -96,19 +103,19 @@ void URectangle::setLoc(vector loc) {
 		//this->absoluteLoc = this->loc + vector{ 1920.f/2.f, 0 };
 		vector halfScreen = stuff::screenSize / 2.f;
 		vector newLoc;
-		if (xAnchor == anchor::left) { // if anchor left
+		if (xAnchor == IMAGE_ANCHOR_LEFT) { // if anchor left
 			newLoc.x = loc.x - halfScreen.x;
-		} else if (xAnchor == anchor::right) { // if anchor right
+		} else if (xAnchor == IMAGE_ANCHOR_RIGHT) { // if anchor right
 			newLoc.x = loc.x + halfScreen.x - size.x;
-		} else if (xAnchor == anchor::center) {
+		} else if (xAnchor == IMAGE_ANCHOR_CENTER) {
 			newLoc.x = loc.x - size.x / 2.f;
 		}
 
-		if (yAnchor == anchor::top) { // if anchor top
+		if (yAnchor == IMAGE_ANCHOR_TOP) { // if anchor top
 			newLoc.y = loc.y - halfScreen.y + size.y;
-		} else if (yAnchor == anchor::bottom) { // if anchor bottom
+		} else if (yAnchor == IMAGE_ANCHOR_BOTTOM) { // if anchor bottom
 			newLoc.y = loc.y + halfScreen.y;
-		} else if (yAnchor == anchor::center) { // if anchor bottom
+		} else if (yAnchor == IMAGE_ANCHOR_CENTER) { // if anchor bottom
 			newLoc.y = loc.y + size.y / 2.f;
 		}
 
@@ -134,7 +141,7 @@ vector URectangle::getSize() {
 	return size;
 }
 
-void URectangle::setAnchor(std::string xAnchor, std::string yAnchor) {
+void URectangle::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 	if (useWorldLoc) {
 		std::cout << "This is a world object, it doesn't work";
 		return;
@@ -175,4 +182,8 @@ void URectangle::updatePositionsList() {
 		memcpy(ptr, positions, sizeof(positions)); // Copy updated vertex data
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
+}
+
+void URectangle::setBlockCursor(bool val) {
+	blockCursor = val;
 }

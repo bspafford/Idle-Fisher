@@ -40,7 +40,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	buyFishTransporterButton = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 2, vector{ 0, 0 }, false, false);
 	buyFishTransporterButton->addCallback(this, &UmechanicWidget::buyFishTransporter);
 	buyFishTransporterText = std::make_unique<text>(this, "Buy Fish Transporter", "biggerStraight", vector{ 0, 0 });
-	buyFishTransporterPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(mechanicStruct->currencyNum), "straight", vector{0, 0}, false, false, textAlign::center);
+	buyFishTransporterPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(mechanicStruct->currencyNum), "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 
 	// bought screen
 	fishTransporterName = std::make_unique<text>(this, "Fish Transporter", "biggerStraight", vector{ 0, 0 });
@@ -53,14 +53,14 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 
 	fishTransporterImg->w *= 2.5;
 	fishTransporterImg->h *= 2.5;
-	level = std::make_unique<text>(this, "0/100", "biggerStraight", vector{ 0, 0 }, false, false, textAlign::right);
+	level = std::make_unique<text>(this, "0/100", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	levelProgress = std::make_unique<UprogressBar>(this, false, 125, 7);
 	maxHoldText = std::make_unique<text>(this, "Max Hold:", "straight", vector{ 0, 0 });
-	maxHoldValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	maxHoldValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	speedText = std::make_unique<text>(this, "Walk Speed:", "straight", vector{ 0, 0 });
-	speedValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	speedValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	collectSpeedText = std::make_unique<text>(this, "Collect Speed:", "straight", vector{ 0, 0 });
-	collectSpeedValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	collectSpeedValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	
 	buyButton = std::make_unique<Ubutton>(this, "widget/biggerButton.png", 31, 15, 2, vector{ 0, 0 }, false, false);
 	buyButton->addCallback(this, &UmechanicWidget::upgradeFishTransporter);
@@ -68,7 +68,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	multi10x = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 2, vector{ 0, 0 }, false, false);
 	multiMax = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 2, vector{ 0, 0 }, false, false);
 
-	upgradePriceText = std::make_unique<text>(this, "0.00k", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	upgradePriceText = std::make_unique<text>(this, "0.00k", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	currencyIcon = std::make_unique<Image>("./images/currency/coin" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
 
 	setup();

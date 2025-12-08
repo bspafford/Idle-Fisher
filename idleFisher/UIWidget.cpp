@@ -22,8 +22,8 @@ UUIWidget::UUIWidget(widget* parent) : widget(parent) {
 	progressBar = std::make_unique<UprogressBar>(this, false, 43, 6);
 	progressBar->setBackgroundColor(glm::vec4(0, 0, 0, 1.f));
 	progressBar->setForegroundColor(glm::vec4(0, 1.f, 1.f, 1.f));
-	currRunRebirthPoints = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, textAlign::right);
-	rebirthPointNum = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, textAlign::right);
+	currRunRebirthPoints = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	rebirthPointNum = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
 	NPCshowButton = std::make_unique<Ubutton>(this, "widget/npcButtons/shopIcon.png", 26, 22, 1, vector{ 0, 0 }, false, false);
 	merchantButton = std::make_unique<Ubutton>(this, "widget/npcButtons/npcButton1.png", 18, 18, 1, vector{ 0, 0 }, false, false);

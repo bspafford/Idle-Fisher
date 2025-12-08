@@ -95,10 +95,10 @@ void AautoFisher::Update(float deltaTime) {
 	if (anim && bMouseOver)
 		IHoverable::setHoveredItem(this);
 
-	if (Input::getMouseButtonDown(MouseButton::left))
+	if (Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 		leftClick();
 
-	if (Input::getMouseButtonDown(MouseButton::right))
+	if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT))
 		rightClick();
 }
 

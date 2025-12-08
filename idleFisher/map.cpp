@@ -22,7 +22,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	hereBoat = std::make_unique<animation>("widget/hereBoat.png", 22, 22, animData, false, vector{ 0, 0 });
 	hereBoat->setAnimation("anim");
 	hereBoat->start();
-	hereText = std::make_unique<text>(this, "Here", "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	hereText = std::make_unique<text>(this, "Here", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
 	for (int i = 0; i < worldButtonLoc.size(); i++) {
 		worldButtonLoc[i] = worldButtonLoc[i] + vector{ 308, 196 };
@@ -40,7 +40,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 		else
 			textString = shortNumbers::convert2Short(SaveData::data.worldData[i].currencyNum);
 		if (worldButtons.size() > i)
-			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[i] * stuff::pixelSize + vector{ worldButtons[i]->getSize().x / 2, 25 * stuff::pixelSize }, false, false, textAlign::center));
+			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[i] * stuff::pixelSize + vector{ worldButtons[i]->getSize().x / 2, 25 * stuff::pixelSize }, false, false, TEXT_ALIGN_CENTER));
 	}
 
 	for (int i = 0; i < worldButtonLoc.size() - 1; i++) {
@@ -68,12 +68,12 @@ void Umap::draw(Shader* shaderProgram) {
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(ogLoc.x, ogLoc.y, getSize().x, getSize().y);
 
-	mouseDown = Input::getMouseButtonHeld(MouseButton::left);
+	mouseDown = Input::getMouseButtonHeld(MOUSE_BUTTON_LEFT);
 	vector mousePos = Input::getMousePos();
 	bool mouseStartX = mousePos.x >= ogLoc.x && mousePos.x <= ogLoc.x + size.x;
 	bool mouseStartY = mousePos.y >= ogLoc.y && mousePos.y <= ogLoc.y + size.y;
 	if ((mouseStartX && mouseStartY) || movingMap) {
-		setMouseHoverIcon("cursor2");
+		setMouseHoverIcon(CURSOR_HOVER);
 		IHoverable::setHoveredItem(this);
 	}
 

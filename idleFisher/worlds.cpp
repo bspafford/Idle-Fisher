@@ -59,13 +59,13 @@ titleScreen::titleScreen() {
 	trees->setAnimation("anim");
 	trees->start();
 
-	newGameButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/newGame.png", 64, 19, 1, vector{ 45.f * stuff::pixelSize, 150.f * stuff::pixelSize }, false, false);
+	newGameButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/newGame.png", 66, 20, 1, vector{ 45.f * stuff::pixelSize, 150.f * stuff::pixelSize }, false, false);
 	newGameButton->addCallback(this, &titleScreen::newGame);
 
-	continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 67, 19, 1, vector{ 45.f * stuff::pixelSize, 182.f * stuff::pixelSize }, false, false);
+	continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 45.f * stuff::pixelSize, 182.f * stuff::pixelSize }, false, false);
 	continueButton->addCallback(this, &titleScreen::continueGame);
 
-	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 35, 19, 1, vector{ 45.f * stuff::pixelSize, 214.f * stuff::pixelSize }, false, false);
+	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f * stuff::pixelSize, 214.f * stuff::pixelSize }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
 
 	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));

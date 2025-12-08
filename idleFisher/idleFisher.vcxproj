@@ -29,28 +29,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -206,6 +206,7 @@
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="comboOvertimeWidget.cpp" />
     <ClCompile Include="comboWidget.cpp" />
+    <ClCompile Include="confirmWidget.cpp" />
     <ClCompile Include="csvReader.cpp" />
     <ClCompile Include="currencyConverterBox.cpp" />
     <ClCompile Include="currencyConverterWidget.cpp" />
@@ -228,6 +229,7 @@
     <ClCompile Include="fishUnlocked.cpp" />
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
+    <ClInclude Include="confirmWidget.h" />
     <ClInclude Include="debugger.h" />
     <ClInclude Include="GPULoadCollector.h">
       <FileType>CppCode</FileType>
@@ -235,6 +237,7 @@
     <ClCompile Include="heldFishWidget.cpp" />
     <ClCompile Include="horizontalBox.cpp" />
     <ClCompile Include="house.cpp" />
+    <ClCompile Include="Hoverable.cpp" />
     <ClCompile Include="hoverBox.cpp" />
     <ClCompile Include="idleProfitWidget.cpp" />
     <ClCompile Include="Image.cpp" />

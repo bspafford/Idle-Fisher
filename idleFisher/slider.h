@@ -22,6 +22,8 @@ public:
 
 	bool mouseOver() override;
 
+	void UpdateValue();
+
 private:
 	std::unique_ptr<text> sliderTitle;
 	std::unique_ptr<text> sliderValueText; // text to right of slider

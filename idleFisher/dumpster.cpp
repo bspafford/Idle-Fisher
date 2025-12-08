@@ -31,7 +31,7 @@ void dumpster::onHover() {
 		img->setImage("./images/dumpster.png");
 	}
 
-	if (bMouseOver && Input::getMouseButtonDown(MouseButton::left) && !widget::getCurrWidget())
+	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT) && !widget::getCurrWidget())
 		Input::setLeftClick(this, &dumpster::sellFish);
 }
 

@@ -8,10 +8,10 @@
 #include "widget.h"
 #include "Image.h"
 
-struct textAlign {
-	static inline int left = 0;
-	static inline int right = 1;
-	static inline int center = 2;
+enum TextAlign {
+	TEXT_ALIGN_LEFT,
+	TEXT_ALIGN_RIGHT,
+	TEXT_ALIGN_CENTER,
 };
 
 struct FtextInfo {
@@ -21,7 +21,7 @@ struct FtextInfo {
 
 class text : public widget {
 public:
-	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, int alignment = textAlign::left);
+	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, TextAlign alignment = TEXT_ALIGN_LEFT);
 	~text();
 	void setText(std::string text);
 	void draw(Shader* shaderProgram);
@@ -42,7 +42,7 @@ public:
 	void setLocAndSize(vector loc, vector size) override;
 	void setLoc(vector loc) override;
 	// anchor::...
-	void setAnchor(std::string xAnchor, std::string yAnchor);
+	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
 
 	void updatePositionsList();
 
@@ -65,7 +65,7 @@ private:
 	// static list of text imgs
 	std::vector<std::unique_ptr<Image>> letters;
 
-	int alignment;
+	TextAlign alignment;
 	std::string font;
 
 	bool isometric = false;
@@ -93,8 +93,8 @@ private:
 	std::unique_ptr<EBO> currEBO;
 
 	vector absoluteLoc;
-	std::string xAnchor = anchor::left;
-	std::string yAnchor = anchor::top;
+	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
+	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
 
 	int textHeight;
 };

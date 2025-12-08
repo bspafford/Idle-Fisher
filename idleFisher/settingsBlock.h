@@ -22,7 +22,11 @@ public:
 	void toggleOption();
 	std::string getSelectedOption();
 
+	void UpdateValue();
+
 private:
+	void SetValue(int value);
+
 	std::vector<std::string> options;
 	std::unique_ptr<text> selectedOptionText;
 

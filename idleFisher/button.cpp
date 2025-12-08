@@ -54,7 +54,7 @@ void Ubutton::onHover(Shader* shaderProgra) {
 		IHoverable::setHoveredItem(this);
 		if (!prevMouseOver && hasHover && buttonAnim)
 			buttonAnim->setAnimation("hover");
-		if (Input::getMouseButtonDown(MouseButton::left))
+		if (Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 			Input::setLeftClick(this, &Ubutton::onClick);
 	} else if (!mouseOver && buttonAnim && prevMouseOver)
 		buttonAnim->setAnimation("click");

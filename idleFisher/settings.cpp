@@ -9,6 +9,7 @@
 #include "horizontalBox.h"
 #include "saveData.h"
 #include "settingsBlock.h"
+#include "confirmWidget.h"
 
 #include "Cursor.h"
 
@@ -38,13 +39,13 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	scrollBox->addChild(settingsTitle.get(), settingsTitle->getSize().y + 3 * stuff::pixelSize);
 
 	saveButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
-	saveButton->addCallback(SaveData::saveSettings);
-	saveText = std::make_unique<text>(this, "Save", "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	saveButton->addCallback(this, &Usettings::SaveSettings);
+	saveText = std::make_unique<text>(this, "Save", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	
 	cancelButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	cancelButton->addCallback(this, &Usettings::cancel);
 	
-	cancelText = std::make_unique<text>(this, "Cancel", "straightDark", vector{ 0, 0 }, false, false, textAlign::center);
+	cancelText = std::make_unique<text>(this, "Revert", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	
 // audio
 	scrollBox->addChild(audioTitle.get(), audioTitle->getSize().y + 3 * stuff::pixelSize);
@@ -115,6 +116,11 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	// add bottom padding
 	scrollBox->addChild(nullptr, 20 * stuff::pixelSize);
 
+	confirmWidget = std::make_unique<ConfirmWidget>(this);
+	confirmWidget->AddSaveCallback(this, &Usettings::saveConfirm);
+	confirmWidget->AddRevertCallback(this, &Usettings::revertConfirm);
+	confirmWidget->AddCancelCallback(this, &Usettings::cancelConfirm);
+
 	setupLocs();
 }
 
@@ -135,9 +141,58 @@ void Usettings::draw(Shader* shaderProgram) {
 		cancelButton->draw(shaderProgram);
 	cancelText->draw(shaderProgram);
 
+	if (showingConfirmationBox)
+		confirmWidget->draw(shaderProgram);
+}
+
+void Usettings::addedToViewport() {
+	prevSettingsData = SaveData::settingsData;
+	UpdateData();
+}
+
+void Usettings::SaveSettings() {
+	prevSettingsData = SaveData::settingsData;
+	SaveData::saveSettings();
+}
+
+void Usettings::UpdateData() {
+	// audio
+	masterVolumeSlider->UpdateValue();
+	musicVolume->UpdateValue();
+	sfxVolume->UpdateValue();
+	dialogVolume->UpdateValue();
+
+	// graphics
+	pixelFontBlock->UpdateValue();
+	shortNumBlock->UpdateValue();
+	petBlock->UpdateValue();
+	rainBlock->UpdateValue();
+	cursorBlock->UpdateValue();
+}
+
+void Usettings::removeFromViewport() {
+	// just like hitting cancel on the confirmation box, brings you back to the settings
+	if (showingConfirmationBox) {
+		showingConfirmationBox = false;
+		return;
+	} else if (checkIfSettingsChanged()) {
+		showingConfirmationBox = true;
+		return;
+	}
+
+	__super::removeFromViewport();
+
+	goBack();
 }
 
 void Usettings::goBack() {
+	if (checkIfSettingsChanged()) {
+		showingConfirmationBox = true;
+		return;
+	}
+
+	RevertSettings();
+
 	// go back to the pause screen
 	Main::pauseMenu->addToViewport(true);
 }
@@ -168,5 +223,32 @@ void Usettings::setupLocs() {
 
 void Usettings::cancel() {
 	// just revert all settings back to original before save
+	RevertSettings();
+}
 
+void Usettings::RevertSettings() {
+	// updates settings variable while keeping memory the same for the setting blocks
+	memcpy(&SaveData::settingsData, &prevSettingsData, sizeof(FsettingsData));
+	UpdateData();
+}
+
+bool Usettings::checkIfSettingsChanged() {
+	return SaveData::settingsData != prevSettingsData;
+}
+
+// saves then leaves page
+void Usettings::saveConfirm() {
+	SaveSettings();
+	goBack();
+}
+
+// reverts then leaves page
+void Usettings::revertConfirm() {
+	RevertSettings();
+	goBack();
+}
+
+// cancels and returns to page
+void Usettings::cancelConfirm() {
+	showingConfirmationBox = false;
 }

@@ -7,6 +7,15 @@
 
 class GLFWcursor;
 
+enum CursorType {
+	CURSOR_DEFAULT,
+	CURSOR_POINT,
+	CURSOR_HOVER,
+	CURSOR_GRAB,
+	CURSOR_CLICK,
+	CURSOR_HOOK
+};
+
 class Cursor {
 public:
 	static void calcMouseImg();
@@ -17,19 +26,19 @@ public:
 	static void toggleCursor();
 
 private:
-	static void setMouseImg(std::string cursorName);
+	static void setCursorIcon(CursorType cursorName);
 
 	static inline GLFWcursor* cursor;
-	static inline std::string currCursor;
+	static inline CursorType currCursor;
 
 	// if mouse is over water
 	static inline bool mouseOverWater = false;
 
-	static inline std::unordered_map<std::string, GLuint> cursorLookup{
-		{ "cursor",  GLFW_ARROW_CURSOR },
-		{ "cursor1", GLFW_POINTING_HAND_CURSOR },
-		{ "cursor2", GLFW_POINTING_HAND_CURSOR },
-		{ "cursor3", GLFW_POINTING_HAND_CURSOR },
-		{ "cursor4", GLFW_POINTING_HAND_CURSOR },
+	static inline std::unordered_map<CursorType, GLuint> cursorLookup{
+		{ CURSOR_DEFAULT,  GLFW_ARROW_CURSOR },
+		{ CURSOR_POINT, GLFW_POINTING_HAND_CURSOR },
+		{ CURSOR_HOVER, GLFW_POINTING_HAND_CURSOR },
+		{ CURSOR_GRAB, GLFW_POINTING_HAND_CURSOR },
+		{ CURSOR_CLICK, GLFW_POINTING_HAND_CURSOR },
 	};
 };

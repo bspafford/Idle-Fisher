@@ -64,7 +64,7 @@ Acharacter::Acharacter() {
 
 	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, false, vector{ 0, 0 });
 	anim->shouldntDeleteTimer(true);
-	anim->spriteSheet->setAnchor(anchor::center, anchor::center);
+	anim->spriteSheet->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 	anim->setAnimation("idleSE", true);
 	anim->addFinishedCallback(this, &Acharacter::animFinished);
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
@@ -79,7 +79,7 @@ Acharacter::Acharacter() {
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, false);
 	fishingRod->shouldntDeleteTimer(true);
-	fishingRod->spriteSheet->setAnchor(anchor::center, anchor::center);
+	fishingRod->spriteSheet->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 
 	fishingTimer = std::make_unique<timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);
@@ -220,9 +220,9 @@ vector Acharacter::getCharLoc() {
 void Acharacter::Update(float deltaTime) {
 	move(deltaTime);
 
-	if (Input::getMouseButtonDown(MouseButton::left))
+	if (Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 		leftClick();
-	else if (Input::getMouseButtonDown(MouseButton::right))
+	else if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT))
 		stopFishing();
 
 	// animate character depending on move direction

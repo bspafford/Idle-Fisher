@@ -7,27 +7,32 @@
 #include "debugger.h"
 
 void Cursor::calcMouseImg() {
+	if (Scene::isLoading()) {
+		setCursorIcon(CURSOR_DEFAULT);
+		return;
+	}
+
 	IHoverable* hoveredItem = IHoverable::getHoveredItem();
 	bool canHover = IHoverable::checkValidInteract();
 	if (hoveredItem && canHover) {
-		std::string hoveredIcon = hoveredItem->getMouseHoverIcon();
+		CursorType hoveredIcon = hoveredItem->getMouseHoverIcon();
 		if (Input::getMouseButtonHeld(GLFW_MOUSE_BUTTON_LEFT)) {
-			if (hoveredIcon == "cursor1")
-				setMouseImg("cursor4");
-			else if (hoveredIcon == "cursor2")
-				setMouseImg("cursor3");
+			if (hoveredIcon == CURSOR_POINT)
+				setCursorIcon(CURSOR_CLICK);
+			else if (hoveredIcon == CURSOR_HOVER)
+				setCursorIcon(CURSOR_GRAB);
 		} else
-			setMouseImg(hoveredItem->getMouseHoverIcon());
-	} else if (!hoveredItem && mouseOverWater)
-		setMouseImg("hook");
+			setCursorIcon(hoveredItem->getMouseHoverIcon());
+	} else if (!hoveredItem && mouseOverWater && !widget::getCurrWidget())
+		setCursorIcon(CURSOR_HOOK);
 	else if (!hoveredItem || !canHover)
-		setMouseImg("cursor");
+		setCursorIcon(CURSOR_DEFAULT);
 
-	// resets hoveredItem
+	// resets hoveredItem for next frame
 	IHoverable::setHoveredItem(nullptr);
 }
 
-void Cursor::setMouseImg(std::string cursorName) {
+void Cursor::setCursorIcon(CursorType cursorName) {
 	// return if same cursor
 	if (currCursor == cursorName)
 		return;
@@ -38,7 +43,7 @@ void Cursor::setMouseImg(std::string cursorName) {
 		int width, height, channels;
 
 		// should be getting texture from texture manager not loading them ever time i switch
-		textureStruct* mouseImg = textureManager::getTexture("./images/" + currCursor + ".png");
+		textureStruct* mouseImg = textureManager::getTexture("./images/cursor" + std::to_string(currCursor) + ".png");
 		GLFWimage cursorImg;
 		cursorImg.width = mouseImg->w;
 		cursorImg.height = mouseImg->h;

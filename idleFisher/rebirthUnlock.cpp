@@ -20,7 +20,7 @@ UrebirthUnlock::UrebirthUnlock(widget* parent, int id) : widget(parent) {
 	button = std::make_unique<Ubutton>(this, thumbnailPath, 16, 16, 1, vector{ 0, 0 }, false, false);
 	button->addCallback(this, &UrebirthUnlock::onClick);
 
-	upgradeCost = std::make_unique<text>(this, shortNumbers::convert2Short(rebirthInfo->currencyNum), "straight", vector{ 0, 0 }, false, false, textAlign::center);
+	upgradeCost = std::make_unique<text>(this, shortNumbers::convert2Short(rebirthInfo->currencyNum), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	if (!saveRebirthInfo->unlocked) {
 		if (background)
 			background->setColorMod(glm::vec4(75.f/255.f, 75.f/255.f, 75.f/255.f, 1.f));

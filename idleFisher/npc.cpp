@@ -72,7 +72,7 @@ void npc::setupCollision() {
 void npc::draw(Shader* shaderProgram) {
 	bool prevMouseOver = bMouseOver;
 	bool bMouseOver = npcAnim->spriteSheet->isMouseOver(true);
-	if (bMouseOver && Input::getMouseButtonDown(MouseButton::left))
+	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 		Input::setLeftClick(this, &npc::click);
 	if (bMouseOver)
 		IHoverable::setHoveredItem(this);

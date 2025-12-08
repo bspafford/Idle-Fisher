@@ -11,7 +11,7 @@
 
 #include "debugger.h"
 
-text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, int alignment) : widget(parent) {
+text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, TextAlign alignment) : widget(parent) {
 	instances.push_back(this);
 
 	this->alignment = alignment;
@@ -158,14 +158,14 @@ void text::makeText(int i, std::string text, vector &offset) {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(currInfo.loc.x, currInfo.loc.y, currInfo.size.x, currInfo.size.y);
 
 		letters[i] = std::make_unique<Image>(textImg, source, vector{ 0, 0 }, false);
-		letters[i]->setAnchor(anchor::center, anchor::center);
+		letters[i]->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 		Image* letter = letters[i].get();
 
-		if (alignment != textAlign::right)
+		if (alignment != TEXT_ALIGN_RIGHT)
 			letter->setLoc(offset);
 
 		int temp = 1;
-		if (alignment == textAlign::right)
+		if (alignment == TEXT_ALIGN_RIGHT)
 			temp = -1;
 
 		offset.x += letter->w * temp * stuff::pixelSize;
@@ -177,7 +177,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 				offset.y -= 2 * stuff::pixelSize * temp;
 		}
 
-		if (alignment == textAlign::right)
+		if (alignment == TEXT_ALIGN_RIGHT)
 			letter->setLoc(offset);
 
 		// ONLY works for ALIGNED LEFT
@@ -218,18 +218,18 @@ void text::setText(std::string text) {
 		letters = std::vector<std::unique_ptr<Image>>(text.size());
 
 		vector offset = { 0, 0 };
-		if (alignment == textAlign::right) {
+		if (alignment == TEXT_ALIGN_RIGHT) {
 			for (int i = letters.size() - 1; i >= 0; i--) {
 				makeText(i, text, offset);
 			}
-		} else if (alignment == textAlign::left || alignment == textAlign::center) {
+		} else if (alignment == TEXT_ALIGN_LEFT || alignment == TEXT_ALIGN_CENTER) {
 			for (int i = 0; i < letters.size(); i++) {
 				makeText(i, text, offset);
 			}
 		}
 
 		// corrects for chars being out of textures "frame" if isometric, aligned center, or aligned right
-		if (alignment != textAlign::left || isometric) {
+		if (alignment != TEXT_ALIGN_LEFT || isometric) {
 			if (letters[0] && letters[letters.size() - 1]) {
 				vector _loc = { -letters[0]->getLoc().x, -letters[letters.size() - 1]->getLoc().y};
 				for (int i = 0; i < letters.size(); i++) {
@@ -371,15 +371,15 @@ void text::setLoc(vector loc) {
 	if (useWorldPos) {
 		vector size = getSize();
 
-		if (alignment == textAlign::left) {
+		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
 			if (isometric)
 				absoluteLoc += vector{ 0, size.y / stuff::pixelSize };
-		} else if (alignment == textAlign::right) {
+		} else if (alignment == TEXT_ALIGN_RIGHT) {
 			absoluteLoc = loc - vector{ size.x / stuff::pixelSize, 0 };
 			if (isometric)
 				absoluteLoc -= vector{ 0, getSize().y / stuff::pixelSize };
-		} else if (alignment == textAlign::center) {
+		} else if (alignment == TEXT_ALIGN_CENTER) {
 			absoluteLoc = loc - vector{ getSize().x / 2.f, 0.f };
 		}
 
@@ -391,11 +391,11 @@ void text::setLoc(vector loc) {
 		// convert { 0, 0 } from center to top left of screen and makes the top left the { 0, 0 } of the text
 		loc += (-halfScreen + vector{0, size.y});
 
-		if (alignment == textAlign::left) {
+		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
-		} else if (alignment == textAlign::right) {
+		} else if (alignment == TEXT_ALIGN_RIGHT) {
 			absoluteLoc = loc - vector{ getSize().x, 0.f };
-		} else if (alignment == textAlign::center) {
+		} else if (alignment == TEXT_ALIGN_CENTER) {
 			absoluteLoc = loc - vector{ (getSize().x / 2.f), 0.f };
 		}
 
@@ -438,7 +438,7 @@ void text::updatePositionsList() {
 	}
 }
 
-void text::setAnchor(std::string xAnchor, std::string yAnchor) {
+void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 	if (useWorldPos) {
 		std::cout << "This is a world object, it doesn't work";
 		return;
