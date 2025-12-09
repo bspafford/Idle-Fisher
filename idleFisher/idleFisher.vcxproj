@@ -177,6 +177,8 @@
     <None Include="2dShader.vert" />
     <None Include="2dWaterShader.frag" />
     <None Include="2dWaterShader.vert" />
+    <None Include="blurShader.frag" />
+    <None Include="blurShader.vert" />
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="shadowMap.frag" />
@@ -198,6 +200,7 @@
     <ClCompile Include="atm.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
     <ClCompile Include="baitBuffs.cpp" />
+    <ClCompile Include="blurBox.cpp" />
     <ClCompile Include="building.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="buyAutoFisher.cpp" />
@@ -229,6 +232,7 @@
     <ClCompile Include="fishUnlocked.cpp" />
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
+    <ClInclude Include="blurBox.h" />
     <ClInclude Include="confirmWidget.h" />
     <ClInclude Include="debugger.h" />
     <ClInclude Include="GPULoadCollector.h">

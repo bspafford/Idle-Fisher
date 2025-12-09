@@ -9,8 +9,8 @@ public:
 	virtual ~IHoverable();
 
 	// set what the mouse hover icon should be
-	void setMouseHoverIcon(CursorType cursorName);
-	CursorType getMouseHoverIcon();
+	void setCursorHoverIcon(CursorType cursorName);
+	CursorType getCursorHoverIcon();
 
 	static IHoverable* getHoveredItem();
 	static void setHoveredItem(IHoverable* item);

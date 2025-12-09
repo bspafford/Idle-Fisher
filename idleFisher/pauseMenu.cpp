@@ -7,10 +7,12 @@
 #include "text.h"
 #include "verticalBox.h"
 #include "settings.h"
+#include "blurBox.h"
 
 #include "debugger.h"
 
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
+	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize, 4);
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, 3 } * stuff::pixelSize, false);
 	pauseText->setAnchor(IMAGE_ANCHOR_LEFT, IMAGE_ANCHOR_TOP);
  	resumeButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
@@ -54,6 +56,7 @@ UpauseMenu::~UpauseMenu() {
 }
 
 void UpauseMenu::draw(Shader* shaderProgram) {
+	blurBox->draw(shaderProgram);
 	pauseText->draw(shaderProgram);
 	vertBox->draw(shaderProgram);
 }

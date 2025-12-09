@@ -73,7 +73,7 @@ void Umap::draw(Shader* shaderProgram) {
 	bool mouseStartX = mousePos.x >= ogLoc.x && mousePos.x <= ogLoc.x + size.x;
 	bool mouseStartY = mousePos.y >= ogLoc.y && mousePos.y <= ogLoc.y + size.y;
 	if ((mouseStartX && mouseStartY) || movingMap) {
-		setMouseHoverIcon(CURSOR_HOVER);
+		setCursorHoverIcon(CURSOR_HOVER);
 		IHoverable::setHoveredItem(this);
 	}
 

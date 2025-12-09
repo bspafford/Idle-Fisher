@@ -17,11 +17,11 @@ void UscrollBox::draw(Shader* shaderProgram) {
 			mouseStartPos = Input::getMousePos();
 		}
 		if (Input::getMouseButtonHeld(MOUSE_BUTTON_RIGHT)) {
-			setMouseHoverIcon(CURSOR_GRAB);
+			setCursorHoverIcon(CURSOR_GRAB);
 			scrolling();
 		} else {
 			scrolling(Input::getMouseScrollDir());
-			setMouseHoverIcon(CURSOR_DEFAULT);
+			setCursorHoverIcon(CURSOR_DEFAULT);
 		}
 	}
 

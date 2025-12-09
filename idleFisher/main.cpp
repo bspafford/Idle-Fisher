@@ -44,6 +44,7 @@
 #include "idleProfitWidget.h"
 #include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
+#include "blurBox.h"
 
 // includes Windows.h if on windows
 #ifdef _WIN32
@@ -177,6 +178,7 @@ int Main::createWindow() {
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
 	// Load in a model for shadows
 	house = std::make_unique<Model>("./images/models/idleFisher3D/idleFisher3DNoWater.gltf");
 	house->setPos(glm::vec3(-182.75f, 0.f, -504.5f));
@@ -243,7 +245,14 @@ int Main::createWindow() {
 		glDisable(GL_DEPTH_TEST);
 		// ==== DRAW 2D STUFF ====
 		twoDShader->Activate();
+
+		BlurBox::BindFrameBuffer();
+		glClear(GL_COLOR_BUFFER_BIT);
+		glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
 		draw(twoDShader);
+		BlurBox::UnbindFrameBuffer();
+
+		BlurBox::DrawFinal();
 
 		glEnable(GL_DEPTH_TEST);
 		// ==== DRAW SHADOW MESH ====
@@ -308,7 +317,7 @@ void Main::Start() {
 	achievementBuffs::init();
 	setupWidgets();
 
-	Scene::openLevel("titleScreen", worldLoc::None, true);
+	Scene::openLevel("world1", worldLoc::None, true);
 	
 	character = std::make_unique<Acharacter>();
 	camera = std::make_unique<Camera>(stuff::screenSize.x, stuff::screenSize.y, glm::vec3(-55, 50, -350));
@@ -323,6 +332,8 @@ void Main::Start() {
 	fps::fps();
 
 	achievement::createAchievementList();
+
+	BlurBox::Init();
 }
 
 void Main::Update(float deltaTime) {

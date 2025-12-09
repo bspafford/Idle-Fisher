@@ -7,6 +7,7 @@ class Ubutton;
 class text;
 class verticalBox;
 class Usettings;
+class BlurBox;
 
 class UpauseMenu : public widget {
 public:
@@ -22,6 +23,7 @@ private:
 	void exitToMenu();
 	void exitToDesktop();
 
+	std::unique_ptr<BlurBox> blurBox;
 	std::unique_ptr<Image> pauseText;
 	std::unique_ptr<Ubutton> resumeButton;
 	std::unique_ptr<Ubutton> saveGameButton;

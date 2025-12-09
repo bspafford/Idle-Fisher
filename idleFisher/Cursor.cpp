@@ -15,14 +15,14 @@ void Cursor::calcMouseImg() {
 	IHoverable* hoveredItem = IHoverable::getHoveredItem();
 	bool canHover = IHoverable::checkValidInteract();
 	if (hoveredItem && canHover) {
-		CursorType hoveredIcon = hoveredItem->getMouseHoverIcon();
+		CursorType hoveredIcon = hoveredItem->getCursorHoverIcon();
 		if (Input::getMouseButtonHeld(GLFW_MOUSE_BUTTON_LEFT)) {
 			if (hoveredIcon == CURSOR_POINT)
 				setCursorIcon(CURSOR_CLICK);
 			else if (hoveredIcon == CURSOR_HOVER)
 				setCursorIcon(CURSOR_GRAB);
 		} else
-			setCursorIcon(hoveredItem->getMouseHoverIcon());
+			setCursorIcon(hoveredItem->getCursorHoverIcon());
 	} else if (!hoveredItem && mouseOverWater && !widget::getCurrWidget())
 		setCursorIcon(CURSOR_HOOK);
 	else if (!hoveredItem || !canHover)

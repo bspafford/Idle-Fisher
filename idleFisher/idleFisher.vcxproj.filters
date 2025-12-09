@@ -87,6 +87,12 @@
     <None Include="test.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="blurShader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="blurShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">
@@ -424,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="Hoverable.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blurBox.cpp">
+      <Filter>Source Files\widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -782,6 +791,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="confirmWidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="blurBox.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
   </ItemGroup>

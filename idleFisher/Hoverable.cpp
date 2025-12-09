@@ -8,11 +8,11 @@ IHoverable::~IHoverable() {
 }
 
 // set what the mouse hover icon should be
-void IHoverable::setMouseHoverIcon(CursorType cursorName) {
+void IHoverable::setCursorHoverIcon(CursorType cursorName) {
 	currCursor = cursorName;
 }
 
-CursorType IHoverable::getMouseHoverIcon() {
+CursorType IHoverable::getCursorHoverIcon() {
 	return currCursor;
 }
 

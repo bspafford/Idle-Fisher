@@ -41,7 +41,7 @@ void URectangle::loadGPU() {
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	setMouseHoverIcon(CURSOR_DEFAULT);
+	setCursorHoverIcon(CURSOR_DEFAULT);
 
 	setLoc(loc);
 }
