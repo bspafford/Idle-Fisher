@@ -787,24 +787,11 @@
     <ClInclude Include="settingsBlock.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="confirmWidget.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="blurBox.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="idleFisher.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="images\icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

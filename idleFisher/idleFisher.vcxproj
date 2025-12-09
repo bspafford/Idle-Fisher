@@ -393,7 +393,6 @@
     <ClInclude Include="rebirthUnlock.h" />
     <ClInclude Include="rebirthWidget.h" />
     <ClInclude Include="Rectangle.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="rock.h" />
     <ClInclude Include="sailor.h" />
     <ClInclude Include="sailorWidget.h" />
@@ -426,12 +425,6 @@
     <ClInclude Include="widget.h" />
     <ClInclude Include="worlds.h" />
     <ClInclude Include="wrapBox.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="idleFisher.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="images\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

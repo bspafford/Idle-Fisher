@@ -20,19 +20,19 @@ void main() {
 
     // Simple 3×3 box blur
     for (int x = -radius; x <= radius; x += 3) {
-    for (int y = -radius; y <= radius; y += 3) {
-        vec2 offset = vec2(x, y) * texelSize;
-        vec2 coords = TexCoord + offset;
+        for (int y = -radius; y <= radius; y += 3) {
+            vec2 offset = vec2(x, y) * texelSize;
+            vec2 coords = TexCoord + offset;
         
-        // Adjusting the offset to compensate for the shift
-        coords += 0.333f * vec2(radius, radius) * texelSize;
+            // Adjusting the offset to compensate for the shift
+            coords += 0.333f * vec2(radius, radius) * texelSize;
         
-        if (coords.x >= 0.0 && coords.x <= 1.0 && coords.y >= 0.0 && coords.y <= 1.0) {
-            result += texture(screenTexture, coords).rgb;
-            total++;
+            if (coords.x >= 0.0 && coords.x <= 1.0 && coords.y >= 0.0 && coords.y <= 1.0) {
+                result += texture(screenTexture, coords).rgb;
+                total++;
+            }
         }
     }
-}
 
     FragColor = vec4(result / total, 1.0);
 }

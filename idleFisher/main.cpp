@@ -1,5 +1,4 @@
 #include "main.h"
-#include "resource.h"
 
 #include "Image.h"
 #include "model.h"
@@ -85,7 +84,6 @@ Main::~Main() {
 }
 
 int Main::createWindow() {
-	GPULoadCollector::setMainThread(std::this_thread::get_id());
 	fpsCap = 0;
 	// temp
 	stuff::screenSize = { 1920, 1080 };
@@ -99,10 +97,9 @@ int Main::createWindow() {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent resizing
 	}
 
-
 	// Tell GLFW what version of OpenGL we are using 
 	// In this case we are using OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// Tell GLFW we are using the CORE profile
 	// So that means we only have the modern functions
@@ -117,19 +114,14 @@ int Main::createWindow() {
 		return -1;
 	}
 
-	// temp
+	// borderless fullscreen
 	glfwSetWindowPos(window, 0, 0);
 
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 
-	GLFWimage iconImgs;
-	iconImgs.pixels = stbi_load("./images/icon.png", &iconImgs.width, &iconImgs.height, 0, 4);
-	glfwSetWindowIcon(window, 1, &iconImgs);
-	stbi_image_free(iconImgs.pixels);
-
 	setTaskbarIcon(window);
-
+	
 	//Load GLAD so it configures OpenGL
 	if (!gladLoadGL()) {
 		return -1;
@@ -289,6 +281,8 @@ int Main::createWindow() {
 }
 
 void Main::Start() {
+	GPULoadCollector::setMainThread(std::this_thread::get_id());
+
 	// Generates Shader object using shaders default.vert and default.frag
 	shaderProgram = new Shader("default.vert", "default.frag");
 	shadowMapProgram = new Shader("shadowMap.vert", "shadowMap.frag");
@@ -558,10 +552,16 @@ void Main::loadIdleProfits() {
 }
 
 void Main::setTaskbarIcon(GLFWwindow* window) {
-#ifdef _WIN32
-	HWND hwnd = glfwGetWin32Window(window);
-	HICON hIconBig = (HICON)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
-	if (hIconBig)
-		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-#endif
+	const int iconsNum = 2;
+	GLFWimage iconImgs[iconsNum];
+	std::vector<std::string> paths = { "icon24", "icon16" };
+	for (int i = 0; i < iconsNum; i++)
+		iconImgs[i].pixels = stbi_load(("./images/icons/" + paths[i] + ".png").c_str(), &iconImgs[i].width, &iconImgs[i].height, 0, 4);
+	glfwSetWindowIcon(window, iconsNum, iconImgs);
+	for (int i = 0; i < iconsNum; i++)
+		stbi_image_free(iconImgs[i].pixels);
+
+	// polls events to update the taskbar icon
+	// otherwise something like loading all the textures will cause too long of a hold
+	glfwPollEvents();
 }
