@@ -85,7 +85,7 @@ void Uslider::setLoc(vector loc) {
 	vector titleSize = titleLength > 0 ? vector{ titleLength, sliderTitle->getSize().y } : sliderTitle->getSize();
 	background->setSize({ remainingSize, background->getSize().y });
 	foreground->setSize(background->getSize());
-	background->setLoc(loc + vector{ titleSize.x, titleSize.y / 2.f - background->getSize().y / 2.f}.round());
+	background->setLoc(loc + vector{ titleSize.x, titleSize.y / 2.f - background->getSize().y / 2.f}.floor());
 	foreground->setLoc(background->getLoc());
 
 	float percent = math::clamp((*value - minVal) / (maxVal - minVal), 0, 1);

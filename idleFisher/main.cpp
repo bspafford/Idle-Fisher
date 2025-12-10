@@ -109,7 +109,7 @@ int Main::createWindow() {
 	window = glfwCreateWindow(stuff::screenSize.x, stuff::screenSize.y, "Idle Fisher", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == nullptr) {
-		std::cout << "Failed to create GLFW window" << std::endl;						
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -301,7 +301,6 @@ void Main::Start() {
 
 	SaveData::saveData.playerLoc = vector{ 1800, 1300 } / 3.f;
 	SaveData::saveData.playerLoc = vector{ 663, 552 };
-
 	textureManager::textureManager();
 	sounds::sounds();
 	csvReader();
@@ -312,7 +311,7 @@ void Main::Start() {
 	setupWidgets();
 
 	Scene::openLevel("world1", worldLoc::None, true);
-	
+
 	character = std::make_unique<Acharacter>();
 	camera = std::make_unique<Camera>(stuff::screenSize.x, stuff::screenSize.y, glm::vec3(-55, 50, -350));
 
@@ -382,25 +381,18 @@ void Main::updateShaders(float deltaTime) {
 
 void Main::setupWidgets() {
 	pauseMenu = std::make_unique<UpauseMenu>(nullptr);
-
 	fishComboWidget = std::make_unique<UfishComboWidget>(nullptr);
-
 	heldFishWidget = std::make_unique<UheldFishWidget>(nullptr);
 	heldFishWidget->updateList();
 	currencyWidget = std::make_unique<UcurrencyWidget>(nullptr);
 	currencyWidget->updateList();
-
 	comboWidget = std::make_unique<UcomboWidget>(nullptr);
 	achievementWidget = std::make_unique<UachievementWidget>(nullptr);
 	journal = std::make_unique<Ujournal>(nullptr);
 	fishUnlocked = std::make_unique<UfishUnlocked>(nullptr);
-
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
-
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
-
 	comboOvertimeWiget = std::make_unique<UcomboOvertimeWidget>(nullptr);
-
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
 }
 

@@ -180,35 +180,25 @@ void Image::setLoc(vector loc) {
 		this->absoluteLoc = loc;
 		updatePositionsList();
 	} else {
-		// by default anchor should be top left?
-
-		// if left anchor to left side of screen.
-		// if left and top anchor then anchor top left
-		// if anchor centerX and centerY then anchor center of screen
-
-		// should only work for screen space objects
-
-		// right now the anchor of the image is the bottom left, but when screen anchoring to the right side of the screen, should make it subtract the image width from the image so it isn't off the screen
-		//this->absoluteLoc = this->loc + vector{ 1920.f/2.f, 0 };
 		vector halfScreen = stuff::screenSize / 2.f;
 		vector newLoc;
 		if (xAnchor == IMAGE_ANCHOR_LEFT) { // if anchor left
-			newLoc.x = floorf(loc.x - halfScreen.x);
+			newLoc.x = (loc.x - halfScreen.x);
 		} else if (xAnchor == IMAGE_ANCHOR_RIGHT) { // if anchor right
-			newLoc.x = floorf(loc.x + halfScreen.x - w * stuff::pixelSize);
+			newLoc.x = (loc.x + halfScreen.x - w * stuff::pixelSize);
 		} else if (xAnchor == IMAGE_ANCHOR_CENTER) {
-			newLoc.x = floorf(loc.x - w * stuff::pixelSize / 2.f);
+			newLoc.x = (loc.x - w * stuff::pixelSize / 2.f);
 		}
 
 		if (yAnchor == IMAGE_ANCHOR_TOP) { // if anchor top
-			newLoc.y = floorf(loc.y - halfScreen.y + h * stuff::pixelSize);
+			newLoc.y = (loc.y - halfScreen.y + h * stuff::pixelSize);
 		} else if (yAnchor == IMAGE_ANCHOR_BOTTOM) { // if anchor bottom
-			newLoc.y = floorf(loc.y + halfScreen.y);
+			newLoc.y = (loc.y + halfScreen.y);
 		} else if (yAnchor == IMAGE_ANCHOR_CENTER) { // if anchor bottom
-			newLoc.y = floorf(loc.y + h * stuff::pixelSize / 2.f);
+			newLoc.y = (loc.y + h * stuff::pixelSize / 2.f);
 		}
 
-		absoluteLoc = newLoc.round();
+		absoluteLoc = newLoc;
 		
 		updatePositionsList();
 	}
@@ -229,19 +219,18 @@ void Image::updatePositionsList(std::vector<float> positions) {
 	currVAO->Bind();
 	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
 
-	// round positions list
-	for (int i = 0; i < positions.size(); i++) {
-		positions[i] = floorf(positions[i]);
-	}
-
 	// updates the tex coords
 	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 	if (ptr) {
 		if (positions.size() == 0) {
 			std::vector<float> positions = getPositionsList();
 			memcpy(ptr, positions.data(), positions.size() * sizeof(float)); // Copy updated vertex data
-		} else
+		} else {
+			// round positions list
+			for (int i = 0; i < positions.size(); i++)
+				positions[i] = floorf(positions[i]);
 			memcpy(ptr, positions.data(), positions.size() * sizeof(float)); // Copy updated vertex data
+		}
 
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
@@ -303,16 +292,16 @@ std::vector<float> Image::getPositionsList() {
 		x2 = xTemp;
 	}
 
-	vector scale = vector{ w, h } * stuff::pixelSize;
-	vector scaledLoc = absoluteLoc * vector{ 1, -1 }; // left to right is positive, bottom to top is negative, just like sdl2
+	vector scale = (vector{ w, h } * stuff::pixelSize).ceil();
+	vector scaledLoc = (absoluteLoc * vector{ 1, -1 }).ceil(); // left to right is positive, bottom to top is negative, just like sdl2
 	if (useWorldPos)
-		scaledLoc = vector{ absoluteLoc.x, absoluteLoc.y } * stuff::pixelSize;
+		scaledLoc = absoluteLoc * stuff::pixelSize;
 	std::vector<float> positions = {
-		// Positions						// Texture Coords
-		scale.x + scaledLoc.x, scaledLoc.y,				x2, y2,
-		scale.x + scaledLoc.x, scale.y + scaledLoc.y,	x2, y1,
-		scaledLoc.x, scale.y + scaledLoc.y,	 			x1, y1,
-		scaledLoc.x, scaledLoc.y,						x1, y2
+		// Positions										// Texture Coords
+		scale.x + scaledLoc.x,	scaledLoc.y,				x2, y2,
+		scale.x + scaledLoc.x,	scale.y + scaledLoc.y,		x2, y1,
+		scaledLoc.x,			scale.y + scaledLoc.y,	 	x1, y1,
+		scaledLoc.x,			scaledLoc.y,				x1, y2
 	};
 
 	return positions;

@@ -3,8 +3,8 @@
 
 BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : widget(parent) {
 	this->blurStrength = blurStrength;
+	
 	setLocAndSize(loc, size);
-
 	makeVerticesList();
 
 	glGenVertexArrays(1, &quadVAO);
@@ -49,6 +49,9 @@ void BlurBox::makeVerticesList() {
 }
 
 void BlurBox::UpdateVertices() {
+	if (!quadVAO)
+		return;
+
 	makeVerticesList();
 
 	glBindVertexArray(quadVAO);

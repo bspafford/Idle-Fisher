@@ -12,6 +12,7 @@
 #include "debugger.h"
 
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
+	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
 	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize, 4);
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, 3 } * stuff::pixelSize, false);
 	pauseText->setAnchor(IMAGE_ANCHOR_LEFT, IMAGE_ANCHOR_TOP);
@@ -56,6 +57,7 @@ UpauseMenu::~UpauseMenu() {
 }
 
 void UpauseMenu::draw(Shader* shaderProgram) {
+	rect->draw(shaderProgram);
 	blurBox->draw(shaderProgram);
 	pauseText->draw(shaderProgram);
 	vertBox->draw(shaderProgram);

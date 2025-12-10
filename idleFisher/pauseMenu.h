@@ -23,6 +23,7 @@ private:
 	void exitToMenu();
 	void exitToDesktop();
 
+	std::unique_ptr<URectangle> rect;
 	std::unique_ptr<BlurBox> blurBox;
 	std::unique_ptr<Image> pauseText;
 	std::unique_ptr<Ubutton> resumeButton;

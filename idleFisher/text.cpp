@@ -16,7 +16,7 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 
 	this->alignment = alignment;
 	this->font = font;
-	this->loc = loc.round();
+	this->loc = loc.floor();
 	this->isometric = isometric;
 	this->useWorldPos = useWorldPos;
 
@@ -192,6 +192,10 @@ void text::makeText(int i, std::string text, vector &offset) {
 		}
 	}
 
+	if (textString == "Buy Fish Transporter") {
+		std::cout << "offset: " << offset << "\n";
+	}
+
 	numLetters++;
 }
 
@@ -266,7 +270,10 @@ void text::makeTextTexture() {
 	if (letters.size() == 0)
 		return;
 
-	fboSize = getFBOSize() + vector{ 0, textHeight / 2.f * stuff::pixelSize };
+	fboSize = (getFBOSize() + vector{ 0, textHeight / 2.f * stuff::pixelSize }).ceil();
+	// don't know but it fixed pixel texture offset problem
+	fboSize.x += (int)fboSize.x % 2 != 0; // make even
+	fboSize.y += (int)fboSize.y % 2 == 0; // make odd
 
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;
@@ -276,18 +283,21 @@ void text::makeTextTexture() {
 	Main::twoDShader->Activate();
 	Main::twoDShader->setMat4("projection", Main::camera->getProjectionMat(fboSize));
 
-	absoluteLoc = absoluteLoc.round();
-	vector scaledLoc = absoluteLoc * vector{ 1, -1 };
+	absoluteLoc = absoluteLoc.floor();
+	vector scaledLoc = (absoluteLoc * vector{ 1, -1 });
 	if (useWorldPos)
 		scaledLoc = absoluteLoc * stuff::pixelSize;
 
 	float positions[] = {
 		// Positions											// Texture Coords
-		fboSize.x + scaledLoc.x,	scaledLoc.y,				1.f, 1.f,	// Bottom-right
-		fboSize.x + scaledLoc.x,	fboSize.y + scaledLoc.y,	1.f, 0.f,	// Top-right // idk why the y texCoords have to be flipped
-		scaledLoc.x,				fboSize.y + scaledLoc.y,	0.f, 0.f,	// Top-left
-		scaledLoc.x,				scaledLoc.y,				0.f, 1.f	// Bottom-left
+		floor(fboSize.x + scaledLoc.x),	floor(scaledLoc.y),				1.f, 1.f,	// Bottom-right
+		floor(fboSize.x + scaledLoc.x),	floor(fboSize.y + scaledLoc.y),	1.f, 0.f,	// Top-right
+		floor(scaledLoc.x),				floor(fboSize.y + scaledLoc.y),	0.f, 0.f,	// Top-left
+		floor(scaledLoc.x),				floor(scaledLoc.y),				0.f, 1.f	// Bottom-left
 	};
+
+	if (textString == "Buy Fish Transporter")
+		std::cout << "fboSize: " << fboSize << ", absoluteLoc: " << absoluteLoc << ", scaledLoc : " << scaledLoc << "\n";
 
 	std::vector<GLuint> indices = {
 		0, 1, 3, // First triangle
@@ -334,15 +344,18 @@ void text::makeTextTexture() {
 	// Draws to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
-			letters[i]->setLoc(vector{ letters[i]->getLoc().x - (fboSize.x - letters[i]->getSize().x) / 2.f, letters[i]->getLoc().y + (letters[i]->getSize().y - fboSize.y) / 2.f });
+			letters[i]->setLoc(vector{ letters[i]->getLoc().x - (fboSize.x - letters[i]->getSize().x) / 2.f, letters[i]->getLoc().y + (letters[i]->getSize().y - fboSize.y) / 2.f }.floor());
 			// drops characters if they are inside the drop list and the correct font
 			std::string dropList = "gpqjy";
 			std::vector<std::string> dontDropFont = { "afScreen", "biggerStraight", "biggerStraightDark" };
 			if (std::find(dontDropFont.begin(), dontDropFont.end(), font) == dontDropFont.end() && std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
-				letters[i]->setLoc({letters[i]->getLoc().x, letters[i]->getLoc().y + letters[i]->getSize().y / 2.f});
-			letters[i]->draw(Main::twoDShader);
+				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y + letters[i]->getSize().y / 2.f}.floor());
 
+			letters[i]->draw(Main::twoDShader);
 		}
+
+	if (textString == "Buy Fish Transporter")
+		std::cout << "fboSize: " << fboSize << "\n";
 
 	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -367,6 +380,7 @@ void text::setLocAndSize(vector loc, vector size) {
 }
 
 void text::setLoc(vector loc) {
+	loc = loc.floor();
 	__super::setLoc(loc);
 	if (useWorldPos) {
 		vector size = getSize();
@@ -419,15 +433,15 @@ void text::updatePositionsList() {
 	float y2 = 1;
 
 	vector scale = getSize();
-	vector scaledLoc = (absoluteLoc * vector{ 1, -1 }).round();
+	vector scaledLoc = (absoluteLoc * vector{ 1, -1 });
 	if (useWorldPos)
-		scaledLoc = (absoluteLoc * stuff::pixelSize).round();
+		scaledLoc = (absoluteLoc * stuff::pixelSize);
 	float positions[] = {
 		// Positions // Texture Coords
-		fboSize.x + scaledLoc.x,	scaledLoc.y,				1.f, 0.f,	// Bottom-right
-		fboSize.x + scaledLoc.x,	fboSize.y + scaledLoc.y,	1.f, 1.f,	// Top-right // idk why the y texCoords have to be flipped
-		scaledLoc.x,				fboSize.y + scaledLoc.y,	0.f, 1.f,	// Top-left
-		scaledLoc.x,				scaledLoc.y,				0.f, 0.f	// Bottom-left
+		round(fboSize.x + scaledLoc.x),	round(scaledLoc.y),				1.f, 0.f,	// Bottom-right
+		round(fboSize.x + scaledLoc.x),	round(fboSize.y + scaledLoc.y),	1.f, 1.f,	// Top-right // idk why the y texCoords have to be flipped
+		round(scaledLoc.x),				round(fboSize.y + scaledLoc.y),	0.f, 1.f,	// Top-left
+		round(scaledLoc.x),				round(scaledLoc.y),				0.f, 0.f	// Bottom-left
 	};
 
 	// updates the tex coords
@@ -475,7 +489,7 @@ vector text::getFBOSize() {
 		if (maxY < letterLoc.y + letter->h * stuff::pixelSize)
 			maxY = letterLoc.y + letter->h * stuff::pixelSize;
 	}
-	return { maxX - minX, maxY - minY };
+	return { ceil(maxX - minX), ceil(maxY - minY) };
 }
 
 void text::setLineLength(float length) {

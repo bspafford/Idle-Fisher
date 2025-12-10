@@ -28,7 +28,7 @@ void UcurrencyWidget::updateList() {
 			
 			FcurrencyStruct* currencyStruct = &SaveData::data.currencyData[saveCurrency.id];
 
-			widget->setLoc(vector{ widget->getLoc().x, yOffset }.round());
+			widget->setLoc(vector{ widget->getLoc().x, yOffset }.floor());
 			widget->setup(currencyStruct, saveCurrency.numOwned);
 			yOffset += widget->getSize().y + 1 * stuff::pixelSize;
 
@@ -41,7 +41,7 @@ void UcurrencyWidget::updateList() {
 void UcurrencyWidget::draw(Shader* shaderProgram) {
 	float yOffset = 15 * stuff::pixelSize;
 	for (int i = 0; i < currencyList.size(); i++) {
-		currencyList[i]->setLoc(vector{ stuff::screenSize.x - currencyList[i]->getSize().x - 11 * stuff::pixelSize, yOffset}.round());
+		currencyList[i]->setLoc(vector{ stuff::screenSize.x - currencyList[i]->getSize().x - 11 * stuff::pixelSize, yOffset}.floor());
 		currencyList[i]->draw(shaderProgram);
 		yOffset += currencyList[i]->getSize().y + 1 * stuff::pixelSize;
 	}

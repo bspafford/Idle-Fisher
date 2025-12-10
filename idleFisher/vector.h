@@ -17,7 +17,15 @@ public:
 	}
 
 	vector round() {
+		return vector{ roundf(x), roundf(y) };
+	}
+
+	vector floor() {
 		return vector{ floorf(x), floorf(y) };
+	}
+
+	vector ceil() {
+		return vector{ ceilf(x), ceilf(y) };
 	}
 
 	// Addition

@@ -67,7 +67,7 @@ bool Ubutton::isMouseOver() {
 }
 
 void Ubutton::setLoc(vector loc) {
-	loc = loc.round();
+	loc = loc.floor();
 	__super::setLoc(loc);
 	
 	buttonAnim->setLoc(loc);

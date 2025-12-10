@@ -200,7 +200,7 @@ void UfishermanWidget::setupLocs() {
 
 	fishingRodThumbnail->setLoc(stuff::screenSize / 2.f - fishingRodThumbnail->getSize() / 2.f + vector{ 0, 0 } * stuff::pixelSize);
 	vector offset = { 0, 30 * stuff::pixelSize };
-	vector buttonOffset = (-powerUpgradeButton->getSize() / 2.f).round() + vector{ 90 * stuff::pixelSize, roundf(powerText->getSize().y / 2.f) };
+	vector buttonOffset = (-powerUpgradeButton->getSize() / 2.f).floor() + vector{ 90 * stuff::pixelSize, roundf(powerText->getSize().y / 2.f) };
 	powerText->setLoc(stuff::screenSize / 2.f + vector{ 50, -27 } * stuff::pixelSize);
 	speedText->setLoc(powerText->getLoc() + offset);
 	catchChanceText->setLoc(speedText->getLoc() + offset);
@@ -208,9 +208,9 @@ void UfishermanWidget::setupLocs() {
 	speedUpgradeButton->setLoc(speedText->getLoc() + buttonOffset);
 	catchChanceUpgradeButton->setLoc(catchChanceText->getLoc() + buttonOffset);
 
-	powerButtonPrice->setLoc(powerUpgradeButton->getLoc() + (powerUpgradeButton->getSize() / 2.f).round());
-	speedButtonPrice->setLoc(speedUpgradeButton->getLoc() + (speedUpgradeButton->getSize() / 2.f).round());
-	catchChanceButtonPrice->setLoc(catchChanceUpgradeButton->getLoc() + (catchChanceUpgradeButton->getSize() / 2.f).round());
+	powerButtonPrice->setLoc(powerUpgradeButton->getLoc() + (powerUpgradeButton->getSize() / 2.f).floor());
+	speedButtonPrice->setLoc(speedUpgradeButton->getLoc() + (speedUpgradeButton->getSize() / 2.f).floor());
+	catchChanceButtonPrice->setLoc(catchChanceUpgradeButton->getLoc() + (catchChanceUpgradeButton->getSize() / 2.f).floor());
 
 	vector levelTextOffset = { -10 * stuff::pixelSize, 0 };
 	powerLevelText->setLoc(vector{ powerUpgradeButton->getLoc().x, powerText->getLoc().y } + levelTextOffset);
@@ -220,7 +220,7 @@ void UfishermanWidget::setupLocs() {
 	// fishing rod stats
 	vector textOffset = { 0, 10 * stuff::pixelSize };
 	vector textNumOffset = { 100 * stuff::pixelSize, 0 };
-	powerStatsText->setLoc((stuff::screenSize / 2.f).round() + vector{ -475, 30 });
+	powerStatsText->setLoc((stuff::screenSize / 2.f).floor() + vector{ -475, 30 });
 	speedStatsText->setLoc(powerStatsText->getLoc() + textOffset);
 	catchChanceStatsText->setLoc(speedStatsText->getLoc() + textOffset);
 	powerStatsTextNum->setLoc(powerStatsText->getLoc() + textNumOffset);

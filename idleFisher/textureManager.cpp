@@ -8,19 +8,11 @@
 
 textureManager::textureManager() {
 	std::ifstream colFile("./data/png_files.txt");
-	int index = 0;
 	if (colFile.is_open()) {
 		std::string line;
 		while (colFile.good()) {
-			index++;
-			if (index >= 445) {
-				//std::cout << "line: " << line << "\n";
-				//break;
-			}
 			std::getline(colFile, line);
-
 			line = math::toLower(line);
-
 			loadTexture(line);
 		}
 	}
@@ -34,14 +26,8 @@ void textureManager::Deconstructor() {
 textureStruct* textureManager::loadTexture(std::string path, bool loadSurface) {
 	int w, h, nChannels;
 	unsigned char* bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
-	if (!bytes) {
-		return nullptr;
-		std::cout << "BAD!\n";
-	}
 	std::unique_ptr<textureStruct> texStruct = std::make_unique<textureStruct>(bytes, loadSurface, w, h, nChannels);
-
 	textureMap[path] = std::move(texStruct);
-
 	return textureMap[path].get();
 }
 
