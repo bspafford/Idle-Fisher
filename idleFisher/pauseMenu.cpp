@@ -15,7 +15,6 @@ UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
 	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize, 4);
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, 3 } * stuff::pixelSize, false);
-	pauseText->setAnchor(IMAGE_ANCHOR_LEFT, IMAGE_ANCHOR_TOP);
  	resumeButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
 	saveGameButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/saveGame.png", 72, 20, 1, vector{ 0, 0 }, false, false);
 	settingsButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/settings.png", 70, 20, 1, vector{ 0, 0 }, false, false);
@@ -66,6 +65,10 @@ void UpauseMenu::draw(Shader* shaderProgram) {
 void UpauseMenu::setupLocs() {
 	vertBox->getSize();
 	vertBox->setLocAndSize({ 8 * stuff::pixelSize, stuff::screenSize.y * .25f }, stuff::screenSize);
+	blurBox->setSize(stuff::screenSize);
+	rect->setLoc(rect->getLoc());
+	rect->setSize(stuff::screenSize);
+	pauseText->setLoc(pauseText->getLoc());
 }
 
 void UpauseMenu::resume() {

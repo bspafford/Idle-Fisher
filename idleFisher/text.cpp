@@ -192,10 +192,6 @@ void text::makeText(int i, std::string text, vector &offset) {
 		}
 	}
 
-	if (textString == "Buy Fish Transporter") {
-		std::cout << "offset: " << offset << "\n";
-	}
-
 	numLetters++;
 }
 
@@ -278,10 +274,10 @@ void text::makeTextTexture() {
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;
 
-	glm::mat4 currProjection = Main::camera->getProjectionMat();
+	glm::mat4 currProjection = Camera::getProjectionMat();
 
 	Main::twoDShader->Activate();
-	Main::twoDShader->setMat4("projection", Main::camera->getProjectionMat(fboSize));
+	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize));
 
 	absoluteLoc = absoluteLoc.floor();
 	vector scaledLoc = (absoluteLoc * vector{ 1, -1 });
@@ -295,9 +291,6 @@ void text::makeTextTexture() {
 		floor(scaledLoc.x),				floor(fboSize.y + scaledLoc.y),	0.f, 0.f,	// Top-left
 		floor(scaledLoc.x),				floor(scaledLoc.y),				0.f, 1.f	// Bottom-left
 	};
-
-	if (textString == "Buy Fish Transporter")
-		std::cout << "fboSize: " << fboSize << ", absoluteLoc: " << absoluteLoc << ", scaledLoc : " << scaledLoc << "\n";
 
 	std::vector<GLuint> indices = {
 		0, 1, 3, // First triangle
@@ -353,9 +346,6 @@ void text::makeTextTexture() {
 
 			letters[i]->draw(Main::twoDShader);
 		}
-
-	if (textString == "Buy Fish Transporter")
-		std::cout << "fboSize: " << fboSize << "\n";
 
 	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -518,7 +508,9 @@ void text::drawTexture(Shader* shaderProgram, GLuint textureID) {
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	currVAO->Bind();
 
-	glUniform1i(glGetUniformLocation(shaderProgram->ID, "useWorldPos"), useWorldPos);
+	std::cout << "fboSize: " << fboSize << "\n";
+
+	shaderProgram->setInt("useWorldPos", useWorldPos);
 	shaderProgram->setVec4("color", colorMod);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -11,13 +11,12 @@
 #include "Image.h"
 #include "Texture.h"
 #include "Rectangle.h"
-#include "text.h"
+#include "CircleLoad.h"
 
 #include "button.h"
 #include "animation.h"
 #include "timer.h"
 #include "rebirthExit.h"
-#include "idleProfitWidget.h"
 
 // npcs
 #include "pet.h"
@@ -301,10 +300,7 @@ world::world() {
 	darkenScreenTimer->addUpdateCallback(this, &world::darkenScreen);
 	darkenValue = 0;
 	isRaining = false;
-	std::unordered_map<std::string, animDataStruct> circleAnimData;
-	circleAnimData.insert({ "anim", {{0, 0}, {3, 0}, .1, false} });
-	circleAnim = std::make_unique<animation>("circle/circleSpriteSheet.png", 640, 360, circleAnimData, false);
-	circleAnim->setAnimation("anim");
+	circleAnim = std::make_unique<CircleLoad>();
 
 	rainStartTimer->start(math::randRange(upgrades::calcMinRainSpawnInterval(), upgrades::calcMaxRainSpawnInterval()));
 }
@@ -370,7 +366,7 @@ void world::start() {
 
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
 
-	circleAnim->start();
+	circleAnim->Start();
 	while ((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "OpenGL Error: " << err << std::endl;
 	}
@@ -442,7 +438,7 @@ void world::draw(Shader* shaderProgram) {
 		trees[i]->draw(shaderProgram);
 
 	if (sellFish)
-	sellFish->draw(shaderProgram);
+		sellFish->draw(shaderProgram);
 	
 	if (Main::pet)
 		Main::pet->draw(shaderProgram);
@@ -459,8 +455,7 @@ void world::draw(Shader* shaderProgram) {
 
 	Main::drawWidgets(shaderProgram);
 
-	if (circleAnim && !circleAnim->finished())
-		circleAnim->draw(shaderProgram);
+	circleAnim->draw();
 }
 
 void world::renderWater() {
@@ -623,10 +618,6 @@ world1::world1(int worldChangeLoc) {
 	for (int i = 0; i < 19; i++)
 		mapAnimList.push_back("./images/worlds/world1/map" + std::to_string(i + 1) + ".png");
 	ship = std::make_unique<Aship>(vector{ -164 + 500, 495 - 25 });
-
-	std::string circlePath = "./images/circle/circle";
-	circleImgs = std::vector<std::string>{ circlePath + "1.png", circlePath + "2.png", circlePath + "3.png", circlePath + "4.png" };
-	circle = std::make_unique<Image>(circlePath + "1.png", vector{ 0, 0 }, false);
 
 	sellFish = std::make_unique<dumpster>(vector{ 739 + 110, 672 + 50 });
 

@@ -179,6 +179,7 @@
     <None Include="2dWaterShader.vert" />
     <None Include="blurShader.frag" />
     <None Include="blurShader.vert" />
+    <None Include="circleShader.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="shadowMap.frag" />
@@ -206,6 +207,7 @@
     <ClCompile Include="buyAutoFisher.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="character.cpp" />
+    <ClCompile Include="CircleLoad.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="comboOvertimeWidget.cpp" />
     <ClCompile Include="comboWidget.cpp" />
@@ -233,6 +235,7 @@
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
     <ClInclude Include="blurBox.h" />
+    <ClInclude Include="CircleLoad.h" />
     <ClInclude Include="confirmWidget.h" />
     <ClInclude Include="debugger.h" />
     <ClInclude Include="GPULoadCollector.h">

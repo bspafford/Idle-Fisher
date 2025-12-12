@@ -18,6 +18,7 @@ class Ubutton;
 class Shader;
 class URectangle;
 class text;
+class CircleLoad;
 
 class AautoFisher;
 class buyAutoFisher;
@@ -174,9 +175,7 @@ public:
 
 	void sortDraw(Shader* shaderProgram);
 
-	std::vector<std::string> circleImgs;
-	std::unique_ptr<Image> circle;
-	std::unique_ptr<animation> circleAnim;
+	std::unique_ptr<CircleLoad> circleAnim;
 
 	std::vector<std::unique_ptr<AautoFisher>> autoFisherList;
 	std::unique_ptr<buyAutoFisher> buyer;

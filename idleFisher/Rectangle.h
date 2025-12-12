@@ -24,8 +24,8 @@ public:
 	// will stop hovers and clicks through a rectangle
 	void setBlockCursor(bool val);
 
-private:
-	bool blockCursor;
+protected:
+	bool blockCursor = false;
 
 	vector size;
 	glm::vec4 color = glm::vec4(1.f);

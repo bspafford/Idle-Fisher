@@ -2,6 +2,8 @@
 #include "main.h"
 
 BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : widget(parent) {
+	instances.push_back(this);
+
 	this->blurStrength = blurStrength;
 	
 	setLocAndSize(loc, size);
@@ -29,6 +31,12 @@ BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : wi
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+BlurBox::~BlurBox() {
+	auto it = std::find(instances.begin(), instances.end(), this);
+	if (it != instances.end())
+		instances.erase(it);
 }
 
 void BlurBox::makeVerticesList() {
@@ -162,4 +170,15 @@ void BlurBox::UnbindTexture() {
 
 void BlurBox::BindShader() {
 	blurShader->Activate();
+}
+
+void BlurBox::OnReizeWindow() {
+	// resize the texture
+	glBindTexture(GL_TEXTURE_2D, sceneTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stuff::screenSize.x, stuff::screenSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	for (BlurBox* box : instances) {
+		glBindTexture(GL_TEXTURE_2D, box->texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stuff::screenSize.x, stuff::screenSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	}
 }

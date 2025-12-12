@@ -93,6 +93,9 @@
     <None Include="blurShader.frag">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="circleShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">
@@ -433,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="blurBox.cpp">
       <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleLoad.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -792,6 +798,9 @@
     </ClInclude>
     <ClInclude Include="blurBox.h">
       <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleLoad.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

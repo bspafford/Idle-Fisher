@@ -46,7 +46,7 @@ public:
 	void Inputs(GLFWwindow* window, float deltaTime);
 
 	// Frame size is relative to what window, by default its the screen size, change it if using something like a FBO
-	glm::mat4 getProjectionMat(vector frameSize = stuff::screenSize);
+	static glm::mat4 getProjectionMat(vector frameSize = { 0, 0 });
 
 	void printCamRot();
 

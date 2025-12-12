@@ -190,6 +190,10 @@ void Camera::printCamRot() {
 }
 
 glm::mat4 Camera::getProjectionMat(vector frameSize) {
+	if (frameSize == vector{0, 0})
+		frameSize = stuff::screenSize;
+	
 	float left = -frameSize.x / 2.f, right = frameSize.x / 2.f, bottom = -frameSize.y / 2.f, top = frameSize.y / 2.f;
+
 	return glm::ortho(left, right, bottom, top, -1.f, 5000.0f);
 }

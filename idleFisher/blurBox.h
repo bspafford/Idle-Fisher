@@ -6,6 +6,7 @@
 class BlurBox : public widget {
 public:
 	BlurBox(widget* parent, vector loc, vector size, int blurStrength);
+	~BlurBox();
 
 	void draw(Shader* shader);
 	void GenerateSubTexture(GLuint texture);
@@ -17,13 +18,15 @@ public:
 	static void BindTexture();
 	static void UnbindTexture();
 	static void BindShader();
-
+	static void OnReizeWindow();
+	virtual void setLoc(vector loc) override;
+	virtual void setSize(vector size) override;
 private:
+	static inline std::vector<BlurBox*> instances;
+
 	void makeVerticesList();
 	void UpdateVertices();
 	virtual void setupLocs() override;
-	virtual void setLoc(vector loc) override;
-	virtual void setSize(vector size) override;
 	
 	int blurStrength = 5;
 

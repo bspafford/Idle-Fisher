@@ -33,9 +33,6 @@
 #include "idleProfitWidget.h"
 #include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
-#include "idleProfitWidget.h"
-#include "comboOvertimeWidget.h"
-#include "newRecordWidget.h"
 
 class widget;
 class achievement;
@@ -76,6 +73,7 @@ public:
 	static inline Shader* quadShader;
 	static inline Shader* waterShader;
 	static inline Shader* twoDWaterShader;
+	static inline Shader* circleShader;
 
 	// 3d
 	std::unique_ptr<Model> house;

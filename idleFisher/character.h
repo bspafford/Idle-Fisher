@@ -50,7 +50,6 @@ public:
 	static inline std::unique_ptr<animation> anim;
 	std::unique_ptr<animation> fishingRod;
 
-
 	// setup fish image
 	std::unique_ptr<Image> fishImg;
 	bool showFish = false;

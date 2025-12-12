@@ -188,7 +188,7 @@ int Main::createWindow() {
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 		lastTime = currentTime;
 		//std::cout << "fps: " << 1.f / deltaTime << std::endl;
-		
+
 		// process input
 		Input::pollEvents();
 
@@ -196,8 +196,6 @@ int Main::createWindow() {
 		Update(deltaTime);
 		updateShaders(deltaTime);
 
-		glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
-		//glClearColor(.25, .6, .6, 1.f);
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -240,7 +238,6 @@ int Main::createWindow() {
 
 		BlurBox::BindFrameBuffer();
 		glClear(GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
 		draw(twoDShader);
 		BlurBox::UnbindFrameBuffer();
 
@@ -290,6 +287,7 @@ void Main::Start() {
 	quadShader = new Shader("test.vert", "test.frag");
 	waterShader = new Shader("waterShader.vert", "waterShader.frag");
 	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
+	circleShader = new Shader("2dShader.vert", "circleShader.frag");
 	shaderProgram->Activate();
 
 	// setup callbacks for input
@@ -330,7 +328,7 @@ void Main::Start() {
 }
 
 void Main::Update(float deltaTime) {
-		timer::callUpdate(deltaTime);
+	timer::callUpdate(deltaTime);
 
 	character->Update(deltaTime);
 	camera->Update(window, deltaTime);
@@ -417,6 +415,9 @@ void Main::draw(Shader* shaderProgram) {
 void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 	stuff::screenSize = { float(width), float(height) };
 	glViewport(0, 0, width, height);
+
+	BlurBox::OnReizeWindow();
+	widget::resizeScreen();
 }
 
 void Main::checkInputs() {
