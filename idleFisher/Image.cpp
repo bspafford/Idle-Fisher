@@ -88,12 +88,11 @@ Image::Image(std::string image, vector loc, bool useWorldPos) {
 Image::~Image() {
 	if (currVAO)
 		currVAO->Delete();
+	if (currVBO)
+		currVBO->Delete();
 	if (currEBO)
 		currEBO->Delete();
-	glDeleteBuffers(1, &VBOId);
 	glDeleteTextures(1, &ID);
-	currVAO = nullptr;
-	currEBO = nullptr;
 
 	// remove itself from GPULoadCollector
 	GPULoadCollector::remove(this);
@@ -112,13 +111,8 @@ void Image::LoadGPU() {
 	if (!currVAO)
 		currVAO = std::make_unique<VAO>();
 	currVAO->Bind();
-
-	glGenBuffers(1, &VBOId);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
-
-	if (!currEBO)
-		currEBO = std::make_unique<EBO>(indices);
+	currVBO = std::make_unique<VBO>(positions);
+	currEBO = std::make_unique<EBO>(indices);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
@@ -217,22 +211,16 @@ void Image::updatePositionsList(std::vector<float> positions) {
 		return;
 
 	currVAO->Bind();
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+	currVBO->Bind();
 
-	// updates the tex coords
-	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	if (ptr) {
-		if (positions.size() == 0) {
-			std::vector<float> positions = getPositionsList();
-			memcpy(ptr, positions.data(), positions.size() * sizeof(float)); // Copy updated vertex data
-		} else {
-			// round positions list
-			for (int i = 0; i < positions.size(); i++)
-				positions[i] = floorf(positions[i]);
-			memcpy(ptr, positions.data(), positions.size() * sizeof(float)); // Copy updated vertex data
-		}
-
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+	// default, get data data from image data
+	if (positions.size() == 0) {
+		currVBO->UpdateData(getPositionsList());
+	} else { // get data from rotation function
+		// rounds position list
+		for (int i = 0; i < positions.size(); i++)
+			positions[i] = floorf(positions[i]);
+		currVBO->UpdateData(positions);
 	}
 }
 

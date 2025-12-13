@@ -36,12 +36,12 @@ text::~text() {
 		currVAO->Delete();
 	if (currEBO)
 		currEBO->Delete();
+	if (currVBO)
+		currVBO->Delete();
 
-	glDeleteBuffers(1, &VBOId);
 	glDeleteTextures(1, &textTexture);
 	glDeleteFramebuffers(1, &fbo);
 
-	VBOId = 0;
 	textTexture = 0;
 	fbo = 0;
 
@@ -62,9 +62,7 @@ void text::LoadGPU() {
 	currVAO->Bind();
 	currEBO = std::make_unique<EBO>(indices);
 
-	glGenBuffers(1, &VBOId);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
+	currVBO = std::make_unique<VBO>(positions);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
@@ -347,7 +345,8 @@ void text::makeTextTexture() {
 	GLint scissorBox[4];
 	glGetIntegerv(GL_SCISSOR_BOX, scissorBox);
 	glScissor(0, 0, fboSize.x, fboSize.y);
-
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	// Draws to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
@@ -375,7 +374,7 @@ void text::makeTextTexture() {
 
 void text::UpdateGPUData(float positions[]) {
 	currVAO->Bind();
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+	currVBO->Bind();
 
 	// updates the tex coords
 	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
@@ -442,14 +441,11 @@ void text::setLoc(vector loc) {
 }
 
 void text::updatePositionsList() {
-	if (!GPULoadCollector::isOnMainThread())
-		return;
-
-	if (!currVAO)
+	if (!currVAO || !GPULoadCollector::isOnMainThread())
 		return;
 
 	currVAO->Bind();
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+	currVBO->Bind();
 
 	float x1 = 0;
 	float x2 = 1;
@@ -468,12 +464,8 @@ void text::updatePositionsList() {
 		round(scaledLoc.x),				round(scaledLoc.y),				0.f, 0.f	// Bottom-left
 	};
 
-	// updates the tex coords
-	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	if (ptr) {
-		memcpy(ptr, positions, sizeof(positions)); // Copy updated vertex data
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-	}
+	currVBO->UpdateData(positions, sizeof(positions));
+	currVAO->Unbind();
 }
 
 void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {

@@ -28,14 +28,10 @@ void URectangle::LoadGPU() {
 		3, 1, 2  // Second triangle
 	};
 
-	currVAO = new VAO();
+	currVAO = std::make_unique<VAO>();
 	currVAO->Bind();
-
-	glGenBuffers(1, &VBOId);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	currEBO = new EBO(indices);
+	currVBO = std::make_unique<VBO>(vertices, sizeof(vertices));
+	currEBO = std::make_unique<EBO>(indices);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -49,14 +45,11 @@ void URectangle::LoadGPU() {
 URectangle::~URectangle() {
 	if (currVAO)
 		currVAO->Delete();
+	if (currVBO)
+		currVBO->Delete();
 	if (currEBO)
 		currEBO->Delete();
-	glDeleteBuffers(1, &VBOId);
-	delete currVAO;
-	delete currEBO;
-	currVAO = nullptr;
-	currEBO = nullptr;
-
+	
 	GPULoadCollector::remove(this);
 }
 
@@ -157,8 +150,7 @@ void URectangle::updatePositionsList() {
 		return;
 
 	currVAO->Bind();
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+	currVBO->Bind();
 
 	vector scaledLoc = absoluteLoc * vector{ 1, -1 }; // left to right is positive, bottom to top is negative, just like sdl2
 	if (useWorldLoc)
@@ -176,12 +168,7 @@ void URectangle::updatePositionsList() {
 		positions[i] = floorf(positions[i]);
 	}
 
-	// updates the tex coords
-	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	if (ptr) {
-		memcpy(ptr, positions, sizeof(positions)); // Copy updated vertex data
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-	}
+	currVBO->UpdateData(positions, sizeof(positions));
 }
 
 void URectangle::setBlockCursor(bool val) {

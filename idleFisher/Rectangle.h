@@ -36,8 +36,8 @@ protected:
 	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
 	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
 
-	GLuint VBOId;
-	VAO* currVAO = nullptr;
-	EBO* currEBO = nullptr;
+	std::unique_ptr<VAO> currVAO = NULL;
+	std::unique_ptr<VBO> currVBO = NULL;
+	std::unique_ptr<EBO> currEBO = NULL;
 
 };

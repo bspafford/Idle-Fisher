@@ -21,6 +21,8 @@ public:
 	GLuint ID;
 	// Constructor that generates a Vertex Buffer Object and links it to vertices
 	VBO(std::vector<Vertex>& vertices);
+	VBO(std::vector<float>& vertices);
+	VBO(float vertices[], unsigned int size);
 
 	// Binds the VBO
 	void Bind();
@@ -28,6 +30,9 @@ public:
 	void Unbind();
 	// Deletes the VBO
 	void Delete();
+
+	void UpdateData(std::vector<float> vertices);
+	void UpdateData(float vertices[], unsigned int size);
 };
 
 #endif

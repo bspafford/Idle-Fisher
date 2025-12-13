@@ -79,9 +79,9 @@ private:
 	GLenum texType = GL_TEXTURE_2D;
 	GLenum pixelType = GL_UNSIGNED_BYTE;
 
-	std::unique_ptr<VAO> currVAO = nullptr;
-	GLuint VBOId = 0;
-	std::unique_ptr<EBO> currEBO = nullptr;
+	std::unique_ptr<VAO> currVAO = NULL;
+	std::unique_ptr<VBO> currVBO = NULL;
+	std::unique_ptr<EBO> currEBO = NULL;
 
 	std::vector<float> positions;
 

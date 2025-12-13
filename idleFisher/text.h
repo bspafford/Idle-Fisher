@@ -89,7 +89,7 @@ private:
 	vector fboSize = { 1, 1 };
 
 	void drawTexture(Shader* shaderProgram, GLuint textureID);
-	GLuint VBOId = 0;
+	std::unique_ptr<VBO> currVBO;
 	std::unique_ptr<VAO> currVAO;
 	std::unique_ptr<EBO> currEBO;
 
