@@ -46,14 +46,14 @@ titleScreen::titleScreen() {
 	waterImg = std::make_unique<Image>("./images/worlds/titleScreen/depthMap.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> fishermanDockAnimData;
-	fishermanDockAnimData.insert({ "anim", { {0, 0}, {48, 0}, .1, true } });
+	fishermanDockAnimData.insert({ "anim", animDataStruct({0, 0}, {48, 0}, true) });
 	fishermanDock = std::make_unique<animation>("worlds/titleScreen/characterDockSpriteSheet.png", 403, 303, fishermanDockAnimData, false);
 	fishermanDock->setAnimation("anim");
 	fishermanDock->start();
 	title = std::make_unique<Image>("./images/worlds/titleScreen/title.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> treesAnimData;
-	treesAnimData.insert({ "anim", {{0, 0}, {14, 0}, .1, true} });
+	treesAnimData.insert({ "anim", animDataStruct({0, 0}, {14, 0}, true) });
 	trees = std::make_unique<animation>("worlds/titleScreen/treesSpriteSheet.png", 337, 96, treesAnimData, false);
 	trees->setAnimation("anim");
 	trees->start();
@@ -125,13 +125,13 @@ void titleScreen::draw(Shader* shaderProgram) {
 
 	// set bottom right
 	if (fishermanDock)
-		fishermanDock->setLoc(stuff::screenSize - vector{ float(fishermanDock->cellWidth), float(fishermanDock->cellHeight) } * stuff::pixelSize);
+		fishermanDock->setLoc(stuff::screenSize - fishermanDock->GetCellSize() * stuff::pixelSize);
 	// set top left
 	if (title)
 		title->setLoc({0, 0});
 	// set top right
 	if (trees) {
-		trees->setLoc({ stuff::screenSize.x - trees->cellWidth * stuff::pixelSize, 0 });
+		trees->setLoc({ stuff::screenSize.x - trees->GetCellSize().x * stuff::pixelSize, 0 });
 		trees->draw(shaderProgram);
 	}
 	if (fishermanDock)
@@ -270,7 +270,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 
 void rebirthWorld::addAnim() {
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "anim", {{0, 0}, {6, 0}, .1, false} });
+	animData.insert({ "anim", animDataStruct({0, 0}, {6, 0}, false) });
 	animation* waterRipples = new animation("walkRipples.png", 48, 26, animData, true, SaveData::saveData.playerLoc - vector{12, 8}); // Acharacter::getCharLoc()
 	waterRipples->setAnimation("anim");
 	waterRipples->start();
@@ -374,8 +374,8 @@ void world::start() {
 
 void world::spawnFishSchool() {
 	if (fishSchoolList.size() < maxFishSchoolNum) { // only spawn school if less than max
-		float x = math::randRange(-200, 450);
-		float y = math::randRange(-200, 150);
+		float x = math::randRange(-200.f, 450.f);
+		float y = math::randRange(-200.f, 150.f);
 		std::unique_ptr<AfishSchool> fishSchool = std::make_unique<AfishSchool>(vector{ x, y });
 		fishSchoolList.push_back(std::move(fishSchool));
 	}
@@ -555,14 +555,7 @@ void world::sortDraw(Shader* shaderProgram) {
 	if (buyer && !buyer->inFrontPlayer)
 		buyer->draw(shaderProgram);
 
-	// if bobber above player, render behind
-	if (Main::character->tempBobberLoc.y > Main::character->getCharScreenLoc().y) {
-		Main::character->draw(shaderProgram);
-		Main::character->drawFishingLine(shaderProgram);
-	} else {
-		Main::character->drawFishingLine(shaderProgram);
-		Main::character->draw(shaderProgram);
-	}
+	Main::character->draw(shaderProgram);
 
 	if (buyer && buyer->inFrontPlayer)
 		buyer->draw(shaderProgram);
@@ -659,8 +652,8 @@ world1::world1(int worldChangeLoc) {
 	makeDrawLists();
 
 	std::unordered_map<std::string, animDataStruct> beachData;
-	beachData.insert({ "in", {{0, 0}, {14, 0}, .1, false } });
-	beachData.insert({ "out", {{0, 1}, {14, 1}, .1, false } });
+	beachData.insert({ "in", animDataStruct({0, 0}, {14, 0}, false) });
+	beachData.insert({ "out", animDataStruct({0, 1}, {14, 1}, false) });
 	beachAnim = std::make_unique<animation>("water/beachSpriteSheet.png", 1152, 388, beachData, true, vector{ 708, 511 });
 	beachAnim->setAnimation("in");
 	beachAnim->addFinishedCallback(static_cast<world*>(this), &world::finishedBeachAnim);

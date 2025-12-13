@@ -33,9 +33,9 @@ public:
 	// calculates how much the all the upgrades combine should equal
 	static double getFishSellPrice(FfishData fish, int quality);
 
-	static float calcGreenFishingUpgrade();
+	static double calcGreenFishingUpgrade();
 
-	static float calcYellowFishingUpgrade();
+	static double calcYellowFishingUpgrade();
 
 	static bool calcComboUnlocked();
 	static double calcComboMax();
@@ -47,8 +47,8 @@ public:
 	static double calcMaxComboBounce();
 
 	// fishing rod
-	static double calcMaxFishingInterval();
-	static double calcMinFishingInterval();
+	static float calcMaxFishingInterval();
+	static float calcMinFishingInterval();
 	static double calcFishingRodPower();
 	static double calcFishingRodCatchChance();
 
@@ -57,13 +57,13 @@ public:
 	static double calcConversionTime(FcurrencyConversionStruct* conversion);
 
 	static double calcPremiumCatchChance();
-	static double calcPremiumCoolDownTime();
+	static float calcPremiumCoolDownTime();
 
-	static double calcMaxFishSchoolSpawnInterval();
-	static double calcMinFishSchoolSpawnInterval();
+	static float calcMaxFishSchoolSpawnInterval();
+	static float calcMinFishSchoolSpawnInterval();
 
-	static double calcMaxRainSpawnInterval();
-	static double calcMinRainSpawnInterval();
+	static float calcMaxRainSpawnInterval();
+	static float calcMinRainSpawnInterval();
 
 	
 

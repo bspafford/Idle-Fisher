@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class GLFWcursor;
+struct GLFWcursor;
 
 enum CursorType {
 	CURSOR_DEFAULT,

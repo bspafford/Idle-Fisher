@@ -100,9 +100,8 @@ void UfishComboWidget::Update(float deltaTime) {
 
 void UfishComboWidget::setupRandomCombo() {
 	updateComboStartEnd();
-	double num = (double)rand() / RAND_MAX;
-	comboLoc = (int)math::lerp((float)comboStart, (float)comboEnd, (float)num);
-	std::cout << "comboLoc: " << comboLoc << "\n";
+	double num = rand() / RAND_MAX;
+	comboLoc = math::lerp(comboStart, comboEnd, num);
 }
 
 void UfishComboWidget::updateComboStartEnd() {
@@ -111,13 +110,11 @@ void UfishComboWidget::updateComboStartEnd() {
 	comboEnd = halfSize - yellowRect->getSize().x / 2.f;
 }
 
-void UfishComboWidget::draw(Shader* shaderProgram, int screenWidth, int screenHeight) {
+void UfishComboWidget::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
-	shake->updateShake({ float(screenWidth), float(screenHeight) });
-	screenWidth = shake->getShakeLoc().x;
-	screenHeight = shake->getShakeLoc().y;
+	shake->updateShake(stuff::screenSize);
 
 	float maxFishX = fishComboBorderImg->getSize().x / 2.f - 7 * stuff::pixelSize;
 	float minFishX = -fishComboBorderImg->getSize().x / 2.f + 7 * stuff::pixelSize;
@@ -136,16 +133,6 @@ void UfishComboWidget::draw(Shader* shaderProgram, int screenWidth, int screenHe
 	fishComboBorderImg->draw(shaderProgram);
 
 	fishImg->flipHoizontally(fishMoveBack);
-
-	/*
-	// fish
-	// flip sprite
-	SDL_RendererFlip flip = SDL_RendererFlip::SDL_FLIP_NONE;
-	if (fishMoveBack)
-		flip = SDL_RendererFlip::SDL_FLIP_HORIZONTAL;
-	SDL_Point rect = { 0, 0 };
-	SDL_RenderCopyEx(shaderProgram, fishImg, NULL, &fishRect, 0, &rect, flip);
-	*/
 }
 
 void UfishComboWidget::updateComboSize() {

@@ -11,7 +11,7 @@ CircleLoad::CircleLoad() : URectangle({ 0, 0 }, stuff::screenSize, false, glm::v
 void CircleLoad::Start() {
 	animating = true;
 	circleIndex = 0;
-	circleTimer->start(.1);
+	circleTimer->start(.1f);
 }
 
 void CircleLoad::draw() {
@@ -33,7 +33,7 @@ void CircleLoad::NextCircle() {
 		return;
 	}
 
-	circleTimer->start(.1);
+	circleTimer->start(.1f);
 }
 
 void CircleLoad::setupLocs() {

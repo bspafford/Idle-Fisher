@@ -37,7 +37,7 @@ void Apet::draw(Shader* shaderProgram) {
 	if (!SaveData::settingsData.showPets)
 		return;
 
-	Astar->drawBoard(shaderProgram);
+	//Astar->drawBoard(shaderProgram);
 
 	img->draw(shaderProgram);
 }

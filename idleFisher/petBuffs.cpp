@@ -91,16 +91,16 @@ double petBuffs::increaseGoldenFishChance() {
 
 }
 
-double petBuffs::increaseFishSchoolSpawnRate() {
+float petBuffs::increaseFishSchoolSpawnRate() {
 	if (SaveData::saveData.equippedPet.id != 12)
-		return 0;
+		return 0.f;
 	return SaveData::data.petData[SaveData::saveData.equippedPet.id].buffValue;
 
 }
 
-double petBuffs::decreaseRainIntervals() {
+float petBuffs::decreaseRainIntervals() {
 	if (SaveData::saveData.equippedPet.id != 13)
-		return 0;
+		return 0.f;
 	return SaveData::data.petData[SaveData::saveData.equippedPet.id].buffValue;
 
 }

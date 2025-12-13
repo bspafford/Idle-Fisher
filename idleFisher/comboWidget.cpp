@@ -30,11 +30,11 @@ void UcomboWidget::update(float deltaTime) {
 
 }
 
-void UcomboWidget::spawnComboNumber(int comboNum) {
+void UcomboWidget::spawnComboNumber(double comboNum) {
 	comboText->setText("x" + shortNumbers::convert2Short(comboNum));
 	setupLocs();
 
-	if (comboNum == 1)
+	if (comboNum == 1.0)
 		hideComboText();
 	else if (Main::character->isFishing)
 		showComboText();

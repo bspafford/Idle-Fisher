@@ -15,21 +15,19 @@ FsaveAchievementStruct* achievementBuffs::getAchievement(std::string achievement
 }
 
 float achievementBuffs::getFishPercentIncrease(int fishId) {
-
-
 	float percentIncrease = 1;
 	FsaveAchievementStruct* achievement = getAchievement("Catch your first fish!");
 	if (!achievement)
 		return 1;
 
 	if (getAchievement("Catch your first fish!")->unlocked)
-		percentIncrease += .01;
+		percentIncrease += .01f;
 	if (getAchievement("catch 100 dirt fish")->unlocked)
-		percentIncrease += .01;
+		percentIncrease += .01f;
 	if (getAchievement("catch 10000 dirt fish")->unlocked)
-		percentIncrease += .01;
+		percentIncrease += .01f;
 	if (getAchievement("catch 1000000 dirt fish")->unlocked)
-		percentIncrease += .01;
+		percentIncrease += .01f;
 
 	return percentIncrease;
 }

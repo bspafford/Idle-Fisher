@@ -32,7 +32,7 @@ public:
 	static double increaseComboIncrease();
 	static double increaseGoldenFishChance();
 	// increases how fast the fish schools spawn by certain %, returns %, 0-1
-	static double increaseFishSchoolSpawnRate();
+	static float increaseFishSchoolSpawnRate();
 	// reduces the time it takes for rain to spawn
-	static double decreaseRainIntervals();
+	static float decreaseRainIntervals();
 };

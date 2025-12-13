@@ -50,8 +50,8 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 		levelBarImgs.push_back(levelBarPath + std::to_string(i + 1) + ".png");
 
 	std::unordered_map<std::string, animDataStruct> openData;
-	openData.insert({ "open", {{0, 0}, {3, 0}, .1, false} });
-	openData.insert({ "close", {{0, 1}, {3, 1}, .1, false} });
+	openData.insert({ "open", animDataStruct({0, 0}, {3, 0}, false) });
+	openData.insert({ "close", animDataStruct({0, 1}, {3, 1}, false) });
 	openAnimation = std::make_unique<animation>("autoFisher/UI/openUI/openUI.png", 36, 66, openData, true, UILoc);
 	openAnimation->setAnimation("open");
 }
@@ -139,7 +139,7 @@ void autoFisherUI::updateUI() {
 	}
 
 	// based on the level up the level bar
-	float levelIndex = floor((float(*autoFisher->level) / float(autoFisher->maxLevel)) * ((int)levelBarImgs.size() - 1));
+	int levelIndex = static_cast<int>(floor((float(*autoFisher->level) / float(autoFisher->maxLevel)) * ((int)levelBarImgs.size() - 1)));
 	level = std::make_unique<Image>(levelBarImgs[levelIndex], UILoc, true);
 }
 
@@ -213,5 +213,5 @@ void autoFisherUI::setMulti10() {
 	setMultiplier(10);
 }
 void autoFisherUI::setMultiMax() {
-	setMultiplier(INFINITY);
+	setMultiplier(int(INFINITY));
 }

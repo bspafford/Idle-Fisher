@@ -15,7 +15,7 @@ class AFmoreInfoUI;
 
 class Ubutton;
 class animation;
-class Fcollision;
+struct Fcollision;
 
 class AautoFisher : public IHoverable {
 public:

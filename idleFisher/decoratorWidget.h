@@ -11,7 +11,7 @@ class UwrapBox;
 class npc;
 struct FvaultUnlocksStruct;
 struct FsaveVaultUnlocksStruct;
-struct URectangle;
+class URectangle;
 
 class UdecoratorWidget : public widget {
 public:

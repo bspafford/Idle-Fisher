@@ -58,4 +58,14 @@ private:
 	vector getOffset();
 
 	std::unique_ptr<Fcollision> col;
+
+	static inline std::unordered_map<std::string, vector> npcCellSizes{ {"atm", {28, 47}},
+																		{ "decorator", { 29, 54 } },
+																		{ "fisherman", { 34, 54 } },
+																		{ "mechanic", { 32, 58 } },
+																		{ "merchant", { 19, 49 } },
+																		{ "petSeller", { 36, 51 } },
+																		{ "sailor", { 21, 49 } },
+																		{ "scuba", { 18, 45 } },
+																		{ "fishGod", { 514, 479 } } };
 };

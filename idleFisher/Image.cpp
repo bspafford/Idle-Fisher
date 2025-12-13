@@ -281,7 +281,7 @@ std::vector<float> Image::getPositionsList() {
 	}
 
 	vector scale = (vector{ w, h } * stuff::pixelSize).ceil();
-	vector scaledLoc = (absoluteLoc * vector{ 1, -1 }).ceil(); // left to right is positive, bottom to top is negative, just like sdl2
+	vector scaledLoc = (absoluteLoc * vector{ 1, -1 }).ceil();
 	if (useWorldPos)
 		scaledLoc = absoluteLoc * stuff::pixelSize;
 	std::vector<float> positions = {
@@ -378,8 +378,6 @@ void Image::setColorMod(glm::vec4 colorMod) {
 glm::vec4 Image::GetPixelColor(const int X, const int Y) {
 	const int x = X / stuff::pixelSize;
 	const int y = Y / stuff::pixelSize;
-
-	unsigned char pixel[4];
 
 	unsigned char* pixels = texture;
 	int index = (y * ogW + x) * 4;

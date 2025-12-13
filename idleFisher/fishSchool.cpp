@@ -9,14 +9,14 @@ AfishSchool::AfishSchool(vector loc) {
 	this->loc = loc;
 
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "fishSchool", {{0, 0}, {6, 0}, .1, true} });
+	animData.insert({ "fishSchool", animDataStruct({0, 0}, {6, 0}, true) });
 	anim = std::make_unique<animation>("fishSchool/fishSchool.png", 48, 26, animData, true, loc);
 	anim->setAnimation("fishSchool");
 	anim->start();
 
-	fishNum = math::randRange(1, 5);
+	fishNum = math::randRange(1.f, 5.f);
 	lifeTimer = std::make_unique<timer>();
-	lifeTimer->start(math::randRange(30, 60));
+	lifeTimer->start(math::randRange(30.f, 60.f));
 	lifeTimer->addCallback(this, &AfishSchool::remove);
 }
 
@@ -30,10 +30,10 @@ void AfishSchool::draw(Shader* shaderProgram) {
 
 AfishSchool* AfishSchool::pointInSchool(vector worldPoint) {
 	// i guess calc if in ellipse
-	float h = loc.x + anim->cellWidth / 2;
-	float k = loc.y + anim->cellHeight / 2;
-	float a = anim->cellWidth / 2;
-	float b = anim->cellHeight / 2;
+	float h = loc.x + anim->GetCellSize().x / 2.f;
+	float k = loc.y + anim->GetCellSize().y / 2.f;
+	float a = anim->GetCellSize().x / 2.f;
+	float b = anim->GetCellSize().y / 2.f;
 	float y = (((worldPoint.x - h) * (worldPoint.x - h)) / (a * a)) + (((worldPoint.y - k) * (worldPoint.y - k)) / (b * b));
 	if (y <= 1)
 		return this;

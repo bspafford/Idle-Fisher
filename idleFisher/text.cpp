@@ -107,14 +107,6 @@ void text::changeFont() {
 	}
 }
 
-int text::calcFontSize() {
-	if (font == "tall" || font == "straightDark" || font == "straightBoldDark" || font == "straight" || font == "normal" || font == "boldDark" || font == "bold") {
-		return 5 * stuff::pixelSize;
-	} else {
-		return 7 * stuff::pixelSize;
-	}
-}
-
 void text::loadTextImg() {
 	textImg = std::make_shared<Image>("./fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
 

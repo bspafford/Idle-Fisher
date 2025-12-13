@@ -7,7 +7,7 @@ class AFmoreInfoUI;
 class animation;
 class Ubutton;
 class text;
-struct Image;
+class Image;
 
 class autoFisherUI : public widget {
 public:

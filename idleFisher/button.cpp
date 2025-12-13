@@ -15,14 +15,14 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 	this->loc = loc;
 
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "click", { { 0, 0 }, { float(numberOfFrames - 1), 0 }, .1, false } });
-	animData.insert({ "hover", { { 0, 1 }, { float(numberOfFrames - 1), 1 }, .1, false } });
-	animData.insert({ "disabled", { { 0, 2 }, { 1, 2 }, .1, false } });
+	animData.insert({ "click", animDataStruct({ 0, 0 }, { float(numberOfFrames - 1), 0 }, false) });
+	animData.insert({ "hover", animDataStruct({ 0, 1 }, { float(numberOfFrames - 1), 1 }, false) });
+	animData.insert({ "disabled", animDataStruct({ 0, 2 }, { 1, 2 }, false) });
 	buttonAnim = std::make_shared<animation>(spriteSheetPath, cellWidth, cellHeight, animData, useWorldLoc, loc);
 	buttonAnim->setAnimation("click");
 
-	hasHover = buttonAnim->cellHeightNum >= 2;
-	hasDisabled = buttonAnim->cellHeightNum >= 3;
+	hasHover = buttonAnim->GetCellNum().y >= 2;
+	hasDisabled = buttonAnim->GetCellNum().y >= 3;
 
 
 	this->useAlpha = useAlpha;
@@ -105,7 +105,7 @@ std::weak_ptr<Image> Ubutton::getButtonImg() {
 }
 
 vector Ubutton::getSize() {
-	return vector{ float(buttonAnim->cellWidth), float(buttonAnim->cellHeight) } * stuff::pixelSize;
+	return buttonAnim->GetCellSize() * stuff::pixelSize;
 }
 
 vector Ubutton::getLoc() {

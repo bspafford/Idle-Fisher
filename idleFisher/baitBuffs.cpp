@@ -9,10 +9,10 @@ double baitBuffs::increaseFishSpeed() {
 
 bool baitBuffs::chanceToKeepCombo() {
 	if (SaveData::saveData.equippedBait.id != 1)
-		return 0;
+		return false;
 
-	float rand = math::randRange(0, 1/ SaveData::data.baitData[1].buffValues[0]);
-	return rand <= 1;
+	double rand = math::randRange(0.0, 1/ SaveData::data.baitData[1].buffValues[0]);
+	return rand <= 1.0;
 }
 
 std::vector<double> baitBuffs::increaseFishCaughtIncraseFishInterval() {

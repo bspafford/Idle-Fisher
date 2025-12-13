@@ -16,8 +16,11 @@ class Shader;
 struct animDataStruct {
 	vector start; // x and y where frame starts (0, 0) is top left
 	vector end; // x and y where frame ends
-	float duration; // how fast the animation is
 	bool loop; // if the animation loops
+	float duration; // how fast the animation is
+
+	animDataStruct() {}
+	animDataStruct(vector _start, vector _end, bool _loop, float _duration = 0.f) : start(_start), end(_end), loop(_loop), duration(_duration) {}
 };
 
 class animation {
@@ -72,14 +75,11 @@ public:
 
 	void shouldntDeleteTimer(bool dontDelete);
 
-private:
-	vector loc;
-public:
+	vector GetCellSize();
+	vector GetCellNum();
+
 	std::unique_ptr<timer> animTimer;
 
-	// new stuff
-	int cellWidth, cellHeight;
-	int cellWidthNum, cellHeightNum;
 	std::unordered_map<std::string, animDataStruct> animData;
 	std::shared_ptr<Image> spriteSheet;
 	bool useWorldLoc;
@@ -98,6 +98,11 @@ public:
 	void playQueuedStart();
 private:
 	void setQueuedAnimString(std::string anim);
+
+	vector loc;
+	vector cellSize;
+	vector cellNum;
+
 	// what the animation was set to when GPULoadCollector was active
 	std::string queuedAnim = "";
 	// if the animation was told to start during GPULoadCollector being active

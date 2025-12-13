@@ -26,8 +26,7 @@ public:
 
 	void updateComboSize();
 
-	void draw(Shader* shaderProgram, int screenWidth, int screenHeight);
-	//SDL_Rect getRect(int screenX, int screenY, int sizeX, int sizeY);
+	void draw(Shader* shaderProgram);
 	void setupRandomCombo();
 	void updateComboStartEnd();
 	int getCombo();

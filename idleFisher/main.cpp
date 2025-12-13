@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	srand(time(0));
-	math::randRange(0, 100); // steups up srand i guess? otherwise first value always the same
+	math::randRange(0.f, 100.f); // steups up srand i guess? otherwise first value always the same
 	Main* _main = new Main();
 	_main->createWindow();
 
@@ -73,6 +73,7 @@ Main::~Main() {
 	delete quadShader;
 	delete waterShader;
 	delete twoDWaterShader;
+	delete circleShader;
 
 	textureManager::Deconstructor();
 	timer::clearInstanceList(false);
@@ -106,7 +107,7 @@ int Main::createWindow() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	window = glfwCreateWindow(stuff::screenSize.x, stuff::screenSize.y, "Idle Fisher", NULL, NULL);
+	window = glfwCreateWindow(static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y), "Idle Fisher", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -129,7 +130,7 @@ int Main::createWindow() {
 
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-	glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
+	glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
 	// Enables the Depth Buffer
 	//glEnable(GL_DEPTH_TEST);
 
@@ -225,7 +226,7 @@ int Main::createWindow() {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
-		glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
+		glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
 		glEnable(GL_DEPTH_TEST);
 		
 		// === MAIN RENDER PASS (Render Scene with Shadows) ===
@@ -466,7 +467,7 @@ void Main::drawWidgets(Shader* shaderProgram) {
 	if (widget::getCurrWidget() == pauseMenu.get())
 		return;
 
-	fishComboWidget->draw(shaderProgram, stuff::screenSize.x, stuff::screenSize.y);
+	fishComboWidget->draw(shaderProgram);
 	heldFishWidget->draw(shaderProgram);
 	currencyWidget->draw(shaderProgram);
 	comboWidget->draw(shaderProgram);
@@ -534,9 +535,9 @@ double Main::calcRebirthCurrency() {
 }
 
 void Main::loadIdleProfits() {
-	float timeDiffNano = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count();
+	float timeDiffNano = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
 	// in seconds
-	float timeDiff = timeDiffNano / 1000000000;
+	float timeDiff = timeDiffNano / 1000000000.f;
 
 	if (world::currWorld && world::currWorld->fishTransporter)
 		world::currWorld->fishTransporter->calcIdleProfits(timeDiff);

@@ -2,7 +2,7 @@
 
 #include "widget.h"
 
-struct Image;
+class Image;
 class Ubutton;
 class text;
 class verticalBox;

@@ -43,26 +43,28 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	idleSE = std::vector<std::string>{ idleAnimPath + "idleSE.png" };
 	idleAnimWheel = std::vector<std::vector<std::string>>{ idleNW, idleN, idleNE, idleE, idleSE, idleS, idleSW, idleW };
 
+	float duration = 0.13f;
 	std::unordered_map<std::string, animDataStruct> animData;
+
 	// idle
-	animData.insert({ "idleNE", { { 0, 0 }, { 0, 0 }, .13, true } });
-	animData.insert({ "idleNW", { { 1, 0 }, { 1, 0 }, .13, true } });
-	animData.insert({ "idleE", { { 0, 1 }, { 0, 1 }, .13, true } });
-	animData.insert({ "idleW", { { 1, 1 }, { 1, 1 }, .13, true } });
-	animData.insert({ "idleN", { { 0, 2 }, { 0, 2 }, .13, true } });
-	animData.insert({ "idleS", { { 1, 2 }, { 1, 2 }, .13, true } });
-	animData.insert({ "idleSE", { { 0, 3 }, { 0, 3 }, .13, true } });
-	animData.insert({ "idleSW", { { 1, 3 }, { 1, 3 }, .13, true } });
+	animData.insert({ "idleNE", animDataStruct({0, 0 }, { 0, 0 }, true, duration) });
+	animData.insert({ "idleNW", animDataStruct({1, 0 }, { 1, 0 }, true, duration) });
+	animData.insert({ "idleE", animDataStruct({0, 1 }, { 0, 1 }, true, duration) });
+	animData.insert({ "idleW", animDataStruct({1, 1 }, { 1, 1 }, true, duration) });
+	animData.insert({ "idleN", animDataStruct({0, 2 }, { 0, 2 }, true, duration) });
+	animData.insert({ "idleS", animDataStruct({1, 2 }, { 1, 2 }, true, duration) });
+	animData.insert({ "idleSE", animDataStruct({0, 3 }, { 0, 3 }, true, duration) });
+	animData.insert({ "idleSW", animDataStruct({1, 3 }, { 1, 3 }, true, duration) });
 
 	// walking
-	animData.insert({ "walkNE", { { 0, 8 }, { 5, 8 }, .13, true } });
-	animData.insert({ "walkNW", { { 0, 9 }, { 5, 9 }, .13, true } });
-	animData.insert({ "walkE", { { 0, 6 }, { 5, 6 }, .13, true } });
-	animData.insert({ "walkW", { { 0, 7 }, { 5, 7 }, .13, true } });
-	animData.insert({ "walkN", { { 0, 11 }, { 5, 11 }, .13, true } });
-	animData.insert({ "walkS", { { 0, 10 }, { 5, 10 }, .13, true } });
-	animData.insert({ "walkSE", { { 0, 4 }, { 5, 4 }, .13, true } });
-	animData.insert({ "walkSW", { { 0, 5 }, { 5, 5 }, .13, true } });
+	animData.insert({ "walkNE", animDataStruct({0, 8 }, { 5, 8 }, true, duration) });
+	animData.insert({ "walkNW", animDataStruct({0, 9 }, { 5, 9 }, true, duration) });
+	animData.insert({ "walkE", animDataStruct({0, 6 }, { 5, 6 }, true, duration) });
+	animData.insert({ "walkW", animDataStruct({0, 7 }, { 5, 7 }, true, duration) });
+	animData.insert({ "walkN", animDataStruct({0, 11 }, { 5, 11 }, true, duration) });
+	animData.insert({ "walkS", animDataStruct({0, 10 }, { 5, 10 }, true, duration) });
+	animData.insert({ "walkSE", animDataStruct({0, 4 }, { 5, 4 }, true, duration) });
+	animData.insert({ "walkSW", animDataStruct({0, 5 }, { 5, 5 }, true, duration) });
 
 	npcAnim = std::make_unique<animation>("npc/fishTransporter/fishTransporterSpriteSheet.png", 30, 42, animData, true, loc);
 	npcAnim->spriteSheet->setUseAlpha(true);
@@ -70,79 +72,80 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	npcAnim->start();
 
 	std::unordered_map<std::string, animDataStruct> fishPileData;
+
 	// idle // empty
-	fishPileData.insert({ "emptyidleNE", { { 0, 0 }, { 0, 0 }, .13, true } });
-	fishPileData.insert({ "emptyidleNW", { { 1, 0 }, { 1, 0 }, .13, true } });
-	fishPileData.insert({ "emptyidleE", { { 0, 1 }, { 0, 1 }, .13, true } });
-	fishPileData.insert({ "emptyidleW", { { 1, 1 }, { 1, 1 }, .13, true } });
-	fishPileData.insert({ "emptyidleN", { { 0, 2 }, { 0, 2 }, .13, true } });
-	fishPileData.insert({ "emptyidleS", { { 1, 2 }, { 1, 2 }, .13, true } });
-	fishPileData.insert({ "emptyidleSE", { { 0, 3 }, { 0, 3 }, .13, true } });
-	fishPileData.insert({ "emptyidleSW", { { 1, 3 }, { 1, 3 }, .13, true } });
+	fishPileData.insert({ "emptyidleNE", animDataStruct({0, 0 }, { 0, 0 }, true, duration) });
+	fishPileData.insert({ "emptyidleNW", animDataStruct({1, 0 }, { 1, 0 }, true, duration) });
+	fishPileData.insert({ "emptyidleE", animDataStruct({0, 1 }, { 0, 1 }, true, duration) });
+	fishPileData.insert({ "emptyidleW", animDataStruct({1, 1 }, { 1, 1 }, true, duration) });
+	fishPileData.insert({ "emptyidleN", animDataStruct({0, 2 }, { 0, 2 }, true, duration) });
+	fishPileData.insert({ "emptyidleS", animDataStruct({1, 2 }, { 1, 2 }, true, duration) });
+	fishPileData.insert({ "emptyidleSE", animDataStruct({0, 3 }, { 0, 3 }, true, duration) });
+	fishPileData.insert({ "emptyidleSW", animDataStruct({1, 3 }, { 1, 3 }, true, duration) });
 	// slight
-	fishPileData.insert({ "slightidleNE", { { 6, 0 }, { 6, 0 }, .13, true } });
-	fishPileData.insert({ "slightidleNW", { { 7, 0 }, { 7, 0 }, .13, true } });
-	fishPileData.insert({ "slightidleE", { { 6, 1 }, { 6, 1 }, .13, true } });
-	fishPileData.insert({ "slightidleW", { { 7, 1 }, { 7, 1 }, .13, true } });
-	fishPileData.insert({ "slightidleN", { { 6, 2 }, { 6, 2 }, .13, true } });
-	fishPileData.insert({ "slightidleS", { { 7, 2 }, { 7, 2 }, .13, true } });
-	fishPileData.insert({ "slightidleSE", { { 6, 3 }, { 6, 3 }, .13, true } });
-	fishPileData.insert({ "slightidleSW", { { 7, 3 }, { 7, 3 }, .13, true } });
+	fishPileData.insert({ "slightidleNE", animDataStruct({6, 0 }, { 6, 0 }, true, duration) });
+	fishPileData.insert({ "slightidleNW", animDataStruct({7, 0 }, { 7, 0 }, true, duration) });
+	fishPileData.insert({ "slightidleE", animDataStruct({6, 1 }, { 6, 1 }, true, duration) });
+	fishPileData.insert({ "slightidleW", animDataStruct({7, 1 }, { 7, 1 }, true, duration) });
+	fishPileData.insert({ "slightidleN", animDataStruct({6, 2 }, { 6, 2 }, true, duration) });
+	fishPileData.insert({ "slightidleS", animDataStruct({7, 2 }, { 7, 2 }, true, duration) });
+	fishPileData.insert({ "slightidleSE", animDataStruct({6, 3 }, { 6, 3 }, true, duration) });
+	fishPileData.insert({ "slightidleSW", animDataStruct({7, 3 }, { 7, 3 }, true, duration) });
 	// mid
-	fishPileData.insert({ "mididleNE", { { 12, 0 }, { 12, 0 }, .13, true } });
-	fishPileData.insert({ "mididleNW", { { 13, 0 }, { 13, 0 }, .13, true } });
-	fishPileData.insert({ "mididleE", { { 12, 1 }, { 12, 1 }, .13, true } });
-	fishPileData.insert({ "mididleW", { { 13, 1 }, { 13, 1 }, .13, true } });
-	fishPileData.insert({ "mididleN", { { 12, 2 }, { 12, 2 }, .13, true } });
-	fishPileData.insert({ "mididleS", { { 13, 2 }, { 13, 2 }, .13, true } });
-	fishPileData.insert({ "mididleSE", { { 12, 3 }, { 12, 3 }, .13, true } });
-	fishPileData.insert({ "mididleSW", { { 13, 3 }, { 13, 3 }, .13, true } });
+	fishPileData.insert({ "mididleNE", animDataStruct({12, 0 }, { 12, 0 }, true, duration) });
+	fishPileData.insert({ "mididleNW", animDataStruct({13, 0 }, { 13, 0 }, true, duration) });
+	fishPileData.insert({ "mididleE", animDataStruct({12, 1 }, { 12, 1 }, true, duration) });
+	fishPileData.insert({ "mididleW", animDataStruct({13, 1 }, { 13, 1 }, true, duration) });
+	fishPileData.insert({ "mididleN", animDataStruct({12, 2 }, { 12, 2 }, true, duration) });
+	fishPileData.insert({ "mididleS", animDataStruct({13, 2 }, { 13, 2 }, true, duration) });
+	fishPileData.insert({ "mididleSE", animDataStruct({12, 3 }, { 12, 3 }, true, duration) });
+	fishPileData.insert({ "mididleSW", animDataStruct({13, 3 }, { 13, 3 }, true, duration) });
 	// full
-	fishPileData.insert({ "fullidleNE", { { 18, 0 }, { 18, 0 }, .13, true } });
-	fishPileData.insert({ "fullidleNW", { { 19, 0 }, { 19, 0 }, .13, true } });
-	fishPileData.insert({ "fullidleE", { { 18, 1 }, { 18, 1 }, .13, true } });
-	fishPileData.insert({ "fullidleW", { { 19, 1 }, { 19, 1 }, .13, true } });
-	fishPileData.insert({ "fullidleN", { { 18, 2 }, { 18, 2 }, .13, true } });
-	fishPileData.insert({ "fullidleS", { { 19, 2 }, { 19, 2 }, .13, true } });
-	fishPileData.insert({ "fullidleSE", { { 18, 3 }, { 18, 3 }, .13, true } });
-	fishPileData.insert({ "fullidleSW", { { 19, 3 }, { 19, 3 }, .13, true } });
+	fishPileData.insert({ "fullidleNE", animDataStruct({18, 0 }, { 18, 0 }, true, duration) });
+	fishPileData.insert({ "fullidleNW", animDataStruct({19, 0 }, { 19, 0 }, true, duration) });
+	fishPileData.insert({ "fullidleE", animDataStruct({18, 1 }, { 18, 1 }, true, duration) });
+	fishPileData.insert({ "fullidleW", animDataStruct({19, 1 }, { 19, 1 }, true, duration) });
+	fishPileData.insert({ "fullidleN", animDataStruct({18, 2 }, { 18, 2 }, true, duration) });
+	fishPileData.insert({ "fullidleS", animDataStruct({19, 2 }, { 19, 2 }, true, duration) });
+	fishPileData.insert({ "fullidleSE", animDataStruct({18, 3 }, { 18, 3 }, true, duration) });
+	fishPileData.insert({ "fullidleSW", animDataStruct({19, 3 }, { 19, 3 }, true, duration) });
 
 	// walking // empty
-	fishPileData.insert({ "emptywalkNE", { { 0, 8 }, { 5, 8 }, .13, true } });
-	fishPileData.insert({ "emptywalkNW", { { 0, 9 }, { 5, 9 }, .13, true } });
-	fishPileData.insert({ "emptywalkE", { { 0, 6 }, { 5, 6 }, .13, true } });
-	fishPileData.insert({ "emptywalkW", { { 0, 7 }, { 5, 7 }, .13, true } });
-	fishPileData.insert({ "emptywalkN", { { 0, 11 }, { 5, 11 }, .13, true } });
-	fishPileData.insert({ "emptywalkS", { { 0, 10 }, { 5, 10 }, .13, true } });
-	fishPileData.insert({ "emptywalkSE", { { 0, 4 }, { 5, 4 }, .13, true } });
-	fishPileData.insert({ "emptywalkSW", { { 0, 5 }, { 5, 5 }, .13, true } });
+	fishPileData.insert({ "emptywalkNE", animDataStruct({0, 8 }, { 5, 8 }, true, duration) });
+	fishPileData.insert({ "emptywalkNW", animDataStruct({0, 9 }, { 5, 9 }, true, duration) });
+	fishPileData.insert({ "emptywalkE", animDataStruct({0, 6 }, { 5, 6 }, true, duration) });
+	fishPileData.insert({ "emptywalkW", animDataStruct({0, 7 }, { 5, 7 }, true, duration) });
+	fishPileData.insert({ "emptywalkN", animDataStruct({0, 11 }, { 5, 11 }, true, duration) });
+	fishPileData.insert({ "emptywalkS", animDataStruct({0, 10 }, { 5, 10 }, true, duration) });
+	fishPileData.insert({ "emptywalkSE", animDataStruct({0, 4 }, { 5, 4 }, true, duration) });
+	fishPileData.insert({ "emptywalkSW", animDataStruct({0, 5 }, { 5, 5 }, true, duration) });
 	// slight
-	fishPileData.insert({ "slightwalkNE", { { 6, 8 }, { 11, 8 }, .13, true } });
-	fishPileData.insert({ "slightwalkNW", { { 6, 9 }, { 11, 9 }, .13, true } });
-	fishPileData.insert({ "slightwalkE", { { 6, 6 }, { 11, 6 }, .13, true } });
-	fishPileData.insert({ "slightwalkW", { { 6, 7 }, { 11, 7 }, .13, true } });
-	fishPileData.insert({ "slightwalkN", { { 6, 11 }, { 11, 11 }, .13, true } });
-	fishPileData.insert({ "slightwalkS", { { 6, 10 }, { 11, 10 }, .13, true } });
-	fishPileData.insert({ "slightwalkSE", { { 6, 4 }, { 11, 4 }, .13, true } });
-	fishPileData.insert({ "slightwalkSW", { { 6, 5 }, { 11, 5 }, .13, true } });
+	fishPileData.insert({ "slightwalkNE", animDataStruct({6, 8 }, { 11, 8 }, true, duration) });
+	fishPileData.insert({ "slightwalkNW", animDataStruct({6, 9 }, { 11, 9 }, true, duration) });
+	fishPileData.insert({ "slightwalkE", animDataStruct({6, 6 }, { 11, 6 }, true, duration) });
+	fishPileData.insert({ "slightwalkW", animDataStruct({6, 7 }, { 11, 7 }, true, duration) });
+	fishPileData.insert({ "slightwalkN", animDataStruct({6, 11 }, { 11, 11 }, true, duration) });
+	fishPileData.insert({ "slightwalkS", animDataStruct({6, 10 }, { 11, 10 }, true, duration) });
+	fishPileData.insert({ "slightwalkSE", animDataStruct({6, 4 }, { 11, 4 }, true, duration) });
+	fishPileData.insert({ "slightwalkSW", animDataStruct({6, 5 }, { 11, 5 }, true, duration) });
 	// mid
-	fishPileData.insert({ "midwalkNE", { { 12, 8 }, { 17, 8 }, .13, true } });
-	fishPileData.insert({ "midwalkNW", { { 12, 9 }, { 17, 9 }, .13, true } });
-	fishPileData.insert({ "midwalkE", { { 12, 6 }, { 17, 6 }, .13, true } });
-	fishPileData.insert({ "midwalkW", { { 12, 7 }, { 17, 7 }, .13, true } });
-	fishPileData.insert({ "midwalkN", { { 12, 11 }, { 17, 11 }, .13, true } });
-	fishPileData.insert({ "midwalkS", { { 12, 10 }, { 17, 10 }, .13, true } });
-	fishPileData.insert({ "midwalkSE", { { 12, 4 }, { 17, 4 }, .13, true } });
-	fishPileData.insert({ "midwalkSW", { { 12, 5 }, { 17, 5 }, .13, true } });
+	fishPileData.insert({ "midwalkNE", animDataStruct({12, 8 }, { 17, 8 }, true, duration) });
+	fishPileData.insert({ "midwalkNW", animDataStruct({12, 9 }, { 17, 9 }, true, duration) });
+	fishPileData.insert({ "midwalkE", animDataStruct({12, 6 }, { 17, 6 }, true, duration) });
+	fishPileData.insert({ "midwalkW", animDataStruct({12, 7 }, { 17, 7 }, true, duration) });
+	fishPileData.insert({ "midwalkN", animDataStruct({12, 11 }, { 17, 11 }, true, duration) });
+	fishPileData.insert({ "midwalkS", animDataStruct({12, 10 }, { 17, 10 }, true, duration) });
+	fishPileData.insert({ "midwalkSE", animDataStruct({12, 4 }, { 17, 4 }, true, duration) });
+	fishPileData.insert({ "midwalkSW", animDataStruct({12, 5 }, { 17, 5 }, true, duration) });
 	// full
-	fishPileData.insert({ "fullwalkNE", { { 18, 8 }, { 23, 8 }, .13, true } });
-	fishPileData.insert({ "fullwalkNW", { { 18, 9 }, { 23, 9 }, .13, true } });
-	fishPileData.insert({ "fullwalkE", { { 18, 6 }, { 23, 6 }, .13, true } });
-	fishPileData.insert({ "fullwalkW", { { 18, 7 }, { 23, 7 }, .13, true } });
-	fishPileData.insert({ "fullwalkN", { { 18, 11 }, { 23, 11 }, .13, true } });
-	fishPileData.insert({ "fullwalkS", { { 18, 10 }, { 23, 10 }, .13, true } });
-	fishPileData.insert({ "fullwalkSE", { { 18, 4 }, { 23, 4 }, .13, true } });
-	fishPileData.insert({ "fullwalkSW", { { 18, 5 }, { 23, 5 }, .13, true } });
+	fishPileData.insert({ "fullwalkNE", animDataStruct({18, 8 }, { 23, 8 }, true, duration) });
+	fishPileData.insert({ "fullwalkNW", animDataStruct({18, 9 }, { 23, 9 }, true, duration) });
+	fishPileData.insert({ "fullwalkE", animDataStruct({18, 6 }, { 23, 6 }, true, duration) });
+	fishPileData.insert({ "fullwalkW", animDataStruct({18, 7 }, { 23, 7 }, true, duration) });
+	fishPileData.insert({ "fullwalkN", animDataStruct({18, 11 }, { 23, 11 }, true, duration) });
+	fishPileData.insert({ "fullwalkS", animDataStruct({18, 10 }, { 23, 10 }, true, duration) });
+	fishPileData.insert({ "fullwalkSE", animDataStruct({18, 4 }, { 23, 4 }, true, duration) });
+	fishPileData.insert({ "fullwalkSW", animDataStruct({18, 5 }, { 23, 5 }, true, duration) });
 
 	fishPileAnim = std::make_unique<animation>("npc/fishTransporter/fishPileSpriteSheet.png", 30, 42, fishPileData, true, loc);
 	fishPileAnim->setAnimation("emptyidleSE");
@@ -189,11 +192,11 @@ void AfishTransporter::draw(Shader* shaderProgram) {
 	fishPileAnim->draw(shaderProgram);
 
 	if (npcAnim->spriteSheet->isMouseOver(true) && fullnessText) {
-		fullnessText->setLoc(loc + vector(npcAnim->cellWidth / 2.f, npcAnim->cellHeight));
+		fullnessText->setLoc(loc + npcAnim->GetCellSize() / vector{ 2.f, 1.f });
 		fullnessText->draw(shaderProgram);
-		progressBar->setLoc(loc + vector{ -progressBar->getSize().x / 2 / stuff::pixelSize, npcAnim->cellHeight + 11.f });
+		progressBar->setLoc(loc + vector{ -progressBar->getSize().x / 2 / stuff::pixelSize, npcAnim->GetCellSize().y + 11.f});
 	} else {
-		progressBar->setLoc(loc + vector{ -progressBar->getSize().x / 2 / stuff::pixelSize, npcAnim->cellHeight + 3.f });
+		progressBar->setLoc(loc + vector{ -progressBar->getSize().x / 2 / stuff::pixelSize, npcAnim->GetCellSize().y + 3.f});
 	}
 
 	progressBar->draw(shaderProgram);
@@ -384,7 +387,7 @@ double AfishTransporter::calcCurrencyHeld() {
 void AfishTransporter::setLoc(vector loc) {
 	this->loc = loc;
 	if (npcAnim) {
-		npcAnim->setLoc(loc - vector{ npcAnim->cellWidth / 2.f, 0 });
+		npcAnim->setLoc(loc - vector{ npcAnim->GetCellSize().x / 2.f, 0 });
 		fishPileAnim->setLoc(npcAnim->getLoc());
 	}
 }

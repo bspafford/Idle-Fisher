@@ -18,8 +18,8 @@
 
 buyAutoFisher::buyAutoFisher(vector loc) {
 	std::unordered_map<std::string, animDataStruct> plusData;
-	plusData.insert({ "normal", {{0, 0}, {7, 0}, .1, true } });
-	plusData.insert({ "hover", {{0, 1}, {7, 1}, .1, true } });
+	plusData.insert({ "normal", animDataStruct({0, 0}, {7, 0}, true) });
+	plusData.insert({ "hover", animDataStruct({0, 1}, {7, 1}, true) });
 	plusAnim = std::make_unique<animation>("autoFisher/buyer/buyer.png", 26, 46, plusData, true);
 	plusAnim->setAnimation("normal");
 	plusAnim->start();
@@ -124,7 +124,7 @@ void buyAutoFisher::updateLoc() {
 
 	if (plusAnim) {
 		plusAnim->setLoc({ SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].xLoc + 4, SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].yLoc + 2 });
-		priceText->setLoc(plusAnim->getLoc() + vector{ 0, plusAnim->cellHeight - 6.f * stuff::pixelSize });
+		priceText->setLoc(plusAnim->getLoc() + vector{ 0, plusAnim->GetCellSize().y - 6.f * stuff::pixelSize});
 	}
 
 
@@ -143,7 +143,6 @@ void buyAutoFisher::setupCollision() {
 	if (calcMaxAutoFishers() || !plusAnim)
 		return;
 
-	// converts SDL_Point to vector
 	std::vector<vector> points = std::vector<vector>(4);
 	for (int i = 0; i < 4; i++)
 		points[i] = { collisionPoints[i].x + plusAnim->getLoc().x, collisionPoints[i].y + plusAnim->getLoc().y};

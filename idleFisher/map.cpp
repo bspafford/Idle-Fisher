@@ -18,7 +18,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	mapImg = std::make_unique<Image>("./images/sailorMap.png", vector{ 0, 0 }, false); // -1073, -739
 
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "anim", {{0, 0}, {9, 0}, .333, true} });
+	animData.insert({ "anim", animDataStruct({0, 0}, {9, 0}, true, 0.333) });
 	hereBoat = std::make_unique<animation>("widget/hereBoat.png", 22, 22, animData, false, vector{ 0, 0 });
 	hereBoat->setAnimation("anim");
 	hereBoat->start();

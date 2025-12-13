@@ -350,7 +350,7 @@ struct FgoldenFishStruct {
     std::string description;
     double multiplier;
     double comboMultiplier;
-    double time;
+    float time;
     double catchChance;
 
     void parseData(std::vector<std::string> row) {
@@ -359,7 +359,7 @@ struct FgoldenFishStruct {
         description = row[2];
         multiplier = std::stod(row[3]);
         comboMultiplier = std::stod(row[4]);
-        time = std::stod(row[5]);
+        time = std::stof(row[5]);
         catchChance = std::stod(row[6]);
     }
 };
@@ -520,7 +520,7 @@ struct FsettingsData {
         const unsigned char* a = reinterpret_cast<const unsigned char*>(this);
         const unsigned char* b = reinterpret_cast<const unsigned char*>(&other);
         
-        for (size_t i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (a[i] != b[i])
                 return false;
         }

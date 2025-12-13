@@ -43,8 +43,8 @@ public:
 	vector getCharScreenLoc();
 
 	// fish stuff
-	FfishData calcFish(int& quality, float& fishSize);
-	std::vector<std::vector<float>> calcFishProbability(std::vector<FfishData> fishData);
+	FfishData calcFish(int& quality, int& fishSize);
+	std::vector<std::pair<int, double>> calcFishProbability(std::vector<FfishData> fishData);
 	void comboExceeded();
 
 	static inline std::unique_ptr<animation> anim;
@@ -56,7 +56,7 @@ public:
 
 	FfishData currFish;
 	int currFishQuality;
-	float currFishSize;
+	int currFishSize;
 
 private:
 	bool canMove = true;
@@ -97,7 +97,7 @@ public:
 	// stops player from moving if they start fishing
 	bool fishingStop = false;
 
-	int comboNum = 1;
+	double comboNum = 1;
 	// temp
 	bool comboUnlocked = true;
 	std::unique_ptr<timer> comboOvertimer;

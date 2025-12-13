@@ -152,7 +152,7 @@ void URectangle::updatePositionsList() {
 	currVAO->Bind();
 	currVBO->Bind();
 
-	vector scaledLoc = absoluteLoc * vector{ 1, -1 }; // left to right is positive, bottom to top is negative, just like sdl2
+	vector scaledLoc = absoluteLoc * vector{ 1, -1 };
 	if (useWorldLoc)
 		scaledLoc = { absoluteLoc.x * stuff::pixelSize, absoluteLoc.y * stuff::pixelSize };
 	float positions[] = {

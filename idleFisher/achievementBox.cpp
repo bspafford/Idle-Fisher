@@ -54,7 +54,7 @@ void UachievementBox::draw(Shader* shaderProgram) {
 		if (mouseOver()) {
 			isMouseOver = true;
 
-			float scale = 1.3;
+			float scale = 1.3f;
 			icon->w = startSize.x / stuff::pixelSize * scale;
 			icon->h = startSize.y / stuff::pixelSize * scale;
 

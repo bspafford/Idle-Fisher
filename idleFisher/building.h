@@ -20,7 +20,7 @@ public:
 protected:
 	std::unique_ptr<Image> buildingImg;
 	vector loc;
-	std::unique_ptr<Fcollision> col;
+	std::vector<std::unique_ptr<Fcollision>> cols;
 	vector leftPoint, rightPoint;
 private:
 };

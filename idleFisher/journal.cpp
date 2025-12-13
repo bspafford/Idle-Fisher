@@ -19,8 +19,8 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	journalClosed = std::make_unique<Image>("./images/widget/journalClosed.png", vector{ 0, 0 }, false);
 
 	std::unordered_map < std::string, animDataStruct> anim;
-	anim.insert({ "open", { {0, 0}, {5, 0}, .1, false} });
-	anim.insert({ "close", { {0, 1}, {5, 1}, .1, false} });
+	anim.insert({ "open", animDataStruct({0, 0}, {5, 0}, false) });
+	anim.insert({ "close", animDataStruct({0, 1}, {5, 1}, false) });
 	journalAnim = std::make_unique<animation>("widget/journalOpen.png", 282, 240, anim, false, vector{ 0, 0 });
 	journalAnim->addFinishedCallback(this, &Ujournal::journalAnimFinish);
 	journalAnim->setAnimation("open");

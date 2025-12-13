@@ -34,33 +34,35 @@
 #include "debugger.h"
 
 Acharacter::Acharacter() {
+	float duration = 0.13f;
 	std::unordered_map<std::string, animDataStruct> animData;
+
 	// walking
-	animData.insert({ "walkE", { {0, 0}, {5, 0}, .13, true } });
-	animData.insert({ "walkNE", { {6, 0}, {11, 0}, .13, true } });
-	animData.insert({ "walkN", { {12, 0}, {17, 0}, .13, true } });
-	animData.insert({ "walkNW", { {18, 0}, {23, 0}, .13, true } });
-	animData.insert({ "walkW", { {0, 1}, {5, 1}, .13, true } });
-	animData.insert({ "walkSW", { {6, 1}, {11, 1}, .13, true} });
-	animData.insert({ "walkS", { {12, 1}, {17, 1}, .13, true } });
-	animData.insert({ "walkSE", { {18, 1}, {23, 1}, .13, true } });
+	animData.insert({ "walkE", animDataStruct({0, 0}, {5, 0}, true, duration) });
+	animData.insert({ "walkNE", animDataStruct({6, 0}, {11, 0}, true, duration) });
+	animData.insert({ "walkN", animDataStruct({12, 0}, {17, 0}, true, duration) });
+	animData.insert({ "walkNW", animDataStruct({18, 0}, {23, 0}, true, duration) });
+	animData.insert({ "walkW", animDataStruct({0, 1}, {5, 1}, true, duration) });
+	animData.insert({ "walkSW", animDataStruct({6, 1}, {11, 1}, true, duration) });
+	animData.insert({ "walkS", animDataStruct({12, 1}, {17, 1}, true, duration) });
+	animData.insert({ "walkSE", animDataStruct({18, 1}, {23, 1}, true, duration) });
 
 	// idle
-	animData.insert({ "idleE", { {0, 2}, {13, 2}, .13, true } });
-	animData.insert({ "idleNE", { {14, 2}, {27, 2}, .13, true } });
-	animData.insert({ "idleN", { {0, 3}, {13, 3}, .13, true } });
-	animData.insert({ "idleNW", { {14, 3}, {27, 3}, .13, true } });
-	animData.insert({ "idleW", { {0, 4}, {13, 4}, .13, true } });
-	animData.insert({ "idleSW", { {14, 4}, {27, 4}, .13, true} });
-	animData.insert({ "idleS", { {0, 5}, {13, 5}, .13, true } });
-	animData.insert({ "idleSE", { {14, 5}, {27, 5}, .13, true } });
+	animData.insert({ "idleE", animDataStruct({0, 2}, {13, 2}, true, duration) });
+	animData.insert({ "idleNE", animDataStruct({14, 2}, {27, 2}, true, duration) });
+	animData.insert({ "idleN", animDataStruct({0, 3}, {13, 3}, true, duration) });
+	animData.insert({ "idleNW", animDataStruct({14, 3}, {27, 3}, true, duration) });
+	animData.insert({ "idleW", animDataStruct({0, 4}, {13, 4}, true, duration) });
+	animData.insert({ "idleSW", animDataStruct({14, 4}, {27, 4}, true, duration) });
+	animData.insert({ "idleS", animDataStruct({0, 5}, {13, 5}, true, duration) });
+	animData.insert({ "idleSE", animDataStruct({14, 5}, {27, 5}, true, duration) });
 
 	// fishing
-	animData.insert({ "castSE", { {0, 6}, {17, 6}, .1, false } });
-	animData.insert({ "idleFishingSE", { {18, 6}, {31, 6}, .1, true } });
-	animData.insert({ "transitionSE", { {0, 7}, {2, 7}, .1, false } });
-	animData.insert({ "waitSE", { {3, 7}, {6, 7}, .1, true } });
-	animData.insert({ "pullSE", { {7, 7}, {18, 7}, .1, false } });
+	animData.insert({ "castSE", animDataStruct({0, 6}, {17, 6}, false) });
+	animData.insert({ "idleFishingSE", animDataStruct({18, 6}, {31, 6}, true) });
+	animData.insert({ "transitionSE", animDataStruct({0, 7}, {2, 7}, false) });
+	animData.insert({ "waitSE", animDataStruct({3, 7}, {6, 7}, true) });
+	animData.insert({ "pullSE", animDataStruct({7, 7}, {18, 7}, false) });
 
 	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, false, vector{ 0, 0 });
 	anim->shouldntDeleteTimer(true);
@@ -71,11 +73,11 @@ Acharacter::Acharacter() {
 	anim->start();
 
 	std::unordered_map<std::string, animDataStruct> fishingRodData;
-	fishingRodData.insert({ "castSE", { {0, 0}, {17, 0}, .1, false } });
-	fishingRodData.insert({ "idleFishingSE", { {18, 0}, {31, 0}, .1, true } });
-	fishingRodData.insert({ "transitionSE", { {32, 0}, {34, 0}, .1, false } });
-	fishingRodData.insert({ "waitSE", { {35, 0}, {38, 0}, .1, true } });
-	fishingRodData.insert({ "pullSE", { {39, 0}, {51, 0}, .1, false } });
+	fishingRodData.insert({ "castSE", animDataStruct({0, 0}, {17, 0}, false) });
+	fishingRodData.insert({ "idleFishingSE", animDataStruct({18, 0}, {31, 0}, true) });
+	fishingRodData.insert({ "transitionSE", animDataStruct({32, 0}, {34, 0}, false) });
+	fishingRodData.insert({ "waitSE", animDataStruct({35, 0}, {38, 0}, true) });
+	fishingRodData.insert({ "pullSE", animDataStruct({39, 0}, {51, 0}, false) });
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, false);
 	fishingRod->shouldntDeleteTimer(true);
@@ -92,7 +94,7 @@ Acharacter::Acharacter() {
 	bobberWaterOverlay = std::make_unique<Image>("./images/bobberWaterOverlay.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> bobberData;
-	bobberData.insert({ "water", {{0, 0}, {3, 0}, .3, true } });
+	bobberData.insert({ "water", animDataStruct({0, 0}, {3, 0}, true, .3f) });
 	bobberWaterAnimFront = std::make_unique<animation>("bobberWaterAnimFront.png", 15, 12, bobberData, false, vector{ 0, 0 });
 	bobberWaterAnimBack = std::make_unique<animation>("bobberWaterAnimBack.png", 15, 12, bobberData, false, vector{ 0, 0 });
 	bobberWaterAnimFront->shouldntDeleteTimer(true);
@@ -134,7 +136,7 @@ void Acharacter::animFinished() {
 }
 
 void Acharacter::setFishingTipLoc(int frame) {
-	vector loc = vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } + (vector{ -anim->cellWidth / 2.f, -anim->cellHeight / 2.f } + vector{ -46, -14 }) * stuff::pixelSize;
+	vector loc = vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } + (-anim->GetCellSize() / 2.f + vector{ -46, -14 }) * stuff::pixelSize;
 
 	if (anim->currAnim == "castSE") {
 		std::vector<vector> castAnimLocs = std::vector<vector>{ {95, 41}, {95, 41}, {94, 41}, {94, 41}, {95, 42}, {80, 1}, {48, -1}, {21, 43}, {27, 55}, {30, 56}, {47, 0}, {105, 11}, {105, 11}, {100, 4}, {98, 10}, {98, 10}, {98, 10}, {98, 10} };
@@ -198,23 +200,32 @@ void Acharacter::move(float deltaTime) {
 
 void Acharacter::setPlayerColPoints() {
 	float radius = 5;
-	int yOffset = 22 * stuff::pixelSize;
 	vector loc = getCharLoc();
 
 	col = std::make_unique<Fcollision>(loc, radius, " ");
 }
 
 void Acharacter::draw(Shader* shaderProgram) {
+	// if bobber above player, render behind
+	bool bobberBehind = false;
+	if (Main::character->tempBobberLoc.y > Main::character->getCharScreenLoc().y) {
+		bobberBehind = true;
+		drawFishingLine(shaderProgram);
+	}
+
 	anim->setLoc({ 0, 0 });
 	anim->draw(shaderProgram);
 	if (isFishing) {
 		fishingRod->setLoc(anim->getLoc() - vector{ 4, 51.f });
 		fishingRod->draw(shaderProgram);
 	}
+
+	if (!bobberBehind)
+		drawFishingLine(shaderProgram);
 }
 
 vector Acharacter::getCharLoc() {
-	return (SaveData::saveData.playerLoc + vector{ anim->cellWidth / 2.f, 2});
+	return (SaveData::saveData.playerLoc + vector{ anim->GetCellSize().x / 2.f, 2});
 }
 
 void Acharacter::Update(float deltaTime) {
@@ -232,13 +243,13 @@ void Acharacter::Update(float deltaTime) {
 
 		if (moveDir.x != 0 || moveDir.y != 0) {
 			prevMove = moveDir;
-			float angle = atan2(moveDir.y, moveDir.x) * 180 / M_PI;
-			int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
+			float angle = atan2(moveDir.y, moveDir.x) * 180.f / M_PI;
+			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
 			if (anim->currAnim != walkAnimList[y])
 				anim->setAnimation(walkAnimList[y], true);
 		} else {
 			float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
-			int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
+			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
 			if (anim->currAnim != idleAnimList[y])
 				anim->setAnimation(idleAnimList[y], true);
 		}
@@ -279,8 +290,8 @@ void Acharacter::leftClick() {
 		// temp
 		vector fishRodPoint = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
 		vector diff = math::normalize(bobberLoc - fishRodPoint);
-		float angle = atan2(diff.y, diff.x) * 180 / M_PI;
-		int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3.5;
+		float angle = atan2(diff.y, diff.x) * 180.f / M_PI;
+		int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3.5f);
 
 		// set fishing anim
 		//if (anim->animList != idleAnimWheel[y])
@@ -392,28 +403,27 @@ void Acharacter::fishing() {
 	anim->start();
 	fishingRod->setAnimation("transitionSE", true);
 	fishingRod->start();
-
+	
 	fishingTimer->stop();
 }
 
-FfishData Acharacter::calcFish(int& quality, float& fishSize) {
+FfishData Acharacter::calcFish(int& quality, int& fishSize) {
 	float rand = math::randRange(0.f, 1.f);
-	std::vector<std::vector<float>> probList = calcFishProbability(SaveData::data.fishData);
+	std::vector<std::pair<int, double>> probList = calcFishProbability(SaveData::data.fishData);
 
 	for (int i = 0; i < probList.size(); i++)
-		if (rand <= probList[i][1]) {
-			float randQuality = math::randRange(0.f, 100.f);
-			if (randQuality <= 1) // gold 1%
+		if (rand <= probList[i].second) {
+			double randQuality = math::randRange(0.0, 100.0);
+			if (randQuality <= 1.0) // gold 1%
 				quality = 3;
-			else if (randQuality <= 6) // silver 5%
+			else if (randQuality <= 6.0) // silver 5%
 				quality = 2;
-			else if (randQuality <= 18) // bronze 12%
+			else if (randQuality <= 18.0) // bronze 12%
 				quality = 1;
 			else
 				quality = 0;
 
-			FfishData caughtFish = SaveData::data.fishData[probList[i][0]];
-
+			FfishData caughtFish = SaveData::data.fishData[probList[i].first];
 
 			fishSize = math::randRangeInt(caughtFish.minSize, caughtFish.maxSize);
 			return caughtFish;
@@ -428,14 +438,14 @@ FfishData Acharacter::calcFish(int& quality, float& fishSize) {
 // if its chance is .05 its always .05 even if another fish is 45% chance
 // old method: premium = 1%, fish = 49%, actual premium chance = 2%, actual fish = 98%
 // this method: premium = 1%, fish = 49%, actual premium chance = 1% actual fish = 99%
-std::vector<std::vector<float>> Acharacter::calcFishProbability(std::vector<FfishData> fishData) {
+std::vector<std::pair<int, double>> Acharacter::calcFishProbability(std::vector<FfishData> fishData) {
 	// get premium currency chance
 	// then do (100 - premium chance) / 100
 	// calc fish chance and multuply by that number
 	// then add the premium chance at the end
 	std::vector<float> petBuff = petBuffs::increaseChanceOfHigherFish();
 
-	float premiumChance = canCatchPremium ? upgrades::calcPremiumCatchChance() : 0;
+	double premiumChance = canCatchPremium ? upgrades::calcPremiumCatchChance() : 0.0;
 	float totalProb = 0; // premiumChance;
 	for (int i = 1; i < fishData.size(); i++) {
 		if (fishData[i].fishingPower <= upgrades::calcFishingRodPower() && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
@@ -446,22 +456,22 @@ std::vector<std::vector<float>> Acharacter::calcFishProbability(std::vector<Ffis
 		}
 	}
 
-	float multiplier = (1 - (premiumChance / 100));
+	double multiplier = (1.0 - (premiumChance / 100.0));
 
-	std::vector<std::vector<float>> probList;
-	float test = 0;
+	std::vector<std::pair<int, double>> probList;
+	double percent = 0.0;
 	for (int i = 1; i < fishData.size(); i++) {
 		if (fishData[i].fishingPower <= upgrades::calcFishingRodPower() && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
-			float multi = 1;
+			double multi = 1.0;
 			if (i < petBuff.size())
 				multi = petBuff[i];
-			test += fishData[i].probability / totalProb * multiplier * multi;
-			probList.push_back(std::vector<float>{(float)fishData[i].id, test});
+			percent += fishData[i].probability / totalProb * multiplier * multi;
+			probList.push_back(std::pair<int, double>{fishData[i].id, percent});
 		}
 	}
 
 	if (canCatchPremium)
-		probList.push_back({ std::vector<float>{(float)fishData[0].id, 1} });
+		probList.push_back({ std::pair<int, double>{fishData[0].id, 1.0} });
 
 	return probList;
 }
@@ -519,7 +529,7 @@ void Acharacter::premiumFishBuff() {
 			}
 		}
 
-		double min = math::min(mps * 900, heldCurrency * .15);
+		double min = math::min(mps * 900.0, heldCurrency * 0.15);
 		double currency = round(min + 10); // + 10 for base value incase you have no held currency or autofishers
 		SaveData::saveData.currencyList[worldIndex + 1].numOwned += currency;
 		SaveData::saveData.currencyList[worldIndex + 1].totalNumOwned += currency;
@@ -568,7 +578,7 @@ void Acharacter::comboExceeded() {
 void Acharacter::bobberCatchAnim() {
 	int pullFrames = 4;
 
-	vector temp = { float(stuff::screenSize.x / 2), float(stuff::screenSize.y / 2 - anim->cellHeight / 2 * stuff::pixelSize) };
+	vector temp = { float(stuff::screenSize.x / 2), float(stuff::screenSize.y / 2 - anim->GetCellSize().y / 2 * stuff::pixelSize) };
 
 	float time = bobberCatchTimer->getTime();
 	float timer = bobberCatchTimer->getMaxTime();
@@ -598,7 +608,7 @@ void Acharacter::bobberBobAnim() {
 	// if reeling in fish
 	if (anim->currAnim.find("wait") != std::string::npos || anim->currAnim.find("pull") != std::string::npos) {
 		float percent = time / timer;
-		int num = floor(percent * 14);
+		int num = static_cast<int>(floor(percent * 14.f));
 		bobberLoc = tempBobberLoc + vector{ 0, num % 2 * stuff::pixelSize };
 
 	} else {
@@ -621,8 +631,8 @@ AfishSchool* Acharacter::bobberInFishSchool() {
 		// check if bobber is inside of fish school
 		// if it is then return true
 		// otherwise keep looking
-		if (fishSchool->pointInSchool(math::screenToWorld(bobberLoc)));
-		return fishSchool.get();
+		if (fishSchool->pointInSchool(math::screenToWorld(bobberLoc)))
+			return fishSchool.get();
 	}
 	return nullptr;
 }
@@ -632,8 +642,8 @@ void Acharacter::calcFishSchoolUpgrades() {
 		currFishSchool->removeFishNum();
 
 	currFishSchool = bobberInFishSchool();
-	fishTimeMultiplier = currFishSchool ? .75 : 1;
-	fishSchoolMultiplier = currFishSchool ? 1.5 : 1;
+	fishTimeMultiplier = currFishSchool ? .75f : 1.f;
+	fishSchoolMultiplier = currFishSchool ? 1.5f : 1.f;
 }
 
 bool Acharacter::canCatchWorldFish() {
@@ -648,15 +658,13 @@ bool Acharacter::canCatchWorldFish() {
 }
 
 vector Acharacter::getCharScreenLoc() {
-	int yOffset = 22 * stuff::pixelSize;
-	return { stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f + yOffset };
+	float yOffset = 22 * stuff::pixelSize;
+	return stuff::screenSize + vector{0, yOffset};
 }
 
 void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	if (!isFishing || !showFishingLine)
 		return;
-
-	//SDL_SetRenderDrawColor(shaderProgram, 242, 233, 211, 255);
 
 	vector start = fishingTipLoc;
 	vector end = { Acharacter::bobberLoc.x + (Acharacter::bobberImg->w / 2 * stuff::pixelSize), Acharacter::bobberLoc.y + (Acharacter::bobberImg->h / 2 * stuff::pixelSize) };
@@ -681,13 +689,12 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	float minY = math::min(0, diff.y);
 	float maxY = math::max(0, diff.y);
 
-	int sizeX = maxX - minX;
-	int sizeY = maxY - minY;
+	int sizeX = static_cast<int>(roundf(maxX - minX));
+	int sizeY = static_cast<int>(roundf(maxY - minY));
 
 	float prevY = 0;
 	float diffY;
 	float x, y, a;
-
 	if (sizeX > 0 && sizeY > 0) {
 		Rect* points = new Rect[sizeX];
 		for (int i = 1; i < sizeX + 1; i++) {
@@ -704,7 +711,7 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 				y = a * ((x - p1.x) * (x - p1.x)) + p1.y;
 			}
 
-			int yInt = round(y * negative.y);
+			float yInt = round(y * negative.y);
 
 			diffY = yInt - prevY;
 			if (diffY < 1)

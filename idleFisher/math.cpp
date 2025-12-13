@@ -41,7 +41,17 @@ float math::min(float a, float b) {
 	return b;
 }
 
+double math::min(double a, double b) {
+	if (a < b) return a;
+	return b;
+}
+
 float math::max(float a, float b) {
+	if (a > b) return a;
+	return b;
+}
+
+float math::max(double a, double b) {
 	if (a > b) return a;
 	return b;
 }
@@ -51,8 +61,17 @@ float math::lerp(float min, float max, float val) {
 	return val * dif + min;
 }
 
+int math::lerp(int min, int max, double val) {
+	float dif = max - min;
+	return static_cast<int>(val * dif + min);
+}
+
 float math::randRange(float min, float max) {
 	return (float)rand() / RAND_MAX * (max - min) + min;
+}
+
+double math::randRange(double min, double max) {
+	return (double)rand() / RAND_MAX * (max - min) + min;
 }
 
 int math::randRangeInt(int min, int max) {
@@ -60,6 +79,12 @@ int math::randRangeInt(int min, int max) {
 }
 
 float math::clamp(float x, float min, float max) {
+	if (x < min) return min;
+	if (x > max) return max;
+	return x;
+}
+
+double math::clamp(double x, double min, double max) {
 	if (x < min) return min;
 	if (x > max) return max;
 	return x;

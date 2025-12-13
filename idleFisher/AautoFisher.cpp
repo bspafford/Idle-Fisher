@@ -43,18 +43,19 @@ AautoFisher::AautoFisher(int id) {
 	upgradeAnimIndex = *level / 10;
 
 	// auto fisher animation
+	float duration = 0.1f;
 	std::unordered_map<std::string, animDataStruct> autoFisherData;
-	autoFisherData.insert({ "1", {{0, 0}, {39, 0}, .1, true} });
-	autoFisherData.insert({ "2", {{0, 1}, {39, 1}, .1, true} });
-	autoFisherData.insert({ "3", {{0, 2}, {39, 2}, .1, true} });
-	autoFisherData.insert({ "4", {{0, 3}, {39, 3}, .1, true} });
-	autoFisherData.insert({ "5", {{0, 4}, {39, 4}, .1, true} });
-	autoFisherData.insert({ "6", {{0, 5}, {39, 5}, .1, true} });
-	autoFisherData.insert({ "7", {{0, 6}, {39, 6}, .1, true} });
-	autoFisherData.insert({ "8", {{0, 7}, {39, 7}, .1, true} });
-	autoFisherData.insert({ "9", {{0, 8}, {39, 8}, .1, true} });
-	autoFisherData.insert({ "10", {{0, 9}, {39, 9}, .1, true} });
-	autoFisherData.insert({ "11", {{0, 10}, {39, 10}, .1, true} });
+	autoFisherData.insert({ "1", animDataStruct({0, 0}, {39, 0}, true) });
+	autoFisherData.insert({ "2", animDataStruct({0, 1}, {39, 1}, true) });
+	autoFisherData.insert({ "3", animDataStruct({0, 2}, {39, 2}, true) });
+	autoFisherData.insert({ "4", animDataStruct({0, 3}, {39, 3}, true) });
+	autoFisherData.insert({ "5", animDataStruct({0, 4}, {39, 4}, true) });
+	autoFisherData.insert({ "6", animDataStruct({0, 5}, {39, 5}, true) });
+	autoFisherData.insert({ "7", animDataStruct({0, 6}, {39, 6}, true) });
+	autoFisherData.insert({ "8", animDataStruct({0, 7}, {39, 7}, true) });
+	autoFisherData.insert({ "9", animDataStruct({0, 8}, {39, 8}, true) });
+	autoFisherData.insert({ "10", animDataStruct({0, 9}, {39, 9}, true) });
+	autoFisherData.insert({ "11", animDataStruct({0, 10}, {39, 10}, true) });
 
 	anim = std::make_unique<animation>(autoFisherSpriteSheet, 42, 58, autoFisherData, true, loc);
 	anim->addAnimEvent(40, this, &AautoFisher::catchFish);
@@ -63,14 +64,14 @@ AautoFisher::AautoFisher(int id) {
 
 	// outline animation
 	std::unordered_map<std::string, animDataStruct> outlineData;
-	outlineData.insert({ "outline", {{0, 0}, {39, 0}, .1, true} });
+	outlineData.insert({ "outline", animDataStruct({0, 0}, {39, 0}, true) });
 	outline = std::make_unique<animation>(outlineSpriteSheet, 42, 58, outlineData, true, loc);
 	outline->setAnimation("outline");
 	outline->start();
 
 	// fishing rod animation
 	std::unordered_map<std::string, animDataStruct> fishingLineData;
-	fishingLineData.insert({ "fishingLine", {{0, 0}, {39, 0}, .1, true} });
+	fishingLineData.insert({ "fishingLine", animDataStruct({0, 0}, {39, 0}, true) });
 	fishingLine = std::make_unique<animation>(fishingLineSpriteSheet, 138, 139, fishingLineData, true, loc + vector{ 13, -74 });
 	fishingLine->setAnimation("fishingLine");
 	fishingLine->start();
@@ -259,7 +260,6 @@ std::vector<std::vector<float>> AautoFisher::calcFishProbability(std::vector<Ffi
 }
 
 void AautoFisher::setupCollision() {
-	// converts SDL_Point to vector
 	std::vector<vector> points = std::vector<vector>(4);
 	for (int i = 0; i < 4; i++)
 		points[i] = { collisionPoints[i].x + loc.x, collisionPoints[i].y + loc.y };
@@ -386,7 +386,7 @@ float AautoFisher::getCatchTime() {
 	//return (float)NormalAnim[0].size() * autoFisherAnim->fps;
 	if (anim) {
 		// std::cout << autoFisher->cellWidthNum << " * " << autoFisher->animData[autoFisher->currAnim].duration << std::endl;
-		return anim->cellWidthNum * anim->animData[anim->currAnim].duration;
+		return anim->GetCellNum().x * anim->animData[anim->currAnim].duration;
 	} else
 		return 40; // temp
 }

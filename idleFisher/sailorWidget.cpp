@@ -25,8 +25,8 @@ UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
 	mapClosed = std::make_unique<Image>("./images/widget/mapClosed.png", vector{ 0, 0 }, false);
 
 	std::unordered_map < std::string, animDataStruct> anim;
-	anim.insert({ "open", { {0, 0}, {5, 0}, .1, false} });
-	anim.insert({ "close", { {0, 1}, {5, 1}, .1, false} });
+	anim.insert({ "open", animDataStruct({0, 0}, {5, 0}, false) });
+	anim.insert({ "close", animDataStruct({0, 1}, {5, 1}, false) });
 	mapAnim = std::make_unique<animation>("widget/mapSpriteSheet.png", 402, 230, anim, false, vector{ 0, 0 });
 	mapAnim->addFinishedCallback(this, &UsailorWidget::mapAnimFinish);
 	mapAnim->setAnimation("open");

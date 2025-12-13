@@ -23,13 +23,13 @@ void Eshake::setShakeDist(float shakeDist) {
 }
 
 void Eshake::setShakeLoc() {
-	float radius = 5;
-	float r = radius * sqrt(math::randRange(0, 1));
-	float theta = math::randRange(0, 1) * 2 * M_PI;
+	float radius = 5.f;
+	float r = radius * sqrt(math::randRange(0.f, 1.f));
+	float theta = math::randRange(0.f, 1.f) * 2.f * M_PI;
 	float x = startLoc.x + r * cos(theta);
 	float y = startLoc.y + r * sin(theta);
 	shakeLoc = { x, y };
-	shakeTimer->start(.1);
+	shakeTimer->start(0.1f);
 }
 
 vector Eshake::getShakeLoc() {

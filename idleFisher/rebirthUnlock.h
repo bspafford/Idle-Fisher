@@ -4,8 +4,8 @@
 
 class text;
 class Ubutton;
-class FrebirthStruct;
-class FsaveRebirthStruct;
+struct FrebirthStruct;
+struct FsaveRebirthStruct;
 
 class UrebirthUnlock : public widget {
 public:

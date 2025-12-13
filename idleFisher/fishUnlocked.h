@@ -5,7 +5,7 @@
 class timer;
 class animation;
 struct FfishData;
-struct Image;
+class Image;
 struct FachievementStruct;
 class text;
 

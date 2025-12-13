@@ -13,8 +13,8 @@ UfishUnlocked::UfishUnlocked(widget* parent) : widget(parent) {
 	bannerImg = std::make_unique<Image>("./images/widget/fishUnlocked.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "normal", {{0, 0}, {4, 0}, .1, false} });
-	animData.insert({ "reverse", {{0, 1}, {4, 1}, .1, false} });
+	animData.insert({ "normal", animDataStruct({0, 0}, {4, 0}, false) });
+	animData.insert({ "reverse", animDataStruct({0, 1}, {4, 1}, false) });
 	anim = std::make_unique<animation>("widget/fishUnlockedSpritesheet.png", 135, 63, animData, false, vector{ 0, 0 }); // 116*1.5, 67*1.5
 	anim->setAnimation("normal");
 	anim->addFinishedCallback(this, &UfishUnlocked::finished);

@@ -50,7 +50,6 @@ public:
 	// used when changing the font from pixel to normal or vice versa
 	static void changeFontAll();
 	void changeFont();
-	int calcFontSize();
 
 	void makeTextTexture();
 private:

@@ -115,13 +115,13 @@ double upgrades::getFishSellPrice(FfishData fish, int quality) {
 	return fish.currencyNum * (value + 1) * (petBuff + 1) * achievementBuffs::getFishPercentIncrease(fish.id) * (1.f + (quality * .1f));
 }
 
-float upgrades::calcGreenFishingUpgrade() {
+double upgrades::calcGreenFishingUpgrade() {
 	FsaveUpgradeStruct* saveUpgrade = getUpgrade("increaseGreenComboSizeWorld6");
 	double debuffVal = (1 - baitBuffs::increaseYellowDecreaseGreen()[1]);
 	return debuffVal * (saveUpgrade->upgradeLevel + 1) * (baitBuffs::increaseYellowGreen()[1] + 1) * (baitBuffs::increaseGreenDecreaseYellow()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[2] + 1);
 }
 
-float upgrades::calcYellowFishingUpgrade() {
+double upgrades::calcYellowFishingUpgrade() {
 	FsaveUpgradeStruct* saveUpgrade = getUpgrade("increaseYellowComboSizeWorld6");
 	double debuffVal = (1 - baitBuffs::increaseGreenDecreaseYellow()[1]);
 	return debuffVal * (saveUpgrade->upgradeLevel + 1) * (baitBuffs::increaseYellowGreen()[0] + 1) * (baitBuffs::increaseYellowDecreaseGreen()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[1] + 1);
@@ -137,11 +137,11 @@ double upgrades::calcComboMax() {
 }
 
 double upgrades::calcComboIncrease(double comboMax) {
-	return math::clamp(comboMax * (petBuffs::increaseComboIncrease() + baitBuffs::increaseComboIncrease()), 1, comboMax);
+	return math::clamp(comboMax * (petBuffs::increaseComboIncrease() + baitBuffs::increaseComboIncrease()), 1.0, comboMax);
 }
 
 double upgrades::calcComboStart(double comboMax) {
-	return math::clamp(comboMax * (baitBuffs::startAtHigherCombo()), 1, comboMax);
+	return math::clamp(comboMax * (baitBuffs::startAtHigherCombo()), 1.0, comboMax);
 	//return math::clamp(comboMax * (baitBuffs::startAtHigherCombo()+1), 0, comboMax);
 }
 
@@ -149,11 +149,11 @@ double upgrades::calcFishComboSpeed(FfishData currFish, int quality) {
 	// look at fishing rod
 	// look at fish speed
 	// should clamp incase the player goes back, so the fish is still able to move incase too overpowered
-	float tempSpeed = 1 / (upgrades::calcFishingRodPower() / 10) * currFish.fishSpeed;
-	tempSpeed *= (baitBuffs::increaseFishSpeed() + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[0] + 1) * (baitBuffs::increaseFishSpeedCatchMoreFish()[0] + 1); // debuff
-	tempSpeed *= (1 - petBuffs::decreaseFishComboSpeed()) * (1 - baitBuffs::decreaseFishMoveSpeed()) * (1 + (.1 * quality)); // buff
+	double tempSpeed = 1.0 / (upgrades::calcFishingRodPower() / 10.0) * static_cast<double>(currFish.fishSpeed);
+	tempSpeed *= (baitBuffs::increaseFishSpeed() + 1.0) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[0] + 1.0) * (baitBuffs::increaseFishSpeedCatchMoreFish()[0] + 1.0); // debuff
+	tempSpeed *= (1.0 - petBuffs::decreaseFishComboSpeed()) * (1.0 - baitBuffs::decreaseFishMoveSpeed()) * (1.0 + (0.1 * quality)); // buff
 
-	return math::max(tempSpeed, .1); // returns the bigger number
+	return math::max(tempSpeed, 0.1); // returns the bigger number
 }
 
 double upgrades::calcMaxComboBounce() {
@@ -161,22 +161,22 @@ double upgrades::calcMaxComboBounce() {
 	return baseVal * (baitBuffs::increaseFishComboBounce() + 1);
 }
 
-double upgrades::calcMaxFishingInterval() {
+float upgrades::calcMaxFishingInterval() {
 	double baseVal = 10; // temp
 	//return (baseVal * Acharacter::fishTimeMultiplier) - (baseVal * petBuffs::decreaseFishingIntervals());
 	baseVal *= baitBuffs::increaseFishCaughtIncraseFishInterval()[1] + 1; // debuff base value
 	float fishingRodSpeedVal = 1 - (SaveData::saveData.fishingRod.speedLevel / 1000.f);
 	double val = baseVal * fishingRodSpeedVal * Acharacter::fishTimeMultiplier * (1 - petBuffs::decreaseFishingIntervals()) * (1 - baitBuffs::decreaseFishIntervalDecraseFishCaught()[0]) * (1 - baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[1]); // buff
-	return val;
+	return static_cast<float>(val);
 }
 
-double upgrades::calcMinFishingInterval() {
+float upgrades::calcMinFishingInterval() {
 	double baseVal = 5; // temp
 	//return (baseVal * Acharacter::fishTimeMultiplier) - (baseVal * petBuffs::decreaseFishingIntervals());
 	baseVal *= baitBuffs::increaseFishCaughtIncraseFishInterval()[1] + 1; // debuff base value
 	float fishingRodSpeedVal = 1 - (SaveData::saveData.fishingRod.speedLevel / 1000.f);
 	double val =  baseVal * fishingRodSpeedVal * Acharacter::fishTimeMultiplier * (1 - petBuffs::decreaseFishingIntervals()) * (1 - baitBuffs::decreaseFishIntervalDecraseFishCaught()[0]) * (1 - baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[1]); // buff
-	return val;
+	return static_cast<float>(val);
 }
 
 double upgrades::calcFishingRodPower() {
@@ -206,27 +206,27 @@ double upgrades::calcPremiumCatchChance() {
 	return SaveData::data.fishData[0].probability * (petBuffs::increaseGoldenFishChance() + 1) * (baitBuffs::increaseGoldenFishChance() + 1);
 }
 
-double upgrades::calcPremiumCoolDownTime() {
+float upgrades::calcPremiumCoolDownTime() {
 	double baseVal = 900; // 15 min
-	return baseVal * (1 - baitBuffs::decreaseGoldenFishCooldown());
+	return static_cast<float>(baseVal * (1 - baitBuffs::decreaseGoldenFishCooldown()));
 }
 
-double upgrades::calcMaxFishSchoolSpawnInterval() {
-	double baseVal = 120;
+float upgrades::calcMaxFishSchoolSpawnInterval() {
+	float baseVal = 120;
 	return baseVal - (baseVal * petBuffs::increaseFishSchoolSpawnRate());
 }
 
-double upgrades::calcMinFishSchoolSpawnInterval() {
-	double baseVal = 60;
+float upgrades::calcMinFishSchoolSpawnInterval() {
+	float baseVal = 60;
 	return baseVal - (baseVal * petBuffs::increaseFishSchoolSpawnRate());
 }
 
-double upgrades::calcMaxRainSpawnInterval() {
-	double baseVal = 60 * 60; // 60 min
+float upgrades::calcMaxRainSpawnInterval() {
+	float baseVal = 60 * 60; // 60 min
 	return baseVal - (baseVal * petBuffs::decreaseRainIntervals());
 }
 
-double upgrades::calcMinRainSpawnInterval() {
-	double baseVal = 30 * 60; // 30 min
+float upgrades::calcMinRainSpawnInterval() {
+	float baseVal = 30 * 60; // 30 min
 	return baseVal - (baseVal * petBuffs::decreaseRainIntervals());
 }

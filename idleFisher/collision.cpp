@@ -704,7 +704,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					float toi;
 					vector normal;
 
-					float pointsSize = allCollision[i]->points.size();
+					float pointsSize = static_cast<float>(allCollision[i]->points.size());
 					vector edgeEnd = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
 					vector edgeStart = { allCollision[i]->points[(j + 1) % int(pointsSize)].x, allCollision[i]->points[(j + 1) % int(pointsSize)].y };
 
@@ -737,7 +737,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 		}
 
 		if (hit) {
-			double safeTOI = std::min(minTOI, timeRemaining);
+			float safeTOI = std::min(minTOI, timeRemaining);
 			safeTOI -= 0.01f;
 
 			SaveData::saveData.playerLoc.x += v.x * safeTOI;
@@ -802,7 +802,6 @@ bool collision::testMouse(vector mousePos) {
 
 	for (int i = 0; i < allCollision.size(); i++) {
 		vector normal;
-		float depth;
 		if (!Cursor::getMouseOverWater() && allCollision[i]->identifier == "w") {
 			if (pointInQuad(worldPos, allCollision[i])) {
 				Cursor::setMouseOverWater(true);
@@ -853,7 +852,7 @@ void collision::replaceCollisionObject(Fcollision* oldCol, Fcollision* newCol) {
 
 	auto it = std::find(allCollision.begin(), allCollision.end(), oldCol);
 	if (it != allCollision.end()) {
-		int index = it - allCollision.begin();
+		int index = static_cast<int>(it - allCollision.begin());
 		allCollision[index] = newCol;
 	}
 

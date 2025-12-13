@@ -1,6 +1,6 @@
 #pragma once
 
-#define M_PI 3.1415926535
+#define M_PI 3.1415926535f
 
 #include <iostream>
 #include <chrono>
@@ -34,11 +34,16 @@ public:
 	static float distance(float x1, float y1, float x2, float y2);
 	static float distance(vector a, vector b);
 	static float min(float a, float b);
+	static double min(double a, double b);
 	static float max(float a, float b);
+	static float max(double a, double b);
 	static float lerp(float min, float max, float val);
+	static int lerp(int min, int max, double val);
 	static float randRange(float min, float max);
+	static double randRange(double min, double max);
 	static int randRangeInt(int min, int max);
 	static float clamp(float x, float min, float max);
+	static double clamp(double x, double min, double max);
 	static vector perp(vector v);
 
 	// quick so its approximation

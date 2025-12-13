@@ -74,7 +74,7 @@ void Arain::updateRain() {
 			// hit the ground
 
 			std::unordered_map<std::string, animDataStruct> animData;
-			animData.insert({ "anim", {{0, 0}, {7, 0}, .1, false} });
+			animData.insert({ "anim", animDataStruct({0, 0}, {7, 0}, false) });
 			std::unique_ptr<animation> anim = std::make_unique<animation>("misc/rainDropAnim/rainDropAnim.png", 17, 9, animData, true, locs[i]);
 			anim->setAnimation("anim");
 			anim->start();
@@ -97,7 +97,7 @@ void Arain::updateRain() {
 		}
 	}
 
-	rainTimer->start(.1);
+	rainTimer->start(0.1f);
 }
 
 void Arain::removeAnimList() {

@@ -5,7 +5,7 @@
 class Shader;
 class animation;
 class timer;
-struct Image;
+class Image;
 
 class AfishSchool {
 public:

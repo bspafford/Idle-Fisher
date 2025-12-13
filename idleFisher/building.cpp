@@ -8,7 +8,8 @@ Abuilding::Abuilding(vector loc) {
 }
 
 Abuilding::~Abuilding() {
-	collision::removeCollisionObject(col.get());
+	for (int i = 0; i < cols.size(); i++)
+		collision::removeCollisionObject(cols[i].get());
 }
 
 void Abuilding::draw(Shader* shaderProgram) {
@@ -21,8 +22,10 @@ void Abuilding::setLoc(vector loc) {
 }
 
 void Abuilding::setupCollision(std::vector<vector> pointsList) {
-	col = std::make_unique<Fcollision>(pointsList, "");
-	collision::addCollisionObject(col.get());
+	cols.push_back(std::make_unique<Fcollision>(pointsList, ""));
+	Fcollision* col = cols[cols.size() - 1].get();
+
+	collision::addCollisionObject(col);
 
 	float minIndex = -1, minVal = INFINITY;
 	float maxIndex = -1, maxVal = -INFINITY;

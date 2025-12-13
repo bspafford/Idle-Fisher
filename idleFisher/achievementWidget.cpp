@@ -71,7 +71,6 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 	}
 
 	std::string name, description;
-	bool unlocked;
 	if (equippedWidget->mouseOverSlot(name, description)) {
 		hoverBox->setInfo(name, description);
 		hoverBox->draw(shaderProgram);
@@ -81,17 +80,17 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 }
 
 void UachievementWidget::addedToViewport() {
-	int achievementsUnlocked = 0;
+	float achievementsUnlocked = 0.f;
 	for (FsaveAchievementStruct achievement : SaveData::saveData.achievementList) {
 		if (achievement.unlocked)
 			achievementsUnlocked++;
 	}
 
-	int totalAchievements = SaveData::saveData.achievementList.size();
+	float totalAchievements = static_cast<float>(SaveData::saveData.achievementList.size());
 
 	// displays 1 decimal or 0 if whole number
 	std::string percentAchievements;
-	float percent = double(achievementsUnlocked) / double(totalAchievements) * 100.f;
+	float percent = achievementsUnlocked / totalAchievements * 100.f;
 	if (percent == std::floor(percent))
 		percentAchievements = std::format("{}", static_cast<int>(percent));
 	else

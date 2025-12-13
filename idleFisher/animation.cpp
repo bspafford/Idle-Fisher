@@ -11,15 +11,14 @@
 #include "debugger.h"
 
 animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc) {
-	this->cellWidth = cellWidth;
-	this->cellHeight = cellHeight;
+	this->cellSize = { static_cast<float>(cellWidth), static_cast<float>(cellHeight) };
 	this->animData = animData;
 	this->loc = loc;
 	this->useWorldLoc = useWorldLoc;
 
 	spriteSheet = std::make_shared<Image>("./images/" + spriteSheetPath, loc, useWorldLoc);
-	cellWidthNum = spriteSheet->w / cellWidth;
-	cellHeightNum = spriteSheet->h / cellHeight;
+	cellNum.x = round(spriteSheet->w / static_cast<float>(cellWidth));
+	cellNum.y = round(spriteSheet->h / static_cast<float>(cellHeight));
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
@@ -28,8 +27,7 @@ animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight,
 }
 
 animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc) {
-	this->cellWidth = cellWidth;
-	this->cellHeight = cellHeight;
+	this->cellSize = { static_cast<float>(cellWidth), static_cast<float>(cellHeight) };
 	this->animData = animData;
 	this->loc = loc;
 	this->useWorldLoc = useWorldLoc;
@@ -37,8 +35,8 @@ animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int c
 	std::shared_ptr<Rect> source = std::make_shared<Rect>(0.f, 0.f, spriteSheetImg->w, spriteSheetImg->h);
 	spriteSheet = std::make_shared<Image>(spriteSheetImg, source, loc, useWorldLoc); // create own instance of image
 
-	cellWidthNum = spriteSheet->w / cellWidth;
-	cellHeightNum = spriteSheet->h / cellHeight;
+	cellNum.x = round(spriteSheet->w / static_cast<float>(cellWidth));
+	cellNum.y = round(spriteSheet->h / static_cast<float>(cellHeight));
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
@@ -75,10 +73,10 @@ void animation::start() {
 	bStopped = false;
 	bFinished = false;
 	if (animTimer)
-		animTimer->start(animData[currAnim].duration);
+		animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
 
 	// set source
-	source = std::make_shared<Rect>(currFrameLoc.x * cellWidth, currFrameLoc.y * cellHeight, float(cellWidth), float(cellHeight));
+	source = std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y);
 	spriteSheet->setSourceRect(source);
 
 	if (frameCallback_)
@@ -110,10 +108,10 @@ void animation::setAnimation(std::string name, bool instantUpdate) {
 
 	currFrameLoc = animData[currAnim].start + vector{ float(frameNum), 0 };
 
-	if (currFrameLoc.x > cellWidthNum - 1)
+	if (currFrameLoc.x > cellNum.x - 1)
 		currFrameLoc = animData[currAnim].start;
 
-	source = std::make_shared<Rect>(currFrameLoc.x * cellWidth, currFrameLoc.y * cellHeight, float(cellWidth), float(cellHeight));
+	source = std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y);
 	spriteSheet->setSourceRect(source);
 
 	// updates loc, so it isn't offset by the change in source
@@ -150,11 +148,11 @@ void animation::animCallBack() {
 	if (eventCallback_ && calcFrameDistance(true) == eventFrameNum - 1)
 		eventCallback_();
 
-	source = std::make_shared<Rect>(currFrameLoc.x * cellWidth, currFrameLoc.y * cellHeight, float(cellWidth), float(cellHeight));
+	source = std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y);
 	spriteSheet->setSourceRect(source);
 
 	if (!bFinished && animTimer)
-		animTimer->start(animData[currAnim].duration);
+		animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
 }
 
 void animation::addFinishedCallback(void (*callback) ()) {
@@ -210,4 +208,12 @@ void animation::playQueuedStart() {
 
 void animation::shouldntDeleteTimer(bool dontDelete) {
 	animTimer->shouldntDelete(dontDelete);
+}
+
+vector animation::GetCellSize() {
+	return cellSize;
+}
+
+vector animation::GetCellNum() {
+	return cellNum;
 }

@@ -82,7 +82,7 @@ glm::vec3 scaleIsometricMovement3D(const glm::vec3& inputXZ) {
 }
 
 void Camera::Update(GLFWwindow* window, float deltaTime) {
-	glm::vec2 animCenter = glm::vec2(Acharacter::anim->cellWidth / 2.f / stuff::pixelSize, Acharacter::anim->cellHeight / stuff::pixelSize);
+	glm::vec2 animCenter = glm::vec2(Acharacter::anim->GetCellSize().x / 2.f / stuff::pixelSize, Acharacter::anim->GetCellSize().y / stuff::pixelSize);
 	glm::vec2 relLoc = glm::vec2(SaveData::saveData.playerLoc.x / 10.f * stuff::pixelSize, SaveData::saveData.playerLoc.y / 5.f * stuff::pixelSize) + animCenter;
 	glm::vec3 camLoc = math::convertFromRelativeCoords(relLoc);
 	camLoc.y = 50;
@@ -97,7 +97,7 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime) {
 
 	glm::vec3 move = glm::vec3(0);
 
-	float sqrt2over2 = 0.707106781187;
+	float sqrt2over2 = 0.707106781187f;
 
 	// Handles key inputs
 	if (Input::getKeyHeld(GLFW_KEY_W)) {
@@ -180,7 +180,7 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime) {
 }
 
 void Camera::printCamRot() {
-	float radToDeg = 180 / 3.1415926;
+	float radToDeg = 180.f / 3.1415926f;
 
 	float yaw = atan2(cameraMatrix[0][1], cameraMatrix[0][0]) * radToDeg;
 	float pitch = atan2(-cameraMatrix[0][2], sqrt(cameraMatrix[0][0] * cameraMatrix[0][0] + cameraMatrix[0][1] * cameraMatrix[0][1])) * radToDeg;

@@ -12,7 +12,7 @@ npc::npc(vector loc) {
 	this->loc = loc;
 
 	std::unordered_map<std::string, animDataStruct> exclamationPointAnimData;
-	exclamationPointAnimData.insert({ "anim", {{0, 0}, {4, 0}, .1, true} });
+	exclamationPointAnimData.insert({ "anim", animDataStruct({0, 0}, {4, 0}, true) });
 	exclamationPointAnim = std::make_unique<animation>("widget/npcButtons/exclamationPoint.png", 5, 13, exclamationPointAnimData, true, loc);
 	exclamationPointAnim->setAnimation("anim");
 	exclamationPointAnim->start();
@@ -28,17 +28,6 @@ npc::~npc() {
 }
 
 void npc::setup(std::string npcName) {
-	std::unordered_map<std::string, vector> npcCellSizes;
-	npcCellSizes.insert({ "atm", { 28, 47 } });
-	npcCellSizes.insert({ "decorator", { 29, 54 } });
-	npcCellSizes.insert({ "fisherman", { 34, 54 } });
-	npcCellSizes.insert({ "mechanic", { 32, 58 } });
-	npcCellSizes.insert({ "merchant", { 19, 49 } });
-	npcCellSizes.insert({ "petSeller", { 36, 51 } });
-	npcCellSizes.insert({ "sailor", { 21, 49 } });
-	npcCellSizes.insert({ "scuba", { 18, 45 } });
-	npcCellSizes.insert({ "fishGod", { 514, 479 } });
-
 	// calc frame num
 	if (npcName != "fishTransporter") {
 		widget = std::make_unique<NPCwidget>(nullptr, this, npcName);
@@ -46,14 +35,14 @@ void npc::setup(std::string npcName) {
 		int fameNum = textureManager::getTexture("./images/npc/" + npcName + ".png")->w / npcCellSizes[npcName].x - 1;
 
 		std::unordered_map<std::string, animDataStruct> npcAnimData;
-		npcAnimData.insert({ "idle", {{0, 0}, {float(fameNum), 0}, .1, true} });
+		npcAnimData.insert({ "idle", animDataStruct({0, 0}, {float(fameNum), 0}, true) });
 		vector cellSize = npcCellSizes[npcName];
 		npcAnim = std::make_unique<animation>("npc/" + npcName + ".png", cellSize.x, cellSize.y, npcAnimData, true, loc);
 
 		npcAnim->spriteSheet->setUseAlpha(true);
 		npcAnim->setAnimation("idle");
 		npcAnim->start();
-		npcAnim->currFrameLoc.x = round(math::randRange(0, fameNum));
+		npcAnim->currFrameLoc.x = round(math::randRange(0.f, fameNum));
 
 		setLoc(loc);
 		setupCollision();
@@ -86,8 +75,8 @@ void npc::draw(Shader* shaderProgram) {
 void npc::setLoc(vector loc) {
 	this->loc = loc;
 
-	npcAnim->setLoc(loc - vector{ npcAnim->cellWidth / 2.f, float(npcAnim->cellHeight) });
-	exclamationPointAnim->setLoc(npcAnim->getLoc() + vector{npcAnim->cellWidth / 2.f - exclamationPointAnim->cellWidth / 2, float(npcAnim->cellHeight + 1 * stuff::pixelSize) });
+	npcAnim->setLoc(loc - npcAnim->GetCellSize() / vector{ 2.f, 1.f });
+	exclamationPointAnim->setLoc(npcAnim->getLoc() + vector{npcAnim->GetCellSize().x / 2.f - exclamationPointAnim->GetCellSize().x / 2, float(npcAnim->GetCellSize().y + 1 * stuff::pixelSize)});
 }
 
 void npc::click() {
@@ -103,14 +92,14 @@ bool npc::isDiscovered() {
 bool npc::calcIfPlayerInfront() {
 	if (npcAnim) {
 		vector charLoc = Acharacter::getCharLoc();
-		vector npcLoc = loc - vector{ 0, npcAnim->cellHeight * 1.f };
+		vector npcLoc = loc - vector{ 0, npcAnim->GetCellSize().y * 1.f };
 		return (charLoc.y < npcLoc.y);
 	}
 	return false;
 }
 
 vector npc::getOffset() {
-	return loc - vector{ 0, float(npcAnim->cellHeight) };
+	return loc - vector{ 0, float(npcAnim->GetCellSize().y) };
 }
 
 std::weak_ptr<Image> npc::getCharImg() {
