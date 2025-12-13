@@ -37,8 +37,8 @@ public:
 	std::unique_ptr<URectangle> yellowRect;
 	std::unique_ptr<URectangle> backgroundRect;
 
-	int comboStart = 0, comboEnd = 0;
-	int comboLoc = 0;
+	float comboStart = 0, comboEnd = 0;
+	float comboLoc = 0;
 
 	bool visible = false;
 

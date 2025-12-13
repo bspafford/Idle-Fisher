@@ -6,7 +6,6 @@
 class Eshake {
 public:
 	Eshake(float shakeDist);
-	void updateShake(vector loc);
 	void setShakeDist(float shakeDist);
 	vector getShakeLoc();
 	void start(vector loc);
@@ -16,7 +15,6 @@ private:
 	void setShakeLoc();
 
 	float shakeDist;
-	vector startLoc;
 	vector shakeLoc;
 
 	std::unique_ptr<timer> shakeTimer;

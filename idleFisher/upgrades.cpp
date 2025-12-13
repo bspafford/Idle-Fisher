@@ -149,7 +149,7 @@ double upgrades::calcFishComboSpeed(FfishData currFish, int quality) {
 	// look at fishing rod
 	// look at fish speed
 	// should clamp incase the player goes back, so the fish is still able to move incase too overpowered
-	double tempSpeed = 1.0 / (upgrades::calcFishingRodPower() / 10.0) * static_cast<double>(currFish.fishSpeed);
+	double tempSpeed = 1.0 / (upgrades::calcFishingRodPower() / 5.0) * static_cast<double>(currFish.fishSpeed);
 	tempSpeed *= (baitBuffs::increaseFishSpeed() + 1.0) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[0] + 1.0) * (baitBuffs::increaseFishSpeedCatchMoreFish()[0] + 1.0); // debuff
 	tempSpeed *= (1.0 - petBuffs::decreaseFishComboSpeed()) * (1.0 - baitBuffs::decreaseFishMoveSpeed()) * (1.0 + (0.1 * quality)); // buff
 
@@ -162,6 +162,7 @@ double upgrades::calcMaxComboBounce() {
 }
 
 float upgrades::calcMaxFishingInterval() {
+	return 0.0;
 	double baseVal = 10; // temp
 	//return (baseVal * Acharacter::fishTimeMultiplier) - (baseVal * petBuffs::decreaseFishingIntervals());
 	baseVal *= baitBuffs::increaseFishCaughtIncraseFishInterval()[1] + 1; // debuff base value
@@ -171,6 +172,7 @@ float upgrades::calcMaxFishingInterval() {
 }
 
 float upgrades::calcMinFishingInterval() {
+	return 0.0;
 	double baseVal = 5; // temp
 	//return (baseVal * Acharacter::fishTimeMultiplier) - (baseVal * petBuffs::decreaseFishingIntervals());
 	baseVal *= baitBuffs::increaseFishCaughtIncraseFishInterval()[1] + 1; // debuff base value
