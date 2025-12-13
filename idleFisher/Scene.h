@@ -43,10 +43,6 @@ private:
 	static inline std::unique_ptr<LoadingScreen> loadingScreen;
 
 	static void finishedLoading();
-	static inline std::vector<Image*> gpuImages;
-	static inline std::vector<animation*> gpuAnimations;
-	static inline std::vector<text*> gpuText;
-	static inline std::vector<URectangle*> gpuRect;
 
 	static inline std::string worldName;
 	static inline int worldChangeLoc;

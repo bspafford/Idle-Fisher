@@ -29,7 +29,7 @@ public:
 	Image(std::shared_ptr<Image> image, std::shared_ptr<Rect>, vector loc, bool useWorldPos);
 	~Image();
 
-	void loadGPU();
+	void LoadGPU();
 
 	void draw(Shader* shaderProgram);
 	void setSourceRect(std::shared_ptr<Rect> rect);

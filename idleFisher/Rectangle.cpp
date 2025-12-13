@@ -14,7 +14,7 @@ URectangle::URectangle(vector loc, vector size, bool useWorldLoc, glm::vec4 colo
 	GPULoadCollector::add(this);
 }
 
-void URectangle::loadGPU() {
+void URectangle::LoadGPU() {
 	float vertices[] = {
 		// Positions // Texture Coords
 		size.x + loc.x, loc.y,           // Bottom-right

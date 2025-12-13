@@ -23,6 +23,7 @@ class text : public widget {
 public:
 	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, TextAlign alignment = TEXT_ALIGN_LEFT);
 	~text();
+	void LoadGPU();
 	void setText(std::string text);
 	void draw(Shader* shaderProgram);
 	// void setAlignment(std::string alignment);
@@ -46,9 +47,6 @@ public:
 
 	void updatePositionsList();
 
-	// deletes VAO, VBO, EBO, TEXTURE, FBO
-	void deleteObjects();
-
 	// used when changing the font from pixel to normal or vice versa
 	static void changeFontAll();
 	void changeFont();
@@ -56,11 +54,14 @@ public:
 
 	void makeTextTexture();
 private:
+	void UpdateGPUData(float positions[]);
+
 	vector getFBOSize();
 
 	static inline std::vector<text*> instances;
 
 	std::string textString;
+	std::string futureTextString; // keeps track if text was changed while on another thread
 
 	// static list of text imgs
 	std::vector<std::unique_ptr<Image>> letters;
@@ -85,7 +86,7 @@ private:
 	// text fbo
 	GLuint fbo = 0;
 	GLuint textTexture = 0;
-	vector fboSize;
+	vector fboSize = { 1, 1 };
 
 	void drawTexture(Shader* shaderProgram, GLuint textureID);
 	GLuint VBOId = 0;

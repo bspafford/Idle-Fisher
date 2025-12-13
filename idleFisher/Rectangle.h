@@ -10,7 +10,7 @@ public:
 	URectangle(vector loc, vector size, bool useWorldLoc, glm::vec4 color = glm::vec4(1.f));
 	~URectangle();
 
-	void loadGPU();
+	void LoadGPU();
 
 	void draw(Shader* shaderProgram);
 	void setColor(glm::vec4 color);

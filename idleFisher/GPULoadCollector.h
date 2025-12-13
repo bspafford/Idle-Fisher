@@ -11,7 +11,7 @@
 class GPULoadCollector {
 public:
 	static void open() {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		imagesToUpload.clear();
 		animationsToUpload.clear();
 		textToUpload.clear();
@@ -20,7 +20,7 @@ public:
 	}
 
 	static void setMainThread(std::thread::id mainThread) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		mainThreadId = mainThread;
 	}
 
@@ -29,35 +29,37 @@ public:
 	}
 
 	static void add(Image* img) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (active && !isOnMainThread())
 			imagesToUpload.push_back(img);
 		else
-			img->loadGPU();
+			img->LoadGPU();
 	}
 
 	static void add(animation* anim) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (active && !isOnMainThread())
 			animationsToUpload.push_back(anim);
 	}
 
 	static void add(text* text) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (active && !isOnMainThread())
 			textToUpload.push_back(text);
+		else
+			text->LoadGPU();
 	}
 
 	static void add(URectangle* rect) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (active && !isOnMainThread())
 			rectToUpload.push_back(rect);
 		else
-			rect->loadGPU();
+			rect->LoadGPU();
 	}
 
 	static void remove(Image* img) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		// list shouldn't contain anything
 		if (!active)
 			return;
@@ -68,7 +70,7 @@ public:
 	}
 
 	static void remove(animation* anim) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		// list shouldn't contain anything
 		if (!active)
 			return;
@@ -79,7 +81,7 @@ public:
 	}
 
 	static void remove(text* text) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		// list shouldn't contain anything
 		if (!active)
 			return;
@@ -90,7 +92,7 @@ public:
 	}
 
 	static void remove(URectangle* rect) {
-		std::lock_guard<std::mutex> lock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		// list shouldn't contain anything
 		if (!active)
 			return;
@@ -100,13 +102,26 @@ public:
 			rectToUpload.erase(it);
 	}
 
-	static void close(std::vector<Image*>& images, std::vector<animation*>& animations, std::vector<text*>& text, std::vector<URectangle*>& rect) {
-		std::lock_guard<std::mutex> lock(mutex);
+	static void close() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		active = false;
-		images = imagesToUpload;
-		animations = animationsToUpload;
-		text = textToUpload;
-		rect = rectToUpload;
+	}
+
+	static void LoadAllGPUData() {
+		for (int i = 0; i < imagesToUpload.size(); i++) {
+			imagesToUpload[i]->LoadGPU();
+		}
+		for (int i = 0; i < animationsToUpload.size(); i++) {
+			animationsToUpload[i]->setQueuedAnim();
+			animationsToUpload[i]->playQueuedStart();
+		}
+		for (int i = 0; i < textToUpload.size(); i++) {
+			textToUpload[i]->LoadGPU();
+		}
+		for (int i = 0; i < rectToUpload.size(); i++) {
+			rectToUpload[i]->LoadGPU();
+			rectToUpload[i]->updatePositionsList();
+		}
 
 		imagesToUpload.clear();
 		animationsToUpload.clear();
@@ -120,6 +135,6 @@ private:
 	static inline std::vector<text*> textToUpload;
 	static inline std::vector<URectangle*> rectToUpload;
 	static inline bool active = false;
-	static inline std::mutex mutex;
+	static inline std::recursive_mutex mutex;
 	static inline std::thread::id mainThreadId;
 };

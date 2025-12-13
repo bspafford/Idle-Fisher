@@ -21,7 +21,8 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 	this->useWorldPos = useWorldPos;
 
 	loadTextImg();
-	setText(text);
+
+	futureTextString = text;
 
 	GPULoadCollector::add(this);
 }
@@ -31,12 +32,67 @@ text::~text() {
 	if (it != instances.end())
 		instances.erase(it);
 
-	deleteObjects();
+	if (currVAO)
+		currVAO->Delete();
+	if (currEBO)
+		currEBO->Delete();
+
+	glDeleteBuffers(1, &VBOId);
+	glDeleteTextures(1, &textTexture);
+	glDeleteFramebuffers(1, &fbo);
+
+	VBOId = 0;
+	textTexture = 0;
+	fbo = 0;
 
 	letters.clear();
 	textInfo.clear();
 
 	GPULoadCollector::remove(this);
+}
+
+void text::LoadGPU() {
+	std::vector<float> positions(16, 0);
+
+	std::vector<GLuint> indices = {
+		0, 1, 3, // First triangle
+		3, 1, 2  // Second triangle
+	};
+	currVAO = std::make_unique<VAO>();
+	currVAO->Bind();
+	currEBO = std::make_unique<EBO>(indices);
+
+	glGenBuffers(1, &VBOId);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Create Texture
+	glGenTextures(1, &textTexture);
+	glBindTexture(GL_TEXTURE_2D, textTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboSize.x, fboSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	// Create FBO
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "FBO is incomplete!" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	currVAO->Unbind();
+
+	if (futureTextString != "")
+		setText(futureTextString);
 }
 
 void text::changeFontAll() {
@@ -196,6 +252,14 @@ void text::makeText(int i, std::string text, vector &offset) {
 }
 
 void text::setText(std::string text) {
+	// keeps track if text was updated while not on main thread
+	if (!GPULoadCollector::isOnMainThread()) {
+		futureTextString = text;
+		return;
+	}
+
+	futureTextString = "";
+
 	if (text == textString)
 		return;
 
@@ -242,26 +306,9 @@ void text::setText(std::string text) {
 	}
 }
 
-void text::deleteObjects() {
-	if (currVAO)
-		currVAO->Delete();
-	if (currEBO)
-		currEBO->Delete();
-
-	glDeleteBuffers(1, &VBOId);
-	glDeleteTextures(1, &textTexture);
-	glDeleteFramebuffers(1, &fbo);
-
-	VBOId = 0;
-	textTexture = 0;
-	fbo = 0;
-}
-
 void text::makeTextTexture() {
 	if (!GPULoadCollector::isOnMainThread())
 		return;
-
-	deleteObjects();
 
 	if (letters.size() == 0)
 		return;
@@ -292,47 +339,14 @@ void text::makeTextTexture() {
 		floor(scaledLoc.x),				floor(scaledLoc.y),				0.f, 1.f	// Bottom-left
 	};
 
-	std::vector<GLuint> indices = {
-		0, 1, 3, // First triangle
-		3, 1, 2  // Second triangle
-	};
+	UpdateGPUData(positions);
 
-	currVAO = std::make_unique<VAO>();
-	currVAO->Bind();
-
-	glGenBuffers(1, &VBOId);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-
-	currEBO = std::make_unique<EBO>(indices);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	//currVBO->Unbind();
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Create Texture
-	glGenTextures(1, &textTexture);
-	glBindTexture(GL_TEXTURE_2D, textTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboSize.x, fboSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	// Create FBO
-	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glViewport(0, 0, fboSize.x, fboSize.y);
 	// puts scissor size to fbo and saves previous size
 	GLint scissorBox[4];
 	glGetIntegerv(GL_SCISSOR_BOX, scissorBox);
 	glScissor(0, 0, fboSize.x, fboSize.y);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textTexture, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "FBO is incomplete!" << std::endl;
-	}
 
 	// Draws to the FBO
 	for (int i = 0; i < letters.size(); i++)
@@ -357,6 +371,26 @@ void text::makeTextTexture() {
 
 	// restores projection
 	Main::twoDShader->setMat4("projection", currProjection);
+}
+
+void text::UpdateGPUData(float positions[]) {
+	currVAO->Bind();
+	glBindBuffer(GL_ARRAY_BUFFER, VBOId);
+
+	// updates the tex coords
+	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	if (ptr) {
+		// round positions list
+		for (int i = 0; i < 16; i++)
+			positions[i] = floorf(positions[i]);
+		memcpy(ptr, positions, 16 * sizeof(float));
+	}
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	// resize the texture
+	glBindTexture(GL_TEXTURE_2D, textTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboSize.x, fboSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 }
 
 void text::draw(Shader* shaderProgram) {
@@ -507,8 +541,6 @@ void text::drawTexture(Shader* shaderProgram, GLuint textureID) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	currVAO->Bind();
-
-	std::cout << "fboSize: " << fboSize << "\n";
 
 	shaderProgram->setInt("useWorldPos", useWorldPos);
 	shaderProgram->setVec4("color", colorMod);

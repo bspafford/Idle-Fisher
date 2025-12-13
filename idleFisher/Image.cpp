@@ -99,7 +99,7 @@ Image::~Image() {
 	GPULoadCollector::remove(this);
 }
 
-void Image::loadGPU() {
+void Image::LoadGPU() {
 	if (calledLoadGPU)
 		return;
 

@@ -95,26 +95,11 @@ void Scene::openLevelThread(std::string worldName, int worldChangeLoc, bool over
 	}
 	
 	AStar::init();
-	GPULoadCollector::close(gpuImages, gpuAnimations, gpuText, gpuRect);
 	loadingDone = true;
 }
 
 void Scene::finishedLoading() {
-	for (int i = 0; i < gpuImages.size(); i++) {
-		gpuImages[i]->loadGPU();
-	}
-	for (int i = 0; i < gpuAnimations.size(); i++) {
-		gpuAnimations[i]->setQueuedAnim();
-		gpuAnimations[i]->playQueuedStart();
-	}
-	for (int i = 0; i < gpuText.size(); i++) {
-		gpuText[i]->makeTextTexture();
-		gpuText[i]->updatePositionsList();
-	}
-	for (int i = 0; i < gpuRect.size(); i++) {
-		gpuRect[i]->loadGPU();
-		gpuRect[i]->updatePositionsList();
-	}
+	GPULoadCollector::LoadAllGPUData();
 	if (world::currWorld)
 		world::currWorld->start();
 	if (titleScreen::currTitleScreen)
