@@ -1,5 +1,5 @@
 #include "blurBox.h"
-#include "main.h"
+#include "camera.h"
 
 BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : widget(parent) {
 	instances.push_back(this);
@@ -91,7 +91,7 @@ void BlurBox::draw(Shader* shader) {
 	BindShader();
 	blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
 	blurShader->setInt("radius", blurStrength);
-	blurShader->setMat4("projection", Main::camera->getProjectionMat());
+	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
 	blurShader->setInt("useProjection", true);
 
 	UpdateVertices();

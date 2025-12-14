@@ -7,7 +7,14 @@
 
 #include "debugger.h"
 
+Camera* GetMainCamera() {
+	return Camera::cameraPtr;
+}
+
 Camera::Camera(int width, int height, glm::vec3 position) {
+	if (!cameraPtr)
+		cameraPtr = this;
+
 	// Define a starting orientation vector (pointing forward)
 	Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 

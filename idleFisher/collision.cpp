@@ -125,7 +125,7 @@ void collision::getCollisionObjects() {
 void collision::removeCollisionObject(Fcollision* collision) {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	if (!Main::running)
+	if (!Main::IsRunning())
 		return;
 
 	auto it = std::find(allCollision.begin(), allCollision.end(), collision);
@@ -560,7 +560,7 @@ void collision::testCollisions(Fcollision* playerCol, std::vector<Fcollision*> a
 		// player col shouldn't exist any more, can replace it by converting the cirlce to a square
 		vector normal = { 0, 0 };
 		float depth = 0;
-		if (Main::character->getCanMove() && (Main::character->moveDir.x != 0 || Main::character->moveDir.y != 0)) {
+		if (GetCharacter()->getCanMove() && (GetCharacter()->moveDir.x != 0 || GetCharacter()->moveDir.y != 0)) {
 			//std::cout << allCollision[i]->points[0] << " | " << allCollision[i]->points[1] << " | " << allCollision[i]->points[2] << " | " << allCollision[i]->points[3] << " | " << std::endl;
 			//std::cout << "iscloseenough: " << isCloseEnough(playerCol, allCollision[i]) << ", i: " << i << std::endl;
 			if (isCloseEnough(playerCol, allCollision[i])) {
@@ -582,7 +582,7 @@ void collision::testPlayerCollision(Fcollision* playerCol, std::vector<Fcollisio
 	std::lock_guard<std::mutex> lock(mutex);
 
 	temp.clear();
-	if (!Main::character->getCanMove())
+	if (!GetCharacter()->getCanMove())
 		return;
 
 	for (int i = 0; i < allCollision.size(); i++) {
@@ -681,7 +681,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	const int maxIterations = 2;
 
 	float timeRemaining = 1.0f;
-	vector v = math::normalize(move) * Main::character->speed * deltaTime;
+	vector v = math::normalize(move) * GetCharacter()->speed * deltaTime;
 
 	for (int iteration = 0; iteration < maxIterations && timeRemaining > 0.0f; ++iteration) {
 		float minTOI = timeRemaining;

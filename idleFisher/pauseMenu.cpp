@@ -88,5 +88,5 @@ void UpauseMenu::exitToMenu() {
 }
 
 void UpauseMenu::exitToDesktop() {
-	glfwSetWindowShouldClose(Main::window, true);
+	glfwSetWindowShouldClose(Main::GetWindow(), true);
 }

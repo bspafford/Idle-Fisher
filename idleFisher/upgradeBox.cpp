@@ -380,7 +380,7 @@ void UupgradeBox::spawnPet() {
 
 void UupgradeBox::equipBait() {
 	if (SaveData::saveData.equippedBait.id == -1 || baitStruct->id != SaveData::saveData.equippedBait.id)
-		Main::character->equipBait(baitStruct);
+		GetCharacter()->equipBait(baitStruct);
 	else {
 		// unequip bait
 		SaveData::saveData.equippedBait.id = -1;

@@ -33,7 +33,14 @@
 
 #include "debugger.h"
 
+Acharacter* GetCharacter() {
+	return Acharacter::characterPtr;
+}
+
 Acharacter::Acharacter() {
+	if (!characterPtr)
+		characterPtr = this;
+
 	float duration = 0.13f;
 	std::unordered_map<std::string, animDataStruct> animData;
 
@@ -208,7 +215,7 @@ void Acharacter::setPlayerColPoints() {
 void Acharacter::draw(Shader* shaderProgram) {
 	// if bobber above player, render behind
 	bool bobberBehind = false;
-	if (Main::character->tempBobberLoc.y > Main::character->getCharScreenLoc().y) {
+	if (tempBobberLoc.y > getCharScreenLoc().y) {
 		bobberBehind = true;
 		drawFishingLine(shaderProgram);
 	}
@@ -287,7 +294,6 @@ void Acharacter::leftClick() {
 
 		// face the character the correct direction
 		// start fishing animation
-		// temp
 		vector fishRodPoint = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
 		vector diff = math::normalize(bobberLoc - fishRodPoint);
 		float angle = atan2(diff.y, diff.x) * 180.f / M_PI;
@@ -308,7 +314,7 @@ void Acharacter::leftClick() {
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->visible) {
 		// catch fish
-		if (upgrades::calcComboUnlocked()) {
+		if (upgrades::IsComboUnlocked()) {
 			int combo = Main::fishComboWidget->click(Acharacter::isFishing);
 			switch (combo) {
 			case 0:
@@ -316,10 +322,8 @@ void Acharacter::leftClick() {
 					comboNum = upgrades::calcComboStart(upgrades::calcComboMax());
 				break;
 			case 2:
-				if (comboUnlocked) {
-					double comboMax = upgrades::calcComboMax();
-					comboNum = math::clamp(comboNum + upgrades::calcComboIncrease(comboMax), 1, comboMax);
-				}
+				double comboMax = upgrades::calcComboMax();
+				comboNum = math::clamp(comboNum + upgrades::calcComboIncrease(comboMax), 1, comboMax);
 				break;
 			}
 
@@ -482,7 +486,6 @@ void Acharacter::stopFishing() {
 	// catchTimerGoing = false;
 	fishingTimer->stop();
 
-	Main::fishComboWidget->hitWallNum = 0;
 	Main::fishComboWidget->fishLoc = 0;
 	Main::fishComboWidget->visible = false;
 	Main::fishComboWidget->fishMoveBack = false;
@@ -556,22 +559,6 @@ void Acharacter::setCanMove(bool move) {
 
 bool Acharacter::getCanMove() {
 	return canMove;
-}
-
-// failed to catch
-void Acharacter::comboExceeded() {
-	comboNum = upgrades::calcComboStart(upgrades::calcComboMax());
-	Main::comboWidget->showComboText();
-	Main::comboWidget->spawnComboNumber(comboNum);
-
-	Main::fishComboWidget->visible = false;
-	catchTimer = math::randRange(upgrades::calcMinFishingInterval(), upgrades::calcMaxFishingInterval());
-	fishingTimer->start(catchTimer);
-
-	anim->setAnimation("pullSE");
-	anim->start();
-	fishingRod->setAnimation("pullSE");
-	fishingRod->start();
 }
 
 // temp straight line to character
@@ -781,4 +768,12 @@ void Acharacter::equipFishingRod(FfishingRodStruct* fishingRod) {
 void Acharacter::equipBait(FbaitStruct* bait) {
 	SaveData::saveData.equippedBait = *bait;
 	Main::achievementWidget->updateEquipmentWidget();
+}
+
+double Acharacter::GetCombo() {
+	return comboNum;
+}
+
+void Acharacter::IncreaseCombo(double comboChange) {
+	comboNum = math::clamp(comboNum + comboChange, 0.0, upgrades::calcComboMax());
 }

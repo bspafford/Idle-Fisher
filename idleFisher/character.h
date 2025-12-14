@@ -45,7 +45,6 @@ public:
 	// fish stuff
 	FfishData calcFish(int& quality, int& fishSize);
 	std::vector<std::pair<int, double>> calcFishProbability(std::vector<FfishData> fishData);
-	void comboExceeded();
 
 	static inline std::unique_ptr<animation> anim;
 	std::unique_ptr<animation> fishingRod;
@@ -57,11 +56,6 @@ public:
 	FfishData currFish;
 	int currFishQuality;
 	int currFishSize;
-
-private:
-	bool canMove = true;
-public:
-	vector prevMove = { 1, -1 };
 
 	static inline std::unique_ptr<Image> bobberImg;
 	static inline std::unique_ptr<Image> bobberWaterOverlay;
@@ -97,9 +91,6 @@ public:
 	// stops player from moving if they start fishing
 	bool fishingStop = false;
 
-	double comboNum = 1;
-	// temp
-	bool comboUnlocked = true;
 	std::unique_ptr<timer> comboOvertimer;
 	void comboOvertimeFinished();
 
@@ -123,4 +114,20 @@ public:
 
 	void equipFishingRod(FfishingRodStruct* fishingRod);
 	void equipBait(FbaitStruct* bait);
+
+
+	double GetCombo();
+	// Can be a negative value
+	void IncreaseCombo(double comboChange);
+
+	friend Acharacter* GetCharacter(); // get a reference to the character
+
+private:
+	static inline Acharacter* characterPtr;
+
+	bool canMove = true;
+	vector prevMove = { 1, -1 };
+	double comboNum = 1;
 };
+
+Acharacter* GetCharacter();

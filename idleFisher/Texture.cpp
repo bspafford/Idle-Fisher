@@ -169,6 +169,6 @@ GLuint Texture::takeOpenSlot() {
 }
 
 void Texture::releaseSlot(GLuint slot) {
-	if (Main::running)
+	if (Main::IsRunning())
 		usedSlots[slot] = false;
 }

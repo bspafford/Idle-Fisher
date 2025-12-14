@@ -1,5 +1,4 @@
-#ifndef CAMERA_CLASS_H
-#define CAMERA_CLASS_H
+#pragma once
 
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
@@ -49,5 +48,11 @@ public:
 	void printCamRot();
 
 	void Update(GLFWwindow* window, float deltaTime);
+
+	friend Camera* GetMainCamera();
+
+private:
+	static inline Camera* cameraPtr;
 };
-#endif
+
+Camera* GetMainCamera();

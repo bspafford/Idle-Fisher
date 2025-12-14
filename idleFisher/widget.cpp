@@ -38,7 +38,7 @@ void widget::addToViewport(bool override) {
 
 		currWidget = this;
 		
-		Main::character->setCanMove(false);
+		GetCharacter()->setCanMove(false);
 	}
 
 	visible = true;
@@ -52,7 +52,7 @@ void widget::removeFromViewport() {
 		currWidget = nullptr;
 	}
 
-	Main::character->setCanMove(true);
+	GetCharacter()->setCanMove(true);
 
 	visible = false;
 }

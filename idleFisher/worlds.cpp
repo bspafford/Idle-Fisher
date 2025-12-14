@@ -116,7 +116,7 @@ void titleScreen::openWorld() {
 }
 
 void titleScreen::exit() {
-	glfwSetWindowShouldClose(Main::window, true);
+	glfwSetWindowShouldClose(Main::GetWindow(), true);
 }
 
 void titleScreen::draw(Shader* shaderProgram) {
@@ -182,7 +182,7 @@ void vaultWorld::draw(Shader* shaderProgram) {
 	AvaultPlacedItems::draw(shaderProgram);
 	decorator->draw(shaderProgram);
 
-	Main::character->draw(shaderProgram);
+	GetCharacter()->draw(shaderProgram);
 
 	houseDoor->draw(shaderProgram);
 	decorator->calcIfPlayerInfront();
@@ -246,7 +246,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 
 	shaderProgram->Activate();
 	
-	charMoveDir = Main::character->moveDir;
+	charMoveDir = GetCharacter()->moveDir;
 
 	//rebirthWorldImg->draw(shaderProgram);
 
@@ -255,7 +255,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 
 	for (int i = 0; i < waterRippleList.size(); i++)
 		waterRippleList[i]->draw(shaderProgram);
-	Main::character->draw(shaderProgram);
+	GetCharacter()->draw(shaderProgram);
 
 	removeAnim();
 
@@ -265,7 +265,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 		waterTimer->start(.13f * 3.f);
 	}
 
-	charPrevMoveDir = Main::character->moveDir;
+	charPrevMoveDir = GetCharacter()->moveDir;
 }
 
 void rebirthWorld::addAnim() {
@@ -275,7 +275,7 @@ void rebirthWorld::addAnim() {
 	waterRipples->setAnimation("anim");
 	waterRipples->start();
 	waterRippleList.push_back(waterRipples);
-	if (math::length(Main::character->moveDir) != 0)
+	if (math::length(GetCharacter()->moveDir) != 0)
 		waterTimer->start(.13f * 3.f);
 	else
 		waterTimer->start(.13f * 6.f);
@@ -359,7 +359,7 @@ void world::start() {
 	setupAutoFishers();
 
 	// load idle profits
-	Main::loadIdleProfits();
+	loadIdleProfits();
 	if (autoFisherList.size() > 0 && SaveData::saveData.mechanicStruct[0].unlocked) { // if has atleast 1 autofisher and has fish transporter
 		Main::idleProfitWidget->addToViewport(true);
 	}
@@ -370,6 +370,18 @@ void world::start() {
 	while ((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "OpenGL Error: " << err << std::endl;
 	}
+}
+
+void world::loadIdleProfits() {
+	if (!currWorld)
+		return;
+	
+	float timeDiff = static_cast<float>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
+
+	if (currWorld->fishTransporter)
+		currWorld->fishTransporter->calcIdleProfits(timeDiff);
+	if (currWorld->atm)
+		currWorld->atm->calcIdleProfits(timeDiff);
 }
 
 void world::spawnFishSchool() {
@@ -555,7 +567,7 @@ void world::sortDraw(Shader* shaderProgram) {
 	if (buyer && !buyer->inFrontPlayer)
 		buyer->draw(shaderProgram);
 
-	Main::character->draw(shaderProgram);
+	GetCharacter()->draw(shaderProgram);
 
 	if (buyer && buyer->inFrontPlayer)
 		buyer->draw(shaderProgram);

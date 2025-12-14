@@ -142,6 +142,8 @@ public:
 
 	void spawnFishTransporter();
 
+	void loadIdleProfits();
+
 	std::unique_ptr<Image> mapImg;
 	std::unique_ptr<animation> mapAnim;
 	std::vector<std::string> mapAnimList;

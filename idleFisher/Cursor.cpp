@@ -49,10 +49,10 @@ void Cursor::setCursorIcon(CursorType cursorName) {
 
 		cursor = glfwCreateCursor(&cursorImg, 0, 0);
 		if (cursor)
-			glfwSetCursor(Main::window, cursor);
+			glfwSetCursor(Main::GetWindow(), cursor);
 	} else {
 		GLFWcursor* handCursor = glfwCreateStandardCursor(cursorLookup[cursorName]);
-		glfwSetCursor(Main::window, handCursor);
+		glfwSetCursor(Main::GetWindow(), handCursor);
 	}
 }
 
@@ -65,5 +65,5 @@ void Cursor::setMouseOverWater(bool overWater) {
 }
 
 void Cursor::toggleCursor() {
-	glfwSetCursor(Main::window, NULL);
+	glfwSetCursor(Main::GetWindow(), NULL);
 }

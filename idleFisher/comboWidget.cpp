@@ -36,7 +36,7 @@ void UcomboWidget::spawnComboNumber(double comboNum) {
 
 	if (comboNum == 1.0)
 		hideComboText();
-	else if (Main::character->isFishing)
+	else if (GetCharacter()->isFishing)
 		showComboText();
 
 	prevComboNum = comboNum;
@@ -47,7 +47,7 @@ void UcomboWidget::setupLocs() {
 }
 
 void UcomboWidget::showComboText() {
-	if (Main::character->isFishing)
+	if (GetCharacter()->isFishing)
 		visible = true;
 }
 

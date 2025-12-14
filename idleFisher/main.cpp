@@ -534,17 +534,6 @@ double Main::calcRebirthCurrency() {
 	return floor(tempRebirthCurrency - SaveData::saveData.totalRebirthCurrency);
 }
 
-void Main::loadIdleProfits() {
-	float timeDiffNano = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
-	// in seconds
-	float timeDiff = timeDiffNano / 1000000000.f;
-
-	if (world::currWorld && world::currWorld->fishTransporter)
-		world::currWorld->fishTransporter->calcIdleProfits(timeDiff);
-	if (world::currWorld && world::currWorld->atm)
-		world::currWorld->atm->calcIdleProfits(timeDiff);
-}
-
 void Main::setTaskbarIcon(GLFWwindow* window) {
 	const int iconsNum = 2;
 	GLFWimage iconImgs[iconsNum];
@@ -558,4 +547,12 @@ void Main::setTaskbarIcon(GLFWwindow* window) {
 	// polls events to update the taskbar icon
 	// otherwise something like loading all the textures will cause too long of a hold
 	glfwPollEvents();
+}
+
+bool Main::IsRunning() {
+	return running;
+}
+
+GLFWwindow* Main::GetWindow() {
+	return window;
 }

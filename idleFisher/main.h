@@ -49,22 +49,11 @@ struct Fcollision;
 
 class Main {
 public:
+	int createWindow();
 	~Main();
 
-	int createWindow();
-	static inline GLFWwindow* window;
-	void Start();
-	void Update(float deltaTime);
-	void updateShaders(float deltaTime);
-	void draw3D(Shader* shaderProgram);
-	void draw(Shader* shaderProgram);
-	static void drawWidgets(Shader* shaderProgram);
-	void setTaskbarIcon(GLFWwindow* window);
-
-	static void windowSizeCallback(GLFWwindow* window, int width, int height);
-	static void checkInputs();
-
-	static inline bool running = true;
+	static bool IsRunning();
+	static GLFWwindow* GetWindow();
 
 	// shaders
 	static inline Shader* shaderProgram;
@@ -74,14 +63,6 @@ public:
 	static inline Shader* waterShader;
 	static inline Shader* twoDWaterShader;
 	static inline Shader* circleShader;
-
-	// 3d
-	std::unique_ptr<Model> house;
-	std::unique_ptr<Model> characterModel;
-	static inline std::unique_ptr<Camera> camera;
-	
-	// 2d
-	static void loadIdleProfits();
 
 	// widgets
 	void setupWidgets();
@@ -98,22 +79,42 @@ public:
 	static inline std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWiget;
 	static inline std::unique_ptr<UnewRecordWidget> newRecordWidget;
 
-public:
+	static inline std::unique_ptr<Apet> pet;
+
+	static void rebirth();
+	static double calcRebirthCurrency();
+
+	static inline std::vector<UpremiumBuffWidget*> premiumBuffList;
+
+	static void drawWidgets(Shader* shaderProgram);
+
+private:
+	static inline GLFWwindow* window;
+
+	void Start();
+	void Update(float deltaTime);
+	void updateShaders(float deltaTime);
+	void draw3D(Shader* shaderProgram);
+	void draw(Shader* shaderProgram);
+	void setTaskbarIcon(GLFWwindow* window);
+
+	static void windowSizeCallback(GLFWwindow* window, int width, int height);
+	static void checkInputs();
+
 	static inline std::unique_ptr<Acharacter> character;
 
-	static inline std::unique_ptr<Apet> pet;
+	bool renderShadows = false;
+
+	int fpsCap = 0; // 0 is not cap
+	static inline bool running = true;
 
 	// water stuff
 	static inline float waveSpeed = 0.03f;
 	static inline float waveFactor = 0;
 	static inline float tideFactor = 0;
 
-	bool renderShadows = false;
-
-	int fpsCap = 0; // 0 is not cap
-
-	static void rebirth();
-	static double calcRebirthCurrency();
-
-	static inline std::vector<UpremiumBuffWidget*> premiumBuffList;
+	// 3d
+	std::unique_ptr<Model> house;
+	std::unique_ptr<Model> characterModel;
+	static inline std::unique_ptr<Camera> camera;
 };

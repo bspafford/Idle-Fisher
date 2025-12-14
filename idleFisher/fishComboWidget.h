@@ -53,7 +53,6 @@ public:
 
 	// should move backwards or forwards
 	bool fishMoveBack = false;
-	int hitWallNum = 0;
 
 	std::unique_ptr<Eshake> shake;
 };

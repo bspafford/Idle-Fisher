@@ -127,7 +127,7 @@ double upgrades::calcYellowFishingUpgrade() {
 	return debuffVal * (saveUpgrade->upgradeLevel + 1) * (baitBuffs::increaseYellowGreen()[0] + 1) * (baitBuffs::increaseYellowDecreaseGreen()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[1] + 1);
 }
 
-bool upgrades::calcComboUnlocked() {
+bool upgrades::IsComboUnlocked() {
 	return getUpgrade("unlockComboWorld2")->upgradeLevel != 0;
 }
 
@@ -156,9 +156,8 @@ double upgrades::calcFishComboSpeed(FfishData currFish, int quality) {
 	return math::max(tempSpeed, 0.1); // returns the bigger number
 }
 
-double upgrades::calcMaxComboBounce() {
-	double baseVal = 2;
-	return baseVal * (baitBuffs::increaseFishComboBounce() + 1);
+double upgrades::calcComboDecreaseOnBounce() {
+	return 1;
 }
 
 float upgrades::calcMaxFishingInterval() {
@@ -196,7 +195,7 @@ double upgrades::calcFishCatchNum() {
 		goldenFishVal *= premium->getGoldenFish().multiplier * (petBuffs::increaseGoldenFishBuff() + 1);
 
 	double debuffVal = (1 - baitBuffs::decreaseFishIntervalDecraseFishCaught()[1]);
-	double buffVal = Main::character->comboNum * Acharacter::fishSchoolMultiplier * goldenFishVal * petBuffs::chanceToDoubleCatch() * (baitBuffs::increaseFishCaughtIncraseFishInterval()[0] + 1) * (baitBuffs::increaseFishSpeedCatchMoreFish()[1] + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[0] + 1);
+	double buffVal = GetCharacter()->GetCombo() * Acharacter::fishSchoolMultiplier * goldenFishVal * petBuffs::chanceToDoubleCatch() * (baitBuffs::increaseFishCaughtIncraseFishInterval()[0] + 1) * (baitBuffs::increaseFishSpeedCatchMoreFish()[1] + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[0] + 1);
 	return round(debuffVal * buffVal);
 }
 

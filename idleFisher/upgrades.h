@@ -37,14 +37,14 @@ public:
 
 	static double calcYellowFishingUpgrade();
 
-	static bool calcComboUnlocked();
+	static bool IsComboUnlocked();
 	static double calcComboMax();
 	static double calcComboIncrease(double comboMax);
 	static double calcComboStart(double comboMax);
 
 	// how many times the combo fish can go hit the walls until it goes away
 	static double calcFishComboSpeed(FfishData currFish, int quality);
-	static double calcMaxComboBounce();
+	static double calcComboDecreaseOnBounce();
 
 	// fishing rod
 	static float calcMaxFishingInterval();

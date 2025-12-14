@@ -21,8 +21,8 @@ Apet::~Apet() {
 void Apet::update(float deltaTime) {
 
 	// get if character is inside a valid spot
-	if (Astar->nodeFromWorldPoint(Main::character->getCharLoc())->walkable)
-		Astar->startPathFinding(loc, Main::character->getCharLoc());
+	if (Astar->nodeFromWorldPoint(GetCharacter()->getCharLoc())->walkable)
+		Astar->startPathFinding(loc, GetCharacter()->getCharLoc());
 	
 	if (Astar->followingPath) {
 		//vector diff = math::normalize(SaveData::saveData.playerLoc / stuff::pixelSize - loc) * deltaTime; // directly follow the player

@@ -51,7 +51,6 @@ void UfishComboWidget::Start(FfishData fish, int quality) {
 
 	visible = true;
 	fishMoveBack = false;
-	hitWallNum = 0;
 	fishLoc = 0;
 	setupRandomCombo();
 }
@@ -83,20 +82,22 @@ void UfishComboWidget::Update(float deltaTime) {
 
 	fishLoc += fishSpeed * deltaTime * num;
 
+	bool hitWall = false;
 	if (fishLoc >= 1 && !fishMoveBack) {
 		fishMoveBack = true;
-		hitWallNum++;
+		hitWall = true;
 	} else if (fishLoc <= 0 && fishMoveBack) {
 		fishMoveBack = false;
-		hitWallNum++;
+		hitWall = true;
 	}
 
-	if (hitWallNum > upgrades::calcMaxComboBounce()) {
-		// didn't catch fish
-		Main::character->comboExceeded();
+	if (hitWall) {
+		GetCharacter()->IncreaseCombo(-upgrades::calcComboDecreaseOnBounce());
+		Main::comboWidget->showComboText();
+		Main::comboWidget->spawnComboNumber(GetCharacter()->GetCombo());
 	}
 
-	shake->setShakeDist(Main::character->comboNum / 2.f);
+	shake->setShakeDist(GetCharacter()->GetCombo() / 2.f);
 }
 
 void UfishComboWidget::setupRandomCombo() {
