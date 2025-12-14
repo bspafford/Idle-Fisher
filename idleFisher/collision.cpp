@@ -388,7 +388,7 @@ std::string collision::getIdentifier(std::string str) {
 void collision::showCollisionBoxes(Shader* shaderProgram) {
 	std::lock_guard<std::mutex> lock(mutex);
 
-	glUniform1i(glGetUniformLocation(shaderProgram->ID, "useWorldPos"), 1);
+	shaderProgram->setInt("useWorldPos", true);
 	shaderProgram->setInt("isRectangle", true);
 
 	for (int i = 0; i < allCollision.size(); i++) {

@@ -68,7 +68,7 @@ void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
 
 void Camera::Matrix(Shader* shader, const char* uniform) {
 	// Exports camera matrix
-	glUniformMatrix4fv(glGetUniformLocation(shader->ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+	shader->setMat4(uniform, cameraMatrix);
 }
 
 glm::vec3 scaleIsometricMovement3D(const glm::vec3& inputXZ) {

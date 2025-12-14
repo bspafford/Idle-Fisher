@@ -52,9 +52,8 @@ void Mesh::Draw
 		textures[i].texUnit(shader, (type + num).c_str());
 		textures[i].Bind();
 	}
-	// Take care of the camera Matrix
-	glUniform3f(glGetUniformLocation(shader->ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-	//camera.Matrix(shader, "camMatrix");
+
+	shader->setVec3("camPos", camera.Position);
 
 	// Initialize matrices
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -66,16 +65,14 @@ void Mesh::Draw
 	rot = glm::mat4_cast(rotation);
 	sca = glm::scale(sca, scale);
 
-	// std::cout << "translation: " << translation.x << ", " << translation.y << ", " << translation.z << ", stuff: " << glGetUniformLocation(shader.ID, "translation") << std::endl;
-
 	// Push the matrices to the vertex shader
-	glUniformMatrix4fv(glGetUniformLocation(shader->ID, "translation"), 1, GL_FALSE, glm::value_ptr(trans));
-	glUniformMatrix4fv(glGetUniformLocation(shader->ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rot));
-	glUniformMatrix4fv(glGetUniformLocation(shader->ID, "scale"), 1, GL_FALSE, glm::value_ptr(sca));
-	glUniformMatrix4fv(glGetUniformLocation(shader->ID, "model"), 1, GL_FALSE, glm::value_ptr(matrix));
+	shader->setMat4("translation", trans);
+	shader->setMat4("rotation", rot);
+	shader->setMat4("scale", sca);
+	shader->setMat4("model", matrix);
 
 	glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(matrix)));
-	glUniformMatrix3fv(glGetUniformLocation(shader->ID, "normalMatrix"), 1, GL_FALSE, glm::value_ptr(normalMatrix));
+	shader->setMat3("normalMatrix", normalMatrix);
 
 	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

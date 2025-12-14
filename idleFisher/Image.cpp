@@ -149,10 +149,23 @@ void Image::draw(Shader* shaderProgram) {
 	Bind();
 	currVAO->Bind();
 
+	//shaderProgram->setInt("useWorldPos", useWorldPos);
+	//int temp2 = useWorldPos;
+	//std::string c1 = "useWorldPos";
+	//std::string c2 = "color";
+	//shaderProgram->setInt1(c1, temp2);
+	//shaderProgram->setVec4("color", colorMod);
+	//shaderProgram->setVec41(c2, colorMod);
+	// 5, 0
+	if (shaderProgram->ID == 9) {
+		glUniform1i(5, useWorldPos);
+		glUniform4f(0, colorMod.x, colorMod.y, colorMod.z, colorMod.w);
+	} else {
+		int temp2 = useWorldPos;
+		shaderProgram->setInt1("useWorldPos", temp2);
+		shaderProgram->setVec41("color", colorMod);
+	}
 
-	glUniform1i(glGetUniformLocation(shaderProgram->ID, "useWorldPos"), useWorldPos);
-	shaderProgram->setVec4("color", colorMod);
-	
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	Unbind();
@@ -406,12 +419,8 @@ void Image::flipHoizontally(bool flip) {
 }
 
 void Image::texUnit(Shader& shader, const char* uniform, GLuint unit) {
-	// Gets the location of the uniform
-	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
-	// Shader needs to be activated before changing the value of a uniform
 	shader.Activate();
-	// Sets the value of the uniform
-	glUniform1i(texUni, unit);
+	shader.setInt(uniform, unit);
 }
 
 void Image::Bind() {

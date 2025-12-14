@@ -16,10 +16,9 @@ Model::Model(const char* file) {
 } 
 
 void Model::Draw(Shader* shader, Camera& camera) {
+	shader->setVec3("color", color / 255.f);
+
 	// Go over all meshes and draw each one
-	glUniform3f(glGetUniformLocation(shader->ID, "color"), color.x/255.f, color.y/255.f, color.z/255.f);
-
-
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i], pos, glm::quat(1.0f, 0.0f, 0.0f, 0.0f), scale);
 	}

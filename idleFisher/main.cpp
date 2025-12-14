@@ -189,6 +189,8 @@ int Main::createWindow() {
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 		lastTime = currentTime;
 		//std::cout << "fps: " << 1.f / deltaTime << std::endl;
+		fps::showFPS(true);
+		fps::update(deltaTime);
 
 		// process input
 		Input::pollEvents();
@@ -316,7 +318,7 @@ void Main::Start() {
 
 	// setup projection mat
 	twoDShader->Activate();
-	glUniformMatrix4fv(glGetUniformLocation(twoDShader->ID, "projection"), 1, GL_FALSE, glm::value_ptr(camera->getProjectionMat()));
+	twoDShader->setMat4("projection", camera->getProjectionMat());
 
 	if (SaveData::saveData.equippedPet.id != -1)
 		Main::pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
@@ -371,7 +373,7 @@ void Main::updateShaders(float deltaTime) {
 	twoDShader->setMat4("projection", camera->getProjectionMat());
 
 	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
-	glUniform2f(glGetUniformLocation(twoDShader->ID, "playerPos"), newPos.x * 10, newPos.y * 5);
+	twoDShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
 
 	twoDWaterShader->Activate();
 	twoDWaterShader->setMat4("projection", camera->getProjectionMat());

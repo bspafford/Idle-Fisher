@@ -108,10 +108,7 @@ Texture::~Texture() {
 void Texture::texUnit(Shader* shader, const char* uniform) {
 	// Shader needs to be activated before changing the value of a uniform
 	shader->Activate();
-	// Gets the location of the uniform
-	GLuint texUni = glGetUniformLocation(shader->ID, uniform);
-	// Sets the value of the uniform
-	glUniform1i(texUni, unit);
+	shader->setInt(uniform, unit);
 }
 
 void Texture::Bind() {
@@ -137,10 +134,8 @@ void Texture::bindTextureToShader(std::vector<Shader*> shaderPrograms, const cha
 	if (path == nullptr || path == "") {
 		for (Shader* shaderProgram : shaderPrograms) {
 			shaderProgram->Activate();
-			GLuint texUni = glGetUniformLocation(shaderProgram->ID, uniform);
-			glUniform1i(texUni, 0);
+			shaderProgram->setInt(uniform, 0);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	} else {
 		std::unique_ptr<Texture> texture = std::make_unique<Texture>(path);

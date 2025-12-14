@@ -61,7 +61,7 @@ void URectangle::draw(Shader* shaderProgram) {
 	currVAO->Bind();
 
 	shaderProgram->setVec4("color", color);
-	glUniform1i(glGetUniformLocation(shaderProgram->ID, "useWorldPos"), useWorldLoc);
+	shaderProgram->setInt("useWorldPos", useWorldLoc);
 	shaderProgram->setInt("isRectangle", 1);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

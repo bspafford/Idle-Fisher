@@ -98,25 +98,50 @@ void Shader::compileErrors(unsigned int shader, const char* type) {
 }
 
 void Shader::setMat4(std::string key, glm::mat4 value) {
-	glUniformMatrix4fv(glGetUniformLocation(ID, key.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix4fv(GetUniformLocation(key), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setMat3(std::string key, glm::mat3 value) {
+	glUniformMatrix3fv(GetUniformLocation(key), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::setVec4(std::string key, glm::vec4 value) {
-	glUniform4f(glGetUniformLocation(ID, key.c_str()), value.x, value.y, value.z, value.w);
+	glUniform4f(GetUniformLocation(key), value.x, value.y, value.z, value.w);
+}
+
+void Shader::setVec41(const std::string& key, glm::vec4& value) {
+	glUniform4f(GetUniformLocation(key), value.x, value.y, value.z, value.w);
 }
 
 void Shader::setVec3(std::string key, glm::vec3 value) {
-	glUniform3f(glGetUniformLocation(ID, key.c_str()), value.x, value.y, value.z);
+	glUniform3f(GetUniformLocation(key), value.x, value.y, value.z);
 }
 
 void Shader::setVec2(std::string key, glm::vec2 value) {
-	glUniform2f(glGetUniformLocation(ID, key.c_str()), value.x, value.y);
+	glUniform2f(GetUniformLocation(key), value.x, value.y);
 }
 
 void Shader::setInt(std::string key, int value) {
-	glUniform1i(glGetUniformLocation(ID, key.c_str()), value);
+	glUniform1i(GetUniformLocation(key), value);
+}
+
+void Shader::setInt1(const std::string& key, int& value) {
+	glUniform1i(GetUniformLocation(key), value);
 }
 
 void Shader::setFloat(std::string key, float value) {
-	glUniform1f(glGetUniformLocation(ID, key.c_str()), value);
+	glUniform1f(GetUniformLocation(key), value);
 }
+
+int Shader::GetUniformLocation(const std::string& key) {
+	auto it = uniformCache.find(key);
+	if (it != uniformCache.end())
+		return it->second;
+
+	std::cout << "getting unfirom location bad\n";
+	int loc = glGetUniformLocation(ID, key.c_str());
+	//uniformCache[key] = loc;
+	uniformCache.emplace(key, loc);
+	return loc;
+}
+
