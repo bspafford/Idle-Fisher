@@ -108,28 +108,38 @@ textureStruct* textureManager::getTexture(std::string name) {
 
 void textureManager::StartFrame() {
 	gpuData.clear();
+	prevShader = NULL;
+	currShader = NULL;
 }
 
 void textureManager::DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& tex) {
-	UploadGPUData(shader);
+	currShader = shader;
+	CheckShaders();
 	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(source.x, source.y, source.w, source.h), useWorldPos, color, tex));
 }
 
 void textureManager::DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color) {
-	UploadGPUData(shader);
+	currShader = shader;
+	CheckShaders();
 	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(0), useWorldPos, color, 0));
 }
 
-void textureManager::UploadGPUData(Shader* shader, bool bypass) {
-	if (gpuData.size() == 0 || (!shader && !prevShader))
+void textureManager::EndFrame() {
+	UploadGPUData();
+}
+
+void textureManager::CheckShaders() {
+	if (prevShader != currShader) {
+		UploadGPUData();
+		prevShader = currShader;
+	}
+}
+
+void textureManager::UploadGPUData() {
+	if (gpuData.size() == 0)
 		return;
 
-	currShader = shader;
-
-	if (bypass)
-		prevShader = currShader;
-
-	if (bypass || (prevShader && currShader != prevShader)) {
+	if (prevShader) {
 		glGenBuffers(1, &ssbo);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
@@ -153,7 +163,7 @@ void textureManager::UploadGPUData(Shader* shader, bool bypass) {
 
 void textureManager::BindFramebuffer(GLuint ID, glm::vec4 fboSize, glm::vec4 clearColor) {
 	// draw here, before binding a new fbo
-	UploadGPUData(currShader, true);
+	UploadGPUData();
 
 	fboStack.push(FBOData(ID, fboSize));
 
@@ -168,7 +178,7 @@ void textureManager::BindFramebuffer(GLuint ID, glm::vec4 fboSize, glm::vec4 cle
 
 void textureManager::UnbindFramebuffer() {
 	// draw here, before leaving the fbo
-	UploadGPUData(currShader, true);
+	UploadGPUData();
 
 	fboStack.pop();
 	FBOData currFBO = fboStack.empty() ? FBOData(0, glm::vec4(0, 0, stuff::screenSize.x, stuff::screenSize.y)) : fboStack.top();

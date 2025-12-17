@@ -63,9 +63,7 @@ public:
 	static void DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& tex);
 	// Instantly draws the image, used for things like FBOs
 	static void DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color);
-	// uploads data to the CPU if the shader has changed, or the end of the frame has been reached
-	// bypass: uploads GPU data even if the shader hasn't changed
-	static void UploadGPUData(Shader* shader, bool bypass = false);
+	static void EndFrame();
 
 	static void BindFramebuffer(GLuint ID, glm::vec4 fboSize, glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
 	static void UnbindFramebuffer();
@@ -74,6 +72,13 @@ public:
 	static GLuint GetCurrFBO();
 
 private:
+	// checks if the shader has changed
+	static void CheckShaders();
+	// uploads data to the CPU if the shader has changed, or the end of the frame has been reached
+	// bypass: uploads GPU data even if the shader hasn't changed
+	static void UploadGPUData();
+
+
 	static inline Shader* currShader = NULL;
 	static inline Shader* prevShader = NULL;
 

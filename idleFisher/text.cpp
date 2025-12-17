@@ -33,15 +33,6 @@ text::~text() {
 	if (it != instances.end())
 		instances.erase(it);
 
-	/*
-	if (currVAO)
-		currVAO->Delete();
-	if (currEBO)
-		currEBO->Delete();
-	if (currVBO)
-		currVBO->Delete();
-	*/
-
 	glDeleteTextures(1, &textTexture);
 	glDeleteFramebuffers(1, &fbo);
 
@@ -165,7 +156,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 	// makes new line
 	if (text[i] == '\n') {
 		offset.x = 0;
-		offset.y += (textHeight + 1) * stuff::pixelSize;
+		offset.y += (textHeight + 1);
 	} else {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(currInfo.loc.x, currInfo.loc.y, currInfo.size.x, currInfo.size.y);
 
@@ -184,9 +175,9 @@ void text::makeText(int i, std::string text, vector &offset) {
 
 		if (isometric) {
 			if (text[i] == '.')
-				offset.y -= 1 * stuff::pixelSize * temp;
+				offset.y += 1 * temp;
 			else
-				offset.y -= 2 * stuff::pixelSize * temp;
+				offset.y += 2 * temp;
 		}
 
 		if (alignment == TEXT_ALIGN_RIGHT)
@@ -196,10 +187,10 @@ void text::makeText(int i, std::string text, vector &offset) {
 		// wraps text if its length is greater than its linelength
 		if (lineLength != -1 && offset.x > lineLength) { //  && textString[start] != ' '
 			offset.x = 0;
-			offset.y += (letter->h + 1) * stuff::pixelSize;
+			offset.y += (letter->h + 1);
 			for (int j = start; j < start + numLetters + 1; j++) {
 				letters[j]->setLoc(offset);
-				offset.x += letters[j]->w * stuff::pixelSize;
+				offset.x += letters[j]->w;
 			}
 		}
 	}
@@ -269,10 +260,7 @@ void text::makeTextTexture() {
 	if (letters.size() == 0)
 		return;
 
-	fboSize = (getFBOSize() + vector{ 0, textHeight / 2.f * stuff::pixelSize }).ceil();
-	// don't know but it fixed pixel texture offset problem
-	fboSize.x += (int)fboSize.x % 2 != 0; // make even
-	fboSize.y += (int)fboSize.y % 2 == 0; // make odd
+	fboSize = getFBOSize();
 
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;
@@ -291,6 +279,7 @@ void text::makeTextTexture() {
 	//img->InstantDraw(Main::twoDShader);
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
+			letters[i]->setLoc({letters[i]->getLoc().x, letters[i]->getLoc().y - textHeight + fboSize.y}); // push to top of fbo
 			// drops characters if they are inside the drop list and the correct font
 			std::string dropList = "gpqjy";
 			std::vector<std::string> dontDropFont = { "afScreen", "biggerStraight", "biggerStraightDark" };
@@ -343,12 +332,12 @@ void text::draw(Shader* shader) {
 	//glBindTexture(GL_TEXTURE_2D, textureID);
 
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	//textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
-	textureManager::DrawImage(shader, { 10, 10 }, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, handle);
+	textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
+	//textureManager::DrawImage(shader, { 10, 10 }, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, handle);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	for (int i = 0; i < letters.size(); i++) {
-		letters[i]->draw(shader);
+		//letters[i]->draw(shader);
 	}
 }
 
@@ -365,11 +354,11 @@ void text::setLoc(vector loc) {
 		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
 			if (isometric)
-				absoluteLoc += vector{ 0, size.y / stuff::pixelSize };
+				absoluteLoc += vector{ 0, size.y };
 		} else if (alignment == TEXT_ALIGN_RIGHT) {
-			absoluteLoc = loc - vector{ size.x / stuff::pixelSize, 0 };
+			absoluteLoc = loc - vector{ size.x, 0 };
 			if (isometric)
-				absoluteLoc -= vector{ 0, getSize().y / stuff::pixelSize };
+				absoluteLoc -= vector{ 0, getSize().y };
 		} else if (alignment == TEXT_ALIGN_CENTER) {
 			absoluteLoc = loc - vector{ getSize().x / 2.f, 0.f };
 		}
@@ -399,7 +388,7 @@ void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 }
 
 vector text::getSize() {
-	return fboSize;// -vector{ 0, textHeight / 2.f * stuff::pixelSize };
+	return fboSize;
 }
 
 vector text::getFBOSize() {
@@ -416,13 +405,13 @@ vector text::getFBOSize() {
 		vector letterLoc = letter->getLoc();
 		if (minX > letterLoc.x)
 			minX = letterLoc.x;
-		if (maxX < letterLoc.x + letter->w * stuff::pixelSize)
-			maxX = letterLoc.x + letter->w * stuff::pixelSize;
+		if (maxX < letterLoc.x + letter->w)
+			maxX = letterLoc.x + letter->w;
 
 		if (minY > letterLoc.y)
 			minY = letterLoc.y;
-		if (maxY < letterLoc.y + letter->h * stuff::pixelSize)
-			maxY = letterLoc.y + letter->h * stuff::pixelSize;
+		if (maxY < letterLoc.y + letter->h)
+			maxY = letterLoc.y + letter->h;
 	}
 	return { ceil(maxX - minX), ceil(maxY - minY) };
 }

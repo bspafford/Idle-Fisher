@@ -176,7 +176,7 @@ int Main::createWindow() {
 		fps::showFPS(true);
 		fps::update(deltaTime);
 
-		//*
+		/*
 		Input::pollEvents();
 		textureManager::StartFrame();
 		updateShaders(deltaTime);
@@ -185,7 +185,7 @@ int Main::createWindow() {
 		glActiveTexture(GL_TEXTURE0);
 		//img->InstantDraw(twoDShader);
 		text1->draw(twoDShader);
-		textureManager::UploadGPUData(NULL);
+		textureManager::EndFrame();
 		glfwSwapBuffers(window);
 		continue;
 		//*/
@@ -246,7 +246,7 @@ int Main::createWindow() {
 
 		//BlurBox::DrawFinal();
 
-		textureManager::UploadGPUData(NULL);
+		textureManager::EndFrame();
 
 		glEnable(GL_DEPTH_TEST);
 		// ==== DRAW SHADOW MESH ====
