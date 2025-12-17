@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "GPULoadCollector.h"
 #include "textureManager.h"
+#include "FBO.h"
 
 #include "debugger.h"
 
@@ -32,12 +33,6 @@ text::~text() {
 	auto it = std::find(instances.begin(), instances.end(), this);
 	if (it != instances.end())
 		instances.erase(it);
-
-	glDeleteTextures(1, &textTexture);
-	glDeleteFramebuffers(1, &fbo);
-
-	textTexture = 0;
-	fbo = 0;
 
 	letters.clear();
 	textInfo.clear();
@@ -260,7 +255,7 @@ void text::makeTextTexture() {
 	if (letters.size() == 0)
 		return;
 
-	fboSize = getFBOSize();
+	vector fboSize = getFBOSize();
 
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;
@@ -272,8 +267,8 @@ void text::makeTextTexture() {
 
 	absoluteLoc = absoluteLoc.floor();
 
-	UpdateGPUData(textureManager::GetCurrFBO());
-	textureManager::BindFramebuffer(fbo, glm::vec4(0, 0, fboSize.x, fboSize.y), glm::vec4(0, 0, 0, 1));
+	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
+	fbo->BindFramebuffer(glm::vec4(0, 0, 0, 1));
 	// Draws to the FBO
 	//Image* img = new Image("./images/icon.png", { 10, 10 }, false);
 	//img->InstantDraw(Main::twoDShader);
@@ -289,39 +284,12 @@ void text::makeTextTexture() {
 			letters[i]->draw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
 		}
 	// Unbind FBO
-	textureManager::UnbindFramebuffer();
+	fbo->UnbindFramebuffer();
 
 	setLoc(loc);
 
 	// restores projection
 	Main::twoDShader->setMat4("projection", currProjection);
-}
-
-void text::UpdateGPUData(GLint preboundFBO) {
-	// Create FBO
-	glCreateFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	if (handle) // delete because resizing/changing image
-		glMakeTextureHandleNonResidentARB(handle);
-	glDeleteTextures(1, &textTexture);
-
-	glCreateTextures(GL_TEXTURE_2D, 1, &textTexture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textTexture);
-
-	glTextureStorage2D(textTexture, 1, GL_RGBA8, fboSize.x, fboSize.y);
-
-	handle = glGetTextureSamplerHandleARB(textTexture, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
-	glMakeTextureHandleResidentARB(handle);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textTexture, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "FBO is incomplete!" << std::endl;
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, preboundFBO);
 }
 
 void text::draw(Shader* shader) {
@@ -332,13 +300,14 @@ void text::draw(Shader* shader) {
 	//glBindTexture(GL_TEXTURE_2D, textureID);
 
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
+	fbo->Draw(shader, absoluteLoc, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);
+	//textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
 	//textureManager::DrawImage(shader, { 10, 10 }, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, handle);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	for (int i = 0; i < letters.size(); i++) {
+	//for (int i = 0; i < letters.size(); i++) {
 		//letters[i]->draw(shader);
-	}
+	//}
 }
 
 void text::setLocAndSize(vector loc, vector size) {
@@ -388,7 +357,7 @@ void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 }
 
 vector text::getSize() {
-	return fboSize;
+	return fbo ? fbo->GetSize() : vector{ 0, 0 };
 }
 
 vector text::getFBOSize() {

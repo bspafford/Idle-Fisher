@@ -224,6 +224,7 @@
     <ClCompile Include="dumpster.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="equippedWidget.cpp" />
+    <ClCompile Include="FBO.cpp" />
     <ClCompile Include="fishBox.cpp" />
     <ClCompile Include="fishComboWidget.cpp" />
     <ClCompile Include="fisherman.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="CircleLoad.h" />
     <ClInclude Include="confirmWidget.h" />
     <ClInclude Include="debugger.h" />
+    <ClInclude Include="FBO.h" />
     <ClInclude Include="GPULoadCollector.h">
       <FileType>CppCode</FileType>
     </ClInclude>

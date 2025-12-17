@@ -8,6 +8,8 @@
 #include "widget.h"
 #include "Image.h"
 
+class FBO;
+
 enum TextAlign {
 	TEXT_ALIGN_LEFT,
 	TEXT_ALIGN_RIGHT,
@@ -50,9 +52,8 @@ public:
 	void changeFont();
 
 	void makeTextTexture();
-private:
-	void UpdateGPUData(GLint preboundFBO);
 
+private:
 	vector getFBOSize();
 
 	static inline std::vector<text*> instances;
@@ -80,11 +81,7 @@ private:
 
 	glm::vec4 colorMod = glm::vec4(1.f);
 
-	// text fbo
-	GLuint fbo = 0;
-	GLuint textTexture;
-	GLuint64 handle = 0;
-	vector fboSize = { 1, 1 };
+	std::unique_ptr<FBO> fbo;
 
 	vector absoluteLoc;
 	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;

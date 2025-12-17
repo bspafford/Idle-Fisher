@@ -164,8 +164,8 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
-	text* text1 = new text(NULL, "Hello World!", "straight", { 0, 0 });
-	Image* img = new Image("./images/house.png", { 1, 1 }, false);
+	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World!", "straight", vector{ 0, 0 });
+	std::unique_ptr<Image> img = std::make_unique<Image>("./images/house.png", vector{ 1, 1 }, false);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
