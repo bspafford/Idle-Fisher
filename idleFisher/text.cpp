@@ -284,20 +284,8 @@ void text::makeTextTexture() {
 
 	absoluteLoc = absoluteLoc.floor();
 
-	GLint preboundFBO = 0; // get fbo bound before this
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &preboundFBO);
-	GLint scissorBox[4]; // get the scissor size before this
-	glGetIntegerv(GL_SCISSOR_BOX, scissorBox);
-
-	UpdateGPUData(preboundFBO);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glViewport(0, 0, fboSize.x, fboSize.y);
-	// puts scissor size to fbo
-	glScissor(0, 0, fboSize.x, fboSize.y);
-
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	UpdateGPUData(textureManager::GetCurrFBO());
+	textureManager::BindFramebuffer(fbo, glm::vec4(0, 0, fboSize.x, fboSize.y), glm::vec4(0, 0, 0, 1));
 	// Draws to the FBO
 	//Image* img = new Image("./images/icon.png", { 10, 10 }, false);
 	//img->InstantDraw(Main::twoDShader);
@@ -309,13 +297,10 @@ void text::makeTextTexture() {
 			if (std::find(dontDropFont.begin(), dontDropFont.end(), font) == dontDropFont.end() && std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y + letters[i]->getSize().y / 2.f}.floor());
 
-			letters[i]->InstantDraw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
+			letters[i]->draw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
 		}
 	// Unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, preboundFBO);
-	glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
-	// puts scissor size back to what it was before
-	glScissor(scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3]);
+	textureManager::UnbindFramebuffer();
 
 	setLoc(loc);
 

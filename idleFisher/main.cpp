@@ -164,7 +164,7 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
-	text* text1 = new text(NULL, "hello world!", "straight", { 0, 0 });
+	text* text1 = new text(NULL, "Hello World!", "straight", { 0, 0 });
 	Image* img = new Image("./images/house.png", { 1, 1 }, false);
 
 	// Main while loop

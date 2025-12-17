@@ -440,9 +440,6 @@
     <ClCompile Include="CircleLoad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UBO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -803,9 +800,6 @@
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="CircleLoad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

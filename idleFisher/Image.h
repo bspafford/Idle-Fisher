@@ -21,7 +21,6 @@ public:
 	// Adds to a queue that is drawn at the end of the frame or when the shader is swapped
 	void draw(Shader* shader);
 	// Instantly draws the Image
-	void InstantDraw(Shader* shader);
 	void setSourceRect(std::shared_ptr<Rect> rect);
 	void setLoc(vector loc);
 	vector getLoc();

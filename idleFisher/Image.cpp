@@ -45,10 +45,6 @@ void Image::draw(Shader* shader) {
 	textureManager::DrawImage(shader, absoluteLoc, vector{w, h}, normalizedSource, useWorldPos, colorMod, handle);
 }
 
-void Image::InstantDraw(Shader* shader) {
-	textureManager::InstantDraw(shader, absoluteLoc, vector{ w, h }, normalizedSource, useWorldPos, colorMod, handle);
-}
-
 void Image::setSourceRect(std::shared_ptr<Rect> source) {
 	this->source = source;
 	this->normalizedSource = *source / vector{ ogW, ogH };

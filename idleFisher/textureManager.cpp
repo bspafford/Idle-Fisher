@@ -10,6 +10,7 @@
 textureStruct::textureStruct(const std::string& path, bool useAlpha) {
 	this->useAlpha = useAlpha;
 
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
 	if (!bytes) {
 		std::cout << "Filepath NOT Found: " << path << std::endl;
@@ -114,42 +115,31 @@ void textureManager::DrawImage(Shader* shader, const vector& position, const vec
 	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(source.x, source.y, source.w, source.h), useWorldPos, color, tex));
 }
 
-void textureManager::InstantDraw(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& tex) {
-	InstanceData data = InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(source.x, source.y, source.w, source.h), useWorldPos, color, tex);
-
-	GLuint ssbo1;
-	glGenBuffers(1, &ssbo1);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo1);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo1);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(InstanceData), &data, GL_DYNAMIC_DRAW);
-
-	shader->Activate();
-	shader->setInt("drawingToFBO", 1);
-
-	vao->Bind();
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	glDeleteBuffers(1, &ssbo1);
-}
-
 void textureManager::DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color) {
 	UploadGPUData(shader);
 	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(0), useWorldPos, color, 0));
 }
 
-void textureManager::UploadGPUData(Shader* shader) {
-	if (prevShader && shader != prevShader) {
+void textureManager::UploadGPUData(Shader* shader, bool bypass) {
+	if (gpuData.size() == 0 || (!shader && !prevShader))
+		return;
+
+	currShader = shader;
+
+	if (bypass)
+		prevShader = currShader;
+
+	if (bypass || (prevShader && currShader != prevShader)) {
 		glGenBuffers(1, &ssbo);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, gpuData.size() * sizeof(InstanceData), gpuData.data(), GL_DYNAMIC_DRAW);
 
 		prevShader->Activate();
-		prevShader->setInt("drawingToFBO", 0);
-
+		prevShader->setInt("drawingToFBO", !fboStack.empty());
+		
 		vao->Bind();
+		
 		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, gpuData.size());
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -158,9 +148,42 @@ void textureManager::UploadGPUData(Shader* shader) {
 		gpuData.clear();
 
 	}
-	prevShader = shader;
+	prevShader = currShader;
+}
+
+void textureManager::BindFramebuffer(GLuint ID, glm::vec4 fboSize, glm::vec4 clearColor) {
+	// draw here, before binding a new fbo
+	UploadGPUData(currShader, true);
+
+	fboStack.push(FBOData(ID, fboSize));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+	
+	glViewport(fboSize.x, fboSize.y, fboSize.z, fboSize.w);
+	glScissor(fboSize.x, fboSize.y, fboSize.z, fboSize.w);
+
+	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void textureManager::UnbindFramebuffer() {
+	// draw here, before leaving the fbo
+	UploadGPUData(currShader, true);
+
+	fboStack.pop();
+	FBOData currFBO = fboStack.empty() ? FBOData(0, glm::vec4(0, 0, stuff::screenSize.x, stuff::screenSize.y)) : fboStack.top();
+
+	// Bind to previous FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, currFBO.ID);
+
+	glViewport(currFBO.fboSize.x, currFBO.fboSize.y, currFBO.fboSize.z, currFBO.fboSize.w);
+	glScissor(currFBO.fboSize.x, currFBO.fboSize.y, currFBO.fboSize.z, currFBO.fboSize.w);
 }
 
 GLuint textureManager::GetSamplerID() {
 	return samplerID;
+}
+
+GLuint textureManager::GetCurrFBO() {
+	return fboStack.empty() ? 0 : fboStack.top().ID;
 }

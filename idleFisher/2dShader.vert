@@ -34,10 +34,13 @@ void main() {
     if (drawingToFBO == 0)
         gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 0.0, 1.0);
     else
-        gl_Position = projection * vec4((aPos * data.size) + data.position, 0.0, 1.0);
+        gl_Position = projection * vec4(aPos * data.size + data.position, 0.0, 1.0);
 
+    vec2 texCoord = aTexCoord;
+
+    // if source size is 0
     if (data.source.z == 0 || data.source.w == 0)
-        TexCoord = aTexCoord;
+        TexCoord = texCoord; // (0, 0, 1, 1)
     else
-        TexCoord = data.source.xy + aTexCoord * data.source.zw;
+        TexCoord = data.source.xy + texCoord * data.source.zw;
 }

@@ -302,7 +302,6 @@
     <ClCompile Include="textureManager.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="tree.cpp" />
-    <ClCompile Include="UBO.cpp" />
     <ClCompile Include="UIWidget.cpp" />
     <ClCompile Include="upgradeBox.cpp" />
     <ClCompile Include="upgrades.cpp" />
@@ -419,7 +418,6 @@
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="tree.h" />
-    <ClInclude Include="UBO.h" />
     <ClInclude Include="UIWidget.h" />
     <ClInclude Include="upgradeBox.h" />
     <ClInclude Include="upgrades.h" />
