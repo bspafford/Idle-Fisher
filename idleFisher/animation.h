@@ -93,18 +93,8 @@ public:
 	// if false, then the function finds distance from start to end
 	int calcFrameDistance(bool getFrameNum);
 
-
-	void setQueuedAnim();
-	void playQueuedStart();
 private:
-	void setQueuedAnimString(std::string anim);
-
 	vector loc;
 	vector cellSize;
 	vector cellNum;
-
-	// what the animation was set to when GPULoadCollector was active
-	std::string queuedAnim = "";
-	// if the animation was told to start during GPULoadCollector being active
-	bool queuedStart = false;
 };

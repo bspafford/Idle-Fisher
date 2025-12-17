@@ -19,7 +19,7 @@ public:
 	void setSize(vector size);
 	vector getSize();
 	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
-	void updatePositionsList();
+	//void updatePositionsList();
 
 	// will stop hovers and clicks through a rectangle
 	void setBlockCursor(bool val);
@@ -36,8 +36,8 @@ protected:
 	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
 	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
 
-	std::unique_ptr<VAO> currVAO = NULL;
-	std::unique_ptr<VBO> currVBO = NULL;
-	std::unique_ptr<EBO> currEBO = NULL;
+	//std::unique_ptr<VAO> currVAO = NULL;
+	//std::unique_ptr<VBO> currVBO = NULL;
+	//std::unique_ptr<EBO> currEBO = NULL;
 
 };

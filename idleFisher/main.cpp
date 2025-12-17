@@ -45,13 +45,6 @@
 #include "newRecordWidget.h"
 #include "blurBox.h"
 
-// includes Windows.h if on windows
-#ifdef _WIN32
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-#include <Windows.h>
-#endif
-
 #include "debugger.h"
 
 int main(int argc, char* argv[]) {
@@ -70,8 +63,6 @@ Main::~Main() {
 	delete shaderProgram;
 	delete shadowMapProgram;
 	delete twoDShader;
-	delete quadShader;
-	delete waterShader;
 	delete twoDWaterShader;
 	delete circleShader;
 
@@ -99,9 +90,8 @@ int Main::createWindow() {
 	}
 
 	// Tell GLFW what version of OpenGL we are using 
-	// In this case we are using OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	// Tell GLFW we are using the CORE profile
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -124,18 +114,11 @@ int Main::createWindow() {
 	setTaskbarIcon(window);
 	
 	//Load GLAD so it configures OpenGL
-	if (!gladLoadGL()) {
+	if (!gladLoadGL())
 		return -1;
-	}
 
-	// Specify the viewport of OpenGL in the Window
-	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
-	// Enables the Depth Buffer
-	//glEnable(GL_DEPTH_TEST);
 
-	// Enables Multisampling
-	//glEnable(GL_MULTISAMPLE);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
@@ -149,7 +132,6 @@ int Main::createWindow() {
 	// Framebuffer for Shadow Map
 	unsigned int shadowMapFBO;
 	glGenFramebuffers(1, &shadowMapFBO);
-
 	// Texture for Shadow Map FBO
 	unsigned int shadowMapWidth = 2048, shadowMapHeight = 2048;
 	unsigned int shadowMap;
@@ -171,7 +153,6 @@ int Main::createWindow() {
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 	// Load in a model for shadows
 	house = std::make_unique<Model>("./images/models/idleFisher3D/idleFisher3DNoWater.gltf");
 	house->setPos(glm::vec3(-182.75f, 0.f, -504.5f));
@@ -183,6 +164,9 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
+	text* text1 = new text(NULL, "hello world!", "straight", { 0, 0 });
+	Image* img = new Image("./images/house.png", { 1, 1 }, false);
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
 		auto currentTime = std::chrono::steady_clock::now();
@@ -192,8 +176,24 @@ int Main::createWindow() {
 		fps::showFPS(true);
 		fps::update(deltaTime);
 
+		//*
+		Input::pollEvents();
+		textureManager::StartFrame();
+		updateShaders(deltaTime);
+		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
+		//img->InstantDraw(twoDShader);
+		text1->draw(twoDShader);
+		textureManager::UploadGPUData(NULL);
+		glfwSwapBuffers(window);
+		continue;
+		//*/
+
 		// process input
 		Input::pollEvents();
+
+		textureManager::StartFrame();
 
 		checkInputs();
 		Update(deltaTime);
@@ -201,6 +201,7 @@ int Main::createWindow() {
 
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glEnable(GL_DEPTH_TEST);
 
 		// Compute full light-space matrix
@@ -229,7 +230,6 @@ int Main::createWindow() {
 		}
 
 		glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
-		glEnable(GL_DEPTH_TEST);
 		
 		// === MAIN RENDER PASS (Render Scene with Shadows) ===
 
@@ -239,12 +239,14 @@ int Main::createWindow() {
 		// ==== DRAW 2D STUFF ====
 		twoDShader->Activate();
 
-		BlurBox::BindFrameBuffer();
-		glClear(GL_COLOR_BUFFER_BIT);
+		//BlurBox::BindFrameBuffer();
+		//glClear(GL_COLOR_BUFFER_BIT);
 		draw(twoDShader);
-		BlurBox::UnbindFrameBuffer();
+		//BlurBox::UnbindFrameBuffer();
 
-		BlurBox::DrawFinal();
+		//BlurBox::DrawFinal();
+
+		textureManager::UploadGPUData(NULL);
 
 		glEnable(GL_DEPTH_TEST);
 		// ==== DRAW SHADOW MESH ====
@@ -266,9 +268,8 @@ int Main::createWindow() {
 
 		// checks for errors
 		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR) {
+		while ((err = glGetError()) != GL_NO_ERROR)
 			std::cout << "OpenGL Error: " << err << std::endl;
-		}
 
 		if (fpsCap != 0) {
 			const auto cappedFPS = std::chrono::milliseconds(int(1000.f / float(fpsCap)));
@@ -287,10 +288,9 @@ void Main::Start() {
 	shaderProgram = new Shader("default.vert", "default.frag");
 	shadowMapProgram = new Shader("shadowMap.vert", "shadowMap.frag");
 	twoDShader = new Shader("2dShader.vert", "2dShader.frag");
-	quadShader = new Shader("test.vert", "test.frag");
-	waterShader = new Shader("waterShader.vert", "waterShader.frag");
 	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
 	circleShader = new Shader("2dShader.vert", "circleShader.frag");
+
 	shaderProgram->Activate();
 
 	// setup callbacks for input
@@ -311,14 +311,13 @@ void Main::Start() {
 	achievementBuffs::init();
 	setupWidgets();
 
+	camera = std::make_unique<Camera>(stuff::screenSize.x, stuff::screenSize.y, glm::vec3(-55, 50, -350));
+
+	updateShaders(0);
+
 	Scene::openLevel("world1", worldLoc::None, true);
 
 	character = std::make_unique<Acharacter>();
-	camera = std::make_unique<Camera>(stuff::screenSize.x, stuff::screenSize.y, glm::vec3(-55, 50, -350));
-
-	// setup projection mat
-	twoDShader->Activate();
-	twoDShader->setMat4("projection", camera->getProjectionMat());
 
 	if (SaveData::saveData.equippedPet.id != -1)
 		Main::pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
@@ -353,31 +352,26 @@ void Main::Update(float deltaTime) {
 
 void Main::updateShaders(float deltaTime) {
 	// set water movement
-	waterShader->Activate();
 	waveFactor += waveSpeed * deltaTime;
 	tideFactor += deltaTime;
 	if (waveFactor >= 1.f) // loop if hit 1
 		waveFactor -= 1.f;
 	if (tideFactor >= 3.f)
 		tideFactor -= 3.f;
-	waterShader->setFloat("moveFactor", waveFactor);
 
 	twoDShader->Activate();
 	twoDShader->setFloat("tideFactor", tideFactor);
 
+	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
+	twoDShader->setMat4("projection", camera->getProjectionMat());
+	twoDShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	twoDShader->setFloat("pixelSize", stuff::pixelSize);
+
 	twoDWaterShader->Activate();
 	twoDWaterShader->setFloat("moveFactor", waveFactor);
-
-	// ==== RENDER WATER IMG LAYER ====
-	twoDShader->Activate();
-	twoDShader->setMat4("projection", camera->getProjectionMat());
-
-	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
-	twoDShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
-
-	twoDWaterShader->Activate();
 	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
 	twoDWaterShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
 }
 
 void Main::setupWidgets() {
@@ -403,13 +397,13 @@ void Main::draw3D(Shader* shaderProgram) {
 
 void Main::draw(Shader* shaderProgram) {
 	shaderProgram->Activate();
-	
 	Scene::draw(shaderProgram);
 
 	if (widget::getCurrWidget())
 		widget::getCurrWidget()->draw(shaderProgram);
 
-	fishUnlocked->draw(shaderProgram);
+	if (fishUnlocked)
+		fishUnlocked->draw(shaderProgram);
 
 	// draw collision
 	//collision::showCollisionBoxes(shaderProgram);

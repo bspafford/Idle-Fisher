@@ -25,7 +25,7 @@ public:
 	~text();
 	void LoadGPU();
 	void setText(std::string text);
-	void draw(Shader* shaderProgram);
+	void draw(Shader* shader);
 	// void setAlignment(std::string alignment);
 	void makeText(int i, std::string text, vector &offset);
 	// includeDanglingCharSizes is whether it should count the size of g, y, j, etc
@@ -45,15 +45,13 @@ public:
 	// anchor::...
 	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
 
-	void updatePositionsList();
-
 	// used when changing the font from pixel to normal or vice versa
 	static void changeFontAll();
 	void changeFont();
 
 	void makeTextTexture();
 private:
-	void UpdateGPUData(float positions[]);
+	void UpdateGPUData(GLint preboundFBO);
 
 	vector getFBOSize();
 
@@ -84,13 +82,9 @@ private:
 
 	// text fbo
 	GLuint fbo = 0;
-	GLuint textTexture = 0;
+	GLuint textTexture;
+	GLuint64 handle = 0;
 	vector fboSize = { 1, 1 };
-
-	void drawTexture(Shader* shaderProgram, GLuint textureID);
-	std::unique_ptr<VBO> currVBO;
-	std::unique_ptr<VAO> currVAO;
-	std::unique_ptr<EBO> currEBO;
 
 	vector absoluteLoc;
 	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;

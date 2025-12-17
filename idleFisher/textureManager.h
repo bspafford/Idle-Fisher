@@ -3,22 +3,45 @@
 #include "math.h"
 
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 #include <unordered_map>
 #include <memory>
 
+#include "VAO.h"
+#include "VBO.h"
+#include "EBO.h"
+
+class Shader;
+
+struct InstanceData {
+	glm::vec4 color;
+	glm::vec2 position;
+	int useWorldPos;
+	int hasTexture;
+
+	GLuint64 tex;
+	glm::vec2 size;
+
+	glm::vec4 source;
+
+
+	// tex == 0 means object doesn't have texture
+	InstanceData(glm::vec2 _position, glm::vec2 _size, glm::vec4 _source, int _useWorldPos, glm::vec4 _color, uint64_t _tex)
+		: position(_position), size(_size), source(_source), useWorldPos(_useWorldPos), color(_color), tex(_tex), hasTexture(_tex != 0) {}
+};
+
 struct textureStruct {
-	unsigned char* texture = NULL;
 	// if useAlpha == true then if mouse over a == 0 then it won't trigger
+	GLuint64 handle;
 	bool useAlpha = false;
 	int w = 0;
 	int h = 0;
 	int nChannels;
 
-	textureStruct(unsigned char* bytes, bool _useAlpha, int _w, int _h, int _nChannels)
-		: texture(bytes), useAlpha(_useAlpha), w(_w), h(_h), nChannels(_nChannels) {}
-	~textureStruct() {
-		delete texture;
-	}
+	textureStruct(const std::string& path, bool _useAlpha);
+	~textureStruct() {}
+
+private:
 };
 
 class textureManager {
@@ -28,6 +51,28 @@ public:
 	static textureStruct* loadTexture(std::string path, bool loadSurface = false);
 	static textureStruct* getTexture(std::string name);
 
+	static void StartFrame();
+	// Adds the Image into a draw queue to render at end of frame or when shader is swapped
+	static void DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& tex);
+	// Instantly draws the image, used for things like FBOs
+	static void InstantDraw(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& tex);
+	static void DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color);
+	// uploads data to the CPU if the shader has changed, or the end of the frame has been reached
+	static void UploadGPUData(Shader* shader);
+
+	static GLuint GetSamplerID();
+
 private:
+	static inline Shader* prevShader = NULL;
+
 	static inline std::unordered_map<std::string, std::unique_ptr<textureStruct>> textureMap;
+
+	static inline std::vector<InstanceData> gpuData;
+
+	static inline GLuint ssbo;
+	static inline std::unique_ptr<VAO> vao;
+	static inline std::unique_ptr<VBO> vbo;
+	static inline std::unique_ptr<EBO> ebo;
+
+	static inline GLuint samplerID = -1;
 };

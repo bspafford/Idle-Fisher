@@ -2,6 +2,7 @@
 #include "camera.h"
 
 BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : widget(parent) {
+	return;
 	instances.push_back(this);
 
 	this->blurStrength = blurStrength;
@@ -34,12 +35,14 @@ BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : wi
 }
 
 BlurBox::~BlurBox() {
+	return;
 	auto it = std::find(instances.begin(), instances.end(), this);
 	if (it != instances.end())
 		instances.erase(it);
 }
 
 void BlurBox::makeVerticesList() {
+	return;
 	vector center = stuff::screenSize / 2.f;
 	vector min = loc - center;
 	vector max = loc + size - center;
@@ -57,6 +60,7 @@ void BlurBox::makeVerticesList() {
 }
 
 void BlurBox::UpdateVertices() {
+	return;
 	if (!quadVAO)
 		return;
 
@@ -73,20 +77,24 @@ void BlurBox::UpdateVertices() {
 }
 
 void BlurBox::setupLocs() {
+	return;
 	UpdateVertices();
 }
 
 void BlurBox::setLoc(vector loc) {
+	return;
 	__super::setLoc(loc);
 	UpdateVertices();
 }
 
 void BlurBox::setSize(vector size) {
+	return;
 	__super::setSize(size);
 	UpdateVertices();
 }
 
 void BlurBox::draw(Shader* shader) {
+	return;
 	UnbindFrameBuffer();
 	BindShader();
 	blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
@@ -103,6 +111,7 @@ void BlurBox::draw(Shader* shader) {
 }
 
 void BlurBox::GenerateSubTexture(GLuint texture) {
+	return;
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -111,6 +120,7 @@ void BlurBox::GenerateSubTexture(GLuint texture) {
 }
 
 void BlurBox::Init() {
+	return;
 	blurShader = std::make_unique<Shader>("blurShader.vert", "blurShader.frag");
 
 	glGenFramebuffers(1, &sceneFBO);
@@ -141,6 +151,7 @@ void BlurBox::Init() {
 }
 
 void BlurBox::DrawFinal() {
+	return;
 	glClear(GL_COLOR_BUFFER_BIT);
 	BindShader();
 	blurShader->setInt("radius", 0);
@@ -151,28 +162,33 @@ void BlurBox::DrawFinal() {
 }
 
 void BlurBox::BindFrameBuffer() {
+	return;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevBoundFBO); // saves last active FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 }
 
 void BlurBox::UnbindFrameBuffer() {
+	return;
 	glBindFramebuffer(GL_FRAMEBUFFER, prevBoundFBO); // sets to last active FBO
 }
 
 void BlurBox::BindTexture() {
+	return;
 	glBindTexture(GL_TEXTURE_2D, sceneTexture);
 }
 
 void BlurBox::UnbindTexture() {
+	return;
 	glBindTexture(GL_TEXTURE_2D, 0);
-
 }
 
 void BlurBox::BindShader() {
+	return;
 	blurShader->Activate();
 }
 
 void BlurBox::OnReizeWindow() {
+	return;
 	// resize the texture
 	glBindTexture(GL_TEXTURE_2D, sceneTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stuff::screenSize.x, stuff::screenSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);

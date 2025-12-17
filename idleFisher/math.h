@@ -24,6 +24,10 @@ struct Rect {
 		os << "(" << r.x << ", " << r.y << ", " << r.w << ", " << r.h << ")";
 		return os;
 	}
+
+	Rect operator/ (vector v) const {
+		return { x / v.x, y / v.y, w / v.x, h / v.y };
+	}
 };
 
 class math {

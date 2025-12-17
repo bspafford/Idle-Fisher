@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\npc">
-      <UniqueIdentifier>{ecbf26d6-8881-4f01-a0a6-e547d6060587}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\npc">
       <UniqueIdentifier>{baf36443-b264-4025-9eb7-5a7b079cd018}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="Header Files\scenes">
       <UniqueIdentifier>{fdcf2f61-1078-4f94-b8e1-17353277f6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pathfinding\npc">
+      <UniqueIdentifier>{ecbf26d6-8881-4f01-a0a6-e547d6060587}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -440,6 +440,9 @@
     <ClCompile Include="CircleLoad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -497,7 +500,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="npc.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="widget.h">
       <Filter>Header Files\widgets</Filter>
@@ -650,46 +653,46 @@
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="scuba.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="sailor.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="petSeller.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="pet.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="merchant.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="mechanic.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="fishTransporter.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="fisherman.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="dumpster.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="decorator.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="atm.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="AautoFisher.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="fishGod.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="buyAutoFisher.h">
-      <Filter>Header Files\npc</Filter>
+      <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
     <ClInclude Include="exprtk.hpp">
       <Filter>Resource Files</Filter>
@@ -800,6 +803,9 @@
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="CircleLoad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -71,9 +71,8 @@ Acharacter::Acharacter() {
 	animData.insert({ "waitSE", animDataStruct({3, 7}, {6, 7}, true) });
 	animData.insert({ "pullSE", animDataStruct({7, 7}, {18, 7}, false) });
 
-	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, false, vector{ 0, 0 });
+	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, true, vector{ 0, 0 });
 	anim->shouldntDeleteTimer(true);
-	anim->spriteSheet->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 	anim->setAnimation("idleSE", true);
 	anim->addFinishedCallback(this, &Acharacter::animFinished);
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
@@ -220,7 +219,7 @@ void Acharacter::draw(Shader* shaderProgram) {
 		drawFishingLine(shaderProgram);
 	}
 
-	anim->setLoc({ 0, 0 });
+	anim->setLoc(SaveData::saveData.playerLoc);
 	anim->draw(shaderProgram);
 	if (isFishing) {
 		fishingRod->setLoc(anim->getLoc() - vector{ 4, 51.f });

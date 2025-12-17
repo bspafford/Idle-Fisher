@@ -59,8 +59,6 @@ public:
 	static inline Shader* shaderProgram;
 	static inline Shader* shadowMapProgram;
 	static inline Shader* twoDShader;
-	static inline Shader* quadShader;
-	static inline Shader* waterShader;
 	static inline Shader* twoDWaterShader;
 	static inline Shader* circleShader;
 

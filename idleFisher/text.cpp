@@ -8,6 +8,7 @@
 
 #include "camera.h"
 #include "GPULoadCollector.h"
+#include "textureManager.h"
 
 #include "debugger.h"
 
@@ -32,12 +33,14 @@ text::~text() {
 	if (it != instances.end())
 		instances.erase(it);
 
+	/*
 	if (currVAO)
 		currVAO->Delete();
 	if (currEBO)
 		currEBO->Delete();
 	if (currVBO)
 		currVBO->Delete();
+	*/
 
 	glDeleteTextures(1, &textTexture);
 	glDeleteFramebuffers(1, &fbo);
@@ -52,43 +55,6 @@ text::~text() {
 }
 
 void text::LoadGPU() {
-	std::vector<float> positions(16, 0);
-
-	std::vector<GLuint> indices = {
-		0, 1, 3, // First triangle
-		3, 1, 2  // Second triangle
-	};
-	currVAO = std::make_unique<VAO>();
-	currVAO->Bind();
-	currEBO = std::make_unique<EBO>(indices);
-
-	currVBO = std::make_unique<VBO>(positions);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Create Texture
-	glGenTextures(1, &textTexture);
-	glBindTexture(GL_TEXTURE_2D, textTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboSize.x, fboSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	// Create FBO
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textTexture, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "FBO is incomplete!" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	currVAO->Unbind();
-
 	if (futureTextString != "")
 		setText(futureTextString);
 }
@@ -204,7 +170,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(currInfo.loc.x, currInfo.loc.y, currInfo.size.x, currInfo.size.y);
 
 		letters[i] = std::make_unique<Image>(textImg, source, vector{ 0, 0 }, false);
-		letters[i]->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
+		//letters[i]->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 		Image* letter = letters[i].get();
 
 		if (alignment != TEXT_ALIGN_RIGHT)
@@ -214,7 +180,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 		if (alignment == TEXT_ALIGN_RIGHT)
 			temp = -1;
 
-		offset.x += letter->w * temp * stuff::pixelSize;
+		offset.x += letter->w * temp;// *stuff::pixelSize;
 
 		if (isometric) {
 			if (text[i] == '.')
@@ -317,43 +283,36 @@ void text::makeTextTexture() {
 	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize));
 
 	absoluteLoc = absoluteLoc.floor();
-	vector scaledLoc = (absoluteLoc * vector{ 1, -1 });
-	if (useWorldPos)
-		scaledLoc = absoluteLoc * stuff::pixelSize;
 
-	float positions[] = {
-		// Positions											// Texture Coords
-		floor(fboSize.x + scaledLoc.x),	floor(scaledLoc.y),				1.f, 1.f,	// Bottom-right
-		floor(fboSize.x + scaledLoc.x),	floor(fboSize.y + scaledLoc.y),	1.f, 0.f,	// Top-right
-		floor(scaledLoc.x),				floor(fboSize.y + scaledLoc.y),	0.f, 0.f,	// Top-left
-		floor(scaledLoc.x),				floor(scaledLoc.y),				0.f, 1.f	// Bottom-left
-	};
+	GLint preboundFBO = 0; // get fbo bound before this
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &preboundFBO);
+	GLint scissorBox[4]; // get the scissor size before this
+	glGetIntegerv(GL_SCISSOR_BOX, scissorBox);
 
-	UpdateGPUData(positions);
+	UpdateGPUData(preboundFBO);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glViewport(0, 0, fboSize.x, fboSize.y);
-	// puts scissor size to fbo and saves previous size
-	GLint scissorBox[4];
-	glGetIntegerv(GL_SCISSOR_BOX, scissorBox);
+	// puts scissor size to fbo
 	glScissor(0, 0, fboSize.x, fboSize.y);
-	glClearColor(0, 0, 0, 0);
+
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// Draws to the FBO
+	//Image* img = new Image("./images/icon.png", { 10, 10 }, false);
+	//img->InstantDraw(Main::twoDShader);
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
-			letters[i]->setLoc(vector{ letters[i]->getLoc().x - (fboSize.x - letters[i]->getSize().x) / 2.f, letters[i]->getLoc().y + (letters[i]->getSize().y - fboSize.y) / 2.f }.floor());
 			// drops characters if they are inside the drop list and the correct font
 			std::string dropList = "gpqjy";
 			std::vector<std::string> dontDropFont = { "afScreen", "biggerStraight", "biggerStraightDark" };
 			if (std::find(dontDropFont.begin(), dontDropFont.end(), font) == dontDropFont.end() && std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y + letters[i]->getSize().y / 2.f}.floor());
 
-			letters[i]->draw(Main::twoDShader);
+			letters[i]->InstantDraw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
 		}
-
 	// Unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, preboundFBO);
 	glViewport(0, 0, stuff::screenSize.x, stuff::screenSize.y);
 	// puts scissor size back to what it was before
 	glScissor(scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3]);
@@ -364,30 +323,48 @@ void text::makeTextTexture() {
 	Main::twoDShader->setMat4("projection", currProjection);
 }
 
-void text::UpdateGPUData(float positions[]) {
-	currVAO->Bind();
-	currVBO->Bind();
+void text::UpdateGPUData(GLint preboundFBO) {
+	// Create FBO
+	glCreateFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	// updates the tex coords
-	void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	if (ptr) {
-		// round positions list
-		for (int i = 0; i < 16; i++)
-			positions[i] = floorf(positions[i]);
-		memcpy(ptr, positions, 16 * sizeof(float));
+	if (handle) // delete because resizing/changing image
+		glMakeTextureHandleNonResidentARB(handle);
+	glDeleteTextures(1, &textTexture);
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &textTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textTexture);
+
+	glTextureStorage2D(textTexture, 1, GL_RGBA8, fboSize.x, fboSize.y);
+
+	handle = glGetTextureSamplerHandleARB(textTexture, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
+	glMakeTextureHandleResidentARB(handle);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "FBO is incomplete!" << std::endl;
 	}
 
-	glUnmapBuffer(GL_ARRAY_BUFFER);
-
-	// resize the texture
-	glBindTexture(GL_TEXTURE_2D, textTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboSize.x, fboSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindFramebuffer(GL_FRAMEBUFFER, preboundFBO);
 }
 
-void text::draw(Shader* shaderProgram) {
+void text::draw(Shader* shader) {
 	if (textString == "")
 		return;
-	drawTexture(shaderProgram, textTexture);
+
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, textureID);
+
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
+	textureManager::DrawImage(shader, { 10, 10 }, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, handle);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+	for (int i = 0; i < letters.size(); i++) {
+		letters[i]->draw(shader);
+	}
 }
 
 void text::setLocAndSize(vector loc, vector size) {
@@ -411,14 +388,9 @@ void text::setLoc(vector loc) {
 		} else if (alignment == TEXT_ALIGN_CENTER) {
 			absoluteLoc = loc - vector{ getSize().x / 2.f, 0.f };
 		}
-
-		updatePositionsList();
 	} else {
 		vector size = getSize();
 		vector halfScreen = (stuff::screenSize / 2.f);
-
-		// convert { 0, 0 } from center to top left of screen and makes the top left the { 0, 0 } of the text
-		loc += (-halfScreen + vector{0, size.y});
 
 		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
@@ -427,37 +399,7 @@ void text::setLoc(vector loc) {
 		} else if (alignment == TEXT_ALIGN_CENTER) {
 			absoluteLoc = loc - vector{ (getSize().x / 2.f), 0.f };
 		}
-
-		updatePositionsList();
 	}
-}
-
-void text::updatePositionsList() {
-	if (!currVAO || !GPULoadCollector::isOnMainThread())
-		return;
-
-	currVAO->Bind();
-	currVBO->Bind();
-
-	float x1 = 0;
-	float x2 = 1;
-	float y1 = 0;
-	float y2 = 1;
-
-	vector scale = getSize();
-	vector scaledLoc = (absoluteLoc * vector{ 1, -1 });
-	if (useWorldPos)
-		scaledLoc = (absoluteLoc * stuff::pixelSize);
-	float positions[] = {
-		// Positions // Texture Coords
-		round(fboSize.x + scaledLoc.x),	round(scaledLoc.y),				1.f, 0.f,	// Bottom-right
-		round(fboSize.x + scaledLoc.x),	round(fboSize.y + scaledLoc.y),	1.f, 1.f,	// Top-right // idk why the y texCoords have to be flipped
-		round(scaledLoc.x),				round(fboSize.y + scaledLoc.y),	0.f, 1.f,	// Top-left
-		round(scaledLoc.x),				round(scaledLoc.y),				0.f, 0.f	// Bottom-left
-	};
-
-	currVBO->UpdateData(positions, sizeof(positions));
-	currVAO->Unbind();
 }
 
 void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
@@ -472,7 +414,7 @@ void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 }
 
 vector text::getSize() {
-	return fboSize - vector{ 0, textHeight / 2.f * stuff::pixelSize };
+	return fboSize;// -vector{ 0, textHeight / 2.f * stuff::pixelSize };
 }
 
 vector text::getFBOSize() {
@@ -515,22 +457,4 @@ float text::getLineLength() {
 
 void text::setupLocs() {
 	setText(textString);
-}
-
-void text::drawTexture(Shader* shaderProgram, GLuint textureID) {
-	if (!currVAO)
-		return;
-
-	shaderProgram->Activate();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	currVAO->Bind();
-
-	shaderProgram->setInt("useWorldPos", useWorldPos);
-	shaderProgram->setVec4("color", colorMod);
-
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	currVAO->Unbind();
 }

@@ -346,8 +346,6 @@
 ./images/character/characterspritesheet.png
 ./images/character/fishingrod.png
 ./images/character/idlese1.png
-./images/character/test.png
-./images/character/test1.png
 ./images/circle/circle1.png
 ./images/circle/circle2.png
 ./images/circle/circle3.png

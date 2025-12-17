@@ -19,6 +19,9 @@ void Scene::openLevel(std::string worldName1, int worldChangeLoc1, bool override
 	worldChangeLoc = worldChangeLoc1;
 	overrideIfInWorld = overrideIfInWorld1;
 	loadWorld = true;
+
+	if (!loadingScreen)
+		loadingScreen = std::make_unique<LoadingScreen>(nullptr);
 }
 
 void Scene::draw(Shader* shaderProgram) {
@@ -130,9 +133,6 @@ void Scene::deferredChangeWorld() {
 		return;
 
 	loadWorld = false;
-
-	if (!loadingScreen)
-		loadingScreen = std::make_unique<LoadingScreen>(nullptr);
 
 	// returns if the world is already open
 	if (!overrideIfInWorld && worldName == currWorldName)

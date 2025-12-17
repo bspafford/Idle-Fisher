@@ -1,16 +1,8 @@
-#ifndef TEXTURE_CLASS_H
-#define TEXTURE_CLASS_H
+#pragma once
 
 #include<glad/glad.h>
-#include <stb/stb_image.h>
-#include <vector>
-
-#include "VAO.h"
-#include "VBO.h"
-#include "EBO.h"
 
 #include"shaderClass.h"
-
 #include "math.h"
 
 enum ImageAnchor {
@@ -23,15 +15,13 @@ enum ImageAnchor {
 
 class Image {
 public:
-	GLuint ID;
-	GLenum type;
 	Image(std::string image, vector loc, bool useWorldPos);
 	Image(std::shared_ptr<Image> image, std::shared_ptr<Rect>, vector loc, bool useWorldPos);
-	~Image();
 
-	void LoadGPU();
-
-	void draw(Shader* shaderProgram);
+	// Adds to a queue that is drawn at the end of the frame or when the shader is swapped
+	void draw(Shader* shader);
+	// Instantly draws the Image
+	void InstantDraw(Shader* shader);
 	void setSourceRect(std::shared_ptr<Rect> rect);
 	void setLoc(vector loc);
 	vector getLoc();
@@ -51,49 +41,26 @@ public:
 	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
 	void flipHoizontally(bool flip);
 
-	// Assigns a texture unit to a texture
-	void texUnit(Shader& shader, const char* uniform, GLuint unit);
-	// Binds a texture
-	void Bind();
-	// Unbinds a texture
-	void Unbind();
-	// Deletes a texture
-	void Delete();
-
 	bool useWorldPos;
 	bool useAlpha;
 
 	float w = 0, h = 0;
 	// scale of image without a source rect
 	float ogW = 0, ogH = 0;
-	std::shared_ptr<Rect> source;
+	std::shared_ptr<Rect> source; // 0 -> img size
+	Rect normalizedSource; // 0 -> 1
 	float rotation;
-	unsigned char* texture;
-	GLenum textureFormat;
 	std::string path;
 
-	void updatePositionsList(std::vector<float> positions = std::vector<float>(0));
 private:
-	std::vector<float> getPositionsList();
-
-	GLenum texType = GL_TEXTURE_2D;
-	GLenum pixelType = GL_UNSIGNED_BYTE;
-
-	std::unique_ptr<VAO> currVAO = NULL;
-	std::unique_ptr<VBO> currVBO = NULL;
-	std::unique_ptr<EBO> currEBO = NULL;
-
-	std::vector<float> positions;
+	GLuint64 handle = 0;
 
 	vector loc; // relative to the screen position
 	vector absoluteLoc; // absolute position in the screen
 	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
-	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
+	ImageAnchor yAnchor = IMAGE_ANCHOR_BOTTOM;
 	
 	glm::vec4 colorMod = glm::vec4(1.f);
 
 	bool flipHoriz = false;
-
-	bool calledLoadGPU = false;
 };
-#endif

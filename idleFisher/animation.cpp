@@ -22,8 +22,6 @@ animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight,
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
-
-	GPULoadCollector::add(this);
 }
 
 animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc) {
@@ -40,8 +38,6 @@ animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int c
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
-
-	GPULoadCollector::add(this);
 }
 
 animation::~animation() {
@@ -49,25 +45,14 @@ animation::~animation() {
 	eventCallback_ = nullptr;
 	finishedCallback_ = nullptr;
 	frameCallback_ = nullptr;
-
-	GPULoadCollector::remove(this);
 }
 
 void animation::draw(Shader* shaderProgram) {
 	spriteSheet->draw(shaderProgram);
-	//if (currAnim == "normal" || currAnim == "hover")
-	//	std::cout << currFrameLoc.x << ", " << cellWidthNum - 1 << std::endl;
-
 	int frameNum = calcFrameDistance(true);
 }
 
 void animation::start() {
-	if (!GPULoadCollector::isOnMainThread()) {
-		// queue that set animation for when its set later
-		queuedStart = true;
-		return;
-	}
-
 	// reset frame back to beginning
 	currFrameLoc = animData[currAnim].start;
 	bStopped = false;
@@ -92,12 +77,6 @@ void animation::stop() {
 }
 
 void animation::setAnimation(std::string name, bool instantUpdate) {
-	if (!GPULoadCollector::isOnMainThread()) {
-		// queue that set animation for when its set later
-		setQueuedAnimString(name);
-		return;
-	}
-
 	int frameNum = calcFrameDistance(true);
 
 	currAnim = name;
@@ -171,12 +150,6 @@ int animation::calcFrameDistance(bool getFrameNum) {
 	else
 		end = animData[currAnim].end;
 
-	//int spriteSheetWidth = spriteSheet->w / cellWidth;
-
-	//int startIndex = start.y * spriteSheetWidth + start.x;
-	//int endIndex = end.y * spriteSheetWidth + end.x;
-	//return endIndex - startIndex;
-
 	return end.x - start.x;
 }
 
@@ -188,22 +161,6 @@ void animation::setLoc(vector loc) {
 
 vector animation::getLoc() {
 	return loc;
-}
-
-void animation::setQueuedAnim() {
-	setAnimation(queuedAnim);
-	setQueuedAnimString("");
-}
-
-void animation::setQueuedAnimString(std::string anim) {
-	queuedAnim = anim;
-}
-
-void animation::playQueuedStart() {
-	//std::lock_guard<std::mutex> lock(mutex);
-	if (queuedStart)
-		start();
-	queuedStart = false;
 }
 
 void animation::shouldntDeleteTimer(bool dontDelete) {

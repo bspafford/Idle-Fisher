@@ -138,10 +138,7 @@ int Shader::GetUniformLocation(const std::string& key) {
 	if (it != uniformCache.end())
 		return it->second;
 
-	std::cout << "getting unfirom location bad\n";
 	int loc = glGetUniformLocation(ID, key.c_str());
-	//uniformCache[key] = loc;
 	uniformCache.emplace(key, loc);
 	return loc;
 }
-

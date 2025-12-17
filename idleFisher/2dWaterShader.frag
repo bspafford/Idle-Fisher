@@ -1,7 +1,7 @@
-#version 330 core
+#version 430 core
+#extension GL_ARB_bindless_texture : require
 
 in vec2 textureCoords;
-in vec3 textureCoords1;
 in vec4 clipSpace;
 
 out vec4 FragColor;
@@ -21,19 +21,16 @@ uniform float moveFactor;
 
 const float waveStrength = 0.005f;
 
-in vec2 vSnappedUV;
-
 void main() {
     vec2 waterImgSize = vec2(1860, 1275);
 	float pixelSize = 3.0;
 	
 	vec2 blockSize = vec2(1.0) / waterImgSize; // UV size of one 6x6 block
-	vec2 pixelCoords = (floor(textureCoords1.xy / blockSize) + 0.5) * blockSize;
+	vec2 pixelCoords = (floor(textureCoords / blockSize) + 0.5) * blockSize;
 
 	vec2 reflectTexCoords = pixelCoords.xy;
 	vec2 refractTexCoords = pixelCoords.xy;
 
-	vec2 dudvUV = textureCoords;
 	vec2 distortion1 = (texture(dudvMap, vec2((pixelCoords.x + moveFactor), pixelCoords.y )).rg * 2.0f - 1.0f) * waveStrength;
 	vec2 totalDistortion = distortion1;
 

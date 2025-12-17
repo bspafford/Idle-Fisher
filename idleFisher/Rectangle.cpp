@@ -1,7 +1,7 @@
 #include "Rectangle.h"
 #include "stuff.h"
-#include "GPULoadCollector.h"
 #include "input.h"
+#include "textureManager.h"
 
 #include "debugger.h"
 
@@ -11,10 +11,15 @@ URectangle::URectangle(vector loc, vector size, bool useWorldLoc, glm::vec4 colo
 	this->color = color;
 	this->useWorldLoc = useWorldLoc;
 
-	GPULoadCollector::add(this);
+	setCursorHoverIcon(CURSOR_DEFAULT);
+
+	setLoc(loc);
+
+	//GPULoadCollector::add(this);
 }
 
 void URectangle::LoadGPU() {
+	/*
 	float vertices[] = {
 		// Positions // Texture Coords
 		size.x + loc.x, loc.y,           // Bottom-right
@@ -36,24 +41,22 @@ void URectangle::LoadGPU() {
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	setCursorHoverIcon(CURSOR_DEFAULT);
-
-	setLoc(loc);
+	*/
 }
 
 URectangle::~URectangle() {
+	/*
 	if (currVAO)
 		currVAO->Delete();
 	if (currVBO)
 		currVBO->Delete();
 	if (currEBO)
 		currEBO->Delete();
-	
-	GPULoadCollector::remove(this);
+		*/
 }
 
 void URectangle::draw(Shader* shaderProgram) {
+	/*
 	if (!currVAO || !GPULoadCollector::isOnMainThread())
 		return;
 
@@ -68,9 +71,12 @@ void URectangle::draw(Shader* shaderProgram) {
 	
 	shaderProgram->setInt("isRectangle", 0);
 
+		*/
 	vector mousePos = Input::getMousePos();
 	if (blockCursor && mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
 		setHoveredItem(this);
+
+	textureManager::DrawRect(shaderProgram, absoluteLoc, size, useWorldLoc, color);
 }
 
 void URectangle::setColor(glm::vec4 color) {
@@ -80,9 +86,8 @@ void URectangle::setColor(glm::vec4 color) {
 void URectangle::setLoc(vector loc) {
 	this->loc = loc;
 	if (useWorldLoc) {
-		this->loc = loc;
 		this->absoluteLoc = loc;
-		updatePositionsList();
+		//updatePositionsList();
 	} else {
 		// by default anchor should be top left?
 
@@ -114,7 +119,7 @@ void URectangle::setLoc(vector loc) {
 
 		absoluteLoc = newLoc;
 
-		updatePositionsList();
+		//updatePositionsList();
 	}
 }
 
@@ -123,11 +128,8 @@ vector URectangle::getLoc() {
 }
 
 void URectangle::setSize(vector size) {
-	if (this->size == size)
-		return;
-
 	this->size = size;
-	updatePositionsList();
+	//updatePositionsList();
 }
 
 vector URectangle::getSize() {
@@ -145,6 +147,7 @@ void URectangle::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 	setLoc(loc);
 }
 
+/*
 void URectangle::updatePositionsList() {
 	if (!currVAO || !GPULoadCollector::isOnMainThread())
 		return;
@@ -170,6 +173,7 @@ void URectangle::updatePositionsList() {
 
 	currVBO->UpdateData(positions, sizeof(positions));
 }
+*/
 
 void URectangle::setBlockCursor(bool val) {
 	blockCursor = val;

@@ -78,7 +78,7 @@ titleScreen::~titleScreen() {
 
 void titleScreen::start() {
 	// setup water shader images
-	Texture::bindTextureToShader({ Main::waterShader, Main::twoDWaterShader }, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/water.png", "underwaterTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
 	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
@@ -229,7 +229,7 @@ void rebirthWorld::deconstructor() {
 
 void rebirthWorld::start() {
 	// setup water shader images
-	Texture::bindTextureToShader({ Main::waterShader, Main::twoDWaterShader }, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/rebirth/water.png", "underwaterTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
 	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/worlds/rebirth/depthMap.png", "waterDepthTexture");
@@ -338,12 +338,8 @@ void world::start() {
 	fishSchoolSpawnTimer->addCallback(this, &world::spawnFishSchool);
 	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
 
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR) {
-		std::cout << "OpenGL Error: " << err << std::endl;
-	}
 	// bind texture stuff for water
-	Texture::bindTextureToShader({ Main::waterShader, Main::twoDWaterShader }, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/water.png", "underwaterTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
 	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/water/waterDepthMap.png", "waterDepthTexture");
@@ -353,9 +349,6 @@ void world::start() {
 	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
 	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Main::twoDWaterShader->setFloat("causticSize", 16.f);
-	while ((err = glGetError()) != GL_NO_ERROR) {
-		std::cout << "OpenGL Error: " << err << std::endl;
-	}
 	setupAutoFishers();
 
 	// load idle profits
@@ -367,9 +360,6 @@ void world::start() {
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
 
 	circleAnim->Start();
-	while ((err = glGetError()) != GL_NO_ERROR) {
-		std::cout << "OpenGL Error: " << err << std::endl;
-	}
 }
 
 void world::loadIdleProfits() {

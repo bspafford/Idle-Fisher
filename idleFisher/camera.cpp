@@ -90,7 +90,7 @@ glm::vec3 scaleIsometricMovement3D(const glm::vec3& inputXZ) {
 
 void Camera::Update(GLFWwindow* window, float deltaTime) {
 	glm::vec2 animCenter = glm::vec2(Acharacter::anim->GetCellSize().x / 2.f / stuff::pixelSize, Acharacter::anim->GetCellSize().y / stuff::pixelSize);
-	glm::vec2 relLoc = glm::vec2(SaveData::saveData.playerLoc.x / 10.f * stuff::pixelSize, SaveData::saveData.playerLoc.y / 5.f * stuff::pixelSize) + animCenter;
+	glm::vec2 relLoc = glm::vec2(SaveData::saveData.playerLoc.x / 10.f * stuff::pixelSize, SaveData::saveData.playerLoc.y / 5.f * stuff::pixelSize) + animCenter - glm::vec2(96, 110);
 	glm::vec3 camLoc = math::convertFromRelativeCoords(relLoc);
 	camLoc.y = 50;
 	Position = camLoc;
@@ -187,7 +187,7 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime) {
 }
 
 void Camera::printCamRot() {
-	float radToDeg = 180.f / 3.1415926f;
+	float radToDeg = 180.f / M_PI;
 
 	float yaw = atan2(cameraMatrix[0][1], cameraMatrix[0][0]) * radToDeg;
 	float pitch = atan2(-cameraMatrix[0][2], sqrt(cameraMatrix[0][0] * cameraMatrix[0][0] + cameraMatrix[0][1] * cameraMatrix[0][1])) * radToDeg;
@@ -200,7 +200,8 @@ glm::mat4 Camera::getProjectionMat(vector frameSize) {
 	if (frameSize == vector{0, 0})
 		frameSize = stuff::screenSize;
 	
-	float left = -frameSize.x / 2.f, right = frameSize.x / 2.f, bottom = -frameSize.y / 2.f, top = frameSize.y / 2.f;
+	//float left = -frameSize.x / 2.f, right = frameSize.x / 2.f, bottom = -frameSize.y / 2.f, top = frameSize.y / 2.f;
+	float left = 0, right = frameSize.x, bottom = 0, top = frameSize.y;
 
 	return glm::ortho(left, right, bottom, top, -1.f, 5000.0f);
 }
