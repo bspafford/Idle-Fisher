@@ -57,7 +57,9 @@ public:
 	// Instantly draws the image, used for things like FBOs
 	static void DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color);
 	static void EndFrame();
-	static void FBOChanged();
+	// Uploads data to GPU when called
+	// Used for things like FBO changes or with something like the blur box
+	static void ForceGPUUpload();
 
 	static GLuint GetSamplerID();
 

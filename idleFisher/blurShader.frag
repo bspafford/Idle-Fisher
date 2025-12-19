@@ -1,15 +1,36 @@
-#version 330 core
+#version 430 core
+#extension GL_ARB_bindless_texture : require
+
 out vec4 FragColor;
 
 in vec2 TexCoord;
+flat in uint instanceIndex;
 
-uniform sampler2D screenTexture;
 uniform int radius;
 uniform vec2 screenSize;
 
+struct InstanceData {
+    vec4 color;
+    vec2 position;
+	int useWorldPos;
+	int hasTexture;
+    
+    sampler2D tex;
+    vec2 size;
+
+    vec4 source;
+
+};
+
+layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
+
 void main() {
+    InstanceData data = instances[instanceIndex];
+
+    vec2 texCoord = vec2(TexCoord.x, 1.f - TexCoord.y);
+
     if (radius == 0) {
-        FragColor = texture(screenTexture, TexCoord);
+        FragColor = texture(data.tex, texCoord);
         return;
     }
 
@@ -22,13 +43,13 @@ void main() {
     for (int x = -radius; x <= radius; x += 3) {
         for (int y = -radius; y <= radius; y += 3) {
             vec2 offset = vec2(x, y) * texelSize;
-            vec2 coords = TexCoord + offset;
+            vec2 coords = texCoord + offset;
         
             // Adjusting the offset to compensate for the shift
             coords += 0.333f * vec2(radius, radius) * texelSize;
         
             if (coords.x >= 0.0 && coords.x <= 1.0 && coords.y >= 0.0 && coords.y <= 1.0) {
-                result += texture(screenTexture, coords).rgb;
+                result += texture(data.tex, coords).rgb;
                 total++;
             }
         }

@@ -30,7 +30,6 @@
 // widgets
 #include "widget.h"
 #include "pauseMenu.h"
-#include "settings.h"
 #include "fishComboWidget.h"
 #include "heldFishWidget.h"
 #include "currencyWidget.h"
@@ -39,7 +38,6 @@
 #include "journal.h"
 #include "fishUnlocked.h"
 #include "UIWidget.h"
-#include "premiumBuffWidget.h"
 #include "idleProfitWidget.h"
 #include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
@@ -164,8 +162,9 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
-	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World!", "straight", vector{ 0, 0 });
+	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World!", "straight", vector{ 10, 10 });
 	std::unique_ptr<Image> img = std::make_unique<Image>("./images/house.png", vector{ 1, 1 }, false);
+	FBO* fbo = new FBO(stuff::screenSize, false);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
@@ -183,8 +182,13 @@ int Main::createWindow() {
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
-		//img->draw(twoDShader);
+
+		fbo->BindFramebuffer();
+		img->draw(twoDShader);
 		text1->draw(twoDShader);
+		fbo->UnbindFramebuffer();
+		fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
+		
 		textureManager::EndFrame();
 		glfwSwapBuffers(window);
 		continue;
@@ -239,12 +243,11 @@ int Main::createWindow() {
 		// ==== DRAW 2D STUFF ====
 		twoDShader->Activate();
 
-		//BlurBox::BindFrameBuffer();
-		//glClear(GL_COLOR_BUFFER_BIT);
+		BlurBox::BindFramebuffer();
 		draw(twoDShader);
-		//BlurBox::UnbindFrameBuffer();
+		BlurBox::UnbindFramebuffer();
 
-		//BlurBox::DrawFinal();
+		BlurBox::DrawFinal(twoDShader);
 
 		textureManager::EndFrame();
 
@@ -290,6 +293,7 @@ void Main::Start() {
 	twoDShader = new Shader("2dShader.vert", "2dShader.frag");
 	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
 	circleShader = new Shader("2dShader.vert", "circleShader.frag");
+	blurShader = new Shader("blurShader.vert", "blurShader.frag");
 
 	shaderProgram->Activate();
 
@@ -360,10 +364,8 @@ void Main::updateShaders(float deltaTime) {
 		tideFactor -= 3.f;
 
 	twoDShader->Activate();
-	twoDShader->setFloat("tideFactor", tideFactor);
-
-	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
 	twoDShader->setMat4("projection", camera->getProjectionMat());
+	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
 	twoDShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
 	twoDShader->setFloat("pixelSize", stuff::pixelSize);
 
@@ -372,6 +374,11 @@ void Main::updateShaders(float deltaTime) {
 	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
 	twoDWaterShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
 	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
+
+	blurShader->Activate();
+	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
+	blurShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	blurShader->setFloat("pixelSize", stuff::pixelSize);
 }
 
 void Main::setupWidgets() {

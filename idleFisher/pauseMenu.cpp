@@ -57,7 +57,7 @@ UpauseMenu::~UpauseMenu() {
 
 void UpauseMenu::draw(Shader* shaderProgram) {
 	rect->draw(shaderProgram);
-	blurBox->draw(shaderProgram);
+	blurBox->draw();
 	pauseText->draw(shaderProgram);
 	vertBox->draw(shaderProgram);
 }

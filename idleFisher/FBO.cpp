@@ -2,6 +2,7 @@
 #include "textureManager.h"
 #include "stuff.h"
 #include "ShaderClass.h"
+#include "Texture.h"
 
 FBO::FBO(vector size, bool useWorldPos) {
 	this->size = size;
@@ -10,39 +11,23 @@ FBO::FBO(vector size, bool useWorldPos) {
 	glCreateFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	if (handle) // delete because resizing/changing image
-		glMakeTextureHandleNonResidentARB(handle);
-	glDeleteTextures(1, &textID);
+	texture = std::make_unique<Texture>(size);
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &textID);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
 
-	glTextureStorage2D(textID, 1, GL_RGBA8, size.x, size.y);
-
-	handle = glGetTextureSamplerHandleARB(textID, textureManager::GetSamplerID());
-	glMakeTextureHandleResidentARB(handle);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textID, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "FBO is incomplete!" << std::endl;
-	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, GetCurrFBO());
 }
 
 FBO::~FBO() {
-	if (handle)
-		glMakeTextureHandleNonResidentARB(handle);
 	if (ID)
 		glDeleteFramebuffers(1, &ID);
-	if (textID)
-		glDeleteTextures(1, &textID);
 }
 
 void FBO::Draw(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color) {
-	textureManager::DrawImage(shader, position, size, source, useWorldPos, glm::vec4(1), handle);
+	textureManager::DrawImage(shader, position, size / stuff::pixelSize, source, useWorldPos, glm::vec4(1), texture->GetHandle());
 }
 
 vector FBO::GetSize() {
@@ -51,7 +36,7 @@ vector FBO::GetSize() {
 
 void FBO::BindFramebuffer(glm::vec4 clearColor) {
 	// draw here, before binding a new fbo
-	textureManager::FBOChanged();
+	textureManager::ForceGPUUpload();
 
 	fboStack.push(FBOData(ID, size));
 
@@ -66,7 +51,7 @@ void FBO::BindFramebuffer(glm::vec4 clearColor) {
 
 void FBO::UnbindFramebuffer() {
 	// draw here, before leaving the fbo
-	textureManager::FBOChanged();
+	textureManager::ForceGPUUpload();
 
 	fboStack.pop();
 	FBOData currFBO = fboStack.empty() ? FBOData(0, stuff::screenSize) : fboStack.top();

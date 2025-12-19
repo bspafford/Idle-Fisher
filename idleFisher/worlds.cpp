@@ -342,7 +342,7 @@ void world::start() {
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/water.png", "underwaterTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/water/waterDepthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDepthMap.png", "waterDepthTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/reflectionTexture.png", "reflectionTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");

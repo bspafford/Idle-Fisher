@@ -259,11 +259,11 @@ void text::makeTextTexture() {
 	glm::mat4 currProjection = Camera::getProjectionMat();
 
 	Main::twoDShader->Activate();
-	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize));
+	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
 
 	absoluteLoc = absoluteLoc.floor();
 
-	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
+	fbo = std::make_unique<FBO>(fboSize * stuff::pixelSize, useWorldPos);
 	fbo->BindFramebuffer();
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)

@@ -7,6 +7,7 @@
 #include "math.h"
 
 class Shader;
+class Texture;
 
 struct FBOData {
 	GLuint ID = 0;
@@ -30,9 +31,7 @@ public:
 
 private:
 	GLuint ID = 0;
-	GLuint textID = 0;
-	GLuint64 handle = 0;
-
+	std::unique_ptr<Texture> texture;
 	vector size;
 
 	// keeps track of what FBO the program is in

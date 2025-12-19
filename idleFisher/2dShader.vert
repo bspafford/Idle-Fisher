@@ -10,7 +10,6 @@ flat out uint instanceIndex;
 uniform mat4 projection;
 uniform vec2 playerPos;
 uniform float pixelSize;
-uniform int drawingToFBO;
 
 struct InstanceData {
     vec4 color;
@@ -31,16 +30,11 @@ void main() {
     instanceIndex = gl_InstanceID;
     InstanceData data = instances[instanceIndex];
 
-    if (drawingToFBO == 0)
-        gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 0.0, 1.0);
-    else
-        gl_Position = projection * vec4(aPos * data.size + data.position, 0.0, 1.0);
-
-    vec2 texCoord = aTexCoord;
+    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 0.0, 1.0);
 
     // if source size is 0
     if (data.source.z == 0 || data.source.w == 0)
-        TexCoord = texCoord; // (0, 0, 1, 1)
+        TexCoord = aTexCoord; // (0, 0, 1, 1)
     else
-        TexCoord = data.source.xy + texCoord * data.source.zw;
+        TexCoord = data.source.xy + aTexCoord * data.source.zw;
 }

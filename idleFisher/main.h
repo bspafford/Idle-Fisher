@@ -61,6 +61,7 @@ public:
 	static inline Shader* twoDShader;
 	static inline Shader* twoDWaterShader;
 	static inline Shader* circleShader;
+	static inline Shader* blurShader;
 
 	// widgets
 	void setupWidgets();
