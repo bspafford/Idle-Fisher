@@ -12,16 +12,15 @@ out vec4 clipSpace;
 out vec2 textureCoords;
 
 struct InstanceData {
+    vec4 color;
     vec2 position;
 	int useWorldPos;
-	int pad1;
+	int hasTexture;
     
     sampler2D tex;
     vec2 size;
 
     vec4 source;
-
-    vec4 color;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };

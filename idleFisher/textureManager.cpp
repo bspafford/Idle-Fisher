@@ -152,7 +152,7 @@ void textureManager::UploadGPUData() {
 		glBufferData(GL_SHADER_STORAGE_BUFFER, gpuData.size() * sizeof(InstanceData), gpuData.data(), GL_DYNAMIC_DRAW);
 
 		prevShader->Activate();
-		prevShader->setInt("drawingToFBO", !FBO::GetCurrFBO());
+		prevShader->setInt("drawingToFBO", FBO::GetCurrFBO());
 		
 		vao->Bind();
 		

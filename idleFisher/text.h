@@ -59,7 +59,9 @@ private:
 	static inline std::vector<text*> instances;
 
 	std::string textString;
-	std::string futureTextString; // keeps track if text was changed while on another thread
+	// if the FBO should be updated
+	// set true if text was changed while not on the main thread
+	bool updateWhileOnMain = false; 
 
 	// static list of text imgs
 	std::vector<std::unique_ptr<Image>> letters;

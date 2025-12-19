@@ -23,8 +23,7 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 	this->useWorldPos = useWorldPos;
 
 	loadTextImg();
-
-	futureTextString = text;
+	setText(text);
 
 	GPULoadCollector::add(this);
 }
@@ -41,8 +40,10 @@ text::~text() {
 }
 
 void text::LoadGPU() {
-	if (futureTextString != "")
-		setText(futureTextString);
+	if (updateWhileOnMain) {
+		makeTextTexture();
+		updateWhileOnMain = false;
+	}
 }
 
 void text::changeFontAll() {
@@ -156,7 +157,6 @@ void text::makeText(int i, std::string text, vector &offset) {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(currInfo.loc.x, currInfo.loc.y, currInfo.size.x, currInfo.size.y);
 
 		letters[i] = std::make_unique<Image>(textImg, source, vector{ 0, 0 }, false);
-		//letters[i]->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
 		Image* letter = letters[i].get();
 
 		if (alignment != TEXT_ALIGN_RIGHT)
@@ -194,14 +194,6 @@ void text::makeText(int i, std::string text, vector &offset) {
 }
 
 void text::setText(std::string text) {
-	// keeps track if text was updated while not on main thread
-	if (!GPULoadCollector::isOnMainThread()) {
-		futureTextString = text;
-		return;
-	}
-
-	futureTextString = "";
-
 	if (text == textString)
 		return;
 
@@ -244,7 +236,11 @@ void text::setText(std::string text) {
 			}
 		}						
 
-		makeTextTexture();
+
+		if (GPULoadCollector::isOnMainThread())
+			makeTextTexture();
+		else
+			updateWhileOnMain = true;
 	}
 }
 
@@ -268,10 +264,8 @@ void text::makeTextTexture() {
 	absoluteLoc = absoluteLoc.floor();
 
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
-	fbo->BindFramebuffer(glm::vec4(0, 0, 0, 1));
-	// Draws to the FBO
-	//Image* img = new Image("./images/icon.png", { 10, 10 }, false);
-	//img->InstantDraw(Main::twoDShader);
+	fbo->BindFramebuffer();
+	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
 			letters[i]->setLoc({letters[i]->getLoc().x, letters[i]->getLoc().y - textHeight + fboSize.y}); // push to top of fbo
@@ -290,24 +284,15 @@ void text::makeTextTexture() {
 
 	// restores projection
 	Main::twoDShader->setMat4("projection", currProjection);
+
+	letters.clear();
 }
 
 void text::draw(Shader* shader) {
 	if (textString == "")
 		return;
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, textureID);
-
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	fbo->Draw(shader, absoluteLoc, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);
-	//textureManager::DrawImage(shader, absoluteLoc, getSize(), Rect{0, 0, 1, 1}, useWorldPos, colorMod, handle);
-	//textureManager::DrawImage(shader, { 10, 10 }, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, handle);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-	//for (int i = 0; i < letters.size(); i++) {
-		//letters[i]->draw(shader);
-	//}
 }
 
 void text::setLocAndSize(vector loc, vector size) {

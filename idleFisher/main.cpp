@@ -183,7 +183,7 @@ int Main::createWindow() {
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
-		//img->InstantDraw(twoDShader);
+		//img->draw(twoDShader);
 		text1->draw(twoDShader);
 		textureManager::EndFrame();
 		glfwSwapBuffers(window);

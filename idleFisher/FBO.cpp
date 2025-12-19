@@ -4,6 +4,8 @@
 #include "ShaderClass.h"
 
 FBO::FBO(vector size, bool useWorldPos) {
+	this->size = size;
+
 	// Create FBO
 	glCreateFramebuffers(1, &ID);
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);

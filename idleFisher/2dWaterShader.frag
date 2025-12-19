@@ -27,6 +27,7 @@ void main() {
 	
 	vec2 blockSize = vec2(1.0) / waterImgSize; // UV size of one 6x6 block
 	vec2 pixelCoords = (floor(textureCoords / blockSize) + 0.5) * blockSize;
+	pixelCoords = vec2(pixelCoords.x, 1.f - pixelCoords.y);
 
 	vec2 reflectTexCoords = pixelCoords.xy;
 	vec2 refractTexCoords = pixelCoords.xy;
