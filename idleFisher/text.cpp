@@ -8,7 +8,6 @@
 
 #include "camera.h"
 #include "GPULoadCollector.h"
-#include "textureManager.h"
 #include "FBO.h"
 
 #include "debugger.h"
@@ -63,10 +62,6 @@ void text::changeFont() {
 void text::loadTextImg() {
 	textImg = std::make_shared<Image>("./fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
 
-	// make a list
-	// this list would be the size of all char (126)
-	// then it would contain the starting location and the size of the char
-	// then i could get that infromation by using the char num
 	std::ifstream file("./fonts/" + font + "/" + font + ".txt");
 	if (!file) {
 		std::cout << "no font file\n";
@@ -80,11 +75,20 @@ void text::loadTextImg() {
 	int lineNum = 0;
 	int xOffset = 0;
 
-	// gets the height of the text
-	std::string textHeightStr;
-	std::getline(file, textHeightStr);
-	textHeight = std::stoi(textHeightStr);
+	// parse header row
+	std::string headerLine;
+	std::getline(file, headerLine);
+	std::vector<std::string> delimLine;
+	std::istringstream stream(headerLine);
+	while (std::getline(stream, line, ' '))
+		delimLine.push_back(line);
 
+	if (delimLine.size() > 0)
+		textHeight = std::stoi(delimLine[0]);
+	if (delimLine.size() > 1)
+		dropHeight = std::stoi(delimLine[1]);
+
+	// parse body
 	while (std::getline(file, line)) {
 		// get each word in line
 		size_t pos = 0;
@@ -269,12 +273,9 @@ void text::makeTextTexture() {
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
 			letters[i]->setLoc({letters[i]->getLoc().x, letters[i]->getLoc().y - textHeight + fboSize.y}); // push to top of fbo
-			// drops characters if they are inside the drop list and the correct font
-			std::string dropList = "gpqjy";
-			std::vector<std::string> dontDropFont = { "afScreen", "biggerStraight", "biggerStraightDark" };
-			if (std::find(dontDropFont.begin(), dontDropFont.end(), font) == dontDropFont.end() && std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
-				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y + letters[i]->getSize().y / 2.f}.floor());
-
+			std::string dropList("qypgj");
+			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
+				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - dropHeight }); // add add dropHeight
 			letters[i]->draw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
 		}
 	// Unbind FBO
@@ -367,7 +368,7 @@ vector text::getFBOSize() {
 		if (maxY < letterLoc.y + letter->h)
 			maxY = letterLoc.y + letter->h;
 	}
-	return { ceil(maxX - minX), ceil(maxY - minY) };
+	return { ceil(maxX - minX), ceil(maxY - minY) + dropHeight };
 }
 
 void text::setLineLength(float length) {

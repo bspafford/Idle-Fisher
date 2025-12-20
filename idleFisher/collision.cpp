@@ -405,8 +405,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 				};
 
 				unsigned int VAO, VBO;
-				glGenVertexArrays(1, &VAO);
-				glGenBuffers(1, &VBO);
+				glCreateVertexArrays(1, &VAO);
+				glCreateBuffers(1, &VBO);
 
 				glBindVertexArray(VAO);
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -456,8 +456,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 				};
 
 				unsigned int VAO, VBO;
-				glGenVertexArrays(1, &VAO);
-				glGenBuffers(1, &VBO);
+				glCreateVertexArrays(1, &VAO);
+				glCreateBuffers(1, &VBO);
 
 				glBindVertexArray(VAO);
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -488,8 +488,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 	stuff.push_back({ point.x - radius, point.y + radius, point.x + radius, point.y + radius });
 	for (int i = 0; i < stuff.size(); i++) {
 		unsigned int VAO, VBO;
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
+		glCreateVertexArrays(1, &VAO);
+		glCreateBuffers(1, &VBO);
 
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -519,8 +519,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 	mousePosList.push_back({ mousePos.x - mouseRadius, mousePos.y + mouseRadius, mousePos.x + mouseRadius, mousePos.y + mouseRadius });
 	for (int i = 0; i < mousePosList.size(); i++) {
 		unsigned int VAO, VBO;
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
+		glCreateVertexArrays(1, &VAO);
+		glCreateBuffers(1, &VBO);
 
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);

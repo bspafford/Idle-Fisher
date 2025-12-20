@@ -26,7 +26,7 @@ private:
 	std::unique_ptr<URectangle> rect;
 	std::unique_ptr<BlurBox> blurBox;
 	std::unique_ptr<Image> pauseText;
-	std::unique_ptr<Ubutton> resumeButton;
+	std::unique_ptr<Ubutton> continueButton;
 	std::unique_ptr<Ubutton> saveGameButton;
 	std::unique_ptr<Ubutton> settingsButton;
 	std::unique_ptr<Ubutton> exitToMenuButton;

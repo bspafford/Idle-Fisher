@@ -146,7 +146,7 @@ void textureManager::UploadGPUData() {
 		return;
 
 	if (prevShader) {
-		glGenBuffers(1, &ssbo);
+		glCreateBuffers(1, &ssbo);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, gpuData.size() * sizeof(InstanceData), gpuData.data(), GL_DYNAMIC_DRAW);

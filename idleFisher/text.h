@@ -90,4 +90,6 @@ private:
 	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
 
 	int textHeight;
+	// How many pixels chars like 'g', 'y', etc, should be dropped
+	int dropHeight;
 };

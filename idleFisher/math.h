@@ -58,11 +58,7 @@ public:
 	// helper functions
 	static vector screenToWorld(vector pos, bool round = true);
 
-	// in glfw, (0, 0) is the center of the screen
-	// so stuff like images will already take account of this and have the origin in the center.
-	// but stuff like normal coordinates will have to calculate this
-	// can test this by setting objects coords to (0, 0) and see if they are either in the top left or in the center of the screen
-	static vector worldToScreen(vector pos, std::string origin);
+	static vector worldToScreen(vector pos);
 
 	// time stuff
 	// Y-M-D h:m:s
@@ -71,8 +67,4 @@ public:
 
 	// lowercases string
 	static std::string toLower(std::string str);
-
-	static void computeOrthoMatrix(int width, int height, float* matrix);
-	static glm::vec2 convertToRelativeCoords(glm::vec3 movement);
-	static glm::vec3 convertFromRelativeCoords(glm::vec2 relative);
 };

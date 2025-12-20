@@ -14,7 +14,7 @@ void verticalBox::draw(Shader* shaderProgram) {
 		// need to update position depending on index in horizontal box
 		if (comp.child)
 			comp.child->draw(shaderProgram);
-		yOffset += comp.widgetHeight;
+		yOffset -= comp.widgetHeight;
 	}
 
 	overflowSizeY = yOffset - loc.y;
@@ -40,7 +40,7 @@ float verticalBox::getOverflowSize() {
 	if (overflowSizeY == 0) {
 		float yOffset = 0;
 		for (vertChildComp comp : childList) {
-			yOffset += comp.widgetHeight;
+			yOffset -= comp.widgetHeight;
 		}
 
 		overflowSizeY = yOffset;
@@ -61,7 +61,7 @@ void verticalBox::changeChildHeight(widget* child, float newHeight) {
 	for (vertChildComp comp : childList) {
 		if (comp.child)
 			comp.child->setLocAndSize(vector{ loc.x, yOffset }, vector{ size.x, comp.widgetHeight });
-		yOffset += comp.widgetHeight;
+		yOffset -= comp.widgetHeight;
 	}
 	overflowSizeY = yOffset - loc.y;
 }
@@ -75,7 +75,7 @@ void verticalBox::setLocAndSize(vector loc, vector size) {
 		// comp.child->draw(shaderProgram);
 		if (comp.child)
 			comp.child->setLocAndSize({ loc.x, yOffset }, { size.x, comp.widgetHeight });
-		yOffset += comp.widgetHeight;
+		yOffset -= comp.widgetHeight;
 	}
 
 	overflowSizeY = yOffset - loc.y;

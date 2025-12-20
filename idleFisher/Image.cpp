@@ -38,6 +38,9 @@ Image::Image(std::string image, vector loc, bool useWorldPos) {
 	w = img->w;
 	h = img->h;
 
+	// sets up absolute loc
+	setLoc(loc);
+
 	normalizedSource = { 0, 0, 1, 1 };
 }
 
@@ -92,14 +95,14 @@ void Image::setRotation(float rot) {
 }
 
 bool Image::isMouseOver(bool ignoreTransparent) {
-	vector screenLoc = loc;
+	vector screenLoc = loc * stuff::pixelSize;
+	vector mousePos = Input::getMousePos();
 	if (useWorldPos) {
-		vector mousePos = Input::getMousePos();
-		screenLoc = math::worldToScreen(loc, "topleft");
+		screenLoc = math::worldToScreen(screenLoc);
 
 		vector size = getSize();
-		vector min = { screenLoc.x, screenLoc.y - size.y };
-		vector max = { screenLoc.x + size.x, screenLoc.y };
+		vector min = screenLoc;
+		vector max = min + size;
 		if (mousePos.x >= min.x && mousePos.x <= max.x && mousePos.y >= min.y && mousePos.y <= max.y) {
 			if (ignoreTransparent) {
 				vector pos = { mousePos.x - min.x, mousePos.y - min.y };
@@ -111,7 +114,6 @@ bool Image::isMouseOver(bool ignoreTransparent) {
 				return true;
 		}
 	} else {
-		vector mousePos = Input::getMousePos();
 		bool inX = mousePos.x >= screenLoc.x && mousePos.x <= screenLoc.x + w * stuff::pixelSize;
 		bool inY = mousePos.y >= screenLoc.y && mousePos.y <= screenLoc.y + h * stuff::pixelSize;
 		if (inX && inY)

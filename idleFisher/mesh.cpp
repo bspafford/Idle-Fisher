@@ -53,7 +53,7 @@ void Mesh::Draw
 		textures[i].Bind();
 	}
 
-	shader->setVec3("camPos", camera.Position);
+	shader->setVec3("camPos", camera.GetPosition());
 
 	// Initialize matrices
 	glm::mat4 trans = glm::mat4(1.0f);

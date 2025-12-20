@@ -6,13 +6,11 @@
 #include "Input.h"
 #include "Cursor.h"
 #include "shaderClass.h"
-#include "Image.h"
 #include "worlds.h"
 #include "AautoFisher.h"
 #include "sounds.h"
 #include "collision.h"
 #include "timer.h"
-#include "camera.h"
 #include "fishSchool.h"
 #include "upgrades.h"
 #include "petBuffs.h"
@@ -219,7 +217,7 @@ void Acharacter::draw(Shader* shaderProgram) {
 		drawFishingLine(shaderProgram);
 	}
 
-	anim->setLoc(SaveData::saveData.playerLoc);
+	anim->setLoc(SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f);
 	anim->draw(shaderProgram);
 	if (isFishing) {
 		fishingRod->setLoc(anim->getLoc() - vector{ 4, 51.f });
@@ -231,7 +229,7 @@ void Acharacter::draw(Shader* shaderProgram) {
 }
 
 vector Acharacter::getCharLoc() {
-	return (SaveData::saveData.playerLoc + vector{ anim->GetCellSize().x / 2.f, 2});
+	return SaveData::saveData.playerLoc - vector{ 0.f, anim->GetCellSize().y / 2.f };
 }
 
 void Acharacter::Update(float deltaTime) {

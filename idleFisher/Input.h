@@ -16,6 +16,8 @@ enum MouseButton {
 
 class Input {
 public:
+	static void Init();
+
 	// callback functions
 	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);

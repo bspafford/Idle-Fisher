@@ -480,17 +480,6 @@ void world::renderWater() {
 }
 
 void world::sortDraw(Shader* shaderProgram) {
-	// should have some sort of big list that sorts all the dynamic and static accordingly
-	// shouldn't have it broken up into a bunch of different lists
-
-	// sort all the draws to render some infront or behind depending on location
-	
-	// find the the lowest pixel in the far left side of the image, and do the same for the right?
-	// then use those two location to test against the player
-
-	//vector screenLoc = math::worldToScreen(loc);
-	vector screenLoc = math::worldToScreen(SaveData::saveData.playerLoc, "topleft");
-
 	std::vector<AautoFisher*> autoFishersBehind;
 	std::vector<AautoFisher*> autoFishersInFront;
 	std::vector<npc*> npcBehind;

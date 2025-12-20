@@ -63,6 +63,7 @@ Main::~Main() {
 	delete twoDShader;
 	delete twoDWaterShader;
 	delete circleShader;
+	delete blurShader;
 
 	textureManager::Deconstructor();
 	timer::clearInstanceList(false);
@@ -129,11 +130,11 @@ int Main::createWindow() {
 
 	// Framebuffer for Shadow Map
 	unsigned int shadowMapFBO;
-	glGenFramebuffers(1, &shadowMapFBO);
+	glCreateFramebuffers(1, &shadowMapFBO);
 	// Texture for Shadow Map FBO
 	unsigned int shadowMapWidth = 2048, shadowMapHeight = 2048;
 	unsigned int shadowMap;
-	glGenTextures(1, &shadowMap);
+	glCreateTextures(GL_TEXTURE_2D, 1, &shadowMap);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -162,9 +163,17 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
-	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World!", "straight", vector{ 10, 10 });
+	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World! you are great!", "straight", vector{ 10, 10 });
 	std::unique_ptr<Image> img = std::make_unique<Image>("./images/house.png", vector{ 1, 1 }, false);
-	FBO* fbo = new FBO(stuff::screenSize, false);
+	std::unique_ptr<FBO> fbo = std::make_unique<FBO>(stuff::screenSize, false);
+
+	std::unique_ptr<verticalBox> vertBox = std::make_unique<verticalBox>(nullptr);
+	vertBox->setLoc({ 10, 10 });
+	std::unique_ptr<Ubutton> continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
+	vertBox->addChild(continueButton.get(), 35.f);
+	std::cout << "child: " << continueButton->getLoc() << "\n";
+	vertBox->setLocAndSize({ 10, 10 }, continueButton->getSize());
+	std::cout << "child: " << continueButton->getLoc() << "\n";
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
@@ -172,8 +181,8 @@ int Main::createWindow() {
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 		lastTime = currentTime;
 		//std::cout << "fps: " << 1.f / deltaTime << std::endl;
-		fps::showFPS(true);
-		fps::update(deltaTime);
+		//fps::showFPS(true);
+		//fps::update(deltaTime);
 
 		/*
 		Input::pollEvents();
@@ -183,16 +192,19 @@ int Main::createWindow() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
 
-		fbo->BindFramebuffer();
-		img->draw(twoDShader);
-		text1->draw(twoDShader);
-		fbo->UnbindFramebuffer();
+		//fbo->BindFramebuffer();
+		//img->draw(twoDShader);
+		//text1->draw(twoDShader);
+		//continueButton->draw(twoDShader);
+		vertBox->draw(twoDShader);
+		//fbo->UnbindFramebuffer();
 		fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
 		
 		textureManager::EndFrame();
 		glfwSwapBuffers(window);
 		continue;
 		//*/
+
 
 		// process input
 		Input::pollEvents();
@@ -210,7 +222,7 @@ int Main::createWindow() {
 
 		// Compute full light-space matrix
 		float size = 300.f; // 100.f;// 35
-		glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + camera->Position - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
+		glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + camera->GetPosition() - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
 		glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, -1.f, 300.0f);
 		glm::mat4 lightView = glm::lookAt(lightPos, lightPos - glm::vec3(-1, 1, 1), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView; // This is what you send to shaders
@@ -237,7 +249,7 @@ int Main::createWindow() {
 		
 		// === MAIN RENDER PASS (Render Scene with Shadows) ===
 
-		characterModel->setPos(camera->Position + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
+		characterModel->setPos(camera->GetPosition() + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
 
 		glDisable(GL_DEPTH_TEST);
 		// ==== DRAW 2D STUFF ====
@@ -304,8 +316,7 @@ void Main::Start() {
 	glfwSetScrollCallback(window, Input::scrollCallback);
 	glfwSetCursorPosCallback(window, Input::cursorPosCallback);
 
-	SaveData::saveData.playerLoc = vector{ 1800, 1300 } / 3.f;
-	SaveData::saveData.playerLoc = vector{ 663, 552 };
+	Input::Init();
 	textureManager::textureManager();
 	sounds::sounds();
 	csvReader();
@@ -315,7 +326,7 @@ void Main::Start() {
 	achievementBuffs::init();
 	setupWidgets();
 
-	camera = std::make_unique<Camera>(stuff::screenSize.x, stuff::screenSize.y, glm::vec3(-55, 50, -350));
+	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
 
 	updateShaders(0);
 
@@ -365,19 +376,18 @@ void Main::updateShaders(float deltaTime) {
 
 	twoDShader->Activate();
 	twoDShader->setMat4("projection", camera->getProjectionMat());
-	glm::vec2 newPos = math::convertToRelativeCoords(camera->Position);
-	twoDShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	twoDShader->setVec2("playerPos", camera->GetPosition());
 	twoDShader->setFloat("pixelSize", stuff::pixelSize);
 
 	twoDWaterShader->Activate();
 	twoDWaterShader->setFloat("moveFactor", waveFactor);
 	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
-	twoDWaterShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	twoDWaterShader->setVec2("playerPos", camera->GetPosition());
 	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
 
 	blurShader->Activate();
 	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
-	blurShader->setVec2("playerPos", glm::vec2(newPos.x * 10, newPos.y * 5));
+	blurShader->setVec2("playerPos", camera->GetPosition());
 	blurShader->setFloat("pixelSize", stuff::pixelSize);
 }
 

@@ -78,7 +78,6 @@ void Ubutton::onClick() {
 		return;
 
 	if (hasHover && buttonAnim) {
-	//if (clickAnim && clickImgs.size() > 0) {
 		buttonAnim->setAnimation("hover");
 		buttonAnim->start();
 	}
@@ -105,7 +104,7 @@ std::weak_ptr<Image> Ubutton::getButtonImg() {
 }
 
 vector Ubutton::getSize() {
-	return buttonAnim->GetCellSize() * stuff::pixelSize;
+	return buttonAnim->GetCellSize();
 }
 
 vector Ubutton::getLoc() {

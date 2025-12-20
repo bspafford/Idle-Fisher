@@ -5,6 +5,13 @@
 
 #include "debugger.h"
 
+void Input::Init() {
+	// initialize cursor pos, otherwise will be (0, 0) until cursor is moved
+	double mouseX, mouseY;
+	glfwGetCursorPos(Main::GetWindow(), &mouseX, &mouseY);
+	mousePos = vector{ static_cast<float>(mouseX), stuff::screenSize.y - static_cast<float>(mouseY) };
+}
+
 void Input::pollEvents() {
 	// set mouse up and down to false
 	for (int i = 0; i < 5; i++) {
@@ -45,7 +52,7 @@ void Input::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 void Input::cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
-	mousePos = vector{ float(xPos), float(yPos) };
+	mousePos = vector{ static_cast<float>(xPos), stuff::screenSize.y - static_cast<float>(yPos) };
 }
 
 void Input::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

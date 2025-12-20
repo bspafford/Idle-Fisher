@@ -5,13 +5,13 @@
 #include "saveData.h"
 #include "collision.h"
 #include "animation.h"
+#include "Image.h"
 
 class saveData;
 class collision;
 class timer;
 class AfishSchool;
 class Shader;
-class Image;
 
 class Acharacter {
 public:
