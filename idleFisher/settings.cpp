@@ -214,11 +214,11 @@ void Usettings::setupLocs() {
 	if (cancelButton && background && saveButton)
 		cancelButton->setLoc(background->getLoc() + background->getSize() - saveButton->getSize() - vector{10, 10} *stuff::pixelSize);
 	if (cancelText && cancelButton)
-		cancelText->setLoc(cancelButton->loc + cancelButton->getSize() / 2);
+		cancelText->setLoc(cancelButton->getLoc() + cancelButton->getSize() / 2);
 	if (saveButton && cancelButton)
 		saveButton->setLoc(cancelButton->getLoc() - vector{saveButton->getSize().x + 2 * stuff::pixelSize, 0 });
 	if (saveText && saveButton)
-		saveText->setLoc(saveButton->loc + saveButton->getSize() / 2);
+		saveText->setLoc(saveButton->getLoc() + saveButton->getSize() / 2);
 }
 
 void Usettings::cancel() {

@@ -1,12 +1,18 @@
 #pragma once
 
 #include <iostream>
-#include <span>
+#include <algorithm>
 
 class vector {
 public:
 	float x = 0;
 	float y = 0;
+
+	static vector clamp(vector v, float min, float max) {
+		v.x = std::clamp(v.x, min, max);
+		v.y = std::clamp(v.y, min, max);
+		return v;
+	}
 
 	static vector zero() {
 		return { 0, 0 };

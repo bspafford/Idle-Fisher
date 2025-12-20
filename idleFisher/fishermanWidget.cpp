@@ -182,7 +182,7 @@ void UfishermanWidget::setupLocs() {
 
 	vector baitHolderLoc = upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize;
 	baitHolderList->setLocAndSize(baitHolderLoc, upgradeBackground->getSize() - vector{ 0, 6 * stuff::pixelSize });
-	baitHolderList->ogLoc = baitHolderLoc;
+	baitHolderList->setOgLoc(baitHolderLoc);
 
 	for (int i = 0; i < buttonList.size(); i++) {
 		vector worldButtonSize = buttonList[i]->getSize();

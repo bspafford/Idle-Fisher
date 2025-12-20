@@ -23,8 +23,13 @@ public:
 
 	void setLocAndSize(vector loc, vector size) override;
 	void setOgLoc(vector ogLoc) override;
+	vertChildComp GetChildAt(int index);
+	int GetChildrenCount();
 
-	std::vector<vertChildComp> childList;
+protected:
+	void UpdateChildren();
+
+	std::vector<vertChildComp> childrenList;
 
 	// is the size of the components inside the widget
 	float overflowSizeY = 0;

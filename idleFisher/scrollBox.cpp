@@ -45,7 +45,7 @@ void UscrollBox::scrolling() {
 
 	// need to set location of all the children
 	float yOffset = 0;
-	for (vertChildComp comp : childList) {
+	for (vertChildComp comp : childrenList) {
 		if (comp.child)
 			comp.child->setLoc(ogLoc + vector{ 0, loc.y + yOffset });
 		yOffset += comp.widgetHeight;
@@ -65,9 +65,9 @@ void UscrollBox::scrolling(int mouseWheelDir) {
 	loc.y = math::clamp(diff.y, -overflowSizeY + size.y, 0);
 
 	float yOffset = 0;
-	for (vertChildComp comp : childList) {
+	for (vertChildComp comp : childrenList) {
 		if (comp.child)
-			comp.child->setLocAndSize({ ogLoc.x, ogLoc.y + loc.y + yOffset }, comp.child->size);
+			comp.child->setLocAndSize({ ogLoc.x, ogLoc.y + loc.y + yOffset }, comp.child->getSize());
 		yOffset += comp.widgetHeight;
 	}
 }
@@ -92,7 +92,7 @@ void UscrollBox::setLocAndSize(vector loc, vector size) {
 	setSize(size);
 
 	float yOffset = 0;
-	for (vertChildComp comp : childList) {
+	for (vertChildComp comp : childrenList) {
 		// need to update position depending on index in horizontal box
 		if (comp.child)
 			comp.child->setLocAndSize({ ogLoc.x, ogLoc.y + yOffset }, { comp.child->getSize().x, comp.widgetHeight});

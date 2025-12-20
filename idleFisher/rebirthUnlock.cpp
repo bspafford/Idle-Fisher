@@ -73,7 +73,7 @@ void UrebirthUnlock::setLoc(vector loc) {
 
 	if (button) {
 		button->setLoc(loc);
-		background->setLoc(button->loc + button->getSize() / 2 - background->getSize() / 2);
+		background->setLoc(button->getLoc() + button->getSize() / 2 - background->getSize() / 2);
 		upgradeCost->setLoc(loc + vector{ button->getSize().x / 2, button->getSize().y + stuff::pixelSize });
 	}
 }

@@ -90,7 +90,7 @@ void NPCwidget::setupLocs() {
 
 	vector upgradeHolderPos = (upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize).floor();
 	upgradeHolder->setLocAndSize(upgradeHolderPos, vector{float(upgradeBackground->w), float(upgradeBackground->h - 6)} *stuff::pixelSize);
-	upgradeHolder->ogLoc = upgradeHolderPos;
+	upgradeHolder->setOgLoc(upgradeHolderPos);
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();

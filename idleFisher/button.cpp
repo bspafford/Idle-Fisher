@@ -104,7 +104,7 @@ std::weak_ptr<Image> Ubutton::getButtonImg() {
 }
 
 vector Ubutton::getSize() {
-	return buttonAnim->GetCellSize();
+	return buttonAnim->GetCellSize() * stuff::pixelSize;
 }
 
 vector Ubutton::getLoc() {

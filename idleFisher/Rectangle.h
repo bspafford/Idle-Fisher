@@ -18,7 +18,7 @@ public:
 	vector getLoc();
 	void setSize(vector size);
 	vector getSize();
-	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
+	void setAnchor(Anchor xAnchor, Anchor yAnchor);
 	//void updatePositionsList();
 
 	// will stop hovers and clicks through a rectangle
@@ -33,8 +33,8 @@ protected:
 
 	vector loc; // relative to the screen position
 	vector absoluteLoc; // absolute position in the screen
-	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
-	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
+	Anchor xAnchor = ANCHOR_LEFT;
+	Anchor yAnchor = ANCHOR_TOP;
 
 	//std::unique_ptr<VAO> currVAO = NULL;
 	//std::unique_ptr<VBO> currVBO = NULL;

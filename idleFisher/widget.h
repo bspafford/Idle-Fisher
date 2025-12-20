@@ -23,6 +23,17 @@ protected:
 	// calls when widget is added to viewport
 	virtual void addedToViewport();
 
+	vector loc = { 0, 0 };
+	vector absoluteLoc = { 0, 0 };
+	// the original location of a widget, used for scrollboxes and wrapboxes
+	vector ogLoc = { 0, 0 };
+	vector size = { 0, 0 };
+	// where (0, 0) is relative to the object
+	// pivot (0, 0): is bottom left, (1, 1): is top right
+	vector pivot = { 0, 0 };
+	Anchor xAnchor = ANCHOR_LEFT;
+	Anchor yAnchor = ANCHOR_BOTTOM;
+
 public:
 	virtual void draw(Shader* shaderProgram);
 
@@ -44,11 +55,8 @@ public:
 	virtual void setOgLoc(vector loc);
 	virtual void setSize(vector size);
 	virtual void setLocAndSize(vector loc, vector size);
-
-	vector loc = { 0, 0 };
-	// the original location of a widget, used for scrollboxes and wrapboxes
-	vector ogLoc = { 0, 0 };
-	vector size = { 0, 0 };
+	void SetAnchor(Anchor xAnchor, Anchor yAnchor);
+	void SetPivot(vector pivot);
 
 	// returns the override widget if there is one
 	static widget* getCurrWidget();

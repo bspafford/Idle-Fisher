@@ -5,12 +5,13 @@
 #include"shaderClass.h"
 #include "math.h"
 
-enum ImageAnchor {
-	IMAGE_ANCHOR_LEFT,
-	IMAGE_ANCHOR_RIGHT,
-	IMAGE_ANCHOR_TOP,
-	IMAGE_ANCHOR_BOTTOM,
-	IMAGE_ANCHOR_CENTER
+// where the image anchors relative to the screen
+enum Anchor {
+	ANCHOR_LEFT,
+	ANCHOR_RIGHT,
+	ANCHOR_TOP,
+	ANCHOR_BOTTOM,
+	ANCHOR_CENTER
 };
 
 class Image {
@@ -37,7 +38,8 @@ public:
 
 	glm::vec4 GetPixelColor(const int X, const int Y);
 
-	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
+	void SetAnchor(Anchor xAnchor, Anchor yAnchor);
+	void SetPivot(vector pivot);
 	void flipHoizontally(bool flip);
 
 	bool useWorldPos;
@@ -56,8 +58,11 @@ private:
 
 	vector loc; // relative to the screen position
 	vector absoluteLoc; // absolute position in the screen
-	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
-	ImageAnchor yAnchor = IMAGE_ANCHOR_BOTTOM;
+	// where (0, 0) is relative to the object
+	// pivot (0, 0): is bottom left, (1, 1): is top right
+	vector pivot = { 0, 0 };
+	Anchor xAnchor = ANCHOR_LEFT;
+	Anchor yAnchor = ANCHOR_BOTTOM;
 	
 	glm::vec4 colorMod = glm::vec4(1.f);
 

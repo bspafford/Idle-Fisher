@@ -96,7 +96,7 @@ void UcurrencyConverterWidget::setupLocs() {
 
 
 	upgradeHolder->setLocAndSize(upgradeBackground->getLoc(), vector{float(upgradeBackground->w), float(upgradeBackground->h - 6)} *stuff::pixelSize);
-	upgradeHolder->ogLoc = upgradeBackground->getLoc() + vector{4, 3} *stuff::pixelSize;
+	upgradeHolder->setOgLoc(upgradeBackground->getLoc() + vector{4, 3} * stuff::pixelSize);
 
 	vector closeButtonSize = closeButton->getSize();
 	closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->w * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
@@ -120,7 +120,7 @@ void UcurrencyConverterWidget::addedToViewport() {
 			unlockedNum++;
 	}
 
-	int childListSize = upgradeHolder->childList.size();
+	int childListSize = upgradeHolder->GetChildrenCount();
 	if (childListSize != unlockedNum) {
 		// add children needed
 		// its possible for there to be multiple new currencies

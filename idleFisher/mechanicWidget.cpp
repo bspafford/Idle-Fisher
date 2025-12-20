@@ -165,7 +165,7 @@ void UmechanicWidget::setupLocs() {
 	// bought fish transporter
 	fishTransporterName->setLoc(upgradeBackground->getLoc() + vector{6, 9} * stuff::pixelSize);
 	buyFishTransporterText->setLoc(fishTransporterName->getLoc());
-	fishTransporterImg->setLoc(fishTransporterName->loc + vector{ 2 * stuff::pixelSize, fishTransporterName->getSize().y + 15 * stuff::pixelSize});
+	fishTransporterImg->setLoc(fishTransporterName->getLoc() + vector{2 * stuff::pixelSize, fishTransporterName->getSize().y + 15 * stuff::pixelSize});
 
 	float xStart = fishTransporterImg->getLoc().x + fishTransporterImg->getSize().x;
 	float xEnd = upgradeBackground->getLoc().x + upgradeBackground->getSize().x - 6 * stuff::pixelSize;

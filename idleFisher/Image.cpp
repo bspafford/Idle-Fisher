@@ -58,27 +58,28 @@ void Image::setSourceRect(std::shared_ptr<Rect> source) {
 
 void Image::setLoc(vector loc) {
 	this->loc = loc;
+	vector pivotLoc = getSize() * pivot / stuff::pixelSize;
 	if (useWorldPos) {
-		this->absoluteLoc = loc;
+		this->absoluteLoc = loc - pivotLoc;
 	} else {
 		vector newLoc;
-		if (xAnchor == IMAGE_ANCHOR_LEFT) { // if anchor left
+		if (xAnchor == ANCHOR_LEFT) { // if anchor left
 			newLoc.x = loc.x;
-		} else if (xAnchor == IMAGE_ANCHOR_CENTER) {
+		} else if (xAnchor == ANCHOR_CENTER) {
 			newLoc.x = (loc.x + stuff::screenSize.x / 2.f);
-		} else if (xAnchor == IMAGE_ANCHOR_RIGHT) { // if anchor right
+		} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
 			newLoc.x = (loc.x + stuff::screenSize.x);
 		}
 
-		if (yAnchor == IMAGE_ANCHOR_BOTTOM) { // if anchor bottom
+		if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
 			newLoc.y = (loc.y);
-		} else if (yAnchor == IMAGE_ANCHOR_CENTER) { // if anchor bottom
+		} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
 			newLoc.y = (loc.y + stuff::screenSize.y / 2.f);
-		} else if (yAnchor == IMAGE_ANCHOR_TOP) { // if anchor top
+		} else if (yAnchor == ANCHOR_TOP) { // if anchor top
 			newLoc.y = (loc.y + stuff::screenSize.y);
 		}
 
-		absoluteLoc = newLoc;
+		absoluteLoc = newLoc / stuff::pixelSize - pivotLoc;
 	}
 }
 
@@ -95,7 +96,7 @@ void Image::setRotation(float rot) {
 }
 
 bool Image::isMouseOver(bool ignoreTransparent) {
-	vector screenLoc = loc * stuff::pixelSize;
+	vector screenLoc = loc;
 	vector mousePos = Input::getMousePos();
 	if (useWorldPos) {
 		screenLoc = math::worldToScreen(screenLoc);
@@ -165,7 +166,7 @@ glm::vec4 Image::GetPixelColor(const int X, const int Y) {
 	return glm::vec4(r, g, b, a);*/
 }
 
-void Image::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
+void Image::SetAnchor(Anchor xAnchor, Anchor yAnchor) {
 	if (useWorldPos) {
 		std::cout << "This is a world object, it doesn't work";
 		return;
@@ -173,6 +174,11 @@ void Image::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
 
 	this->xAnchor = xAnchor;
 	this->yAnchor = yAnchor;
+	setLoc(loc);
+}
+
+void Image::SetPivot(vector pivot) {
+	this->pivot = vector::clamp(pivot, 0.f, 1.f);
 	setLoc(loc);
 }
 

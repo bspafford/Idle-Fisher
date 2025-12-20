@@ -151,7 +151,7 @@ void UmerchantWidget::setupLocs() {
 	vector upgradeHolderLoc = upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize;
 	for (int i = 0; i < upgradeHolderList.size(); i++) {
 		upgradeHolderList[i]->setLocAndSize(upgradeHolderLoc, upgradeBackground->getSize() - vector{0, 6} * stuff::pixelSize);
-		upgradeHolderList[i]->ogLoc = upgradeHolderLoc;
+		upgradeHolderList[i]->setOgLoc(upgradeHolderLoc);
 
 		if (worldButtonList.size() > i) {
 			vector worldButtonSize = worldButtonList[i]->getSize();

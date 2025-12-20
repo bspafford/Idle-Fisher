@@ -108,7 +108,7 @@ void autoFisherUI::upgrade() {
 
 void autoFisherUI::moveButtonText(int frame) {
 	std::vector<vector> delta = std::vector<vector>{ {0, 0}, { -3, 3 }, {1, -1}, {3, -2}, {-1, 0} };
-	buttonText->setLoc(buttonText->loc + delta[frame]);
+	buttonText->setLoc(buttonText->getLoc() + delta[frame]);
 
 	if (frame == 0)
 		buttonText->setLoc(buttonTextLoc);
@@ -129,7 +129,7 @@ void autoFisherUI::updateUI() {
 	levelText->setText(std::to_string(*autoFisher->level));
 	maxText->setText("+" + std::to_string(int(upgradeCost[0])));
 
-	maxText->setLoc(levelText->loc - vector{ 0, maxText->getSize().y / stuff::pixelSize + 4 });
+	maxText->setLoc(levelText->getLoc() - vector{0, maxText->getSize().y / stuff::pixelSize + 4});
 
 	if (*autoFisher->level < autoFisher->maxLevel)
 		buttonText->setText(shortNumbers::convert2Short(upgradeCost[1]));

@@ -331,7 +331,7 @@ void text::setLoc(vector loc) {
 	}
 }
 
-void text::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
+void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {
 	if (useWorldPos) {
 		std::cout << "This is a world object, it doesn't work";
 		return;

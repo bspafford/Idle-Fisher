@@ -9,22 +9,19 @@ verticalBox::verticalBox(widget* parent) : widget(parent) {
 }
 
 void verticalBox::draw(Shader* shaderProgram) {
-	float yOffset = loc.y;
-	for (vertChildComp comp : childList) {
-		// need to update position depending on index in horizontal box
+	for (vertChildComp comp : childrenList) {
 		if (comp.child)
 			comp.child->draw(shaderProgram);
-		yOffset -= comp.widgetHeight;
 	}
-
-	overflowSizeY = yOffset - loc.y;
 }
 
 void verticalBox::addChild(widget* child, float widgetHeight) {
 	vertChildComp comp = { child, widgetHeight };
 	if (comp.child)
 		comp.child->setParent(this);
-	childList.push_back(comp);
+	childrenList.push_back(comp);
+
+	overflowSizeY += widgetHeight;
 }
 
 void verticalBox::removeChild(widget* child) {
@@ -32,59 +29,56 @@ void verticalBox::removeChild(widget* child) {
 }
 
 void verticalBox::removeChild(int index) {
-	childList.erase(childList.begin() + index);
+	overflowSizeY -= childrenList[index].widgetHeight;
+	childrenList.erase(childrenList.begin() + index);
 }
 
 float verticalBox::getOverflowSize() {
-	// if the overflow size isn't set yet
-	if (overflowSizeY == 0) {
-		float yOffset = 0;
-		for (vertChildComp comp : childList) {
-			yOffset -= comp.widgetHeight;
-		}
-
-		overflowSizeY = yOffset;
-	}
-
-	return overflowSizeY;
+	return std::abs(overflowSizeY);
 }
 
 void verticalBox::changeChildHeight(widget* child, float newHeight) {
-	for (vertChildComp& comp : childList) {
+	for (vertChildComp& comp : childrenList) {
 		if (comp.child == child) {
 			comp.widgetHeight = newHeight;
 			break;
 		}
 	}
 
-	float yOffset = loc.y;
-	for (vertChildComp comp : childList) {
-		if (comp.child)
-			comp.child->setLocAndSize(vector{ loc.x, yOffset }, vector{ size.x, comp.widgetHeight });
-		yOffset -= comp.widgetHeight;
-	}
-	overflowSizeY = yOffset - loc.y;
+	UpdateChildren();
 }
 
 void verticalBox::setLocAndSize(vector loc, vector size) {
-	__super::setLocAndSize(loc, size);
+	__super::setLocAndSize(loc * stuff::pixelSize, size);
 
-	float yOffset = loc.y;
-	for (vertChildComp comp : childList) {
+	UpdateChildren();
+}
+
+void verticalBox::UpdateChildren() {
+	float yOffset = absoluteLoc.y + size.y * pivot.y;
+	for (vertChildComp comp : childrenList) {
 		// need to update position depending on index in horizontal box
 		// comp.child->draw(shaderProgram);
 		if (comp.child)
-			comp.child->setLocAndSize({ loc.x, yOffset }, { size.x, comp.widgetHeight });
+			comp.child->setLocAndSize({ absoluteLoc.x, yOffset - comp.widgetHeight * pivot.y }, { size.x, comp.widgetHeight });
 		yOffset -= comp.widgetHeight;
 	}
 
-	overflowSizeY = yOffset - loc.y;
+	overflowSizeY = yOffset - absoluteLoc.y;
 }
 
 void verticalBox::setOgLoc(vector ogLoc) {
 	__super::setOgLoc(ogLoc);
 
-	for (vertChildComp comp : childList)
+	for (vertChildComp comp : childrenList)
 		if (comp.child)
 			comp.child->setOgLoc(ogLoc);
+}
+
+vertChildComp verticalBox::GetChildAt(int index) {
+	return childrenList[index];
+}
+
+int verticalBox::GetChildrenCount() {
+	return static_cast<int>(childrenList.size());
 }

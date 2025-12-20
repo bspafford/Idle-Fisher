@@ -33,5 +33,5 @@ void UcomboOvertimeWidget::updateProgressBar() {
 }
 
 void UcomboOvertimeWidget::setupLocs() {
-	progressBar->loc = vector{ stuff::screenSize.x / 2.f, 12 * stuff::pixelSize } - vector{ progressBar->getSize().x / 2, 0 };
+	progressBar->setLoc(vector{ stuff::screenSize.x / 2.f, 12 * stuff::pixelSize } - vector{ progressBar->getSize().x / 2, 0 });
 }

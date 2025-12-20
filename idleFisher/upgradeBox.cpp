@@ -301,8 +301,8 @@ void UupgradeBox::buyUpgrade() {
 				if (Main::pet.get() && petStruct == Main::pet->getPetStruct()) {
 					NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
 					if (npcWidget)
-						for (int i = 0; i < npcWidget->upgradeHolder->childList.size(); i++) {
-							widget* child = npcWidget->upgradeHolder->childList[i].child;
+						for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
+							widget* child = npcWidget->upgradeHolder->GetChildAt(i).child;
 							UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
 							if (upgradeBox && upgradeBox->savePetStruct->unlocked)
 								upgradeBox->buttonPriceText->setText("equip");
@@ -315,14 +315,14 @@ void UupgradeBox::buyUpgrade() {
 				// since happening after function its gotta be reversed
 				if (baitStruct->id == SaveData::saveData.equippedBait.id) {
 					UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);
-					if (fishermanWidget)
-						for (int i = 0; i < fishermanWidget->baitHolderList->childList.size(); i++) {
-							widget* child = fishermanWidget->baitHolderList->childList[i].child;
+					if (fishermanWidget) {
+						for (int i = 0; i < fishermanWidget->baitHolderList->GetChildrenCount(); i++) {
+							widget* child = fishermanWidget->baitHolderList->GetChildAt(i).child;
 							UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
 							if (upgradeBox && upgradeBox->saveBaitStruct->unlocked)
 								upgradeBox->buttonPriceText->setText("equip");
 						}
-
+					}
 					buttonPriceText->setText("remove");
 					// then remove pet
 				} else {

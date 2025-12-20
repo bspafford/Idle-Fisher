@@ -14,7 +14,9 @@
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
 	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize, 4);
-	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, 3 } * stuff::pixelSize, false);
+	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, -3 } * stuff::pixelSize, false);
+	pauseText->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
+	pauseText->SetPivot({ 0, 1 });
 	continueButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
 	saveGameButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/saveGame.png", 72, 20, 1, vector{ 0, 0 }, false, false);
 	settingsButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/settings.png", 70, 20, 1, vector{ 0, 0 }, false, false);
@@ -24,8 +26,11 @@ UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	settingsWidget = std::make_unique<Usettings>(nullptr);
 
 	vertBox = std::make_unique<verticalBox>(this);
+	vertBox->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
+	vertBox->SetPivot({ 0, 1 });
+
 	if (vertBox) {
-		float padding = 5 * stuff::pixelSize;
+		float padding = 10 * stuff::pixelSize;
 		if (continueButton) {
 			continueButton->addCallback(this, &UpauseMenu::resume);
 			vertBox->addChild(continueButton.get(), continueButton->getSize().y + padding);
@@ -63,11 +68,12 @@ void UpauseMenu::draw(Shader* shaderProgram) {
 }
 
 void UpauseMenu::setupLocs() {
-	vertBox->setLocAndSize({ 8 * stuff::pixelSize, stuff::screenSize.y * .25f }, stuff::screenSize);
+	// vertBox->setLocAndSize({ 8 * stuff::pixelSize, stuff::screenSize.y * .25f }, stuff::screenSize);
+	vertBox->setLocAndSize({ 20.f, -70.f }, vector{ stuff::screenSize.x, vertBox->getOverflowSize() });
+	
 	blurBox->setSize(stuff::screenSize);
 	rect->setLoc(rect->getLoc());
 	rect->setSize(stuff::screenSize);
-	pauseText->setLoc(pauseText->getLoc());
 }
 
 void UpauseMenu::resume() {

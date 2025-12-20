@@ -85,7 +85,7 @@ Acharacter::Acharacter() {
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, false);
 	fishingRod->shouldntDeleteTimer(true);
-	fishingRod->spriteSheet->setAnchor(IMAGE_ANCHOR_CENTER, IMAGE_ANCHOR_CENTER);
+	fishingRod->spriteSheet->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 
 	fishingTimer = std::make_unique<timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);

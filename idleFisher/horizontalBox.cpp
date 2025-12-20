@@ -25,7 +25,7 @@ void horizontalBox::addChild(widget* child, float widgetWidth) {
 	horizChildComp comp = { child, widgetWidth };
 	if (comp.child) {
 		comp.child->setParent(this);
-		comp.child->ogLoc = ogLoc;
+		comp.child->setOgLoc(ogLoc);
 	}
 	childList.push_back(comp);
 }

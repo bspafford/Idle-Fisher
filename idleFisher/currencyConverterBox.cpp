@@ -106,7 +106,7 @@ void UcurrencyConverterBox::setupLocs() {
 	arrow->setLoc(currency1->getLoc() + vector{currency1->getSize().x + stuff::pixelSize, currency1->getSize().y / 2 - arrow->getSize().y / 2});
 
 	if (upgradeText) {
-		vector upgradeTextLoc = { buyButtonLoc.x - stuff::pixelSize, loc.y + size.y / 2 - upgradeText->size.y / 2 };
+		vector upgradeTextLoc = { buyButtonLoc.x - stuff::pixelSize, loc.y + size.y / 2 - upgradeText->getSize().y / 2};
 		upgradeText->setLoc(upgradeTextLoc);
 	}
 }

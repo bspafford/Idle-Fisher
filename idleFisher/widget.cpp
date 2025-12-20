@@ -88,9 +88,7 @@ void widget::setupLocs() {
 }
 
 vector widget::getLoc() {
-	if (parent)
-		return loc;
-	return loc;
+	return absoluteLoc;
 }
 
 vector widget::getSize() {
@@ -99,6 +97,25 @@ vector widget::getSize() {
 
 void widget::setLoc(vector loc) {
 	this->loc = loc;
+	vector pivotLoc = getSize() * pivot;
+	vector newLoc;
+	if (xAnchor == ANCHOR_LEFT) { // if anchor left
+		newLoc.x = loc.x;
+	} else if (xAnchor == ANCHOR_CENTER) {
+		newLoc.x = (loc.x + stuff::screenSize.x / 2.f);
+	} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
+		newLoc.x = (loc.x + stuff::screenSize.x);
+	}
+
+	if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
+		newLoc.y = (loc.y);
+	} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
+		newLoc.y = (loc.y + stuff::screenSize.y / 2.f);
+	} else if (yAnchor == ANCHOR_TOP) { // if anchor top
+		newLoc.y = (loc.y + stuff::screenSize.y);
+	}
+
+	absoluteLoc = newLoc - pivotLoc;
 }
 
 void widget::setOgLoc(vector loc) {
@@ -107,11 +124,22 @@ void widget::setOgLoc(vector loc) {
 
 void widget::setSize(vector size) {
 	this->size = size;
-
 }
+
 void widget::setLocAndSize(vector loc, vector size) {
-	setLoc(loc);
 	setSize(size);
+	setLoc(loc);
+}
+
+void widget::SetAnchor(Anchor xAnchor, Anchor yAnchor) {
+	this->xAnchor = xAnchor;
+	this->yAnchor = yAnchor;
+	setLoc(loc);
+}
+
+void widget::SetPivot(vector pivot) {
+	this->pivot = vector::clamp(pivot, 0.f, 1.f);
+	setLoc(loc);
 }
 
 void widget::addedToViewport() {

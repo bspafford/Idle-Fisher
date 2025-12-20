@@ -101,19 +101,19 @@ void URectangle::setLoc(vector loc) {
 		//this->absoluteLoc = this->loc + vector{ 1920.f/2.f, 0 };
 		vector halfScreen = stuff::screenSize / 2.f;
 		vector newLoc;
-		if (xAnchor == IMAGE_ANCHOR_LEFT) { // if anchor left
+		if (xAnchor == ANCHOR_LEFT) { // if anchor left
 			newLoc.x = loc.x - halfScreen.x;
-		} else if (xAnchor == IMAGE_ANCHOR_RIGHT) { // if anchor right
+		} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
 			newLoc.x = loc.x + halfScreen.x - size.x;
-		} else if (xAnchor == IMAGE_ANCHOR_CENTER) {
+		} else if (xAnchor == ANCHOR_CENTER) {
 			newLoc.x = loc.x - size.x / 2.f;
 		}
 
-		if (yAnchor == IMAGE_ANCHOR_TOP) { // if anchor top
+		if (yAnchor == ANCHOR_TOP) { // if anchor top
 			newLoc.y = loc.y - halfScreen.y + size.y;
-		} else if (yAnchor == IMAGE_ANCHOR_BOTTOM) { // if anchor bottom
+		} else if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
 			newLoc.y = loc.y + halfScreen.y;
-		} else if (yAnchor == IMAGE_ANCHOR_CENTER) { // if anchor bottom
+		} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
 			newLoc.y = loc.y + size.y / 2.f;
 		}
 
@@ -136,7 +136,7 @@ vector URectangle::getSize() {
 	return size;
 }
 
-void URectangle::setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor) {
+void URectangle::setAnchor(Anchor xAnchor, Anchor yAnchor) {
 	if (useWorldLoc) {
 		std::cout << "This is a world object, it doesn't work";
 		return;

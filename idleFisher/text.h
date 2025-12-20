@@ -45,7 +45,7 @@ public:
 	void setLocAndSize(vector loc, vector size) override;
 	void setLoc(vector loc) override;
 	// anchor::...
-	void setAnchor(ImageAnchor xAnchor, ImageAnchor yAnchor);
+	void setAnchor(Anchor xAnchor, Anchor yAnchor);
 
 	// used when changing the font from pixel to normal or vice versa
 	static void changeFontAll();
@@ -86,8 +86,8 @@ private:
 	std::unique_ptr<FBO> fbo;
 
 	vector absoluteLoc;
-	ImageAnchor xAnchor = IMAGE_ANCHOR_LEFT;
-	ImageAnchor yAnchor = IMAGE_ANCHOR_TOP;
+	Anchor xAnchor = ANCHOR_LEFT;
+	Anchor yAnchor = ANCHOR_TOP;
 
 	int textHeight;
 	// How many pixels chars like 'g', 'y', etc, should be dropped
