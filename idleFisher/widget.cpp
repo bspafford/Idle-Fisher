@@ -97,25 +97,7 @@ vector widget::getSize() {
 
 void widget::setLoc(vector loc) {
 	this->loc = loc;
-	vector pivotLoc = getSize() * pivot;
-	vector newLoc;
-	if (xAnchor == ANCHOR_LEFT) { // if anchor left
-		newLoc.x = loc.x;
-	} else if (xAnchor == ANCHOR_CENTER) {
-		newLoc.x = (loc.x + stuff::screenSize.x / 2.f);
-	} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
-		newLoc.x = (loc.x + stuff::screenSize.x);
-	}
-
-	if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
-		newLoc.y = (loc.y);
-	} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
-		newLoc.y = (loc.y + stuff::screenSize.y / 2.f);
-	} else if (yAnchor == ANCHOR_TOP) { // if anchor top
-		newLoc.y = (loc.y + stuff::screenSize.y);
-	}
-
-	absoluteLoc = newLoc - pivotLoc;
+	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
 }
 
 void widget::setOgLoc(vector loc) {

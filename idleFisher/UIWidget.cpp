@@ -133,7 +133,7 @@ void UUIWidget::setupLocs() {
 	rebirthPointNum->setLoc(vector{ stuff::screenSize.x - stuff::pixelSize, loc.y + rebirthPointNum->getSize().y + stuff::pixelSize });
 
 	if (NPCshowButton) {
-		NPCshowButton->setLoc({ 4 * stuff::pixelSize, stuff::screenSize.y - 4 * stuff::pixelSize - NPCshowButton->getSize().y });
+		NPCshowButton->setLoc({ 4, 4 });
 		if (merchantButton)
 			merchantButton->setLoc(NPCshowButton->getLoc());
 		if (sailorButton)

@@ -197,6 +197,7 @@
     <ClCompile Include="achievementBuffs.cpp" />
     <ClCompile Include="achievementWidget.cpp" />
     <ClCompile Include="AFmoreInfoUI.cpp" />
+    <ClCompile Include="Anchor.cpp" />
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="atm.cpp" />
@@ -236,6 +237,7 @@
     <ClCompile Include="fishUnlocked.cpp" />
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
+    <ClInclude Include="Anchor.h" />
     <ClInclude Include="blurBox.h" />
     <ClInclude Include="CircleLoad.h" />
     <ClInclude Include="confirmWidget.h" />

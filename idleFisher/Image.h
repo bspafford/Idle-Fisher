@@ -4,15 +4,7 @@
 
 #include"shaderClass.h"
 #include "math.h"
-
-// where the image anchors relative to the screen
-enum Anchor {
-	ANCHOR_LEFT,
-	ANCHOR_RIGHT,
-	ANCHOR_TOP,
-	ANCHOR_BOTTOM,
-	ANCHOR_CENTER
-};
+#include "Anchor.h"
 
 class Image {
 public:

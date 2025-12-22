@@ -30,7 +30,7 @@ UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	vertBox->SetPivot({ 0, 1 });
 
 	if (vertBox) {
-		float padding = 10 * stuff::pixelSize;
+		float padding = 10;
 		if (continueButton) {
 			continueButton->addCallback(this, &UpauseMenu::resume);
 			vertBox->addChild(continueButton.get(), continueButton->getSize().y + padding);
@@ -68,7 +68,6 @@ void UpauseMenu::draw(Shader* shaderProgram) {
 }
 
 void UpauseMenu::setupLocs() {
-	// vertBox->setLocAndSize({ 8 * stuff::pixelSize, stuff::screenSize.y * .25f }, stuff::screenSize);
 	vertBox->setLocAndSize({ 20.f, -70.f }, vector{ stuff::screenSize.x, vertBox->getOverflowSize() });
 	
 	blurBox->setSize(stuff::screenSize);

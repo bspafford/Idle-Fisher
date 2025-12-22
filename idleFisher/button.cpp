@@ -39,13 +39,13 @@ void Ubutton::addCallback(void (*callback) ()) {
 	callback_ = callback;
 }
 
-void Ubutton::draw(Shader* shaderProgra) {
-	onHover(shaderProgra);
+void Ubutton::draw(Shader* shaderProgram) {
+	onHover(shaderProgram);
 }
 
-void Ubutton::onHover(Shader* shaderProgra) {
+void Ubutton::onHover(Shader* shaderProgram) {
 	if (buttonAnim)
-		buttonAnim->draw(shaderProgra);
+		buttonAnim->draw(shaderProgram);
 
 	prevMouseOver = mouseOver;
 	mouseOver = isMouseOver();
@@ -104,7 +104,7 @@ std::weak_ptr<Image> Ubutton::getButtonImg() {
 }
 
 vector Ubutton::getSize() {
-	return buttonAnim->GetCellSize() * stuff::pixelSize;
+	return buttonAnim->GetCellSize();
 }
 
 vector Ubutton::getLoc() {

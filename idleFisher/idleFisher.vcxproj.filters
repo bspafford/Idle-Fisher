@@ -443,6 +443,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Anchor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -806,6 +809,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Anchor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

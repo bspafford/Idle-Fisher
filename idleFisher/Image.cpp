@@ -58,29 +58,7 @@ void Image::setSourceRect(std::shared_ptr<Rect> source) {
 
 void Image::setLoc(vector loc) {
 	this->loc = loc;
-	vector pivotLoc = getSize() * pivot / stuff::pixelSize;
-	if (useWorldPos) {
-		this->absoluteLoc = loc - pivotLoc;
-	} else {
-		vector newLoc;
-		if (xAnchor == ANCHOR_LEFT) { // if anchor left
-			newLoc.x = loc.x;
-		} else if (xAnchor == ANCHOR_CENTER) {
-			newLoc.x = (loc.x + stuff::screenSize.x / 2.f);
-		} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
-			newLoc.x = (loc.x + stuff::screenSize.x);
-		}
-
-		if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
-			newLoc.y = (loc.y);
-		} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
-			newLoc.y = (loc.y + stuff::screenSize.y / 2.f);
-		} else if (yAnchor == ANCHOR_TOP) { // if anchor top
-			newLoc.y = (loc.y + stuff::screenSize.y);
-		}
-
-		absoluteLoc = newLoc / stuff::pixelSize - pivotLoc;
-	}
+	absoluteLoc = GetAbsoluteLoc(loc, getSize(), useWorldPos, pivot, xAnchor, yAnchor);
 }
 
 vector Image::getLoc() {
@@ -96,10 +74,9 @@ void Image::setRotation(float rot) {
 }
 
 bool Image::isMouseOver(bool ignoreTransparent) {
-	vector screenLoc = loc;
-	vector mousePos = Input::getMousePos();
+	vector mousePos = Input::getMousePos() / stuff::pixelSize;
 	if (useWorldPos) {
-		screenLoc = math::worldToScreen(screenLoc);
+		vector screenLoc = math::worldToScreen(absoluteLoc);
 
 		vector size = getSize();
 		vector min = screenLoc;
@@ -115,8 +92,8 @@ bool Image::isMouseOver(bool ignoreTransparent) {
 				return true;
 		}
 	} else {
-		bool inX = mousePos.x >= screenLoc.x && mousePos.x <= screenLoc.x + w * stuff::pixelSize;
-		bool inY = mousePos.y >= screenLoc.y && mousePos.y <= screenLoc.y + h * stuff::pixelSize;
+		bool inX = mousePos.x >= absoluteLoc.x && mousePos.x <= absoluteLoc.x + w;
+		bool inY = mousePos.y >= absoluteLoc.y && mousePos.y <= absoluteLoc.y + h;
 		if (inX && inY)
 			return true;
 	}
@@ -125,7 +102,7 @@ bool Image::isMouseOver(bool ignoreTransparent) {
 }
 
 vector Image::getSize() {
-	return vector{ w, h } * stuff::pixelSize;
+	return vector{ w, h };
 }
 
 void Image::setSize(vector size) {
@@ -151,7 +128,7 @@ void Image::setColorMod(glm::vec4 colorMod) {
 }
 
 glm::vec4 Image::GetPixelColor(const int X, const int Y) {
-	return glm::vec4(0);
+	return glm::vec4(1);
 
 	/*const int x = X / stuff::pixelSize;
 	const int y = Y / stuff::pixelSize;

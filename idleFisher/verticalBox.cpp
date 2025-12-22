@@ -49,7 +49,7 @@ void verticalBox::changeChildHeight(widget* child, float newHeight) {
 }
 
 void verticalBox::setLocAndSize(vector loc, vector size) {
-	__super::setLocAndSize(loc * stuff::pixelSize, size);
+	__super::setLocAndSize(loc, size);
 
 	UpdateChildren();
 }
