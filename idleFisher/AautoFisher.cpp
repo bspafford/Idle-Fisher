@@ -92,7 +92,7 @@ AautoFisher::~AautoFisher() {
 void AautoFisher::Update(float deltaTime) {
 	calcIfPlayerInfront();
 
-	bMouseOver = anim->spriteSheet->isMouseOver(true);
+	bMouseOver = anim->IsMouseOver(true);
 	if (anim && bMouseOver)
 		IHoverable::setHoveredItem(this);
 
@@ -156,7 +156,7 @@ void AautoFisher::collectFish() {
 	Main::heldFishWidget->updateList();
 
 	// only start if full
-	if (anim && anim->bStopped) {
+	if (anim && anim->IsStopped()) {
 		anim->start();
 		//outlineAnim->start();
 	}
@@ -278,9 +278,10 @@ void AautoFisher::setStats() {
 	float y = -(1.f / 1100.f) * *level + 0.100909f;
 
 	if (anim)
-		anim->animData[anim->currAnim].duration = y;
-	outline->animData[outline->currAnim].duration = y;
-	fishingLine->animData[fishingLine->currAnim].duration = y;
+		anim->SetCurrAnimDuration(y);
+
+	outline->SetCurrAnimDuration(y);
+	fishingLine->SetCurrAnimDuration(y);
 
 	// updates the max hold currency
 	maxCurrency = *level * 100;
@@ -321,7 +322,7 @@ void AautoFisher::upgrade() {
 	setStats();
 
 	// see if can fish again
-	if (anim && calcCurrencyHeld() < maxCurrency && anim->bStopped)
+	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
 		anim->start();
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
@@ -381,14 +382,9 @@ double AautoFisher::price(int level) {
 }
 
 float AautoFisher::getCatchTime() {
-	// temp
-	// should calculate a max catch time, then set the fps based on catch time
-	//return (float)NormalAnim[0].size() * autoFisherAnim->fps;
-	if (anim) {
-		// std::cout << autoFisher->cellWidthNum << " * " << autoFisher->animData[autoFisher->currAnim].duration << std::endl;
-		return anim->GetCellNum().x * anim->animData[anim->currAnim].duration;
-	} else
-		return 40; // temp
+	if (anim)
+		return anim->GetCellNum().x * anim->GetCurrAnimDuration();
+	return 40;
 }
 
 double AautoFisher::calcIdleProfits(double afkTime) {
@@ -448,7 +444,7 @@ std::vector<float> AautoFisher::calcIdleFishChance(std::vector<FfishData> fishLi
 }
 
 void AautoFisher::startFishing() {
-	if (anim && calcCurrencyHeld() < maxCurrency && anim->bStopped)
+	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
 		anim->start();
 }
 

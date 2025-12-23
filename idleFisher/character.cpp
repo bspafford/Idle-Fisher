@@ -85,7 +85,6 @@ Acharacter::Acharacter() {
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, false);
 	fishingRod->shouldntDeleteTimer(true);
-	fishingRod->spriteSheet->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 
 	fishingTimer = std::make_unique<timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);
@@ -120,18 +119,18 @@ Acharacter::Acharacter() {
 }
 
 void Acharacter::animFinished() {
-	if (anim->currAnim.find("cast") != std::string::npos) { // if not cast
+	if (anim->GetCurrAnim().find("cast") != std::string::npos) { // if not cast
 		// change to next animation
 		anim->setAnimation("idleFishingSE", true);
 		anim->start();
 		fishingRod->setAnimation("idleFishingSE", true);
 		fishingRod->start();
-	} else if (anim->currAnim == "transitionSE") {
+	} else if (anim->GetCurrAnim() == "transitionSE") {
 		anim->setAnimation("waitSE", true);
 		anim->start();
 		fishingRod->setAnimation("waitSE", true);
 		fishingRod->start();
-	} else if (anim->currAnim == "pullSE") {
+	} else if (anim->GetCurrAnim() == "pullSE") {
 		anim->setAnimation("castSE", true);
 		anim->start();
 		fishingRod->setAnimation("castSE", true);
@@ -142,24 +141,24 @@ void Acharacter::animFinished() {
 void Acharacter::setFishingTipLoc(int frame) {
 	vector loc = vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } + (-anim->GetCellSize() / 2.f + vector{ -46, -14 }) * stuff::pixelSize;
 
-	if (anim->currAnim == "castSE") {
+	if (anim->GetCurrAnim() == "castSE") {
 		std::vector<vector> castAnimLocs = std::vector<vector>{ {95, 41}, {95, 41}, {94, 41}, {94, 41}, {95, 42}, {80, 1}, {48, -1}, {21, 43}, {27, 55}, {30, 56}, {47, 0}, {105, 11}, {105, 11}, {100, 4}, {98, 10}, {98, 10}, {98, 10}, {98, 10} };
 		fishingTipLoc = castAnimLocs[frame] * stuff::pixelSize + loc;
 		if (frame >= 11)
 			showFishingLine = true;
-	} else if (anim->currAnim == "idleSE") {
+	} else if (anim->GetCurrAnim() == "idleSE") {
 		std::vector<vector> idleFishing = std::vector<vector>{ {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 11}, {98, 11}, {98, 11}, {98, 11}, {98, 11} };
 		fishingTipLoc = idleFishing[frame] * stuff::pixelSize + loc;
 		showFishingLine = true;
-	} else if (anim->currAnim == "transitionSE") {
+	} else if (anim->GetCurrAnim() == "transitionSE") {
 		std::vector<vector> transition = std::vector<vector>{ {107, 14}, {105, 23}, {91, 27} };
 		fishingTipLoc = transition[frame] * stuff::pixelSize + loc;
 		showFishingLine = true;
-	} else if (anim->currAnim == "waitSE") {
+	} else if (anim->GetCurrAnim() == "waitSE") {
 		std::vector<vector> pullAnim = std::vector<vector>{ {96, 33}, {90, 29}, {97, 35}, {89, 25} };
 		fishingTipLoc = pullAnim[frame] * stuff::pixelSize + loc;
 		showFishingLine = true;
-	} else if (anim->currAnim == "pullSE") {
+	} else if (anim->GetCurrAnim() == "pullSE") {
 		std::vector<vector> catchAnim = std::vector<vector>{ {71 + 26, 33}, {71 + 26, 25}, {34 + 26, -19}, {3 + 26, -2}, {6 + 26, -3}, {6 + 26, -3}, {6 + 26, -3}, {3 + 26, -4}, {25 + 26, -6}, {62 + 26, 4}, {69 + 26, 41}, {31, -4} };
 		fishingTipLoc = catchAnim[frame] * stuff::pixelSize + loc;
 		if (frame >= 4)
@@ -249,12 +248,12 @@ void Acharacter::Update(float deltaTime) {
 			prevMove = moveDir;
 			float angle = atan2(moveDir.y, moveDir.x) * 180.f / M_PI;
 			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
-			if (anim->currAnim != walkAnimList[y])
+			if (anim->GetCurrAnim() != walkAnimList[y])
 				anim->setAnimation(walkAnimList[y], true);
 		} else {
 			float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
 			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
-			if (anim->currAnim != idleAnimList[y])
+			if (anim->GetCurrAnim() != idleAnimList[y])
 				anim->setAnimation(idleAnimList[y], true);
 		}
 	}
@@ -300,7 +299,7 @@ void Acharacter::leftClick() {
 		//if (anim->animList != idleAnimWheel[y])
 		showFishingLine = false;
 
-		if (anim->currAnim.find("cast") == std::string::npos) { // if not cast animation, from any direction
+		if (anim->GetCurrAnim().find("cast") == std::string::npos) { // if not cast animation, from any direction
 			anim->setAnimation("castSE", true);
 			anim->start();
 			fishingRod->setAnimation("castSE", true);
@@ -385,7 +384,7 @@ void Acharacter::leftClick() {
 
 		tempBobberLoc = bobberLoc;
 		bobberBobTimer->stop();
-		bobberCatchTimer->start(anim->animData[anim->currAnim].duration * 4);
+		bobberCatchTimer->start(stuff::animSpeed * 4.f);
 	} else if (isFishing) { // stop fishing
 		stopFishing();
 	}
@@ -575,7 +574,7 @@ void Acharacter::bobberCatchAnim() {
 	bobberLoc = { x, y };
 	fishImg->setLoc({ x, y });
 
-	if (bobberCatchTimer->finished()) {
+	if (bobberCatchTimer->IsFinished()) {
 		// plays pop sound when gets to charcter
 		//Mix_PlayChannel(-1, sounds::catchSound, 0);
 
@@ -590,7 +589,7 @@ void Acharacter::bobberBobAnim() {
 	float timer = bobberBobTimer->getMaxTime();
 
 	// if reeling in fish
-	if (anim->currAnim.find("wait") != std::string::npos || anim->currAnim.find("pull") != std::string::npos) {
+	if (anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos) {
 		float percent = time / timer;
 		int num = static_cast<int>(floor(percent * 14.f));
 		bobberLoc = tempBobberLoc + vector{ 0, num % 2 * stuff::pixelSize };
@@ -601,7 +600,7 @@ void Acharacter::bobberBobAnim() {
 	}
 
 	// restarts the timer
-	if (bobberBobTimer->finished()) {
+	if (bobberBobTimer->IsFinished()) {
 		tempBobberLoc = bobberLoc;
 		bobberBobTimer->start(bobTime);
 	}
@@ -651,7 +650,7 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 		return;
 
 	vector start = fishingTipLoc;
-	vector end = { Acharacter::bobberLoc.x + (Acharacter::bobberImg->w / 2 * stuff::pixelSize), Acharacter::bobberLoc.y + (Acharacter::bobberImg->h / 2 * stuff::pixelSize) };
+	vector end = Acharacter::bobberLoc + (Acharacter::bobberImg->getSize() / 2.f);
 
 	vector negative{ 1, 1 };
 	vector diff = { round((end.x - start.x) / stuff::pixelSize), round((end.y - start.y) / stuff::pixelSize) };
@@ -685,7 +684,7 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 			x = minX + i;
 
 			// linear
-			if (anim->currAnim.find("wait") != std::string::npos || anim->currAnim.find("pull") != std::string::npos) {
+			if (anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos) {
 				float m = (p2.y - p1.y) / (p2.x - p1.x);
 				float b = p1.y - m * p1.x;
 				y = m * x + b;

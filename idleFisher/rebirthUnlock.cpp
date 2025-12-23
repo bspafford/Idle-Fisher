@@ -24,8 +24,8 @@ UrebirthUnlock::UrebirthUnlock(widget* parent, int id) : widget(parent) {
 	if (!saveRebirthInfo->unlocked) {
 		if (background)
 			background->setColorMod(glm::vec4(75.f/255.f, 75.f/255.f, 75.f/255.f, 1.f));
-		if (button && button->getButtonImg().lock())
-			button->getButtonImg().lock()->setColorMod(glm::vec4(75.f / 255.f, 75.f / 255.f, 75.f / 255.f, 1.f));
+		if (button)
+			button->SetColorMod(glm::vec4(75.f / 255.f, 75.f / 255.f, 75.f / 255.f, 1.f));
 	}
 
 	if (saveRebirthInfo->unlocked)
@@ -61,7 +61,7 @@ void UrebirthUnlock::unlock() {
 	upgradeCost->setVisibility(false);
 
 	background->setColorMod(glm::vec4(1.f));
-	button->getButtonImg().lock()->setColorMod(glm::vec4(1.f));
+	button->SetColorMod(glm::vec4(1.f));
 }
 
 bool UrebirthUnlock::isMouseOver() {

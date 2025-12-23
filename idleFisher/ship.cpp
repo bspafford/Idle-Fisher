@@ -29,7 +29,7 @@ void Aship::shipbob() {
 	loc = tempLoc + bobberY;
 	shipImg->setLoc(loc);
 
-	if (bobTimer->finished()) {
+	if (bobTimer->IsFinished()) {
 		tempLoc = loc;
 		bobTimer->start(5);
 	}

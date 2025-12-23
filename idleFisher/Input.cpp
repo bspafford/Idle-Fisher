@@ -85,7 +85,7 @@ int Input::getMouseScrollDir() {
 }
 
 vector Input::getMousePos() {
-	return mousePos;
+	return mousePos / stuff::pixelSize;
 }
 
 bool Input::getKeyDown(int key) {

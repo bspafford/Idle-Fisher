@@ -10,27 +10,27 @@ class Image;
 class animation;
 class text;
 
-struct worldLoc {
+enum WorldLoc {
 	// don't set the position of that character when opening level
-	static inline int None = 0;
+	WORLD_SET_LOC_NONE,
 	// change the position of the character to the sailor when changing worlds
-	static inline int changeWorlds = 1;
+	WORLD_SET_LOC_SAILOR,
 	// change the position of the character to the vault enterance when changing worlds
-	static inline int leaveVault = 2;
+	WORLD_SET_LOC_VAULT,
 	// set the character to position { 0, 0 }
-	static inline int zero = 3;
+	WORLD_SET_LOC_ZERO
 };
 
 class Scene {
 public:
-	static void openLevel(std::string worldName, int worldChangeLoc = worldLoc::changeWorlds, bool overrideIfInWorld = false);
+	static void openLevel(std::string worldName, WorldLoc worldChangeLoc = WORLD_SET_LOC_SAILOR, bool overrideIfInWorld = false);
 	static int getWorldIndexFromName(std::string worldName);
 	static std::string getPrevWorldName();
 	static std::string getCurrWorldName();
 	static void deferredChangeWorld();
 
 	static void draw(Shader* shaderProgram);
-	static void openLevelThread(std::string worldName, int worldChangeLoc, bool overrideIfInWorld);
+	static void openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld);
 
 	static bool isLoading();
 private:
@@ -45,7 +45,7 @@ private:
 	static void finishedLoading();
 
 	static inline std::string worldName;
-	static inline int worldChangeLoc;
+	static inline WorldLoc worldChangeLoc;
 	static inline bool overrideIfInWorld;
 	static inline bool loadWorld = false;
 };

@@ -102,7 +102,7 @@ void Arain::updateRain() {
 
 void Arain::removeAnimList() {
 	for (int i = animList.size() - 1; i >= 0; i--) {
-		if (animList[i]->finished()) {
+		if (animList[i]->IsFinished()) {
 			animList[i]->stop();
 			animList.erase(animList.begin() + i);
 		}

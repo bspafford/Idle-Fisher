@@ -13,7 +13,6 @@
 #include "camera.h"
 #include "AautoFisher.h"
 #include "collision.h"
-#include "AStar.h"
 #include "upgrades.h"
 #include "achievement.h"
 #include "achievementBuffs.h"
@@ -25,7 +24,6 @@
 // npc
 #include "fishTransporter.h"
 #include "pet.h"
-#include "atm.h"
 
 // widgets
 #include "widget.h"
@@ -42,6 +40,9 @@
 #include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
 #include "blurBox.h"
+
+#include "slider.h"
+#include "progressBar.h"
 
 #include "debugger.h"
 
@@ -164,16 +165,22 @@ int Main::createWindow() {
 	auto lastTime = std::chrono::steady_clock::now();
 
 	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World! you are great!", "straight", vector{ 10, 10 });
+	std::unique_ptr<text> text2 = std::make_unique<text>(nullptr, "Hello World! you are great! right", "straight", vector{ 30, 30 }, false, false, TEXT_ALIGN_RIGHT);
 	std::unique_ptr<Image> img = std::make_unique<Image>("./images/house.png", vector{ 1, 1 }, false);
 	std::unique_ptr<FBO> fbo = std::make_unique<FBO>(stuff::screenSize, false);
+	std::unique_ptr<UprogressBar> progressBar = std::make_unique<UprogressBar>(nullptr, vector{ 500.f, 20.f }, false);
+	std::unique_ptr<Uslider> slider = std::make_unique<Uslider>(nullptr, false, vector{500.f, 20.f}, 0.f, 1.f);
+	std::unique_ptr<URectangle> rect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 100, 100 }, false, glm::vec4(1.f));
 
 	std::unique_ptr<verticalBox> vertBox = std::make_unique<verticalBox>(nullptr);
 	vertBox->setLoc({ 10, 10 });
 	std::unique_ptr<Ubutton> continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
+	std::unique_ptr<Ubutton> continueButton1 = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
 	vertBox->addChild(continueButton.get(), 35.f);
+	vertBox->addChild(continueButton1.get(), 35.f);
 	std::cout << "child: " << continueButton->getLoc() << "\n";
-	vertBox->setLocAndSize({ 10, 10 }, continueButton->getSize());
-	std::cout << "child: " << continueButton->getLoc() << "\n";
+	vertBox->setLocAndSize({ 100, 100 }, { continueButton->getSize().x, vertBox->getOverflowSize() });
+	std::cout << "child: " << continueButton->getSize() << ", overflow size: " << vertBox->getOverflowSize() << "\n";
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
@@ -195,10 +202,14 @@ int Main::createWindow() {
 		//fbo->BindFramebuffer();
 		//img->draw(twoDShader);
 		//text1->draw(twoDShader);
+		//rect->draw(twoDShader);
+		//progressBar->draw(twoDShader);
+		slider->draw(twoDShader);
+		//text2->draw(twoDShader);
 		//continueButton->draw(twoDShader);
 		vertBox->draw(twoDShader);
 		//fbo->UnbindFramebuffer();
-		fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
+		//fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
 		
 		textureManager::EndFrame();
 		glfwSwapBuffers(window);
@@ -330,7 +341,7 @@ void Main::Start() {
 
 	updateShaders(0);
 
-	Scene::openLevel("world1", worldLoc::None, true);
+	Scene::openLevel("world1", WORLD_SET_LOC_NONE, true);
 
 	character = std::make_unique<Acharacter>();
 
@@ -473,7 +484,7 @@ void Main::checkInputs() {
 		journal->addToViewport(true);
 
 	if (Input::getKeyDown(GLFW_KEY_O)) // temp
-		Scene::openLevel("rebirth", worldLoc::changeWorlds, false);
+		Scene::openLevel("rebirth", WORLD_SET_LOC_SAILOR, false);
 }
 
 void Main::drawWidgets(Shader* shaderProgram) {
@@ -526,7 +537,7 @@ void Main::rebirth() {
 		world::currWorld->autoFisherList.clear();
 	heldFishWidget->updateList();
 	currencyWidget->updateList();
-	Scene::openLevel("world1", 1, true);
+	Scene::openLevel("world1", WORLD_SET_LOC_SAILOR, true);
 }
 
 double Main::calcRebirthCurrency() {

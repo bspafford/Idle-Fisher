@@ -26,7 +26,7 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 
 
 	this->useAlpha = useAlpha;
-	buttonAnim->spriteSheet->setUseAlpha(useAlpha);
+	buttonAnim->SetUseAlpha(useAlpha);
 
 	this->useWorldLoc = useWorldLoc;
 }
@@ -63,7 +63,7 @@ void Ubutton::onHover(Shader* shaderProgram) {
 bool Ubutton::isMouseOver() {
 	if (!buttonAnim)
 		return false;
-	return buttonAnim->spriteSheet->isMouseOver(useAlpha);
+	return buttonAnim->IsMouseOver(useAlpha);
 }
 
 void Ubutton::setLoc(vector loc) {
@@ -97,16 +97,15 @@ void Ubutton::enable(bool enabled) {
 	}
 }
 
-std::weak_ptr<Image> Ubutton::getButtonImg() {
-	if (buttonAnim)
-		return buttonAnim->spriteSheet;
-	return std::weak_ptr<Image>();
-}
-
 vector Ubutton::getSize() {
 	return buttonAnim->GetCellSize();
 }
 
 vector Ubutton::getLoc() {
 	return loc;
+}
+
+void Ubutton::SetColorMod(glm::vec4 colorMod) {
+	if (buttonAnim)
+		buttonAnim->SetColorMod(colorMod);
 }

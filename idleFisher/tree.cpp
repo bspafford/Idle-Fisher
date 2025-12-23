@@ -26,8 +26,8 @@ Atree::Atree(vector loc, bool isTree) {
 		leafAnim->start();
 
 		// set to random frame
-		treeAnim->currFrameLoc.x = round(math::randRange(0.f, 29.f));
-		leafAnim->currFrameLoc.x = round(math::randRange(0.f, 42.f));
+		treeAnim->SetCurrFrameLoc({ round(math::randRange(0.f, 29.f)), -1 });
+		leafAnim->SetCurrFrameLoc({ round(math::randRange(0.f, 42.f)), -1 });
 	} else {
 		if (!bushSpriteSheet)
 			bushSpriteSheet = std::make_shared<Image>("./images/landscape/bush.png", vector{ 0, 0 }, true);
@@ -39,7 +39,7 @@ Atree::Atree(vector loc, bool isTree) {
 		treeAnim->setAnimation("bush");
 		treeAnim->start();
 
-		treeAnim->currFrameLoc.x = round(math::randRange(0.f, 29.f));
+		treeAnim->SetCurrFrameLoc({ round(math::randRange(0.f, 29.f)), -1 });
 	}
 }
 

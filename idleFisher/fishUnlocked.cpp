@@ -33,7 +33,7 @@ void UfishUnlocked::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
-	if (anim->finished()) {
+	if (anim->IsFinished()) {
 		bannerImg->draw(shaderProgram);
 		thumbnail->draw(shaderProgram);
 		if (name)
@@ -68,7 +68,7 @@ void UfishUnlocked::start(FachievementStruct* achievementData) {
 void UfishUnlocked::setupLocs() {
 	__super::setupLocs();
 
-	vector center = { stuff::screenSize.x / 2.f - bannerImg->w / 2 * stuff::pixelSize, 17 * stuff::pixelSize};
+	vector center = { stuff::screenSize.x / 2.f - bannerImg->getSize().x / 2.f * stuff::pixelSize, 17 * stuff::pixelSize};
 	bannerImg->setLoc(center);
 	//anim->setLoc(center - vector{ 20, 26 } * stuff::pixelSize);
 	anim->setLoc(bannerImg->getLoc());
@@ -85,6 +85,6 @@ void UfishUnlocked::reverse() {
 }
 
 void UfishUnlocked::finished() {
-	if (anim->currAnim == "reverse")
+	if (anim->GetCurrAnim() == "reverse")
 		visible = false;
 }

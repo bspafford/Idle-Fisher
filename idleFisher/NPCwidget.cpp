@@ -71,8 +71,8 @@ void NPCwidget::setNameDescription(std::string nameString, std::string descripti
 void NPCwidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = (npcBackground->w + 1) * stuff::pixelSize;
-	float y = (npcBackground->h + 1) * stuff::pixelSize;
+	float x = (npcBackground->getSize().x + 1) * stuff::pixelSize;
+	float y = (npcBackground->getSize().y + 1) * stuff::pixelSize;
 	vector size = vector{ x, 0 } + upgradeBackground->getSize();
 	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
 	vector topLeft = center - size / 2;
@@ -89,17 +89,17 @@ void NPCwidget::setupLocs() {
 
 
 	vector upgradeHolderPos = (upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize).floor();
-	upgradeHolder->setLocAndSize(upgradeHolderPos, vector{float(upgradeBackground->w), float(upgradeBackground->h - 6)} *stuff::pixelSize);
+	upgradeHolder->setLocAndSize(upgradeHolderPos, vector{float(upgradeBackground->getSize().x), float(upgradeBackground->getSize().y - 6)} *stuff::pixelSize);
 	upgradeHolder->setOgLoc(upgradeHolderPos);
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();
-		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->w * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
+		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
 	}
 
 	if (infoBackground) {
-		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize}, vector{float(infoBackground->w), float(infoBackground->h)} *stuff::pixelSize);
-		name->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
-		description->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
+		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize}, infoBackground->getSize() * stuff::pixelSize);
+		name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+		description->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
 	}
 }

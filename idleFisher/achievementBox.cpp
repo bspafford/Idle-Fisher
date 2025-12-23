@@ -55,8 +55,7 @@ void UachievementBox::draw(Shader* shaderProgram) {
 			isMouseOver = true;
 
 			float scale = 1.3f;
-			icon->w = startSize.x / stuff::pixelSize * scale;
-			icon->h = startSize.y / stuff::pixelSize * scale;
+			icon->setSize(startSize * scale);
 
 			vector test = (icon->getSize() / stuff::pixelSize);
 			icon->setLoc(loc - (icon->getSize() - startSize) / 2);
@@ -64,8 +63,7 @@ void UachievementBox::draw(Shader* shaderProgram) {
 			if (saveAchievementStruct->unlocked)
 				icon->setRotation(rot);
 		} else {
-			icon->w = startSize.x / stuff::pixelSize;
-			icon->h = startSize.y / stuff::pixelSize;
+			icon->setSize(startSize);
 			icon->setLoc(loc);
 		}
 		icon->draw(shaderProgram);

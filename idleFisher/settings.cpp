@@ -4,9 +4,7 @@
 #include "text.h"
 #include "scrollBox.h"
 #include "button.h"
-#include "pauseMenu.h"
 #include "slider.h"
-#include "horizontalBox.h"
 #include "saveData.h"
 #include "settingsBlock.h"
 #include "confirmWidget.h"
@@ -22,6 +20,8 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 		buttonClickAnim.push_back("./images/widget/upgradeButton" + std::to_string(i + 1) + ".png");
 
 	background = std::make_unique<Image>("./images/widget/achievementBackground.png", vector{ 0, 0 }, false);
+	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	background->SetPivot({ 0.5f, 0.5f });
 
 	backButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	backButton->addCallback(this, &Usettings::goBack);
@@ -33,10 +33,10 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	graphicsTitle = std::make_unique<text>(this, "  Graphics:", "biggerStraight", vector{ 0, 0 });
 
 	// padding
-	scrollBox->addChild(nullptr, 6 * stuff::pixelSize);
+	scrollBox->addChild(nullptr, 6);
 
 // settings
-	scrollBox->addChild(settingsTitle.get(), settingsTitle->getSize().y + 3 * stuff::pixelSize);
+	scrollBox->addChild(settingsTitle.get(), settingsTitle->getSize().y + 3);
 
 	saveButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	saveButton->addCallback(this, &Usettings::SaveSettings);
@@ -48,12 +48,12 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	cancelText = std::make_unique<text>(this, "Revert", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	
 // audio
-	scrollBox->addChild(audioTitle.get(), audioTitle->getSize().y + 3 * stuff::pixelSize);
+	scrollBox->addChild(audioTitle.get(), audioTitle->getSize().y + 3);
 
 
-	float length = background->getSize().x - 50 * stuff::pixelSize;
-	float sliderHeight = 3 * stuff::pixelSize;
-	float titleSliderLength = 38 * stuff::pixelSize;
+	float length = background->getSize().x - 50;
+	float sliderHeight = 3;
+	float titleSliderLength = 38;
 	glm::vec4 sliderForegroundColor = glm::vec4(0.94901960784, 0.91372549019, 0.82745098039, 1);
 	glm::vec4 sliderBackgroundColor = glm::vec4(181.f / 255.f, 145.f / 255.f, 101.f/255.f, 1);
 	masterVolumeSlider = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0, 100);
@@ -84,15 +84,15 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	dialogVolume->bindValue(&SaveData::settingsData.dialogVolume);
 	dialogVolume->setTitleLength(titleSliderLength);
 
-	float sliderPadding = 17 * stuff::pixelSize;
+	float sliderPadding = 17;
 	scrollBox->addChild(masterVolumeSlider.get(), masterVolumeSlider->getSize().y + sliderPadding);
 	scrollBox->addChild(musicVolume.get(), musicVolume->getSize().y + sliderPadding);
 	scrollBox->addChild(sfxVolume.get(), sfxVolume->getSize().y + sliderPadding);
 	scrollBox->addChild(dialogVolume.get(), dialogVolume->getSize().y + sliderPadding);
-	scrollBox->addChild(nullptr, 5 * stuff::pixelSize);
+	scrollBox->addChild(nullptr, 5);
 
 // graphics
-	scrollBox->addChild(graphicsTitle.get(), graphicsTitle->getSize().y + 3 * stuff::pixelSize);
+	scrollBox->addChild(graphicsTitle.get(), graphicsTitle->getSize().y + 3);
 
 	pixelFontBlock = std::make_unique<UsettingsBlock>(this, "Pixel Font", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.pixelFont);
 	pixelFontBlock->addCallback(text::changeFontAll);
@@ -114,7 +114,7 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	scrollBox->addChild(cursorBlock.get(), cursorBlock->getSize().y);
 
 	// add bottom padding
-	scrollBox->addChild(nullptr, 20 * stuff::pixelSize);
+	scrollBox->addChild(nullptr, 20);
 
 	confirmWidget = std::make_unique<ConfirmWidget>(this);
 	confirmWidget->AddSaveCallback(this, &Usettings::saveConfirm);
@@ -198,27 +198,23 @@ void Usettings::goBack() {
 }
 
 void Usettings::setupLocs() {
-	if (background)
-		background->setLoc(vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } - background->getSize() / 2);
-
 	if (backButton) {
 		vector backButtonSize = backButton->getSize();
-		backButton->setLoc({ float(background->getLoc().x + (background->w - 4) * stuff::pixelSize - backButtonSize.x / 2), float(background->getLoc().y - backButtonSize.y / 2 + 4 * stuff::pixelSize)});
+		backButton->setLoc({ float(background->getLoc().x + (background->getSize().x - 4.f) - backButtonSize.x / 2.f), float(background->getLoc().y - backButtonSize.y / 2.f + 4.f)});
 	}
 
-	vector scrollBoxLoc = background->getLoc() + vector{10, 8} *stuff::pixelSize;
-	vector scrollBoxSize = vector{ background->getSize().x, background->getSize().y - 15 * stuff::pixelSize};
+	vector scrollBoxLoc = background->getAbsoluteLoc() + vector{ 9.f, 8.f };
+	vector scrollBoxSize = background->getSize() - 17.f;
 	scrollBox->setLocAndSize(scrollBoxLoc, scrollBoxSize);
-	scrollBox->setOgLoc(scrollBoxLoc);
 
 	if (cancelButton && background && saveButton)
-		cancelButton->setLoc(background->getLoc() + background->getSize() - saveButton->getSize() - vector{10, 10} *stuff::pixelSize);
+		cancelButton->setLoc(background->getLoc() + background->getSize() - saveButton->getSize() - vector{10.f, 10.f});
 	if (cancelText && cancelButton)
-		cancelText->setLoc(cancelButton->getLoc() + cancelButton->getSize() / 2);
+		cancelText->setLoc(cancelButton->getLoc() + cancelButton->getSize() / 2.f);
 	if (saveButton && cancelButton)
-		saveButton->setLoc(cancelButton->getLoc() - vector{saveButton->getSize().x + 2 * stuff::pixelSize, 0 });
+		saveButton->setLoc(cancelButton->getLoc() - vector{saveButton->getSize().x + 2.f, 0 });
 	if (saveText && saveButton)
-		saveText->setLoc(saveButton->getLoc() + saveButton->getSize() / 2);
+		saveText->setLoc(saveButton->getLoc() + saveButton->getSize() / 2.f);
 }
 
 void Usettings::cancel() {

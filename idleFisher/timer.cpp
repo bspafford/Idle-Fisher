@@ -71,7 +71,7 @@ float timer::getMaxTime() {
 	return maxTime;
 }
 
-bool timer::finished() {
+bool timer::IsFinished() {
 	return bFinished;
 }
 

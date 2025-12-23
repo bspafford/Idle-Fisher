@@ -14,64 +14,13 @@ URectangle::URectangle(vector loc, vector size, bool useWorldLoc, glm::vec4 colo
 	setCursorHoverIcon(CURSOR_DEFAULT);
 
 	setLoc(loc);
-
-	//GPULoadCollector::add(this);
-}
-
-void URectangle::LoadGPU() {
-	/*
-	float vertices[] = {
-		// Positions // Texture Coords
-		size.x + loc.x, loc.y,           // Bottom-right
-		size.x + loc.x, size.y + loc.y,  // Top-right
-		loc.x, size.y + loc.y,           // Top-left
-		loc.x, loc.y                     // Bottom-left
-	};
-
-	std::vector<GLuint> indices = {
-		0, 1, 3, // First triangle
-		3, 1, 2  // Second triangle
-	};
-
-	currVAO = std::make_unique<VAO>();
-	currVAO->Bind();
-	currVBO = std::make_unique<VBO>(vertices, sizeof(vertices));
-	currEBO = std::make_unique<EBO>(indices);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
 }
 
 URectangle::~URectangle() {
-	/*
-	if (currVAO)
-		currVAO->Delete();
-	if (currVBO)
-		currVBO->Delete();
-	if (currEBO)
-		currEBO->Delete();
-		*/
+
 }
 
 void URectangle::draw(Shader* shaderProgram) {
-	/*
-	if (!currVAO || !GPULoadCollector::isOnMainThread())
-		return;
-
-	shaderProgram->Activate();
-	currVAO->Bind();
-
-	shaderProgram->setVec4("color", color);
-	shaderProgram->setInt("useWorldPos", useWorldLoc);
-	shaderProgram->setInt("isRectangle", 1);
-
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-	shaderProgram->setInt("isRectangle", 0);
-
-		*/
 	vector mousePos = Input::getMousePos();
 	if (blockCursor && mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
 		setHoveredItem(this);
@@ -85,42 +34,7 @@ void URectangle::setColor(glm::vec4 color) {
 
 void URectangle::setLoc(vector loc) {
 	this->loc = loc;
-	if (useWorldLoc) {
-		this->absoluteLoc = loc;
-		//updatePositionsList();
-	} else {
-		// by default anchor should be top left?
-
-		// if left anchor to left side of screen.
-		// if left and top anchor then anchor top left
-		// if anchor centerX and centerY then anchor center of screen
-
-		// should only work for screen space objects
-
-		// right now the anchor of the image is the bottom left, but when screen anchoring to the right side of the screen, should make it subtract the image width from the image so it isn't off the screen
-		//this->absoluteLoc = this->loc + vector{ 1920.f/2.f, 0 };
-		vector halfScreen = stuff::screenSize / 2.f;
-		vector newLoc;
-		if (xAnchor == ANCHOR_LEFT) { // if anchor left
-			newLoc.x = loc.x - halfScreen.x;
-		} else if (xAnchor == ANCHOR_RIGHT) { // if anchor right
-			newLoc.x = loc.x + halfScreen.x - size.x;
-		} else if (xAnchor == ANCHOR_CENTER) {
-			newLoc.x = loc.x - size.x / 2.f;
-		}
-
-		if (yAnchor == ANCHOR_TOP) { // if anchor top
-			newLoc.y = loc.y - halfScreen.y + size.y;
-		} else if (yAnchor == ANCHOR_BOTTOM) { // if anchor bottom
-			newLoc.y = loc.y + halfScreen.y;
-		} else if (yAnchor == ANCHOR_CENTER) { // if anchor bottom
-			newLoc.y = loc.y + size.y / 2.f;
-		}
-
-		absoluteLoc = newLoc;
-
-		//updatePositionsList();
-	}
+	absoluteLoc = GetAbsoluteLoc(loc, size, useWorldLoc, pivot, xAnchor, yAnchor);
 }
 
 vector URectangle::getLoc() {
@@ -129,7 +43,6 @@ vector URectangle::getLoc() {
 
 void URectangle::setSize(vector size) {
 	this->size = size;
-	//updatePositionsList();
 }
 
 vector URectangle::getSize() {
@@ -147,33 +60,10 @@ void URectangle::setAnchor(Anchor xAnchor, Anchor yAnchor) {
 	setLoc(loc);
 }
 
-/*
-void URectangle::updatePositionsList() {
-	if (!currVAO || !GPULoadCollector::isOnMainThread())
-		return;
-
-	currVAO->Bind();
-	currVBO->Bind();
-
-	vector scaledLoc = absoluteLoc * vector{ 1, -1 };
-	if (useWorldLoc)
-		scaledLoc = { absoluteLoc.x * stuff::pixelSize, absoluteLoc.y * stuff::pixelSize };
-	float positions[] = {
-		// Positions						// Texture Coords
-		size.x + scaledLoc.x, scaledLoc.y,
-		size.x + scaledLoc.x, size.y + scaledLoc.y,
-		scaledLoc.x, size.y + scaledLoc.y,
-		scaledLoc.x, scaledLoc.y
-	};
-
-	// round positions list
-	for (int i = 0; i < 8; i++) {
-		positions[i] = floorf(positions[i]);
-	}
-
-	currVBO->UpdateData(positions, sizeof(positions));
+void URectangle::SetPivot(vector pivot) {
+	this->pivot = pivot;
+	setLoc(loc);
 }
-*/
 
 void URectangle::setBlockCursor(bool val) {
 	blockCursor = val;

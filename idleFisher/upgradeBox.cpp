@@ -225,13 +225,13 @@ void UupgradeBox::setupLocs() {
 	}
 
 	if (thumbnailBackground)
-		thumbnailBackground->setLoc((loc + vector{ 4 * stuff::pixelSize, size.y / 2 - thumbnailBackground->h / 2 * stuff::pixelSize }));
+		thumbnailBackground->setLoc((loc + vector{ 4 * stuff::pixelSize, size.y / 2 - thumbnailBackground->getSize().y / 2 * stuff::pixelSize }));
 	
 	if (thumbnail && thumbnailBackground)
 		thumbnail->setLoc(thumbnailBackground->getLoc());
 	
 	if (name)
-		name->setLoc((loc + vector{ (thumbnailBackground->h + 6) * stuff::pixelSize, size.y / 2 }));
+		name->setLoc((loc + vector{ (thumbnailBackground->getSize().y + 6) * stuff::pixelSize, size.y / 2}));
 }
 
 bool UupgradeBox::mouseOver() {
@@ -389,6 +389,6 @@ void UupgradeBox::equipBait() {
 
 vector UupgradeBox::getSize() {
 	if (background)
-		return vector{ float(background->w), float(background->h) } * stuff::pixelSize;
+		return background->getSize();
 	return { 0, 0 };
 }

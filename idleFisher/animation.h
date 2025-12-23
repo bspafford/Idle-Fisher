@@ -63,30 +63,29 @@ public:
 		frameCallback_ = std::bind(callback, object, std::placeholders::_1);
 	}
 
-	int eventFrameNum;
-	std::function<void()> eventCallback_ = NULL;
-	std::function<void()> finishedCallback_ = NULL;
-	std::function<void(int)> frameCallback_ = NULL;
-
-	bool finished();
-
-	bool bFinished = false;
-	bool bStopped = false;
+	bool IsFinished();
+	bool IsStopped();
 
 	void shouldntDeleteTimer(bool dontDelete);
 
 	vector GetCellSize();
 	vector GetCellNum();
 
-	std::unique_ptr<timer> animTimer;
+	std::string GetCurrAnim();
 
-	std::unordered_map<std::string, animDataStruct> animData;
-	std::shared_ptr<Image> spriteSheet;
-	bool useWorldLoc;
+	void SetColorMod(glm::vec4 colorMod);
 
-	std::string currAnim; // which animation is currently selected
-	vector currFrameLoc; // which frame the animation is on
-	std::shared_ptr<Rect> source;
+	bool IsMouseOver(bool useAlpha);
+
+	void SetUseAlpha(bool useAlpha);
+
+	void SetAnimDuration(std::string animName, float duration);
+	void SetCurrAnimDuration(float duration);
+	float GetAnimDuration(std::string animName);
+	float GetCurrAnimDuration();
+
+	// can put -1 to keep current value on that axis
+	void SetCurrFrameLoc(vector loc);
 
 	// calculates what frame the animation is on
 	// if getFrameNum = true, then function finds distance from start to frame
@@ -97,4 +96,22 @@ private:
 	vector loc;
 	vector cellSize;
 	vector cellNum;
+
+	int eventFrameNum;
+	std::function<void()> eventCallback_ = NULL;
+	std::function<void()> finishedCallback_ = NULL;
+	std::function<void(int)> frameCallback_ = NULL;
+
+	bool bFinished = false;
+	bool bStopped = false;
+
+	std::unique_ptr<timer> animTimer;
+
+	std::unordered_map<std::string, animDataStruct> animData;
+	std::shared_ptr<Image> spriteSheet;
+	bool useWorldLoc;
+
+	std::string currAnim; // which animation is currently selected
+	vector currFrameLoc; // which frame the animation is on
+	std::shared_ptr<Rect> source;
 };

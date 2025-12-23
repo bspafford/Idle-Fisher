@@ -12,7 +12,7 @@ struct FprogressBarDir {
 
 class UprogressBar : public widget {
 public:
-	UprogressBar(widget* parent, bool useCharLoc, float width, float height, int dir = FprogressBarDir::right, bool reverse = false);
+	UprogressBar(widget* parent, vector size, bool useCharLoc, int dir = FprogressBarDir::right, bool reverse = false);
 	// background color, foreground color, direction (left, up, reverse), width, height
 	void setBackgroundColor(glm::vec4 color);
 	// id is when the progress bar has mutliple preogress bars
@@ -25,15 +25,16 @@ public:
 
 	float calcTotalWeight();
 
+	virtual void setLoc(vector loc) override;
+	virtual void setSize(vector size) override;
+
 private:
 	std::vector<float> percent = { 0 };
 	std::vector<float> weight = { 1 };
-	bool useCharLoc;
+	bool useWorldLoc;
 	int dir;
 	bool reverse;
-	std::vector<glm::vec4> foregroundColor = std::vector<glm::vec4>{ { 255, 255, 255, 255 } };
-	glm::vec4 backgroundColor = { 0, 0, 0, 255 };
-
-	std::unique_ptr<URectangle> foreground;
+	
+	std::vector<std::unique_ptr<URectangle>> foregrounds;
 	std::unique_ptr<URectangle> background;
 };

@@ -173,7 +173,7 @@ void vaultWorld::start() {
 }
 
 void vaultWorld::leaveHouse() {
-	Scene::openLevel(SaveData::saveData.prevWorld, worldLoc::leaveVault);
+	Scene::openLevel(SaveData::saveData.prevWorld, WORLD_SET_LOC_VAULT);
 }
 
 void vaultWorld::draw(Shader* shaderProgram) {
@@ -283,7 +283,7 @@ void rebirthWorld::addAnim() {
 
 void rebirthWorld::removeAnim() {
 	for (int i = waterRippleList.size() - 1; i >= 0; i--) {
-		if (waterRippleList[i]->finished()) {
+		if (waterRippleList[i]->IsFinished()) {
 			waterRippleList[i]->stop();
 			waterRippleList.erase(waterRippleList.begin() + i);
 		}
@@ -580,18 +580,18 @@ void world::setupAutoFishers() {
 	}
 }
 
-void world::setWorldChangeLoc(int worldChangeLoc) {
-	if (worldChangeLoc == worldLoc::changeWorlds)
+void world::setWorldChangeLoc(WorldLoc worldChangeLoc) {
+	if (worldChangeLoc == WORLD_SET_LOC_SAILOR)
 		SaveData::saveData.playerLoc = spawnLoc;
-	else if (worldChangeLoc == worldLoc::leaveVault) {
+	else if (worldChangeLoc == WORLD_SET_LOC_VAULT) {
 		SaveData::saveData.playerLoc = houseLoc;
-	} else if (worldChangeLoc == worldLoc::zero) {
+	} else if (worldChangeLoc == WORLD_SET_LOC_ZERO) {
 		SaveData::saveData.playerLoc = { 0, 0 };
 	}
 }
 
 // world 1
-world1::world1(int worldChangeLoc) {
+world1::world1(WorldLoc worldChangeLoc) {
 	spawnLoc = { 517, 476 };
 	houseLoc = { 1670, -870 };
 	bankSellLoc = { 1000, 650 };
@@ -661,7 +661,7 @@ world1::world1(int worldChangeLoc) {
 }
 
 void world::finishedBeachAnim() {
-	if (beachAnim->currAnim == "in")
+	if (beachAnim->GetCurrAnim() == "in")
 		beachAnim->setAnimation("out");
 	else
 		beachAnim->setAnimation("in");
@@ -675,39 +675,39 @@ void world::sortTreeList() {
 		});
 }
 
-world2::world2(int worldChangeLoc) {
+world2::world2(WorldLoc worldChangeLoc) {
 
 }
 
-world3::world3(int worldChangeLoc) {
+world3::world3(WorldLoc worldChangeLoc) {
 	
 }
 
 // world 1
-world4::world4(int worldChangeLoc) {
+world4::world4(WorldLoc worldChangeLoc) {
 	
 }
 
-world5::world5(int worldChangeLoc) {
+world5::world5(WorldLoc worldChangeLoc) {
 	
 }
 
-world6::world6(int worldChangeLoc) {
+world6::world6(WorldLoc worldChangeLoc) {
 	
 }
 
-world7::world7(int worldChangeLoc) {
+world7::world7(WorldLoc worldChangeLoc) {
 	
 }
 
-world8::world8(int worldChangeLoc) {
+world8::world8(WorldLoc worldChangeLoc) {
 	
 }
 
-world9::world9(int worldChangeLoc) {
+world9::world9(WorldLoc worldChangeLoc) {
 	
 }
 
-world10::world10(int worldChangeLoc) {
+world10::world10(WorldLoc worldChangeLoc) {
 	
 }

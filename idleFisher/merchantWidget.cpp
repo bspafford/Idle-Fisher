@@ -16,8 +16,6 @@ UmerchantWidget::UmerchantWidget(widget* parent, npc* NPCParent) : widget(parent
 	if (closeButton)
 		closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
 	npcImg = std::make_unique<Image>("./images/widget/npcButtons/merchant.png", vector{ 100, 100 }, false);
-	npcImg->w *= 1;
-	npcImg->h *= 1;
 
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0,0 });
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0,0 });
@@ -135,8 +133,8 @@ void UmerchantWidget::setNameDescription(std::string nameString, std::string des
 void UmerchantWidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = (npcBackground->w + 1) * stuff::pixelSize;
-	float y = (npcBackground->h + 1) * stuff::pixelSize;
+	float x = (npcBackground->getSize().x + 1) * stuff::pixelSize;
+	float y = (npcBackground->getSize().y + 1) * stuff::pixelSize;
 	vector size = vector{ x, 0 } + upgradeBackground->getSize();
 	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
 	vector topLeft = center - size / 2;
@@ -161,10 +159,10 @@ void UmerchantWidget::setupLocs() {
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();
-		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->w * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2) });
+		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2) });
 	}
 
-	nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize }, vector{ float(infoBackground->w), float(infoBackground->h) } *stuff::pixelSize);
-	name->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
-	description->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
+	nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize }, vector{ float(infoBackground->getSize().x), float(infoBackground->getSize().y) } *stuff::pixelSize);
+	name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+	description->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
 }

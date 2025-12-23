@@ -109,10 +109,6 @@ void Shader::setVec4(std::string key, glm::vec4 value) {
 	glUniform4f(GetUniformLocation(key), value.x, value.y, value.z, value.w);
 }
 
-void Shader::setVec41(const std::string& key, glm::vec4& value) {
-	glUniform4f(GetUniformLocation(key), value.x, value.y, value.z, value.w);
-}
-
 void Shader::setVec3(std::string key, glm::vec3 value) {
 	glUniform3f(GetUniformLocation(key), value.x, value.y, value.z);
 }
@@ -122,10 +118,6 @@ void Shader::setVec2(std::string key, glm::vec2 value) {
 }
 
 void Shader::setInt(std::string key, int value) {
-	glUniform1i(GetUniformLocation(key), value);
-}
-
-void Shader::setInt1(const std::string& key, int& value) {
 	glUniform1i(GetUniformLocation(key), value);
 }
 
@@ -139,8 +131,10 @@ int Shader::GetUniformLocation(const std::string& key) {
 		return it->second;
 
 	int loc = glGetUniformLocation(ID, key.c_str());
-	if (loc == -1)
+	if (loc == -1) {
 		std::cout << "Uniform \"" + key + "\" is not a valid uniform\n";
+		abort();
+	}
 
 	uniformCache.emplace(key, loc);
 	return loc;

@@ -216,55 +216,55 @@ public:
 	vector bankSellLoc;
 
 protected:
-	void setWorldChangeLoc(int worldChangeLoc);
+	void setWorldChangeLoc(WorldLoc worldChangeLoc);
 };
 
 class world1 : public world {
 public:
-	world1(int worldChangeLoc);
+	world1(WorldLoc worldChangeLoc);
 };
 
 class world2 : public world {
 public:
-	world2(int worldChangeLoc);
+	world2(WorldLoc worldChangeLoc);
 };
 
 class world3 : public world {
 public:
-	world3(int worldChangeLoc);
+	world3(WorldLoc worldChangeLoc);
 };
 
 class world4 : public world {
 public:
-	world4(int worldChangeLoc);
+	world4(WorldLoc worldChangeLoc);
 };
 
 class world5 : public world {
 public:
-	world5(int worldChangeLoc);
+	world5(WorldLoc worldChangeLoc);
 };
 
 class world6 : public world {
 public:
-	world6(int worldChangeLoc);
+	world6(WorldLoc worldChangeLoc);
 };
 
 class world7 : public world {
 public:
-	world7(int worldChangeLoc);
+	world7(WorldLoc worldChangeLoc);
 };
 
 class world8 : public world {
 public:
-	world8(int worldChangeLoc);
+	world8(WorldLoc worldChangeLoc);
 };
 
 class world9 : public world {
 public:
-	world9(int worldChangeLoc);
+	world9(WorldLoc worldChangeLoc);
 };
 
 class world10 : public world {
 public:
-	world10(int worldChangeLoc);
+	world10(WorldLoc worldChangeLoc);
 };

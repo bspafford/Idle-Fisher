@@ -170,7 +170,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 		if (alignment == TEXT_ALIGN_RIGHT)
 			temp = -1;
 
-		offset.x += letter->w * temp;// *stuff::pixelSize;
+		offset.x += letter->getSize().x * temp;// *stuff::pixelSize;
 
 		if (isometric) {
 			if (text[i] == '.')
@@ -186,10 +186,10 @@ void text::makeText(int i, std::string text, vector &offset) {
 		// wraps text if its length is greater than its linelength
 		if (lineLength != -1 && offset.x > lineLength) { //  && textString[start] != ' '
 			offset.x = 0;
-			offset.y += (letter->h + 1);
+			offset.y += (letter->getSize().y + 1);
 			for (int j = start; j < start + numLetters + 1; j++) {
 				letters[j]->setLoc(offset);
-				offset.x += letters[j]->w;
+				offset.x += letters[j]->getSize().x;
 			}
 		}
 	}
@@ -360,13 +360,13 @@ vector text::getFBOSize() {
 		vector letterLoc = letter->getLoc();
 		if (minX > letterLoc.x)
 			minX = letterLoc.x;
-		if (maxX < letterLoc.x + letter->w)
-			maxX = letterLoc.x + letter->w;
+		if (maxX < letterLoc.x + letter->getSize().x)
+			maxX = letterLoc.x + letter->getSize().x;
 
 		if (minY > letterLoc.y)
 			minY = letterLoc.y;
-		if (maxY < letterLoc.y + letter->h)
-			maxY = letterLoc.y + letter->h;
+		if (maxY < letterLoc.y + letter->getSize().y)
+			maxY = letterLoc.y + letter->getSize().y;
 	}
 	return { ceil(maxX - minX), ceil(maxY - minY) + dropHeight };
 }

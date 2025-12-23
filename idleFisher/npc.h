@@ -29,8 +29,6 @@ public:
 	// returns true if player is infront of the NPC
 	virtual bool calcIfPlayerInfront();
 
-	std::weak_ptr<Image> getCharImg();
-
 	virtual void click();
 
 	bool isDiscovered();

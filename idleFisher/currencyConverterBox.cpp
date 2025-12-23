@@ -160,5 +160,5 @@ void UcurrencyConverterBox::update() {
 }
 
 vector UcurrencyConverterBox::getSize() {
-	return vector{ float(background->w), float(background->h) } *stuff::pixelSize;
+	return background->getSize();
 }

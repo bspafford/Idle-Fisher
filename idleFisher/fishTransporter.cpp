@@ -67,7 +67,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	animData.insert({ "walkSW", animDataStruct({0, 5 }, { 5, 5 }, true, duration) });
 
 	npcAnim = std::make_unique<animation>("npc/fishTransporter/fishTransporterSpriteSheet.png", 30, 42, animData, true, loc);
-	npcAnim->spriteSheet->setUseAlpha(true);
+	npcAnim->SetUseAlpha(true);
 	npcAnim->setAnimation("idleSE");
 	npcAnim->start();
 
@@ -157,7 +157,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	collectTimer->addCallback(this, &AfishTransporter::finishCollectTimer);
 	collectTimer->addUpdateCallback(this, &AfishTransporter::collectTimerUpdate);
 
-	progressBar = std::make_unique<UprogressBar>(nullptr, true, 25, 3);
+	progressBar = std::make_unique<UprogressBar>(nullptr, vector{ 25, 3 }, true);
 	progressBar->setVisibility(false);
 
 	setLoc(loc);
@@ -191,7 +191,7 @@ void AfishTransporter::draw(Shader* shaderProgram) {
 	npcAnim->draw(shaderProgram);
 	fishPileAnim->draw(shaderProgram);
 
-	if (npcAnim->spriteSheet->isMouseOver(true) && fullnessText) {
+	if (npcAnim->IsMouseOver(true) && fullnessText) {
 		fullnessText->setLoc(loc + npcAnim->GetCellSize() / vector{ 2.f, 1.f });
 		fullnessText->draw(shaderProgram);
 		progressBar->setLoc(loc + vector{ -progressBar->getSize().x / 2 / stuff::pixelSize, npcAnim->GetCellSize().y + 11.f});
@@ -234,14 +234,14 @@ void AfishTransporter::setAnimation() {
 		if (y == -1)
 			y = 7;
 
-		if (npcAnim->currAnim != walkAnimList[y]) {
+		if (npcAnim->GetCurrAnim() != walkAnimList[y]) {
 			npcAnim->setAnimation(walkAnimList[y], true);
 			fishPileAnim->setAnimation(fullnessString + walkAnimList[y], true);
 		}
 	} else {
 		float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
 		int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
-		if (npcAnim->currAnim != idleAnimList[y]) {
+		if (npcAnim->GetCurrAnim() != idleAnimList[y]) {
 			npcAnim->setAnimation(idleAnimList[y], true);
 			fishPileAnim->setAnimation(fullnessString + idleAnimList[y], true);
 		}
@@ -490,8 +490,8 @@ void AfishTransporter::upgrade(FsaveMechanicStruct* mechanicStruct) {
 
 	// every 10 levels, upgrade speed
 	if (mechanicStruct->level % 10 == 0) {
-		speed = 2.0202 * mechanicStruct->level + 47.9798;
-		collectionSpeed = -0.040404 * mechanicStruct->level + 5.0404; // level 1 = 5 sec, level 100 = 1 sec
+		speed = 2.0202f * mechanicStruct->level + 47.9798f;
+		collectionSpeed = -0.040404f * mechanicStruct->level + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
 	}
 
 	fullnessText->setText(shortNumbers::convert2Short(calcCurrencyHeld()) + "/" + shortNumbers::convert2Short(maxHoldNum));

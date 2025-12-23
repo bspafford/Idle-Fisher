@@ -40,11 +40,11 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
-		worldProgress1 = std::make_unique<UprogressBar>(this, false, 100, 3);
+		worldProgress1 = std::make_unique<UprogressBar>(this, vector{ 100.f, 3.f }, false);
 		worldProgress1->setForegroundColor({ 227, 120, 64, 255 }, 0);
 		worldProgress1->addProgressBar(0, 3, { 232, 210, 75, 255 });
 		worldProgress1->addProgressBar(0, 1, { 120, 158, 36, 255 });
-		worldProgress2 = std::make_unique<UprogressBar>(this, false, 100, 3);
+		worldProgress2 = std::make_unique<UprogressBar>(this, vector{ 100.f, 3.f }, false);
 		worldProgress2->setForegroundColor({ 227, 120, 64, 255 }, 0);
 		worldProgress2->addProgressBar(0, 3, { 232, 210, 75, 255 });
 		worldProgress2->addProgressBar(0, 1, { 120, 158, 36, 255 });
@@ -106,12 +106,12 @@ Ujournal::~Ujournal() {
 }
 
 void Ujournal::draw(Shader* shaderProgram) {
-	if (journalClosed && !journalTimer->finished())
+	if (journalClosed && !journalTimer->IsFinished())
 		journalClosed->draw(shaderProgram);
-	if (journalAnim && !journalAnim->finished() && journalTimer->finished())
+	if (journalAnim && !journalAnim->IsFinished() && journalTimer->IsFinished())
 		journalAnim->draw(shaderProgram);
 
-	if (!journalAnim || !journalAnim->finished() || !journalTimer->finished())
+	if (!journalAnim || !journalAnim->IsFinished() || !journalTimer->IsFinished())
 		return;
 
 	background->draw(shaderProgram);
@@ -253,9 +253,8 @@ void Ujournal::updatePages() {
 	} else {
 		selectedFishName->setLoc(vector{ 256, 98 } * stuff::pixelSize); // 174 57
 		selectedFishDescription->setLoc(vector{ 126+ 80, 150+40 } * stuff::pixelSize);
-		fishThumbnail->w *= 3;
-		fishThumbnail->h *= 3;
-		fishThumbnail->setLoc((vector{ 150 + 80 + 25, 83 + 41 + 27 } *stuff::pixelSize) - (vector{ float(fishThumbnail->w), float(fishThumbnail->h) } / 2.f * stuff::pixelSize));
+		fishThumbnail->setSize(fishThumbnail->getSize() * 3.f);
+		fishThumbnail->setLoc((vector{ 150 + 80 + 25, 83 + 41 + 27 } * stuff::pixelSize) - (fishThumbnail->getSize() / 2.f * stuff::pixelSize));
 		notesBackground->setLoc(vector{ 123 + 80, 140 + 41 } * stuff::pixelSize);
 		selectedFishDescription->setLineLength(102 * stuff::pixelSize);
 
@@ -394,9 +393,9 @@ void Ujournal::closeWidget() {
 void Ujournal::journalAnimFinish() {
 	opening = false;
 
-	if (journalAnim->currAnim == "open")
+	if (journalAnim->GetCurrAnim() == "open")
 		open = true;
-	else if (journalAnim->currAnim == "close")
+	else if (journalAnim->GetCurrAnim() == "close")
 		journalTimer->start(.5);
 }
 

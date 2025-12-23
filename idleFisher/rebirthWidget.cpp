@@ -244,5 +244,5 @@ bool UrebirthWidget::isMouseOverUnlock() {
 }
 
 void UrebirthWidget::openRebirthWorld() {
-	Scene::openLevel("rebirth", worldLoc::zero);
+	Scene::openLevel("rebirth", WORLD_SET_LOC_ZERO);
 }

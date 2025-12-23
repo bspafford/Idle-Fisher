@@ -16,6 +16,7 @@ void UscrollBox::draw(Shader* shaderProgram) {
 			startLoc = loc;
 			mouseStartPos = Input::getMousePos();
 		}
+
 		if (Input::getMouseButtonHeld(MOUSE_BUTTON_RIGHT)) {
 			setCursorHoverIcon(CURSOR_GRAB);
 			scrolling();
@@ -26,8 +27,8 @@ void UscrollBox::draw(Shader* shaderProgram) {
 	}
 
 	glEnable(GL_SCISSOR_TEST);
-	glScissor(ogLoc.x, stuff::screenSize.y - size.y - ogLoc.y, size.x, size.y);
-
+	glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
+	
 	__super::draw(shaderProgram);
 
 	glDisable(GL_SCISSOR_TEST);
@@ -41,16 +42,11 @@ void UscrollBox::scrolling() {
 	}
 
 	vector diff = mouseStartPos - startLoc;
-	loc.y = math::clamp(Input::getMousePos().y - diff.y, -overflowSizeY + size.y, 0);
+	loc.y = math::clamp(Input::getMousePos().y - diff.y, ogLoc.y, overflowSizeY - size.y);
 
-	// need to set location of all the children
-	float yOffset = 0;
-	for (vertChildComp comp : childrenList) {
-		if (comp.child)
-			comp.child->setLoc(ogLoc + vector{ 0, loc.y + yOffset });
-		yOffset += comp.widgetHeight;
-	}
+	UpdateChildren();
 }
+
 
 void UscrollBox::scrolling(int mouseWheelDir) {
 	if (mouseWheelDir == 0)
@@ -61,15 +57,10 @@ void UscrollBox::scrolling(int mouseWheelDir) {
 		return;
 	}
 
-	vector diff = vector{ 0, mouseWheelDir * 10.f * stuff::pixelSize } + loc;
-	loc.y = math::clamp(diff.y, -overflowSizeY + size.y, 0);
+	vector diff = vector{ 0, -mouseWheelDir * 10.f } + loc;
+	loc.y = math::clamp(diff.y, ogLoc.y, overflowSizeY - size.y);
 
-	float yOffset = 0;
-	for (vertChildComp comp : childrenList) {
-		if (comp.child)
-			comp.child->setLocAndSize({ ogLoc.x, ogLoc.y + loc.y + yOffset }, comp.child->getSize());
-		yOffset += comp.widgetHeight;
-	}
+	UpdateChildren();
 }
 
 bool UscrollBox::mouseOver() {
@@ -84,20 +75,14 @@ vector UscrollBox::getLoc() {
 }
 
 void UscrollBox::setLoc(vector loc) {
-	ogLoc = loc;
+	__super::setLoc(loc);
+	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
+	ogLoc = absoluteLoc;
 }
 
 void UscrollBox::setLocAndSize(vector loc, vector size) {
 	setLoc(loc);
 	setSize(size);
 
-	float yOffset = 0;
-	for (vertChildComp comp : childrenList) {
-		// need to update position depending on index in horizontal box
-		if (comp.child)
-			comp.child->setLocAndSize({ ogLoc.x, ogLoc.y + yOffset }, { comp.child->getSize().x, comp.widgetHeight});
-		yOffset += comp.widgetHeight;
-	}
-
-	overflowSizeY = yOffset;
+	UpdateChildren();
 }

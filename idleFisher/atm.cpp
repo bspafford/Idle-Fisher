@@ -33,7 +33,7 @@ void Aatm::draw(Shader* shaderProgram) {
 	__super::draw(shaderProgram);
 
 	for (int i = 0; i < conversionTimers.size(); i++) {
-		if (conversionTimers[i]->finished())
+		if (conversionTimers[i]->IsFinished())
 			finishConversion(i);
 	}
 }

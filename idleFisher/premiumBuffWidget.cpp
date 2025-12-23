@@ -17,11 +17,11 @@ UpremiumBuffWidget::UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenF
 	lifeTimer->addUpdateCallback(this, &UpremiumBuffWidget::timerUpdate);
 	lifeTimer->start(goldenFish.time);
 
-	progressBar = std::make_unique<UprogressBar>(this, false, 15, 15, FprogressBarDir::up, true);
+	progressBar = std::make_unique<UprogressBar>(this, vector{ 15.f, 15.f }, false, FprogressBarDir::up, true);
 	progressBar->setBackgroundColor({ 0, 0, 0, 0 });
 	progressBar->setForegroundColor({ 0, 0, 0, 50 });
 
-	img = std::make_unique<Image>("./images/fish/premium.png", vector{ 0, 0 }, false);
+	img = std::make_unique<Image>("./images/fish/premium.png", vector{ 0.f, 0.f }, false);
 	hoverBox = std::make_unique<UhoverBox>(this);
 	hoverBox->setInfo(goldenFish.name, goldenFish.description);
 }
@@ -55,7 +55,7 @@ void UpremiumBuffWidget::setLoc(vector loc) {
 	__super::setLoc(loc);
 	progressBar->setLoc(loc);
 	vector progressBarSize = progressBar->getSize();
-	vector imgLoc = loc + progressBarSize / 2 - vector{ float(img->w), float(img->h) } / 2 * stuff::pixelSize;
+	vector imgLoc = loc + progressBarSize / 2.f - img->getSize() / 2.f;
 	img->setLoc(imgLoc);
 }
 

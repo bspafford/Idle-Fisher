@@ -42,7 +42,7 @@ AFmoreInfoUI::~AFmoreInfoUI() {
 }
 
 void AFmoreInfoUI::setupLocs() {
-	background->setLoc({ stuff::screenSize.x / 2 - background->w / 2 * stuff::pixelSize,  stuff::screenSize.y / 2 - background->h / 2 * stuff::pixelSize });
+	background->setLoc((stuff::screenSize - background->getSize()) / 2.f);
 	fisherNum->setLoc({ stuff::screenSize.x / 2.f + 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f - 73 * stuff::pixelSize });
 	levelText->setLoc({stuff::screenSize.x / 2.f + 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f - 40 * stuff::pixelSize});
 	fullnessText->setLoc({ stuff::screenSize.x / 2.f,  stuff::screenSize.y / 2.f - 6 * stuff::pixelSize });

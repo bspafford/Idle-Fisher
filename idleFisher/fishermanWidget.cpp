@@ -190,13 +190,13 @@ void UfishermanWidget::setupLocs() {
 	}
 
 	vector closeButtonSize = closeButton->getSize();
-	closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->w * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2) });
+	closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2) });
 
 
-	nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize }, vector{ float(infoBackground->w), float(infoBackground->h) } *stuff::pixelSize);
-	name->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
-	buffText->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
-	debuffText->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
+	nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize }, vector{ float(infoBackground->getSize().x), float(infoBackground->getSize().y) } *stuff::pixelSize);
+	name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+	buffText->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+	debuffText->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
 
 	fishingRodThumbnail->setLoc(stuff::screenSize / 2.f - fishingRodThumbnail->getSize() / 2.f + vector{ 0, 0 } * stuff::pixelSize);
 	vector offset = { 0, 30 * stuff::pixelSize };

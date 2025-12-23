@@ -24,9 +24,7 @@ UfishBox::UfishBox(Ujournal* parent, FfishData* fishData, FsaveFishData* saveFis
 
 	if (name && fishButton && !saveFishData->unlocked) {
 		name->setText("???");
-		std::weak_ptr<Image> img = fishButton->getButtonImg();
-		if (img.lock())
-			img.lock()->setColorMod(glm::vec4(0, 0, 0, 1));
+		fishButton->SetColorMod(glm::vec4(0, 0, 0, 1));
 		fishButton->enable(false);
 	}
 }
@@ -67,7 +65,7 @@ void UfishBox::updateUI() {
 		return;
 
 	//img->setImgColorMod(255, 255, 255);
-	fishButton->getButtonImg().lock()->setColorMod(glm::vec4(1));
+	fishButton->SetColorMod(glm::vec4(1));
 	fishButton->enable(true);
 	name->setText(fishData->name);
 }

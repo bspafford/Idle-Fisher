@@ -3,7 +3,6 @@
 #include "math.h"
 #include <chrono>
 #include <string>
-#include <fstream>
 
 struct FfishData {
     int id;

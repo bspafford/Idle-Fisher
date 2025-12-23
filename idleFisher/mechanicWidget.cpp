@@ -51,10 +51,9 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	else
 		fishTransporterImg->setColorMod(glm::vec4(glm::vec3(0), 1.f));
 
-	fishTransporterImg->w *= 2.5;
-	fishTransporterImg->h *= 2.5;
+	fishTransporterImg->setSize(fishTransporterImg->getSize() * 2.5f);
 	level = std::make_unique<text>(this, "0/100", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
-	levelProgress = std::make_unique<UprogressBar>(this, false, 125, 7);
+	levelProgress = std::make_unique<UprogressBar>(this, vector{ 125.f, 7.f }, false);
 	maxHoldText = std::make_unique<text>(this, "Max Hold:", "straight", vector{ 0, 0 });
 	maxHoldValue = std::make_unique<text>(this, shortNumbers::convert2Short(0), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	speedText = std::make_unique<text>(this, "Walk Speed:", "straight", vector{ 0, 0 });
@@ -137,8 +136,8 @@ void UmechanicWidget::setNameDescription(std::string nameString, std::string des
 void UmechanicWidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = (npcBackground->w + 1) * stuff::pixelSize;
-	float y = (npcBackground->h + 1) * stuff::pixelSize;
+	float x = (npcBackground->getSize().x + 1) * stuff::pixelSize;
+	float y = (npcBackground->getSize().y + 1) * stuff::pixelSize;
 	vector size = vector{ x, 0 } + upgradeBackground->getSize();
 	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
 	vector topLeft = center - size / 2;
@@ -153,13 +152,13 @@ void UmechanicWidget::setupLocs() {
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();
-		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->w * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
+		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
 	}
 
 	if (infoBackground) {
-		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 6 * stuff::pixelSize}, vector{float(infoBackground->w), float(infoBackground->h)} *stuff::pixelSize);
-		name->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
-		description->setLineLength((infoBackground->w - 10) * stuff::pixelSize);
+		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 6 * stuff::pixelSize}, infoBackground->getSize() * stuff::pixelSize);
+		name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+		description->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
 	}
 
 	// bought fish transporter

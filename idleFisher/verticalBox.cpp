@@ -9,6 +9,10 @@ verticalBox::verticalBox(widget* parent) : widget(parent) {
 }
 
 void verticalBox::draw(Shader* shaderProgram) {
+	// temp show background size
+	URectangle* rect = new URectangle(absoluteLoc, size, false, glm::vec4(0, 0, 0, 1));
+	rect->draw(shaderProgram);
+	delete rect;
 	for (vertChildComp comp : childrenList) {
 		if (comp.child)
 			comp.child->draw(shaderProgram);
@@ -55,16 +59,18 @@ void verticalBox::setLocAndSize(vector loc, vector size) {
 }
 
 void verticalBox::UpdateChildren() {
-	float yOffset = absoluteLoc.y + size.y * pivot.y;
+	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
+	float initialOffset = absoluteLoc.y + size.y;
+	float yOffset = initialOffset;
+
 	for (vertChildComp comp : childrenList) {
 		// need to update position depending on index in horizontal box
-		// comp.child->draw(shaderProgram);
 		if (comp.child)
-			comp.child->setLocAndSize({ absoluteLoc.x, yOffset - comp.widgetHeight * pivot.y }, { size.x, comp.widgetHeight });
+			comp.child->setLocAndSize({ absoluteLoc.x, yOffset - comp.widgetHeight }, { size.x, comp.widgetHeight });
 		yOffset -= comp.widgetHeight;
 	}
 
-	overflowSizeY = yOffset - absoluteLoc.y;
+	overflowSizeY = initialOffset - yOffset;
 }
 
 void verticalBox::setOgLoc(vector ogLoc) {

@@ -34,19 +34,11 @@ public:
 	void SetPivot(vector pivot);
 	void flipHoizontally(bool flip);
 
-	bool useWorldPos;
-	bool useAlpha;
-
-	float w = 0, h = 0;
-	// scale of image without a source rect
-	float ogW = 0, ogH = 0;
-	std::shared_ptr<Rect> source; // 0 -> img size
-	Rect normalizedSource; // 0 -> 1
-	float rotation;
-	std::string path;
-
 private:
 	GLuint64 handle = 0;
+
+	bool useWorldPos;
+	bool useAlpha;
 
 	vector loc; // relative to the screen position
 	vector absoluteLoc; // absolute position in the screen
@@ -55,6 +47,14 @@ private:
 	vector pivot = { 0, 0 };
 	Anchor xAnchor = ANCHOR_LEFT;
 	Anchor yAnchor = ANCHOR_BOTTOM;
+
+	float w = 0, h = 0;
+	// scale of image without a source rect
+	float ogW = 0, ogH = 0;
+	std::shared_ptr<Rect> source; // 0 -> img size
+	Rect normalizedSource; // 0 -> 1
+	float rotation;
+	std::string path;
 	
 	glm::vec4 colorMod = glm::vec4(1.f);
 

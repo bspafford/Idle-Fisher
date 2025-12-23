@@ -5,9 +5,9 @@
 
 #include "debugger.h"
 
-Uslider::Uslider(widget* parent, bool useCharLoc, vector size, float minVal, float maxVal, bool showValueText) : widget(parent) {
+Uslider::Uslider(widget* parent, bool useWorldPos, vector size, float minVal, float maxVal, bool showValueText) : widget(parent) {
 	this->size = size;
-	this->useCharLoc = useCharLoc;
+	this->useWorldPos = useWorldPos;
 	this->minVal = minVal;
 	this->maxVal = maxVal;
 	defaultVal = minVal;
@@ -16,8 +16,8 @@ Uslider::Uslider(widget* parent, bool useCharLoc, vector size, float minVal, flo
 	sliderTitle = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
 	sliderValueText = std::make_unique<text>(this, std::to_string(int(*value)), "straight", vector{0, 0});
 
-	background = std::make_unique<URectangle>(vector{ 0, 0 }, this->size, useCharLoc, glm::vec4(0, 0, 0, 1));
-	foreground = std::make_unique<URectangle>(vector{ 0, 0 }, this->size, useCharLoc);
+	background = std::make_unique<URectangle>(vector{ 0, 0 }, this->size, useWorldPos, glm::vec4(0, 0, 0, 1));
+	foreground = std::make_unique<URectangle>(vector{ 0, 0 }, this->size, useWorldPos);
 	handle = std::make_unique<Image>("./images/widget/sliderHandle.png", vector{ 0, 0 }, false);
 }
 
@@ -79,7 +79,7 @@ void Uslider::setLoc(vector loc) {
 	__super::setLoc(loc);
 	sliderTitle->setLoc(loc);
 
-	float valueSize = 16 * stuff::pixelSize;
+	float valueSize = 16;
 	float remainingSize = size.x - (titleLength > 0 ? titleLength : sliderTitle->getSize().x + valueSize);
 
 	vector titleSize = titleLength > 0 ? vector{ titleLength, sliderTitle->getSize().y } : sliderTitle->getSize();
@@ -112,6 +112,7 @@ bool Uslider::mouseOver() {
 	vector mousePos = Input::getMousePos();
 
 	vector handleSize = handle->getSize();
+
 	// gets which ever size is bigger
 	float vertSize = math::max(background->getSize().y, handleSize.y);
 

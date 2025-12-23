@@ -17,8 +17,8 @@ animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight,
 	this->useWorldLoc = useWorldLoc;
 
 	spriteSheet = std::make_shared<Image>("./images/" + spriteSheetPath, loc, useWorldLoc);
-	cellNum.x = round(spriteSheet->w / static_cast<float>(cellWidth));
-	cellNum.y = round(spriteSheet->h / static_cast<float>(cellHeight));
+	cellNum.x = round(spriteSheet->getSize().x / static_cast<float>(cellWidth));
+	cellNum.y = round(spriteSheet->getSize().y / static_cast<float>(cellHeight));
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
@@ -30,11 +30,11 @@ animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int c
 	this->loc = loc;
 	this->useWorldLoc = useWorldLoc;
 
-	std::shared_ptr<Rect> source = std::make_shared<Rect>(0.f, 0.f, spriteSheetImg->w, spriteSheetImg->h);
+	std::shared_ptr<Rect> source = std::make_shared<Rect>(0.f, 0.f, spriteSheetImg->getSize().x, spriteSheetImg->getSize().y);
 	spriteSheet = std::make_shared<Image>(spriteSheetImg, source, loc, useWorldLoc); // create own instance of image
 
-	cellNum.x = round(spriteSheet->w / static_cast<float>(cellWidth));
-	cellNum.y = round(spriteSheet->h / static_cast<float>(cellHeight));
+	cellNum.x = round(spriteSheet->getSize().x / static_cast<float>(cellWidth));
+	cellNum.y = round(spriteSheet->getSize().y / static_cast<float>(cellHeight));
 
 	animTimer = std::make_unique<timer>();
 	animTimer->addCallback(this, &animation::animCallBack);
@@ -138,8 +138,12 @@ void animation::addFinishedCallback(void (*callback) ()) {
 	finishedCallback_ = callback;
 }
 
-bool animation::finished() {
+bool animation::IsFinished() {
 	return bFinished;
+}
+
+bool animation::IsStopped() {
+	return bStopped;
 }
 
 int animation::calcFrameDistance(bool getFrameNum) {
@@ -173,4 +177,47 @@ vector animation::GetCellSize() {
 
 vector animation::GetCellNum() {
 	return cellNum;
+}
+
+std::string animation::GetCurrAnim() {
+	return currAnim;
+}
+
+void animation::SetColorMod(glm::vec4 colorMod) {
+	if (spriteSheet)
+		spriteSheet->setColorMod(colorMod);
+}
+
+bool animation::IsMouseOver(bool useAlpha) {
+	if (!spriteSheet)
+		return false;
+	spriteSheet->isMouseOver(useAlpha);
+}
+
+void animation::SetUseAlpha(bool useAlpha) {
+	if (spriteSheet)
+		spriteSheet->setUseAlpha(useAlpha);
+}
+
+void animation::SetAnimDuration(std::string animName, float duration) {
+	animData[animName].duration = duration;
+}
+
+void animation::SetCurrAnimDuration(float duration) {
+	animData[currAnim].duration = duration;
+}
+
+float animation::GetAnimDuration(std::string animName) {
+	return animData[animName].duration;
+}
+
+float animation::GetCurrAnimDuration() {
+	return animData[currAnim].duration;
+}
+
+void animation::SetCurrFrameLoc(vector loc) {
+	if (loc.x != -1)
+		currFrameLoc.x = math::clamp(loc.x, 0, cellNum.x);
+	if (loc.y != -1)
+		currFrameLoc.y = math::clamp(loc.y, 0, cellNum.y);
 }

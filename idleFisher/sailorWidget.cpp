@@ -43,12 +43,12 @@ UsailorWidget::~UsailorWidget() {
 }
 
 void UsailorWidget::draw(Shader* shaderProgram) {
-	if (mapClosed && !mapTimer->finished())
+	if (mapClosed && !mapTimer->IsFinished())
 		mapClosed->draw(shaderProgram);
-	if (mapAnim && !mapAnim->finished() && mapTimer->finished())
+	if (mapAnim && !mapAnim->IsFinished() && mapTimer->IsFinished())
 		mapAnim->draw(shaderProgram);
 
-	if (!mapAnim || !mapAnim->finished() || !mapTimer->finished())
+	if (!mapAnim || !mapAnim->IsFinished() || !mapTimer->IsFinished())
 		return;
 
 	__super::draw(shaderProgram);
@@ -117,9 +117,9 @@ void UsailorWidget::mapAnimFinish() {
 	//mapOpenAnim->start();
 	opening = false;
 
-	if (mapAnim->currAnim == "open")
+	if (mapAnim->GetCurrAnim() == "open")
 		open = true;
-	else if (mapAnim->currAnim == "close")
+	else if (mapAnim->GetCurrAnim() == "close")
 		mapTimer->start(.5);
 }
 

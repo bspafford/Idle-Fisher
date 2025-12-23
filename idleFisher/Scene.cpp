@@ -14,10 +14,10 @@
 
 #include "debugger.h"
 
-void Scene::openLevel(std::string worldName1, int worldChangeLoc1, bool overrideIfInWorld1) {
-	worldName = worldName1;
-	worldChangeLoc = worldChangeLoc1;
-	overrideIfInWorld = overrideIfInWorld1;
+void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _overrideIfInWorld) {
+	worldName = _worldName;
+	worldChangeLoc = _worldChangeLoc;
+	overrideIfInWorld = _overrideIfInWorld;
 	loadWorld = true;
 
 	if (!loadingScreen)
@@ -48,7 +48,7 @@ void Scene::draw(Shader* shaderProgram) {
 	}
 }
 
-void Scene::openLevelThread(std::string worldName, int worldChangeLoc, bool overrideIfInWorld) {
+void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld) {
 	GPULoadCollector::open();
 
 	if (worldName == "vault" && currWorldName != "vault")

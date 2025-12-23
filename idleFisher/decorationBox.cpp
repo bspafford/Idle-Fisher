@@ -63,8 +63,8 @@ void UdecorationBox::setLoc(vector loc) {
 	__super::setLoc(loc);
 
 	thumbnail->setLoc(loc);
-	buyButton->setLoc(loc + vector{ 0, (float)thumbnail->h * stuff::pixelSize });
-	buttonText->setLoc(loc + vector{ buyButton->getSize().x / 2, (float)thumbnail->h * stuff::pixelSize });
+	buyButton->setLoc(loc + vector{ 0, thumbnail->getSize().y });
+	buttonText->setLoc(loc + vector{ buyButton->getSize().x / 2.f, thumbnail->getSize().y });
 }
 
 vector UdecorationBox::getSize() {

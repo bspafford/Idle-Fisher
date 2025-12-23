@@ -19,7 +19,7 @@
 #include "debugger.h"
 
 UUIWidget::UUIWidget(widget* parent) : widget(parent) {
-	progressBar = std::make_unique<UprogressBar>(this, false, 43, 6);
+	progressBar = std::make_unique<UprogressBar>(this, vector{ 43.f, 6.f }, false);
 	progressBar->setBackgroundColor(glm::vec4(0, 0, 0, 1.f));
 	progressBar->setForegroundColor(glm::vec4(0, 1.f, 1.f, 1.f));
 	currRunRebirthPoints = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
@@ -35,38 +35,32 @@ UUIWidget::UUIWidget(widget* parent) : widget(parent) {
 
 	// set alpha to 0
 	if (merchantButton) {
-		if (merchantButton->getButtonImg().lock())
-			merchantButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		merchantButton->SetColorMod(glm::vec4(0));
 		merchantButton->enable(false);
 		merchantButton->addCallback(this, &UUIWidget::openMerchantWidget);
 	}
 	if (sailorButton) {
-		if (sailorButton->getButtonImg().lock())
-			sailorButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		sailorButton->SetColorMod(glm::vec4(0));
 		sailorButton->enable(false);
 		sailorButton->addCallback(this, &UUIWidget::openSailorWidget);
 	}
 	if (fishermanButton) {
-		if (fishermanButton->getButtonImg().lock())
-			fishermanButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		fishermanButton->SetColorMod(glm::vec4(0));
 		fishermanButton->enable(false);
 		fishermanButton->addCallback(this, &UUIWidget::openFishermanWidget);
 	}
 	if (mechanicButton) {
-		if (mechanicButton->getButtonImg().lock())
-			mechanicButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		mechanicButton->SetColorMod(glm::vec4(0));
 		mechanicButton->enable(false);
 		mechanicButton->addCallback(this, &UUIWidget::openMechanicWidget);
 	}
 	if (petSellerButton) {
-		if (petSellerButton->getButtonImg().lock())
-			petSellerButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		petSellerButton->SetColorMod(glm::vec4(0));
 		petSellerButton->enable(false);
 		petSellerButton->addCallback(this, &UUIWidget::openPetSellerWidget);
 	}
 	if (atmButton) {
-		if (atmButton->getButtonImg().lock())
-			atmButton->getButtonImg().lock()->setColorMod(glm::vec4(0));
+		atmButton->SetColorMod(glm::vec4(0));
 		atmButton->enable(false);
 		atmButton->addCallback(this, &UUIWidget::openAtmWidget);
 	}
@@ -115,7 +109,7 @@ void UUIWidget::draw(Shader* shaderProgram) {
 
 void UUIWidget::updateProgressBar(double points, double progress, double needed) {
 
-	progressBar->setPercent(progress);
+	progressBar->setPercent(static_cast<float>(progress));
 
 	std::string currPointString = shortNumbers::convert2Short(points);
 	if (currRunRebirthPoints->getString() != currPointString)
@@ -225,7 +219,7 @@ void UUIWidget::updateButtonsLoc() {
 		} else if (!open)
 			buttonsList[i]->setLoc({ x, y });
 
-		buttonsList[i]->getButtonImg().lock()->setColorMod(glm::vec4(glm::vec3(1.f), alpha));
+		buttonsList[i]->SetColorMod(glm::vec4(glm::vec3(1.f), alpha));
 	}
 }
 

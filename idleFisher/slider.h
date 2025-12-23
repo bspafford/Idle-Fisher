@@ -7,7 +7,7 @@ class text;
 
 class Uslider : public widget, public IHoverable {
 public:
-	Uslider(widget* parent, bool useCharLoc, vector size, float minVal, float maxVal, bool showValueText = true);
+	Uslider(widget* parent, bool useWorldPos, vector size, float minVal, float maxVal, bool showValueText = true);
 	~Uslider();
 	void setBackgroundColor(glm::vec4 color);
 	void setForegroundColor(glm::vec4 color);
@@ -28,7 +28,7 @@ private:
 	std::unique_ptr<text> sliderTitle;
 	std::unique_ptr<text> sliderValueText; // text to right of slider
 
-	bool useCharLoc;
+	bool useWorldPos;
 	float* value;
 	float minVal;
 	float maxVal;

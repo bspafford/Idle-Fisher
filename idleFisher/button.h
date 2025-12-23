@@ -38,12 +38,12 @@ public:
 
 	void enable(bool enabled);
 
-	std::weak_ptr<Image> getButtonImg();
+	void SetColorMod(glm::vec4 colorMod);
 
+private:
 	// parent
 	widget* widgetClass;
 
-private:
 	std::function<void()> callback_;
 
 	bool mouseOver = false;

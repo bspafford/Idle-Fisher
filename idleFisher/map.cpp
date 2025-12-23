@@ -136,8 +136,8 @@ void Umap::moveMap() {
 	vector diff = mouseStartPos - imgStartPos;
 	vector newLoc = Input::getMousePos() - diff;
 
-	float x = math::clamp(newLoc.x, stuff::screenSize.x - mapImg->w * stuff::pixelSize, 0);
-	float y = math::clamp(newLoc.y, stuff::screenSize.y - mapImg->h * stuff::pixelSize, 0);
+	float x = math::clamp(newLoc.x, stuff::screenSize.x - mapImg->getSize().x * stuff::pixelSize, 0);
+	float y = math::clamp(newLoc.y, stuff::screenSize.y - mapImg->getSize().y * stuff::pixelSize, 0);
 	setLocs({ x, y });
 }
 

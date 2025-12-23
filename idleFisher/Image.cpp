@@ -45,6 +45,7 @@ Image::Image(std::string image, vector loc, bool useWorldPos) {
 }
 
 void Image::draw(Shader* shader) {
+	absoluteLoc = GetAbsoluteLoc(loc, getSize(), useWorldPos, pivot, xAnchor, yAnchor);
 	textureManager::DrawImage(shader, absoluteLoc, vector{w, h}, normalizedSource, useWorldPos, colorMod, handle);
 }
 
@@ -74,7 +75,7 @@ void Image::setRotation(float rot) {
 }
 
 bool Image::isMouseOver(bool ignoreTransparent) {
-	vector mousePos = Input::getMousePos() / stuff::pixelSize;
+	vector mousePos = Input::getMousePos();
 	if (useWorldPos) {
 		vector screenLoc = math::worldToScreen(absoluteLoc);
 
@@ -106,8 +107,8 @@ vector Image::getSize() {
 }
 
 void Image::setSize(vector size) {
-	w = size.x / stuff::pixelSize;
-	h = size.y / stuff::pixelSize;
+	w = size.x;
+	h = size.y;
 }
 
 void Image::setImage(std::string path) {

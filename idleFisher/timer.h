@@ -25,7 +25,7 @@ public:
 
 	float getTime();
 	float getMaxTime();
-	bool finished();
+	bool IsFinished();
 
 	void shouldntDelete(bool dontDelete);
 

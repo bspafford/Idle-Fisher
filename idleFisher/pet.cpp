@@ -44,7 +44,7 @@ void Apet::draw(Shader* shaderProgram) {
 
 void Apet::setLoc(vector loc) {
 	this->loc = loc;
-	img->setLoc(loc - vector{ img->w / 2.f, float(img->h) });
+	img->setLoc(loc - vector{ img->getSize().x / 2.f, img->getSize().y });
 }
 
 FpetStruct* Apet::getPetStruct() {

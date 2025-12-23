@@ -39,10 +39,10 @@ void npc::setup(std::string npcName) {
 		vector cellSize = npcCellSizes[npcName];
 		npcAnim = std::make_unique<animation>("npc/" + npcName + ".png", cellSize.x, cellSize.y, npcAnimData, true, loc);
 
-		npcAnim->spriteSheet->setUseAlpha(true);
+		npcAnim->SetUseAlpha(true);
 		npcAnim->setAnimation("idle");
 		npcAnim->start();
-		npcAnim->currFrameLoc.x = round(math::randRange(0.f, fameNum));
+		npcAnim->SetCurrFrameLoc({ round(math::randRange(0.f, fameNum)), -1 });
 
 		setLoc(loc);
 		setupCollision();
@@ -60,7 +60,7 @@ void npc::setupCollision() {
 
 void npc::draw(Shader* shaderProgram) {
 	bool prevMouseOver = bMouseOver;
-	bool bMouseOver = npcAnim->spriteSheet->isMouseOver(true);
+	bool bMouseOver = npcAnim->IsMouseOver(true);
 	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 		Input::setLeftClick(this, &npc::click);
 	if (bMouseOver)
@@ -100,8 +100,4 @@ bool npc::calcIfPlayerInfront() {
 
 vector npc::getOffset() {
 	return loc - vector{ 0, float(npcAnim->GetCellSize().y) };
-}
-
-std::weak_ptr<Image> npc::getCharImg() {
-	return npcAnim->spriteSheet;
 }
