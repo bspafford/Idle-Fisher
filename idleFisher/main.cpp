@@ -43,6 +43,7 @@
 
 #include "slider.h"
 #include "progressBar.h"
+#include "ScissorTest.h"
 
 #include "debugger.h"
 
@@ -200,14 +201,20 @@ int Main::createWindow() {
 		glActiveTexture(GL_TEXTURE0);
 
 		//fbo->BindFramebuffer();
-		//img->draw(twoDShader);
+		glEnable(GL_SCISSOR_TEST);
+		//glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
+		ScissorTest::Enable({ 0, 0, 200, 200 }, glm::vec4(0, 0, 0, 1));
+
+		img->draw(twoDShader);
+
+		ScissorTest::Disable();
 		//text1->draw(twoDShader);
 		//rect->draw(twoDShader);
 		//progressBar->draw(twoDShader);
-		slider->draw(twoDShader);
+		//slider->draw(twoDShader);
 		//text2->draw(twoDShader);
 		//continueButton->draw(twoDShader);
-		vertBox->draw(twoDShader);
+		//vertBox->draw(twoDShader);
 		//fbo->UnbindFramebuffer();
 		//fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
 		

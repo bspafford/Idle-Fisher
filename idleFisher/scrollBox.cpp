@@ -1,5 +1,6 @@
 #include "scrollBox.h"
 #include "Input.h"
+#include "ScissorTest.h"
 
 #include "debugger.h"
 
@@ -26,12 +27,12 @@ void UscrollBox::draw(Shader* shaderProgram) {
 		}
 	}
 
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
+	//glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
+	ScissorTest::Enable(ogLoc, size);
 	
 	__super::draw(shaderProgram);
 
-	glDisable(GL_SCISSOR_TEST);
+	ScissorTest::Disable();
 }
 
 // mouse right click scrolling

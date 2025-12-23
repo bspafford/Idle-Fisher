@@ -292,6 +292,7 @@
     <ClCompile Include="sailorWidget.cpp" />
     <ClCompile Include="saveData.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScissorTest.cpp" />
     <ClCompile Include="scrollBox.cpp" />
     <ClCompile Include="scuba.cpp" />
     <ClCompile Include="settings.cpp" />
@@ -406,6 +407,7 @@
     <ClInclude Include="sailorWidget.h" />
     <ClInclude Include="saveData.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScissorTest.h" />
     <ClInclude Include="scrollBox.h" />
     <ClInclude Include="scuba.h" />
     <ClInclude Include="settings.h" />
