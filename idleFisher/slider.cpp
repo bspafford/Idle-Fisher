@@ -13,7 +13,7 @@ Uslider::Uslider(widget* parent, bool useWorldPos, vector size, float minVal, fl
 	defaultVal = minVal;
 	value = &defaultVal;
 
-	sliderTitle = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
+	sliderTitle = std::make_unique<text>(this, "Hello world!", "straight", vector{ 0, 0 });
 	sliderValueText = std::make_unique<text>(this, std::to_string(int(*value)), "straight", vector{0, 0});
 
 	background = std::make_unique<URectangle>(vector{ 0, 0 }, this->size, useWorldPos, glm::vec4(0, 0, 0, 1));

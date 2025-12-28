@@ -19,7 +19,6 @@ public:
 	static void DrawFinal(Shader* shader);
 	static void BindFramebuffer();
 	static void UnbindFramebuffer();
-	static void OnReizeWindow();
 	virtual void setLoc(vector loc) override;
 	virtual void setSize(vector size) override;
 private:

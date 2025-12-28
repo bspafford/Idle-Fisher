@@ -41,10 +41,6 @@
 #include "newRecordWidget.h"
 #include "blurBox.h"
 
-#include "slider.h"
-#include "progressBar.h"
-#include "ScissorTest.h"
-
 #include "debugger.h"
 
 int main(int argc, char* argv[]) {
@@ -165,24 +161,6 @@ int Main::createWindow() {
 
 	auto lastTime = std::chrono::steady_clock::now();
 
-	std::unique_ptr<text> text1 = std::make_unique<text>(nullptr, "Hello World! you are great!", "straight", vector{ 10, 10 });
-	std::unique_ptr<text> text2 = std::make_unique<text>(nullptr, "Hello World! you are great! right", "straight", vector{ 30, 30 }, false, false, TEXT_ALIGN_RIGHT);
-	std::unique_ptr<Image> img = std::make_unique<Image>("./images/house.png", vector{ 1, 1 }, false);
-	std::unique_ptr<FBO> fbo = std::make_unique<FBO>(stuff::screenSize, false);
-	std::unique_ptr<UprogressBar> progressBar = std::make_unique<UprogressBar>(nullptr, vector{ 500.f, 20.f }, false);
-	std::unique_ptr<Uslider> slider = std::make_unique<Uslider>(nullptr, false, vector{500.f, 20.f}, 0.f, 1.f);
-	std::unique_ptr<URectangle> rect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 100, 100 }, false, glm::vec4(1.f));
-
-	std::unique_ptr<verticalBox> vertBox = std::make_unique<verticalBox>(nullptr);
-	vertBox->setLoc({ 10, 10 });
-	std::unique_ptr<Ubutton> continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
-	std::unique_ptr<Ubutton> continueButton1 = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 0, 0 }, false, false);
-	vertBox->addChild(continueButton.get(), 35.f);
-	vertBox->addChild(continueButton1.get(), 35.f);
-	std::cout << "child: " << continueButton->getLoc() << "\n";
-	vertBox->setLocAndSize({ 100, 100 }, { continueButton->getSize().x, vertBox->getOverflowSize() });
-	std::cout << "child: " << continueButton->getSize() << ", overflow size: " << vertBox->getOverflowSize() << "\n";
-
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
 		auto currentTime = std::chrono::steady_clock::now();
@@ -191,38 +169,6 @@ int Main::createWindow() {
 		//std::cout << "fps: " << 1.f / deltaTime << std::endl;
 		//fps::showFPS(true);
 		//fps::update(deltaTime);
-
-		/*
-		Input::pollEvents();
-		textureManager::StartFrame();
-		updateShaders(deltaTime);
-		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-
-		//fbo->BindFramebuffer();
-		glEnable(GL_SCISSOR_TEST);
-		//glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
-		ScissorTest::Enable({ 0, 0, 200, 200 }, glm::vec4(0, 0, 0, 1));
-
-		img->draw(twoDShader);
-
-		ScissorTest::Disable();
-		//text1->draw(twoDShader);
-		//rect->draw(twoDShader);
-		//progressBar->draw(twoDShader);
-		//slider->draw(twoDShader);
-		//text2->draw(twoDShader);
-		//continueButton->draw(twoDShader);
-		//vertBox->draw(twoDShader);
-		//fbo->UnbindFramebuffer();
-		//fbo->Draw(twoDShader, { 100, 100 }, stuff::screenSize, { 0, 0, 1, 1 }, false, glm::vec4(1));
-		
-		textureManager::EndFrame();
-		glfwSwapBuffers(window);
-		continue;
-		//*/
-
 
 		// process input
 		Input::pollEvents();
@@ -284,7 +230,6 @@ int Main::createWindow() {
 		glEnable(GL_DEPTH_TEST);
 		// ==== DRAW SHADOW MESH ====
 		shaderProgram->Activate();
-		camera->Matrix(shaderProgram, "camMatrix");
 		shaderProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
 		if (renderShadows) {
 			glActiveTexture(GL_TEXTURE0);
@@ -342,15 +287,14 @@ void Main::Start() {
 	SaveData::loadSettings();
 	upgrades::init();
 	achievementBuffs::init();
-	setupWidgets();
 
 	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
+	character = std::make_unique<Acharacter>();
 
 	updateShaders(0);
+	setupWidgets();
 
 	Scene::openLevel("world1", WORLD_SET_LOC_NONE, true);
-
-	character = std::make_unique<Acharacter>();
 
 	if (SaveData::saveData.equippedPet.id != -1)
 		Main::pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
@@ -448,7 +392,6 @@ void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 	stuff::screenSize = { float(width), float(height) };
 	glViewport(0, 0, width, height);
 
-	BlurBox::OnReizeWindow();
 	widget::resizeScreen();
 }
 

@@ -35,7 +35,7 @@ vector FBO::GetSize() {
 	return size;
 }
 
-void FBO::BindFramebuffer(glm::vec4 clearColor) {
+void FBO::Bind(glm::vec4 clearColor) {
 	// draw here, before binding a new fbo
 	textureManager::ForceGPUUpload();
 
@@ -50,7 +50,7 @@ void FBO::BindFramebuffer(glm::vec4 clearColor) {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void FBO::UnbindFramebuffer() {
+void FBO::Unbind() {
 	// draw here, before leaving the fbo
 	textureManager::ForceGPUUpload();
 

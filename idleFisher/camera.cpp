@@ -12,33 +12,18 @@ Camera* GetMainCamera() {
 Camera::Camera(glm::vec3 position) {
 	if (!cameraPtr)
 		cameraPtr = this;
-
-	Up = glm::vec3(0.0f, 1.0f, 0.0f);
-	cameraMatrix = glm::mat4(1.0f);
-
-	Position = position;
-}
-
-void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
-	// Initialize matrices
-	//glm::mat4 view = glm::lookAt(Position, Position + Orientation, Up);
-	projection = getProjectionMat();
-	//cameraMatrix = projection * view;
-}
-
-void Camera::Matrix(Shader* shader, const char* uniform) {
-	// Exports camera matrix
-	shader->setMat4(uniform, cameraMatrix);
+	this->position = position;
 }
 
 void Camera::Update(GLFWwindow* window, float deltaTime) {
 	vector loc = SaveData::saveData.playerLoc * stuff::pixelSize - stuff::screenSize / 2.f;
-	Position = glm::vec3(loc.x, loc.y, 0.f);
-	updateMatrix(45.0f, 0.001f, 5000.0f);
+	position = glm::vec3(loc.x, loc.y, 0.f);
+
+	projection = getProjectionMat();
 }
 
 glm::vec3 Camera::GetPosition() {
-	return Position;
+	return position;
 }
 
 glm::mat4 Camera::getProjectionMat(vector frameSize) {

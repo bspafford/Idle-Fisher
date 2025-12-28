@@ -5,6 +5,7 @@
 #include "debugger.h"
 
 UscrollBox::UscrollBox(widget* parent) : verticalBox(parent) {
+
 }
 
 void UscrollBox::draw(Shader* shaderProgram) {
@@ -27,7 +28,6 @@ void UscrollBox::draw(Shader* shaderProgram) {
 		}
 	}
 
-	//glScissor(ogLoc.x, ogLoc.y, size.x, size.y);
 	ScissorTest::Enable(ogLoc, size);
 	
 	__super::draw(shaderProgram);
@@ -69,21 +69,4 @@ bool UscrollBox::mouseOver() {
 	if (mousePos.x >= ogLoc.x && mousePos.x <= ogLoc.x + size.x && mousePos.y >= ogLoc.y && mousePos.y <= ogLoc.y + size.y)
 		return true;
 	return false;
-}
-
-vector UscrollBox::getLoc() {
-	return ogLoc;
-}
-
-void UscrollBox::setLoc(vector loc) {
-	__super::setLoc(loc);
-	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
-	ogLoc = absoluteLoc;
-}
-
-void UscrollBox::setLocAndSize(vector loc, vector size) {
-	setLoc(loc);
-	setSize(size);
-
-	UpdateChildren();
 }

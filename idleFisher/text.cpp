@@ -268,12 +268,11 @@ void text::makeTextTexture() {
 	absoluteLoc = absoluteLoc.floor();
 
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
-	fbo->BindFramebuffer();
+	fbo->Bind();
 	
-	glm::mat4 currProjection = Camera::getProjectionMat();
 	Main::twoDShader->Activate();
 	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
-	
+
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
@@ -284,10 +283,10 @@ void text::makeTextTexture() {
 			letters[i]->draw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
 		}
 	// Unbind FBO
-	fbo->UnbindFramebuffer();
+	fbo->Unbind();
 
 	// restores projection
-	Main::twoDShader->setMat4("projection", currProjection);
+	Main::twoDShader->setMat4("projection", Camera::getProjectionMat());
 
 	setLoc(loc);
 	

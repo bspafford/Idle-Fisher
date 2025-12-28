@@ -13,10 +13,6 @@ public:
 	void scrolling();
 	void scrolling(int mouseWheelDir);
 
-	vector getLoc() override;
-	void setLocAndSize(vector loc, vector size) override;
-	void setLoc(vector loc) override;
-
 	vector mouseStartPos;
 	vector startLoc;
 };

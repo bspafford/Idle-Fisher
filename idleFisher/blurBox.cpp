@@ -34,7 +34,6 @@ void BlurBox::draw() {
 	Main::blurShader->Activate();
 	Main::blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
 	Main::blurShader->setInt("radius", blurStrength);
-	Main::blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
 
 	// need to render everything first
 	textureManager::ForceGPUUpload();
@@ -61,23 +60,9 @@ void BlurBox::DrawFinal(Shader* shader) {
 }
 
 void BlurBox::BindFramebuffer() {
-	sceneFBO->BindFramebuffer();
+	sceneFBO->Bind();
 }
 
 void BlurBox::UnbindFramebuffer() {
-	sceneFBO->UnbindFramebuffer();
-}
-
-void BlurBox::OnReizeWindow() { 
-	// don't need this if a create a anchor thing
-	/*
-	// resize the texture
-	glBindTexture(GL_TEXTURE_2D, sceneTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stuff::screenSize.x, stuff::screenSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	for (BlurBox* box : instances) {
-		glBindTexture(GL_TEXTURE_2D, box->texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stuff::screenSize.x, stuff::screenSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	}
-	*/
+	sceneFBO->Unbind();
 }

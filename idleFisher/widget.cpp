@@ -98,6 +98,7 @@ vector widget::getSize() {
 void widget::setLoc(vector loc) {
 	this->loc = loc;
 	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
+	ogLoc = absoluteLoc;
 }
 
 void widget::setOgLoc(vector loc) {

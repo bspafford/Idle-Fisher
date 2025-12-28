@@ -24,8 +24,8 @@ public:
 	void Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color);
 	vector GetSize();
 
-	void BindFramebuffer(glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
-	void UnbindFramebuffer();
+	void Bind(glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
+	void Unbind();
 
 	static GLuint GetCurrFBO();
 
