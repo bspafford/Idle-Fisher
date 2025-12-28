@@ -13,7 +13,7 @@
 
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
-	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize, 4);
+	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize / stuff::pixelSize, 4);
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, -3 } * stuff::pixelSize, false);
 	pauseText->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
 	pauseText->SetPivot({ 0, 1 });
@@ -68,11 +68,11 @@ void UpauseMenu::draw(Shader* shaderProgram) {
 }
 
 void UpauseMenu::setupLocs() {
-	vertBox->setLocAndSize({ 20.f, -70.f }, vector{ stuff::screenSize.x, vertBox->getOverflowSize() });
+	vertBox->setLocAndSize({ 20.f, -70.f }, vector{ stuff::screenSize.x / stuff::pixelSize, vertBox->getOverflowSize() });
 	
-	blurBox->setSize(stuff::screenSize);
+	blurBox->setSize(stuff::screenSize / stuff::pixelSize);
 	rect->setLoc(rect->getLoc());
-	rect->setSize(stuff::screenSize);
+	rect->setSize(stuff::screenSize / stuff::pixelSize);
 }
 
 void UpauseMenu::resume() {

@@ -145,6 +145,10 @@ void text::makeText(int i, std::string text, vector &offset) {
 		numLetters = 0;
 	}
 
+	std::string dropList("qypgj");
+	if (std::find(dropList.begin(), dropList.end(), text[i]) != dropList.end())
+		hasDropChar = true;	
+
 	FtextInfo currInfo = textInfo[text[i]];
 	// ignores special chars, and makes sure the char is in the font
 	if (text[i] >= 32 && currInfo.loc.x == 0 && currInfo.loc.y == 0 && currInfo.size.x == 0 && currInfo.size.y == 0) {
@@ -209,6 +213,7 @@ void text::setText(std::string text) {
 	}
 
 	textString = text;
+	hasDropChar = false;
 	
 	if (text == "")
 		return;
@@ -260,15 +265,15 @@ void text::makeTextTexture() {
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;
 
-	glm::mat4 currProjection = Camera::getProjectionMat();
-
-	Main::twoDShader->Activate();
-	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
-
 	absoluteLoc = absoluteLoc.floor();
 
-	fbo = std::make_unique<FBO>(fboSize * stuff::pixelSize, useWorldPos);
+	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
 	fbo->BindFramebuffer();
+	
+	glm::mat4 currProjection = Camera::getProjectionMat();
+	Main::twoDShader->Activate();
+	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
+	
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
@@ -281,11 +286,11 @@ void text::makeTextTexture() {
 	// Unbind FBO
 	fbo->UnbindFramebuffer();
 
-	setLoc(loc);
-
 	// restores projection
 	Main::twoDShader->setMat4("projection", currProjection);
 
+	setLoc(loc);
+	
 	letters.clear();
 }
 
@@ -293,7 +298,7 @@ void text::draw(Shader* shader) {
 	if (textString == "")
 		return;
 
-	fbo->Draw(shader, absoluteLoc, getSize(), Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);
+	fbo->Draw(shader, absoluteLoc, Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);
 }
 
 void text::setLocAndSize(vector loc, vector size) {
@@ -303,8 +308,9 @@ void text::setLocAndSize(vector loc, vector size) {
 void text::setLoc(vector loc) {
 	loc = loc.floor();
 	__super::setLoc(loc);
+	
+	vector size = getSize();
 	if (useWorldPos) {
-		vector size = getSize();
 
 		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
@@ -313,20 +319,19 @@ void text::setLoc(vector loc) {
 		} else if (alignment == TEXT_ALIGN_RIGHT) {
 			absoluteLoc = loc - vector{ size.x, 0 };
 			if (isometric)
-				absoluteLoc -= vector{ 0, getSize().y };
+				absoluteLoc -= vector{ 0, size.y };
 		} else if (alignment == TEXT_ALIGN_CENTER) {
-			absoluteLoc = loc - vector{ getSize().x / 2.f, 0.f };
+			absoluteLoc = loc - vector{ size.x / 2.f, 0.f };
 		}
 	} else {
-		vector size = getSize();
 		vector halfScreen = (stuff::screenSize / 2.f);
 
 		if (alignment == TEXT_ALIGN_LEFT) {
 			absoluteLoc = loc;
 		} else if (alignment == TEXT_ALIGN_RIGHT) {
-			absoluteLoc = loc - vector{ getSize().x, 0.f };
+			absoluteLoc = loc - vector{ size.x, 0.f };
 		} else if (alignment == TEXT_ALIGN_CENTER) {
-			absoluteLoc = loc - vector{ (getSize().x / 2.f), 0.f };
+			absoluteLoc = loc - vector{ (size.x / 2.f), 0.f };
 		}
 	}
 }
@@ -343,7 +348,7 @@ void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {
 }
 
 vector text::getSize() {
-	return fbo ? fbo->GetSize() : vector{ 0, 0 };
+	return fbo ? fbo->GetSize() : vector{0, 0};
 }
 
 vector text::getFBOSize() {
@@ -368,7 +373,10 @@ vector text::getFBOSize() {
 		if (maxY < letterLoc.y + letter->getSize().y)
 			maxY = letterLoc.y + letter->getSize().y;
 	}
-	return { ceil(maxX - minX), ceil(maxY - minY) + dropHeight };
+	vector size = { ceil(maxX - minX), ceil(maxY - minY) };
+	if (hasDropChar)
+		size += vector{ 0.f, static_cast<float>(dropHeight) };
+	return size;
 }
 
 void text::setLineLength(float length) {

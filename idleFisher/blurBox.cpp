@@ -40,7 +40,7 @@ void BlurBox::draw() {
 	textureManager::ForceGPUUpload();
 
 	GenerateSubTexture(texture.get());
-	textureManager::DrawImage(Main::blurShader, loc, size / stuff::pixelSize, { 0, 0, 1, 1 }, useWorldPos, glm::vec4(1), texture->GetHandle());
+	textureManager::DrawImage(Main::blurShader, loc, size, { 0, 0, 1, 1 }, useWorldPos, glm::vec4(1), texture->GetHandle());
 }
 
 void BlurBox::GenerateSubTexture(Texture* texture) {
@@ -51,13 +51,13 @@ void BlurBox::GenerateSubTexture(Texture* texture) {
 }
 
 void BlurBox::Init() {
-	sceneFBO = std::make_unique<FBO>(stuff::screenSize, false);
+	sceneFBO = std::make_unique<FBO>(stuff::screenSize / stuff::pixelSize, false);
 }
 
 void BlurBox::DrawFinal(Shader* shader) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	shader->Activate();
-	sceneFBO->Draw(shader, {0, 0}, stuff::screenSize, {0, 0, 1, 1}, false, glm::vec4(1));
+	sceneFBO->Draw(shader, {0, 0}, {0, 0, 1, 1}, false, glm::vec4(1));
 }
 
 void BlurBox::BindFramebuffer() {

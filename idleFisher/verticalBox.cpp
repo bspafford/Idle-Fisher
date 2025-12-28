@@ -9,10 +9,6 @@ verticalBox::verticalBox(widget* parent) : widget(parent) {
 }
 
 void verticalBox::draw(Shader* shaderProgram) {
-	// temp show size
-	URectangle* rect = new URectangle(absoluteLoc, size, false, glm::vec4(0, 0, 0, 1));
-	rect->draw(shaderProgram);
-	delete rect;
 	for (vertChildComp comp : childrenList) {
 		if (comp.child)
 			comp.child->draw(shaderProgram);

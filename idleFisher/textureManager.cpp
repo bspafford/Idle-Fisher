@@ -126,7 +126,7 @@ void textureManager::DrawRect(Shader* shader, const vector& position, const vect
 }
 
 void textureManager::EndFrame() {
-	UploadGPUData();
+	ForceGPUUpload();
 }
 
 void textureManager::ForceGPUUpload() {

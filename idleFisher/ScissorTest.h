@@ -7,10 +7,10 @@
 
 class ScissorTest {
 public:
-	static void Enable(vector loc, vector size, glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
-	static void Enable(Rect rect, glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
+	static void Enable(vector loc, vector size);
+	static void Enable(Rect rect);
 	static void Disable();
-
+	static Rect GetCurrRect();
 private:
 	static inline std::stack<Rect> scissorStack;
 };

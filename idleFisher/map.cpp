@@ -8,6 +8,7 @@
 #include "shortNumbers.h"
 #include "animation.h"
 #include "sailorWidget.h"
+#include "ScissorTest.h"
 
 #include "debugger.h"
 
@@ -65,8 +66,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 }
 
 void Umap::draw(Shader* shaderProgram) {
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(ogLoc.x, ogLoc.y, getSize().x, getSize().y);
+	ScissorTest::Enable(ogLoc, getSize());
 
 	mouseDown = Input::getMouseButtonHeld(MOUSE_BUTTON_LEFT);
 	vector mousePos = Input::getMousePos();
@@ -126,7 +126,7 @@ void Umap::draw(Shader* shaderProgram) {
 		}
 	}
 
-	glDisable(GL_SCISSOR_TEST);
+	ScissorTest::Disable();
 }
 
 void Umap::moveMap() {

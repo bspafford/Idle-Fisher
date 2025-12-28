@@ -30,8 +30,6 @@ public:
 	void draw(Shader* shader);
 	// void setAlignment(std::string alignment);
 	void makeText(int i, std::string text, vector &offset);
-	// includeDanglingCharSizes is whether it should count the size of g, y, j, etc
-	// this is required for things like fbo sizing
 	vector getSize();
 	std::string getString();
 	void loadTextImg();
@@ -89,7 +87,8 @@ private:
 	Anchor xAnchor = ANCHOR_LEFT;
 	Anchor yAnchor = ANCHOR_TOP;
 
-	int textHeight;
+	int textHeight = 0;
 	// How many pixels chars like 'g', 'y', etc, should be dropped
-	int dropHeight;
+	int dropHeight = 0;
+	bool hasDropChar = false;
 };

@@ -10,7 +10,7 @@ class Shader;
 class Texture;
 
 struct FBOData {
-	GLuint ID = 0;
+	GLuint ID = -1;
 	vector fboSize;
 
 	FBOData(GLuint _id, vector _fboSize) : ID(_id), fboSize(_fboSize) {}
@@ -21,7 +21,7 @@ public:
 	FBO(vector size, bool useWorldPos);
 	~FBO();
 
-	void Draw(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color);
+	void Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color);
 	vector GetSize();
 
 	void BindFramebuffer(glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
