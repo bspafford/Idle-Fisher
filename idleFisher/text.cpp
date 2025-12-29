@@ -188,9 +188,9 @@ void text::makeText(int i, std::string text, vector &offset) {
 
 		// ONLY works for ALIGNED LEFT
 		// wraps text if its length is greater than its linelength
-		if (lineLength != -1 && offset.x > lineLength) { //  && textString[start] != ' '
+		if (lineLength != -1 && offset.x > lineLength) {
 			offset.x = 0;
-			offset.y += (letter->getSize().y + 1);
+			offset.y -= (letter->getSize().y + 1);
 			for (int j = start; j < start + numLetters + 1; j++) {
 				letters[j]->setLoc(offset);
 				offset.x += letters[j]->getSize().x;
@@ -280,7 +280,7 @@ void text::makeTextTexture() {
 			std::string dropList("qypgj");
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - dropHeight }); // add add dropHeight
-			letters[i]->draw(Main::twoDShader); // can't use draw, cause it just queues it, need to actually draw it
+			letters[i]->draw(Main::twoDShader);
 		}
 	// Unbind FBO
 	fbo->Unbind();
@@ -307,8 +307,9 @@ void text::setLocAndSize(vector loc, vector size) {
 void text::setLoc(vector loc) {
 	loc = loc.floor();
 	__super::setLoc(loc);
-	
+
 	vector size = getSize();
+	vector pivotLoc = size * pivot;
 	if (useWorldPos) {
 
 		if (alignment == TEXT_ALIGN_LEFT) {
@@ -333,6 +334,8 @@ void text::setLoc(vector loc) {
 			absoluteLoc = loc - vector{ (size.x / 2.f), 0.f };
 		}
 	}
+
+	absoluteLoc -= pivotLoc;
 }
 
 void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {

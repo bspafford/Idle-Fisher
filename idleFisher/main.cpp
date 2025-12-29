@@ -312,8 +312,6 @@ void Main::Update(float deltaTime) {
 	character->Update(deltaTime);
 	camera->Update(window, deltaTime);
 
-	std::cout << "mouse to world: " << math::screenToWorld(Input::getMousePos()) << "\n";
-
 	collision::testMouse(Input::getMousePos());
 	Cursor::calcMouseImg();
 

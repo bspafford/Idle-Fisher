@@ -43,7 +43,7 @@ void UscrollBox::scrolling() {
 	}
 
 	vector diff = mouseStartPos - startLoc;
-	loc.y = math::clamp(Input::getMousePos().y - diff.y, ogLoc.y, overflowSizeY - size.y);
+	loc.y = math::clamp(Input::getMousePos().y - diff.y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
 
 	UpdateChildren();
 }
@@ -59,7 +59,7 @@ void UscrollBox::scrolling(int mouseWheelDir) {
 	}
 
 	vector diff = vector{ 0, -mouseWheelDir * 10.f } + loc;
-	loc.y = math::clamp(diff.y, ogLoc.y, overflowSizeY - size.y);
+	loc.y = math::clamp(diff.y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
 
 	UpdateChildren();
 }

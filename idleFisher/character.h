@@ -62,7 +62,7 @@ public:
 	static inline std::unique_ptr<animation> bobberWaterAnimFront;
 	static inline std::unique_ptr<animation> bobberWaterAnimBack;
 
-	float speed = 425.f / 5.f;
+	float speed = 85.f;
 
 	void move(float deltaTime);
 

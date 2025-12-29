@@ -50,6 +50,8 @@ public:
 
 	// loc and size
 	virtual vector getLoc();
+	virtual vector getOgLoc();
+	virtual vector getAbsoluteLoc();
 	virtual vector getSize();
 	virtual void setLoc(vector loc);
 	virtual void setOgLoc(vector loc);

@@ -1,7 +1,5 @@
 #include"Camera.h"
 #include "saveData.h"
-#include "character.h"
-#include "animation.h"
 
 #include "debugger.h"
 
@@ -18,7 +16,6 @@ Camera::Camera(glm::vec3 position) {
 void Camera::Update(GLFWwindow* window, float deltaTime) {
 	vector loc = SaveData::saveData.playerLoc * stuff::pixelSize - stuff::screenSize / 2.f;
 	position = glm::vec3(loc.x, loc.y, 0.f);
-
 	projection = getProjectionMat();
 }
 

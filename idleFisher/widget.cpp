@@ -88,6 +88,14 @@ void widget::setupLocs() {
 }
 
 vector widget::getLoc() {
+	return loc;
+}
+
+vector widget::getOgLoc() {
+	return ogLoc;
+}
+
+vector widget::getAbsoluteLoc() {
 	return absoluteLoc;
 }
 

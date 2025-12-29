@@ -34,8 +34,7 @@ public:
 	void setLoc(vector loc) override;
 
 	vector getSize();
-	vector getLoc();
-
+	
 	void enable(bool enabled);
 
 	void SetColorMod(glm::vec4 colorMod);

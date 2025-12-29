@@ -12,7 +12,7 @@
 #include "debugger.h"
 
 UheldFishWidget::UheldFishWidget(widget* parent) : widget(parent) {
-	line = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 20, 1 }, false);
+	line = std::make_unique<URectangle>(vector{ 0.f, 0.f }, vector{ 27.f, 1.f }, false);
 
 	SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
 	SetPivot({ 0.f, 1.f });
@@ -27,30 +27,22 @@ void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
 		saveFishList = SaveData::saveData.fishData;
 	fishList = saveFishList;
 
-	float yOffset = 1;
 	// setup fish
 	fishList = removeUnneededFish();
 	fishNumList.clear();
 
-	for (int i = 0; i < fishList.size(); i++) {
-		for (int j = 0; j < fishList[i].numOwned.size(); j++) {
-			if (fishList[i].numOwned[j] == 0)
+	for (int i = 0; i < fishList.size(); i++) { // loop through fish
+		for (int j = 0; j < fishList[i].numOwned.size(); j++) { // loop through fish qualities
+			if (fishList[i].numOwned[j] == 0) // if no fish of this quality, skip
 				continue;
 
 			// setup fishNumWidget
 			std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
 			widget->SetPivot(pivot);
-
-			widget->setLoc({ widget->getLoc().x, yOffset });
 			widget->setup(&SaveData::data.fishData[fishList[i].id], &fishList[i], j);
-			yOffset -= widget->getSize().y + 1;
-
 			fishNumList.push_back(std::move(widget));
 		}
 	}
-
-	// adjusted for the line
-	yOffset -= 5;
 
 	// setup currency
 	getCurrency();
@@ -58,18 +50,11 @@ void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
 	for (int i = 0; i < currency.size(); i++) {
 		std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
 		widget->SetPivot(pivot);
-
+		
 		FcurrencyStruct* currencyStruct = &SaveData::data.currencyData[currency[i].x];
-
-		widget->setLoc({ widget->getLoc().x, yOffset });
 		widget->setup(currencyStruct, currency[i].y);
-		yOffset -= widget->getSize().y + 1.f;
-
 		currencyList.push_back(std::move(widget));
 	}
-
-	size.x = 35.f;
-	size.y = yOffset;
 }
 
 void UheldFishWidget::draw(Shader* shaderProgram) {
@@ -84,7 +69,7 @@ void UheldFishWidget::draw(Shader* shaderProgram) {
 
 	// draws line between fish and currency
 	if (fishNumList.size() > 0) {
-		line->setLoc(vector{ absoluteLoc.x, yOffset } + offset);
+		line->setLoc(vector{ absoluteLoc.x, yOffset - 2.f } + offset);
 		line->draw(shaderProgram);
 
 		// adjusted for the line
@@ -101,13 +86,13 @@ void UheldFishWidget::draw(Shader* shaderProgram) {
 }
 
 std::vector<FsaveFishData> UheldFishWidget::removeUnneededFish() {
-	std::vector<FsaveFishData> temp;
+	std::vector<FsaveFishData> data;
 	for (int i = 0; i < fishList.size(); i++) {
 		if (fishList[i].calcCaughtFish() > 0)
-			temp.push_back(fishList[i]);
+			data.push_back(fishList[i]);
 	}
 
-	return temp;
+	return data;
 }
 
 void UheldFishWidget::getCurrency() {

@@ -18,19 +18,28 @@ NPCwidget::NPCwidget(widget* parent, npc* NPCParent, std::string npcName) : widg
 	
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
+	closeButton->SetPivot({ 0.5f, 0.5f });
 	
-	if (npcName != "fishGod")
+	if (npcName != "fishGod") {
 		npcImg = std::make_unique<Image>("./images/widget/npcButtons/" + npcName + ".png", vector{ 0, 0 }, false);
+		npcImg->SetPivot({ 0.5f, 0.f });
+	}
 
 	name = std::make_unique<text>(this, " ", "biggerStraightDark", vector{ 0,0 });
 	description = std::make_unique<text>(this, " ", "straightDark", vector{ 0,0 });
 	nameHolder = std::make_unique<verticalBox>(this);
-	nameHolder->addChild(name.get(), 8 * stuff::pixelSize);
-	nameHolder->addChild(description.get(), 4 * stuff::pixelSize);
+	nameHolder->addChild(name.get(), 8.f);
+	nameHolder->addChild(description.get(), 4.f);
 
 	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	npcBackground->SetPivot({ 1.f, 0.f });
 	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	infoBackground->SetPivot({ 1.f, 1.f });
 	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
 	setupLocs();
 }
@@ -65,41 +74,33 @@ void NPCwidget::setNameDescription(std::string nameString, std::string descripti
 	description->setText(descriptionString);
 
 	// change nameHolder sizes
-	nameHolder->changeChildHeight(name.get(), name->getSize().y + stuff::pixelSize);
+	nameHolder->changeChildHeight(name.get(), name->getSize().y + 1.f);
+	nameHolder->changeChildHeight(description.get(), description->getSize().y + 1.f);
 }
 
 void NPCwidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = (npcBackground->getSize().x + 1) * stuff::pixelSize;
-	float y = (npcBackground->getSize().y + 1) * stuff::pixelSize;
-	vector size = vector{ x, 0 } + upgradeBackground->getSize();
-	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
-	vector topLeft = center - size / 2;
-	npcBackground->setLoc(topLeft);
-	if (infoBackground)
-		infoBackground->setLoc(topLeft + vector{ 0, y });
-	upgradeBackground->setLoc(topLeft + vector{ x, 0 });
+	npcBackground->setLoc({ -1.f, 1.f });
+	infoBackground->setLoc({ -1.f, -1.f });
+	upgradeBackground->setLoc(vector{ 1.f, 1.f });
 
-	if (npcImg) {
-		vector npcBackgroundSize = npcBackground->getSize();
-		vector npcSize = npcImg->getSize();
-		npcImg->setLoc(npcBackground->getLoc() + vector{ npcBackgroundSize.x / 2, npcBackgroundSize.y } - vector{ npcSize.x / 2, npcSize.y } - vector{ 0, 1 * stuff::pixelSize });
-	}
+	if (npcImg)
+		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, 3.f});
 
-
-	vector upgradeHolderPos = (upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize).floor();
-	upgradeHolder->setLocAndSize(upgradeHolderPos, vector{float(upgradeBackground->getSize().x), float(upgradeBackground->getSize().y - 6)} *stuff::pixelSize);
-	upgradeHolder->setOgLoc(upgradeHolderPos);
+	vector upgradeHolderPos = (upgradeBackground->getAbsoluteLoc() + vector{ 4, 3 }).floor();
+	upgradeHolder->setLocAndSize(upgradeHolderPos, upgradeBackground->getSize() - vector{ 8.f, 6.f });
+	std::cout << "overflow size: " << upgradeHolder->getOverflowSize() << "\n";
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();
-		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
+		closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 	}
 
 	if (infoBackground) {
-		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize}, infoBackground->getSize() * stuff::pixelSize);
-		name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
-		description->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+		vector nameHolderSize = infoBackground->getSize() - 10.f;
+		name->setLineLength(nameHolderSize.x);
+		description->setLineLength(nameHolderSize.x);
+		nameHolder->setLocAndSize(infoBackground->getAbsoluteLoc() + 5.f, nameHolderSize);
 	}
 }

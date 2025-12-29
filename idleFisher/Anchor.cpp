@@ -3,7 +3,7 @@
 vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, Anchor xAnchor, Anchor yAnchor) {
 	 vector pivotLoc = size * pivot;
 	 if (useWorldPos) {
-		 return (loc - pivotLoc).round();
+		 return loc - pivotLoc;
 	 } else {
 		 vector newLoc;
 		 vector pixelScreenSize = stuff::screenSize / stuff::pixelSize;
@@ -23,6 +23,6 @@ vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, A
 			 newLoc.y = (loc.y + pixelScreenSize.y);
 		 }
 
-		 return (newLoc - pivotLoc).round();
+		 return (newLoc - pivotLoc).round(); // rounds to nearest pixel
 	 }
 }

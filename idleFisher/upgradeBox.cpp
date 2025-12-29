@@ -114,18 +114,24 @@ void UupgradeBox::setup() {
 	background = std::make_unique<Image>("./images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
 
 	thumbnailBackground = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	thumbnailBackground->SetPivot({ 0.f, 0.5f });
 	name = std::make_unique<text>(this, nameString, "straightDark", vector{ 0, 0 });
+	name->SetPivot({ 0.f, 0.5f });
 
 	buyButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{0, 0}, false, false);
 	buyButton->addCallback(this, &UupgradeBox::buyUpgrade);
+	buyButton->SetPivot({ 1.f, 0.5f });
 
 	buttonPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(*price), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	buttonPriceText->setTextColor(255, 0, 0);
+	buttonPriceText->SetPivot({ 0.f, 0.5f });
 
 	currencyImg = std::make_unique<Image>("./images/currency/coin" + std::to_string(*currencyId) + ".png", vector{ 0, 0 }, false);
+	currencyImg->SetPivot({ 1.f, 0.5f });
 
 	if (upgradeMax > 1) {
 		upgradeText = std::make_unique<text>(this, std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+		upgradeText->SetPivot({ 0.f, 0.5f });
 	}
 
 	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked && *unlocked)) {
@@ -157,15 +163,11 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 	buyButton->draw(shaderProgram);
 
 	if (upgradeStruct) {
-		//int worldId = upgrades::worldNameToId(upgradeStruct->levelName);
-		//if (*price <= SaveData::saveData.currencyList[worldId + 1].numOwned) // can afford
 		if (*price <= SaveData::saveData.currencyList[*currencyId].numOwned) // can afford
 			buttonPriceText->setTextColor(255, 255, 255); // set to og color
 		else // cant afford
 			buttonPriceText->setTextColor(255, 0, 0); // set red
 	} else if (price) {
-		//int worldId = upgrades::worldNameToId(Main::currWorld); // temp
-		//if ((unlocked && *unlocked) || *price <= SaveData::saveData.currencyList[worldId + 1].numOwned) { // can afford
 		if ((unlocked && *unlocked) || *price <= SaveData::saveData.currencyList[*currencyId].numOwned) { // can afford
 			buttonPriceText->setTextColor(255, 255, 255); // set to og color
 		} else // cant afford
@@ -173,16 +175,15 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 	}
 
 	buttonPriceText->draw(shaderProgram);
+
 	// draw if not max or unlocked
 	if ((!unlocked || (unlocked && !*unlocked)) && (!upgradeNum || (upgradeNum && *upgradeNum < upgradeMax)))
 		currencyImg->draw(shaderProgram);
 
 	if (upgradeText)
 		upgradeText->draw(shaderProgram);
-	// changes the text only if it isn't already set to current world
-	if (mouseOver()) {
-		// disable scissor test cause its inside of scroll box and will get culled otherwise
-		glDisable(GL_SCISSOR_TEST);
+	
+	if (mouseOver()) { // changes the text only if it isn't already set to current world
 		if (NPCwidget* widget = dynamic_cast<NPCwidget*>(NPCWidget)) {
 			if (widget->name->getString() != nameString)
 				widget->setNameDescription(nameString, descriptionString);
@@ -194,7 +195,6 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 				widget->setNameDescription(nameString, buffString, debuffString);
 			}
 		}
-		glEnable(GL_SCISSOR_TEST);
 	}
 }
 
@@ -205,68 +205,48 @@ void UupgradeBox::setLocAndSize(vector loc, vector size) {
 
 void UupgradeBox::setupLocs() {
 	if (background)
-		background->setLoc(loc);
+		background->setLoc(absoluteLoc);
 
 	if (buyButton) {
-		vector buttonSize = buyButton->getSize();
-		vector buyButtonLoc = (loc + vector{ size.x - buttonSize.x, size.y / 2 - buttonSize.y / 2 } + vector{ -10 * stuff::pixelSize, 0 });
+		vector buyButtonLoc = (absoluteLoc + vector{ size.x - 3.f, size.y / 2.f });
 		buyButton->setLoc(buyButtonLoc);
 
-		if (buttonPriceText) {
-			buttonPriceText->setLoc(buyButtonLoc + buyButton->getSize() / 2);
-			if (currencyImg)
-				currencyImg->setLoc((buttonPriceText->getLoc() + vector{ -currencyImg->getSize().x - 20 * stuff::pixelSize, -currencyImg->getSize().y / 2 }));
-		}
+		if (buttonPriceText)
+			buttonPriceText->setLoc(buyButtonLoc - vector{ buyButton->getSize().x / 2.f, 0.f });
+
+		if (currencyImg)
+			currencyImg->setLoc(buyButtonLoc - vector{ buyButton->getSize().x + 3.f, 0.f });
 
 		if (upgradeText) {
-			vector upgradeTextLoc = vector{ currencyImg->getLoc().x - 1 * stuff::pixelSize, loc.y + size.y / 2 };
+			vector upgradeTextLoc = vector{ currencyImg->getAbsoluteLoc().x - 3.f, absoluteLoc.y + size.y / 2.f };
 			upgradeText->setLoc(upgradeTextLoc);
 		}
 	}
 
 	if (thumbnailBackground)
-		thumbnailBackground->setLoc((loc + vector{ 4 * stuff::pixelSize, size.y / 2 - thumbnailBackground->getSize().y / 2 * stuff::pixelSize }));
+		thumbnailBackground->setLoc((loc + vector{ 4.f, size.y / 2.f }));
 	
 	if (thumbnail && thumbnailBackground)
-		thumbnail->setLoc(thumbnailBackground->getLoc());
+		thumbnail->setLoc(thumbnailBackground->getAbsoluteLoc());
 	
 	if (name)
-		name->setLoc((loc + vector{ (thumbnailBackground->getSize().y + 6) * stuff::pixelSize, size.y / 2}));
+		name->setLoc((absoluteLoc + vector{ (thumbnailBackground->getSize().x + 6.f), size.y / 2.f }));
 }
 
 bool UupgradeBox::mouseOver() {
-	vector mousePos = Input::getMousePos();
+	// parent assumed to be vertical box
+	vector parentLoc = getParent() ? getParent()->getOgLoc() : vector{ 0, 0 };
+	vector parentSize = getParent() ? getParent()->getSize() : vector{ 0, 0 };
 
-	if (!getParent() && mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
-		return true;
-	else if (getParent()) {
-		vector parentLoc = getParent()->getLoc();
-		vector parentSize = getParent()->getSize();
-		if (mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
-			// test if inside the rect too
-			if (mousePos.x >= parentLoc.x && mousePos.x <= parentLoc.x + parentSize.x && mousePos.y >= parentLoc.y && mousePos.y <= parentLoc.y + parentSize.y)
-				return true;
-	}
-	return false;
+	vector mousePos = Input::getMousePos();
+	bool mouseInVertBox = mousePos.x >= parentLoc.x && mousePos.x <= parentLoc.x + parentSize.x && mousePos.y >= parentLoc.y && mousePos.y <= parentLoc.y + parentSize.y;
+	return mouseInVertBox && background->isMouseOver();
 }
 
 void UupgradeBox::buyUpgrade() {
-
-	if (upgradeStruct) {
-		//bool success = upgrades::upgrade(upgrades::getUpgrade(upgradeStruct->upgradeFunctionName), this);
-		//std::cout << "upgradeStruct->upgradeFunctionName: " << upgradeStruct->upgradeFunctionName << std::endl;
-		bool success = upgrades::upgrade(SaveData::data.upgradeData[upgrades::getUpgrade(upgradeStruct->upgradeFunctionName)->id], this, price);
-		//*price = upgrades::calcPrice(upgradeStruct, saveUpgradeStruct);
-	} else { // temp
-		//int worldId = upgrades::worldNameToId(Main::currWorld); // temp
-		// returns if the player doesn't have enough money
-		if (price)
-			std::cout << "price: " << *price << " > " << SaveData::saveData.currencyList[*currencyId].numOwned << std::endl;
-		if ((!unlocked || !*unlocked) && (!price || *price > SaveData::saveData.currencyList[*currencyId].numOwned)) {
-		//if (!unlocked || *unlocked || !price || *price > SaveData::saveData.currencyList[worldId + 1].numOwned) {
-			std::cout << "returning" << std::endl;
+	if (!upgradeStruct) {
+		if ((!unlocked || !*unlocked) && (!price || *price > SaveData::saveData.currencyList[*currencyId].numOwned))
 			return;
-		}
 		
 		if (upgradeNum) {
 			if (*upgradeNum >= upgradeMax)
@@ -332,8 +312,6 @@ void UupgradeBox::buyUpgrade() {
 
 			} else {
 				buyButton->enable(false);
-				//buyButton->removeClickAnim();
-				//buyButton->setImg("./images/widget/upgradeButton3.png");
 				buttonPriceText->setText("Max");
 				setupLocs(); // updates the locks of the button and the upgrade text
 			}
@@ -355,8 +333,6 @@ void UupgradeBox::update() {
 
 	if (upgradeNum && *upgradeNum >= upgradeMax) { // if max
 		buyButton->enable(false);
-		//buyButton->removeClickAnim();
-		//buyButton->setImg("./images/widget/upgradeButton3.png");
 		buttonPriceText->setText("Max");
 	}
 

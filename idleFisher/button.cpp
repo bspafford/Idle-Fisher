@@ -29,6 +29,8 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 	buttonAnim->SetUseAlpha(useAlpha);
 
 	this->useWorldLoc = useWorldLoc;
+
+	setSize({ static_cast<float>(cellWidth), static_cast<float>(cellHeight) });
 }
 
 Ubutton::~Ubutton() {
@@ -70,7 +72,7 @@ void Ubutton::setLoc(vector loc) {
 	loc = loc.floor();
 	__super::setLoc(loc);
 	
-	buttonAnim->setLoc(loc);
+	buttonAnim->setLoc(absoluteLoc);
 }
 
 void Ubutton::onClick() {
@@ -99,10 +101,6 @@ void Ubutton::enable(bool enabled) {
 
 vector Ubutton::getSize() {
 	return buttonAnim->GetCellSize();
-}
-
-vector Ubutton::getLoc() {
-	return loc;
 }
 
 void Ubutton::SetColorMod(glm::vec4 colorMod) {
