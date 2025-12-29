@@ -142,24 +142,6 @@ void collision::removeCollisionObject(Fcollision* collision) {
 	);
 }
 
-bool collision::mouseOverWater(vector mousePos, std::vector<Fcollision*> allCollision) {
-	std::lock_guard<std::mutex> lock(mutex);
-
-	mousePos = math::screenToWorld(mousePos);
-
-	// mousePos
-	std::unique_ptr<Fcollision> aCol = std::make_unique<Fcollision>(mousePos, 1, "");
-
-	vector normal;
-	float depth;
-	for (int i = 0; i < allCollision.size(); i++) {
-		if (allCollision[i]->identifier == "w" && isCloseEnough(aCol.get(), allCollision[i]) && intersectCirclePolygon(mousePos, 1, allCollision[i]->points, normal, depth))
-			return true;
-	}
-
-	return false;
-}
-
 bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, std::vector<vector> vertices, vector& normal, float& depth) {
 	normal = { 0, 0 };
 	depth = INFINITY;
@@ -396,8 +378,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 			for (int j = 0; j < allCollision[i]->points.size(); j++) {
 				int point1 = j;
 				int point2 = (j + 1) % allCollision[i]->points.size();
-				vector temp1 = allCollision[i]->points[point1] * stuff::pixelSize;
-				vector temp2 = allCollision[i]->points[point2] * stuff::pixelSize;
+				vector temp1 = allCollision[i]->points[point1];
+				vector temp2 = allCollision[i]->points[point2];
 
 				float lineVertices[] = {
 					temp1.x, temp1.y,  // Start point
@@ -432,8 +414,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 		} else { // show circle collisions
 			int circlePointsNum = 12;
 
-			vector center = allCollision[i]->points[0] * stuff::pixelSize;
-			float radius = allCollision[i]->radius * stuff::pixelSize;
+			vector center = allCollision[i]->points[0];
+			float radius = allCollision[i]->radius;
 
 			// calculate all points on circle
 			std::vector<vector> points;
@@ -481,7 +463,7 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 	// draw player collision
 	std::vector<std::vector<float>> stuff;
 	float radius = Acharacter::col->radius;
-	vector point = Acharacter::col->points[0] * stuff::pixelSize;
+	vector point = Acharacter::col->points[0];
 	stuff.push_back({ point.x + radius, point.y + radius, point.x + radius, point.y - radius });
 	stuff.push_back({ point.x + radius, point.y - radius, point.x - radius, point.y - radius });
 	stuff.push_back({ point.x - radius, point.y - radius, point.x - radius, point.y + radius });
@@ -541,62 +523,6 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 
 	shaderProgram->setInt("isRectangle", false);
 	shaderProgram->setVec4("color", glm::vec4(1.f));
-
-}
-
-
-
-void collision::testCollisions(Fcollision* playerCol, std::vector<Fcollision*> allCollision) {
-	std::lock_guard<std::mutex> lock(mutex);
-
-	temp.clear();
-
-	// mousePos
-	vector mousePos = math::screenToWorld(Input::getMousePos());
-	std::unique_ptr<Fcollision> aCol = std::make_unique<Fcollision>(mousePos, 1, "");
-	Cursor::setMouseOverWater(false);
-
-	for (int i = 0; i < allCollision.size(); i++) {
-		// player col shouldn't exist any more, can replace it by converting the cirlce to a square
-		vector normal = { 0, 0 };
-		float depth = 0;
-		if (GetCharacter()->getCanMove() && (GetCharacter()->moveDir.x != 0 || GetCharacter()->moveDir.y != 0)) {
-			//std::cout << allCollision[i]->points[0] << " | " << allCollision[i]->points[1] << " | " << allCollision[i]->points[2] << " | " << allCollision[i]->points[3] << " | " << std::endl;
-			//std::cout << "iscloseenough: " << isCloseEnough(playerCol, allCollision[i]) << ", i: " << i << std::endl;
-			if (isCloseEnough(playerCol, allCollision[i])) {
-				if ((allCollision[i]->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, allCollision[i]->points[0], allCollision[i]->radius, normal, depth)) || intersectCirclePolygon(playerCol->points[0], playerCol->radius, allCollision[i]->points, normal, depth)) {
-					// pushes back player from collision
-					SaveData::saveData.playerLoc.x += -normal.x * depth;
-					SaveData::saveData.playerLoc.y += -normal.y * depth;
-				}
-			}
-		}
-
-		if (!Cursor::getMouseOverWater() && allCollision[i]->identifier == "w" && isCloseEnough(aCol.get(), allCollision[i]) && intersectCirclePolygon(mousePos, 1, allCollision[i]->points, normal, depth))
-			Cursor::setMouseOverWater(true);
-	}
-}
-
-// tests if player is colliding and pushes them back
-void collision::testPlayerCollision(Fcollision* playerCol, std::vector<Fcollision*> allCollision) {
-	std::lock_guard<std::mutex> lock(mutex);
-
-	temp.clear();
-	if (!GetCharacter()->getCanMove())
-		return;
-
-	for (int i = 0; i < allCollision.size(); i++) {
-		// player col shouldn't exist any more, can replace it by converting the cirlce to a square
-		if (isCloseEnough(playerCol, allCollision[i])) {
-			vector normal;
-			float depth;
-			if ((allCollision[i]->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, allCollision[i]->points[0], allCollision[i]->radius, normal, depth)) || intersectCirclePolygon(playerCol->points[0], playerCol->radius, allCollision[i]->points, normal, depth)) {
-				// pushes back player from collision
-				SaveData::saveData.playerLoc.x += -normal.x * depth;
-				SaveData::saveData.playerLoc.y += -normal.y * depth;
-			}
-		}
-	}
 }
 
 // test if the player is close enough for the collision to even be tested
@@ -798,22 +724,22 @@ bool collision::testMouse(vector mousePos) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	vector worldPos = math::screenToWorld(mousePos);
-	Cursor::setMouseOverWater(false);
 
 	for (int i = 0; i < allCollision.size(); i++) {
 		vector normal;
-		if (!Cursor::getMouseOverWater() && allCollision[i]->identifier == "w") {
+		if (allCollision[i]->identifier == "w") {
 			if (pointInQuad(worldPos, allCollision[i])) {
 				Cursor::setMouseOverWater(true);
 				return true;
 			}
 		}
 	}
+
+	Cursor::setMouseOverWater(false);
 	return false;
 }
 
 bool collision::pointInQuad(vector mousePos, Fcollision* col) {
-	mousePos /= stuff::pixelSize;
 	vector a = col->points[0];
 	vector b = col->points[1];
 	vector c = col->points[2];

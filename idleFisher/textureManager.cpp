@@ -19,10 +19,9 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 		return;
 	}
 
-	GLuint ID;
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+	glCreateTextures(GL_TEXTURE_2D, 1, &id);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ID);
+	glBindTexture(GL_TEXTURE_2D, id);
 
 	if (bytes) {
 		GLenum format = 0;
@@ -33,15 +32,16 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 		else
 			std::cerr << "Warning: the image is not truecolor; this may cause issues." << std::endl;
 
-		glTextureStorage2D(ID, 1, GL_RGBA8, w, h); // allocate immutable storage
-		glTextureSubImage2D(ID, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, bytes); // upload texture data
+		glTextureStorage2D(id, 1, GL_RGBA8, w, h); // allocate immutable storage
+		glTextureSubImage2D(id, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, bytes); // upload texture data
 
-		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
+		handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
 		glMakeTextureHandleResidentARB(handle);
 
 		keptData = keepData;
 		if (keptData == 0) { // delete all pixel data
 			stbi_image_free(bytes);
+			bytes = NULL;
 		} else if (keptData == GL_R) { // only keep alpha
 			// make alpha data list
 			alphaBits.resize((w * h + 7) / 8, 0);
@@ -54,6 +54,7 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 			}
 
 			stbi_image_free(bytes);
+			bytes = NULL;
 		} // else don't delete anything
 	}
 }
@@ -165,6 +166,12 @@ textureManager::textureManager() {
 }
 
 void textureManager::Deconstructor() {
+	for (auto& texture : textureMap) {
+		glDeleteTextures(1, &texture.second->id);
+		if (texture.second->bytes)
+			stbi_image_free(texture.second->bytes);
+	}
+
 	textureMap.clear();
 }
 

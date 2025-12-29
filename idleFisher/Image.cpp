@@ -11,6 +11,9 @@ Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector 
 	this->source = source;
 	this->useWorldPos = useWorldPos;
 
+	textureStructPtr = textureManager::getTexture(path);
+	handle = textureStructPtr->handle;
+
 	ogW = image->ogW;
 	ogH = image->ogH;
 	w = source->w;
@@ -28,7 +31,6 @@ Image::Image(std::string image, vector loc, bool useWorldPos) {
 	this->useWorldPos = useWorldPos;
 
 	textureStructPtr = textureManager::getTexture(path);
-
 	handle = textureStructPtr->handle;
 
 	ogW = textureStructPtr->w;

@@ -131,7 +131,7 @@ std::string math::getStringFromTime(std::chrono::system_clock::time_point timePo
 }
 
 vector math::screenToWorld(vector mousePos, bool round) {
-	return SaveData::saveData.playerLoc - stuff::screenSize / (stuff::pixelSize * 2.f) + mousePos / stuff::pixelSize;
+	return SaveData::saveData.playerLoc - stuff::screenSize / (stuff::pixelSize * 2.f) + mousePos;
 }
 
 vector math::worldToScreen(vector pos) {

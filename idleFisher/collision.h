@@ -49,15 +49,10 @@ public:
 	// circles vs circles
 	static bool intersectCircles(vector centerA, float radiusA, vector centerB, float radiusB, vector& normal, float& depth);
 
-	static bool mouseOverWater(vector mousePos, std::vector<Fcollision*> allCollision);
-
 	static void removeSpaces(std::string& str);
 
 	static void showCollisionBoxes(Shader* shaderProgram);
 
-	// checks both mouse and player collision instead of having to loop through allCollisions multiple times
-	static void testCollisions(Fcollision* playerCol, std::vector<Fcollision*> allCollision);
-	static void testPlayerCollision(Fcollision* playerCol, std::vector<Fcollision*> allCollision);
 	static bool isCloseEnough(const Fcollision* a, const Fcollision* col);
 
 	static vector findArithmeticMean(std::vector<vector> vertices);

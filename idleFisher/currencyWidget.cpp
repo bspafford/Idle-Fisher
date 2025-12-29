@@ -6,7 +6,8 @@
 #include "debugger.h"
 
 UcurrencyWidget::UcurrencyWidget(widget* parent) : widget(parent) {
-
+	SetAnchor(ANCHOR_RIGHT, ANCHOR_TOP);
+	SetPivot({ 1.f, 1.f });
 }
 
 UcurrencyWidget::~UcurrencyWidget() {
@@ -14,7 +15,7 @@ UcurrencyWidget::~UcurrencyWidget() {
 }
 
 void UcurrencyWidget::updateList() {
-	float yOffset = 15 * stuff::pixelSize;
+	float yOffset = -15.f;
 
 	// setup currency
 	currencyList.clear();
@@ -22,15 +23,16 @@ void UcurrencyWidget::updateList() {
 		FsaveCurrencyStruct saveCurrency = SaveData::saveData.currencyList[i];
 
 		if (saveCurrency.numOwned != 0) {
-			yOffset += stuff::pixelSize;
+			yOffset -= stuff::pixelSize;
 
 			std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
-			
+			widget->SetPivot(pivot);
+
 			FcurrencyStruct* currencyStruct = &SaveData::data.currencyData[saveCurrency.id];
 
 			widget->setLoc(vector{ widget->getLoc().x, yOffset }.floor());
 			widget->setup(currencyStruct, saveCurrency.numOwned);
-			yOffset += widget->getSize().y + 1 * stuff::pixelSize;
+			yOffset -= widget->getSize().y + 1.f;
 
 			currencyList.push_back(std::move(widget));
 		}
@@ -39,10 +41,10 @@ void UcurrencyWidget::updateList() {
 }
 
 void UcurrencyWidget::draw(Shader* shaderProgram) {
-	float yOffset = 15 * stuff::pixelSize;
+	float yOffset = absoluteLoc.y - 6.f;
 	for (int i = 0; i < currencyList.size(); i++) {
-		currencyList[i]->setLoc(vector{ stuff::screenSize.x - currencyList[i]->getSize().x - 11 * stuff::pixelSize, yOffset}.floor());
+		currencyList[i]->setLoc(vector{ absoluteLoc.x - 3.f, yOffset}.floor());
 		currencyList[i]->draw(shaderProgram);
-		yOffset += currencyList[i]->getSize().y + 1 * stuff::pixelSize;
+		yOffset -= currencyList[i]->getSize().y + 1;
 	}
 }

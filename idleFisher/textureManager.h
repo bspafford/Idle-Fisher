@@ -32,6 +32,7 @@ struct InstanceData {
 
 struct textureStruct {
 	// if useAlpha == true then if mouse over a == 0 then it won't trigger
+	GLuint id;
 	GLuint64 handle;
 	bool useAlpha = false;
 	int w = 0;

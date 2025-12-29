@@ -11,7 +11,7 @@
 #include "debugger.h"
 
 UfishNumWidget::UfishNumWidget(widget* parent) : widget(parent) {
-
+	
 }
 
 // setup / update
@@ -44,10 +44,10 @@ UfishNumWidget::~UfishNumWidget() {
 }
 
 void UfishNumWidget::setupText() {
-	numText = std::make_unique<text>(this, shortNumbers::convert2Short(saveFish ? saveFish->numOwned[fishQuality] : currencyNum), "straight", vector{ 0, 0 });
+	numText = std::make_unique<text>(this, shortNumbers::convert2Short(saveFish ? saveFish->numOwned[fishQuality] : currencyNum), "straight", vector{ 0.f, 0.f });
 
 	if (thumbnail)
-		size = thumbnail->getSize() + vector{ 30, 1 } * stuff::pixelSize;
+		size = thumbnail->getSize() + vector{ 30.f, 1.f };
 }
 
 void UfishNumWidget::draw(Shader* shaderProgram) {
@@ -55,22 +55,19 @@ void UfishNumWidget::draw(Shader* shaderProgram) {
 		thumbnail->draw(shaderProgram);
 	if (numText)
 		numText->draw(shaderProgram);
-
-	if (star && fishQuality != 0) {
+	if (star && fishQuality != 0)
 		star->draw(shaderProgram);
-	}
 }
 
 void UfishNumWidget::setLoc(vector loc) {
 	__super::setLoc(loc);
 
 	if (thumbnail)
-		thumbnail->setLoc(loc);
+		thumbnail->setLoc(absoluteLoc);
 	
 	if (numText && thumbnail)
-		numText->setLoc((loc + vector{ 18 * stuff::pixelSize, thumbnail->getSize().y / 2.f }));
+		numText->setLoc((absoluteLoc + vector{ 18.f, (thumbnail->getSize().y - numText->getSize().y) / 2.f}));
 
-	if (fishQuality != 0 && star) {
-		star->setLoc((loc + vector{ 10, 10 } * stuff::pixelSize));
-	}
+	if (fishQuality != 0 && star)
+		star->setLoc((absoluteLoc + vector{ 10.f, 0.f }));
 }
