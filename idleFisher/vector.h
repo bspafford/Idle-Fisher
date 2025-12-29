@@ -14,6 +14,12 @@ public:
 		return v;
 	}
 
+	static vector clamp(vector v, vector min, vector max) {
+		v.x = std::clamp(v.x, min.x, max.x);
+		v.y = std::clamp(v.y, min.y, max.y);
+		return v;
+	}
+
 	static vector zero() {
 		return { 0, 0 };
 	}

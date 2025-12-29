@@ -16,21 +16,17 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	this->sailorWidgetParent = parent;
 	setSize(mapSize);
 
-	mapImg = std::make_unique<Image>("./images/sailorMap.png", vector{ 0, 0 }, false); // -1073, -739
+	mapImg = std::make_unique<Image>("./images/sailorMap.png", vector{ 0.f, 0.f }, false);
 
 	std::unordered_map<std::string, animDataStruct> animData;
-	animData.insert({ "anim", animDataStruct({0, 0}, {9, 0}, true, 0.333) });
+	animData.insert({ "anim", animDataStruct({0, 0}, {9, 0}, true, 0.333f) });
 	hereBoat = std::make_unique<animation>("widget/hereBoat.png", 22, 22, animData, false, vector{ 0, 0 });
 	hereBoat->setAnimation("anim");
 	hereBoat->start();
-	hereText = std::make_unique<text>(this, "Here", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	hereText = std::make_unique<text>(this, "Here", "straight", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
 
 	for (int i = 0; i < worldButtonLoc.size(); i++) {
-		worldButtonLoc[i] = worldButtonLoc[i] + vector{ 308, 196 };
-	}
-
-	for (int i = 0; i < worldButtonLoc.size(); i++) {
-		std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "x.png", 21, 22, 1, worldButtonLoc[i] * stuff::pixelSize, false, false);
+		std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/maps/x.png", 21, 22, 1, worldButtonLoc[i], false, false);
 		button->setParent(this);
 		worldButtons.push_back(std::move(button));
 		
@@ -41,7 +37,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 		else
 			textString = shortNumbers::convert2Short(SaveData::data.worldData[i].currencyNum);
 		if (worldButtons.size() > i)
-			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[i] * stuff::pixelSize + vector{ worldButtons[i]->getSize().x / 2, 25 * stuff::pixelSize }, false, false, TEXT_ALIGN_CENTER));
+			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[i] + vector{ worldButtons[i]->getSize().x / 2, 25 }, false, false, TEXT_ALIGN_CENTER));
 	}
 
 	for (int i = 0; i < worldButtonLoc.size() - 1; i++) {
@@ -110,10 +106,6 @@ void Umap::draw(Shader* shaderProgram) {
 
 		if (i != Scene::getWorldIndexFromName(currWorldName)) {
 			worldButtons[i]->draw(shaderProgram);
-
-			if (currWorld != currWorldName) // check if the worlds have changed because of worldButtons might change it
-				return;
-
 			worldNames[i]->draw(shaderProgram);
 
 			if (!SaveData::saveData.worldList[i].unlocked)
@@ -136,33 +128,25 @@ void Umap::moveMap() {
 	vector diff = mouseStartPos - imgStartPos;
 	vector newLoc = Input::getMousePos() - diff;
 
-	float x = math::clamp(newLoc.x, stuff::screenSize.x - mapImg->getSize().x * stuff::pixelSize, 0);
-	float y = math::clamp(newLoc.y, stuff::screenSize.y - mapImg->getSize().y * stuff::pixelSize, 0);
-	setLocs({ x, y });
+	vector clamped = vector::clamp(newLoc, size - mapImg->getSize() + ogLoc, ogLoc);
+	setLocs(clamped);
 }
 
 void Umap::setLocs(vector loc) {
-	this->ogLoc = sailorWidgetParent->mapBackground->getLoc() + vector{ 35, 35 } *stuff::pixelSize;
+	this->ogLoc = (stuff::screenSize / stuff::pixelSize - size) / 2.f;
+
 	mapImg->setLoc(loc);
 
 	for (int i = 0; i < worldButtons.size(); i++) {
-		worldButtons[i]->setLoc(loc + worldButtonLoc[i] * stuff::pixelSize);
-
-		worldNames[i]->setLoc(loc + worldButtonLoc[i] * stuff::pixelSize + vector{ worldButtons[i]->getSize().x / 2, 25 * stuff::pixelSize });
+		worldButtons[i]->setLoc(loc + worldButtonLoc[i]);
+		worldNames[i]->setLoc(loc + worldButtonLoc[i] + vector{ worldButtons[i]->getSize().x / 2.f, 25.f });
 	}
 
-	for (int i = 0; i < worldLines.size(); i++) {
-		worldLines[i]->setLoc(loc + worldLineLoc[i] * stuff::pixelSize);
-	}
+	for (int i = 0; i < worldLines.size(); i++)
+		worldLines[i]->setLoc(loc + worldLineLoc[i]);
 }
 
 void Umap::openLevel(std::string levelName) {
-	// check to see if world unlock
-	// if not unlocked
-		// buy / unlock it
-	// otherwise
-		// go there
-
 	// world to id
 	FsaveWorldStruct* saveWorld = nullptr;
 	FworldStruct* world = nullptr;
@@ -197,4 +181,16 @@ void Umap::setLoc(vector loc) {
 	
 vector Umap::getLoc() {
 	return mapImg->getLoc();
+}
+
+void Umap::SetCurrWorldToCenter() {
+	std::string currWorldName = Scene::getCurrWorldName();
+	int worldIndex = Scene::getWorldIndexFromName(currWorldName);
+	if (worldIndex == -1)
+		return;
+	vector worldButtonLoc = this->worldButtonLoc[worldIndex];
+	vector centerScreen = (stuff::screenSize / stuff::pixelSize - worldButtons[0]->getSize()) / 2.f;
+	vector mapLoc = centerScreen - worldButtonLoc;
+	vector clamped = vector::clamp(mapLoc, size - mapImg->getSize() + ogLoc, ogLoc);
+	setLocs(clamped);
 }

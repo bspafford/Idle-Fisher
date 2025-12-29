@@ -81,16 +81,18 @@ void NPCwidget::setNameDescription(std::string nameString, std::string descripti
 void NPCwidget::setupLocs() {
 	__super::setupLocs();
 
-	npcBackground->setLoc({ -1.f, 1.f });
-	infoBackground->setLoc({ -1.f, -1.f });
-	upgradeBackground->setLoc(vector{ 1.f, 1.f });
+	float widgetWidth = npcBackground->getSize().x + upgradeBackground->getSize().x;
+	vector center = vector{ widgetWidth / 2.f - upgradeBackground->getSize().x, 0.f};
+
+	npcBackground->setLoc(center + vector{ -1.f, 1.f });
+	infoBackground->setLoc(center + vector{ -1.f, -1.f });
+	upgradeBackground->setLoc(center + vector{ 1.f, 1.f });
 
 	if (npcImg)
 		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, 3.f});
 
 	vector upgradeHolderPos = (upgradeBackground->getAbsoluteLoc() + vector{ 4, 3 }).floor();
 	upgradeHolder->setLocAndSize(upgradeHolderPos, upgradeBackground->getSize() - vector{ 8.f, 6.f });
-	std::cout << "overflow size: " << upgradeHolder->getOverflowSize() << "\n";
 
 	if (closeButton) {
 		vector closeButtonSize = closeButton->getSize();

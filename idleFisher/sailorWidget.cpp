@@ -13,16 +13,20 @@
 
 UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
 	mapBackground = std::make_unique<Image>("./images/widget/map.png", vector{ 0, 0 }, false);
+	mapBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	mapBackground->SetPivot({ 0.5f, 0.5f });
 
 	setupLocs(); // setup so map can get loc of map background
 
-	vector mapSize = mapBackground->getSize() - vector{ 70, 70 } * stuff::pixelSize;
+	vector mapSize = mapBackground->getSize() - vector{ 70.f, 60.f };
 	map = std::make_unique<Umap>(this, mapSize);
 
 	xButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	xButton->addCallback(this, &UsailorWidget::closeWidget);
 
 	mapClosed = std::make_unique<Image>("./images/widget/mapClosed.png", vector{ 0, 0 }, false);
+	mapClosed->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	mapClosed->SetPivot({ 0.5f, 0.5f });
 
 	std::unordered_map < std::string, animDataStruct> anim;
 	anim.insert({ "open", animDataStruct({0, 0}, {5, 0}, false) });
@@ -55,9 +59,6 @@ void UsailorWidget::draw(Shader* shaderProgram) {
 
 	mapBackground->draw(shaderProgram);
 
-	// draw only inside specified area
-	vector mapSize = mapBackground->getSize() - vector{ 70, 70 } * stuff::pixelSize;
-
 	map->draw(shaderProgram);
 
 	if (xButton) {
@@ -66,13 +67,11 @@ void UsailorWidget::draw(Shader* shaderProgram) {
 }
 
 void UsailorWidget::setupLocs() {
-	if (mapBackground)
-		mapBackground->setLoc(vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } - mapBackground->getSize() / 2.f);
 	if (xButton)
-		xButton->setLoc(mapBackground->getLoc() + vector{mapBackground->getSize().x - 13.5f * stuff::pixelSize, 5 * stuff::pixelSize});
+		xButton->setLoc(mapBackground->getAbsoluteLoc() + vector{ mapBackground->getSize().x - 13.f, 5 });
 
 	if (mapAnim && mapBackground)
-		mapAnim->setLoc(mapBackground->getLoc());
+		mapAnim->setLoc(mapBackground->getAbsoluteLoc());
 }
 
 void UsailorWidget::addedToViewport() {
@@ -85,28 +84,27 @@ void UsailorWidget::addedToViewport() {
 	}
 
 	opening = true;
-	mapClosed->setLoc(stuff::screenSize);
 	mapTimer->start(.5);
+
+	map->SetCurrWorldToCenter();
 }
 
 void UsailorWidget::moveAnim() {
 	float percent = mapTimer->getTime() / mapTimer->getMaxTime();
 
-	std::vector<vector> locs = { {0, 1000}, { 0, 500 }, {0, 100}, {0, 30}, {0, 10}, {0, 0}, {0, 0} };
+	std::vector<float> percents = { -0.926f, 0.463f, -0.093f, -0.028f, -0.009f, 0.f, 0.f };
 	if (opening) // open anim
-		mapClosed->setLoc(mapBackground->getLoc() + locs[floor(percent * 6)]);
+		mapClosed->setLoc(vector{ 0.f, percents[floor(percent * 6)] * stuff::screenSize.y });
 	else // close anim
-		mapClosed->setLoc(mapBackground->getLoc() + locs[floor((1 - percent) * 6)]);
+		mapClosed->setLoc(vector{ 0.f, percents[floor((1 - percent) * 6)] * stuff::screenSize.y });
 }
 
 void UsailorWidget::mapTimerFinish() {
 	if (opening) {
-		std::cout << "opening\n";
 		mapAnim->setAnimation("open");
 		mapAnim->start();
 		closing = false;
 	} else {
-		std::cout << "closing\n";
 		removeFromViewport();
 		opening = false;
 		closing = false;

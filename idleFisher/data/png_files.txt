@@ -32,7 +32,7 @@
 ./images/ship1.png
 ./images/vaultmap.png
 ./images/walkripples.png
-./images/x.png
+./images/widget/maps/x.png
 ./images/autofisher/autofisher.png|a
 ./images/autofisher/fishingline.png
 ./images/autofisher/outline.png

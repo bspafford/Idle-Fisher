@@ -113,9 +113,6 @@ textureManager::textureManager() {
 			if (line == "")
 				continue;
 
-			if (line == "./images/cursor0.png|rgba")
-				std::cout << "puase\n";
-
 			line = math::toLower(line);
 
 			// delimiter it
