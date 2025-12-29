@@ -301,7 +301,7 @@ void text::draw(Shader* shader) {
 }
 
 void text::setLocAndSize(vector loc, vector size) {
-	setLoc(loc);
+	setLoc(loc.round());
 }
 
 void text::setLoc(vector loc) {

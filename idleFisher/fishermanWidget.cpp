@@ -16,7 +16,10 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
-	npcImg = std::make_unique<Image>("./images/widget/npcbuttons/fisherman.png", vector{ 100, 100 }, false);
+	closeButton->SetPivot({ 0.5f, 0.5f });
+
+	npcImg = std::make_unique<Image>("./images/widget/npcbuttons/fisherman.png", vector{ 0, 0 }, false);
+	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, "---", "biggerStraight", vector{ 0, 0 });
 	buffText = std::make_unique<text>(this, "---", "straight", vector{ 0, 0 });
@@ -24,47 +27,72 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	debuffText = std::make_unique<text>(this, "---", "straight", vector{ 0, 0 });
 	debuffText->setTextColor(255, 0, 0);
 	nameHolder = std::make_unique<verticalBox>(this);
-	nameHolder->addChild(name.get(), 8 * stuff::pixelSize);
-	nameHolder->addChild(buffText.get(), 7 * stuff::pixelSize);
-	nameHolder->addChild(debuffText.get(), 7 * stuff::pixelSize);
+	nameHolder->addChild(name.get(), 8);
+	nameHolder->addChild(buffText.get(), 7);
+	nameHolder->addChild(debuffText.get(), 7);
 
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
 	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	npcBackground->SetPivot({ 1.f, 0.f });
+	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	infoBackground->SetPivot({ 1.f, 1.f });
+	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
 	selectedIcon = std::make_unique<Image>("./images/widget/selectedFisherIcon.png", vector{ 0, 0 }, false);
 
 	// fishing rod page
 	fishingRodThumbnail = std::make_unique<Image>("./images/widget/thumbnails/fishingRodThumbnail1.png", vector{ 0, 0 }, false);
-	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 2.f * stuff::pixelSize);
-	powerText = std::make_unique<text>(this, "Power", "straight", vector{ 0, 0 });
+	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 2.f);
+	fishingRodThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	fishingRodThumbnail->SetPivot({ 1.f, 0.5f });
+
+	powerText = std::make_unique<text>(this, "Power", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	powerText->SetPivot({ 0.f, 0.5f });
 	powerUpgradeButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{ 0, 0 }, false, false);
 	powerUpgradeButton->addCallback(this, &UfishermanWidget::upgradePower);
-	speedText = std::make_unique<text>(this, "Speed", "straight", vector{ 0, 0 });
+	speedText = std::make_unique<text>(this, "Speed", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	speedText->SetPivot({ 0.f, 0.5f });
 	speedUpgradeButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{ 0, 0 }, false, false);
 	speedUpgradeButton->addCallback(this, &UfishermanWidget::upgradeSpeed);
-	catchChanceText = std::make_unique<text>(this, "Catch Chance", "straight", vector{ 0, 0 });
+	speedUpgradeButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	speedUpgradeButton->SetPivot({ 1.f, 0.5f });
+	catchChanceText = std::make_unique<text>(this, "Catch Chance", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	catchChanceText->SetPivot({ 0.f, 0.5f });
 	catchChanceUpgradeButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 2, vector{ 0, 0 }, false, false);
 	catchChanceUpgradeButton->addCallback(this, &UfishermanWidget::upgradeCatchChance);
 
 	powerButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	powerButtonPrice->SetPivot({ 0.f, 0.5f });
 	speedButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	speedButtonPrice->SetPivot({ 0.f, 0.5f });
 	catchChanceButtonPrice = std::make_unique<text>(this, "0.00k", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	catchChanceButtonPrice->SetPivot({ 0.f, 0.5f });
 
-	powerLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 });
-	speedLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 });
-	catchChanceLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 });
+	powerLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	powerLevelText->SetPivot({ 0.f, 0.5f });
+	speedLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	speedLevelText->SetPivot({ 0.f, 0.5f });
+	catchChanceLevelText = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	catchChanceLevelText->SetPivot({ 0.f, 0.5f });
 
 	// fishing rod stats
 	powerStatsText = std::make_unique<text>(this, "Power", "straight", vector{ 0, 0 });
+	powerStatsText->SetPivot({ 0.f, 1.f });
 	powerStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	powerStatsTextNum->SetPivot({ 0.f, 1.f });
 	speedStatsText = std::make_unique<text>(this, "Speed", "straight", vector{ 0, 0 });
+	speedStatsText->SetPivot({ 0.f, 1.f });
 	speedStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	speedStatsTextNum->SetPivot({ 0.f, 1.f });
 	catchChanceStatsText = std::make_unique<text>(this, "Catch Chance", "straight", vector{ 0, 0 });
+	catchChanceStatsText->SetPivot({ 0.f, 1.f });
 	catchChanceStatsTextNum = std::make_unique<text>(this, "00", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	catchChanceStatsTextNum->SetPivot({ 0.f, 1.f });
 
 	setup();
-	//setupLocs();
 }
 
 UfishermanWidget::~UfishermanWidget() {
@@ -110,8 +138,8 @@ void UfishermanWidget::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
-	vector selectedPos = buttonList[selectedPageIndex]->getLoc();
-	selectedIcon->setLoc({selectedPos.x - stuff::pixelSize, selectedPos.y - stuff::pixelSize});
+	vector selectedPos = buttonList[selectedPageIndex]->getAbsoluteLoc();
+	selectedIcon->setLoc(selectedPos - vector{ 0.f, 3.f });
 	selectedIcon->draw(shaderProgram);
 
 	upgradeBackground->draw(shaderProgram);
@@ -160,72 +188,74 @@ void UfishermanWidget::setNameDescription(std::string nameString, std::string bu
 	name->setText(nameString);
 	buffText->setText(buffString);
 	debuffText->setText(debuffString);
+
 	// change nameHolder sizes
-	nameHolder->changeChildHeight(name.get(), name->getSize().y + stuff::pixelSize);
+	nameHolder->changeChildHeight(name.get(), name->getSize().y + 1.f);
+	nameHolder->changeChildHeight(buffText.get(), buffText->getSize().y + 1.f);
+	nameHolder->changeChildHeight(debuffText.get(), debuffText->getSize().y + 1.f);
 }
 
 void UfishermanWidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = npcBackground->getSize().x + 1 * stuff::pixelSize;
-	float y = npcBackground->getSize().y + 1 * stuff::pixelSize;
-	vector size = vector{ x, 0 } + upgradeBackground->getSize();
-	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
-	vector topLeft = center - size / 2.f;
-	npcBackground->setLoc(topLeft);
-	infoBackground->setLoc(topLeft + vector{ 0, y });
-	upgradeBackground->setLoc(topLeft + vector{ x, 0 });
+	float widgetWidth = npcBackground->getSize().x + upgradeBackground->getSize().x;
+	vector center = vector{ widgetWidth / 2.f - upgradeBackground->getSize().x, 0.f };
+	npcBackground->setLoc(center + vector{ -1.f, 1.f });
+	infoBackground->setLoc(center + vector{ -1.f, -1.f });
+	upgradeBackground->setLoc(center + vector{ 1.f, 1.f });
 
-	vector npcBackgroundSize = npcBackground->getSize();
-	vector npcSize = npcImg->getSize();
-	npcImg->setLoc(npcBackground->getLoc() + vector{npcBackgroundSize.x / 2, npcBackgroundSize.y} - vector{npcSize.x / 2, npcSize.y} - vector{0, 3 * stuff::pixelSize});
+	if (npcImg)
+		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, 3.f });
 
-	vector baitHolderLoc = upgradeBackground->getLoc() + vector{ 4, 3 } * stuff::pixelSize;
-	baitHolderList->setLocAndSize(baitHolderLoc, upgradeBackground->getSize() - vector{ 0, 6 * stuff::pixelSize });
-	baitHolderList->setOgLoc(baitHolderLoc);
+	vector nameHolderSize = infoBackground->getSize() - 10.f;
+	name->setLineLength(nameHolderSize.x);
+	buffText->setLineLength(nameHolderSize.x);
+	debuffText->setLineLength(nameHolderSize.x);
+	nameHolder->setLocAndSize(infoBackground->getAbsoluteLoc() + 5.f, nameHolderSize);
+
+	vector baitHolderPos = (upgradeBackground->getAbsoluteLoc() + vector{ 4, 3 }).floor();
+	baitHolderList->setLocAndSize(baitHolderPos, upgradeBackground->getSize() - vector{ 8.f, 6.f });
 
 	for (int i = 0; i < buttonList.size(); i++) {
 		vector worldButtonSize = buttonList[i]->getSize();
-		buttonList[i]->setLoc(upgradeBackground->getLoc() + vector{ (worldButtonSize.x + stuff::pixelSize) * i + stuff::pixelSize, -worldButtonSize.y - stuff::pixelSize });
+		buttonList[i]->setLoc(upgradeBackground->getAbsoluteLoc() + vector{ (worldButtonSize.x + 1.f) * i + 1.f, upgradeBackground->getSize().y + 1.f});
 	}
 
 	vector closeButtonSize = closeButton->getSize();
-	closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2) });
+	closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 
+	fishingRodThumbnail->setLoc(vector{ 5.f, 0 });
 
-	nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 9 * stuff::pixelSize }, vector{ float(infoBackground->getSize().x), float(infoBackground->getSize().y) } *stuff::pixelSize);
-	name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
-	buffText->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
-	debuffText->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
+	// price buttons, name, and levels
+	vector offset = { -45.f, 30.f };
 
-	fishingRodThumbnail->setLoc(stuff::screenSize / 2.f - fishingRodThumbnail->getSize() / 2.f + vector{ 0, 0 } * stuff::pixelSize);
-	vector offset = { 0, 30 * stuff::pixelSize };
-	vector buttonOffset = (-powerUpgradeButton->getSize() / 2.f).floor() + vector{ 90 * stuff::pixelSize, roundf(powerText->getSize().y / 2.f) };
-	powerText->setLoc(stuff::screenSize / 2.f + vector{ 50, -27 } * stuff::pixelSize);
-	speedText->setLoc(powerText->getLoc() + offset);
-	catchChanceText->setLoc(speedText->getLoc() + offset);
-	powerUpgradeButton->setLoc(powerText->getLoc() + buttonOffset);
-	speedUpgradeButton->setLoc(speedText->getLoc() + buttonOffset);
-	catchChanceUpgradeButton->setLoc(catchChanceText->getLoc() + buttonOffset);
+	speedUpgradeButton->setLoc({ widgetWidth / 2.f - 5.f, 0 });
+	powerUpgradeButton->setLoc(speedUpgradeButton->getAbsoluteLoc() + vector{ 0.f, offset.y });
+	catchChanceUpgradeButton->setLoc(speedUpgradeButton->getAbsoluteLoc() - vector{ 0.f, offset.y });
 
-	powerButtonPrice->setLoc(powerUpgradeButton->getLoc() + (powerUpgradeButton->getSize() / 2.f).floor());
-	speedButtonPrice->setLoc(speedUpgradeButton->getLoc() + (speedUpgradeButton->getSize() / 2.f).floor());
-	catchChanceButtonPrice->setLoc(catchChanceUpgradeButton->getLoc() + (catchChanceUpgradeButton->getSize() / 2.f).floor());
+	powerText->setLoc(powerUpgradeButton->getAbsoluteLoc() + vector{ offset.x, powerUpgradeButton->getSize().y / 2.f });
+	speedText->setLoc(speedUpgradeButton->getAbsoluteLoc() + vector{ offset.x, speedUpgradeButton->getSize().y / 2.f });
 
-	vector levelTextOffset = { -10 * stuff::pixelSize, 0 };
-	powerLevelText->setLoc(vector{ powerUpgradeButton->getLoc().x, powerText->getLoc().y } + levelTextOffset);
-	speedLevelText->setLoc(vector{ speedUpgradeButton->getLoc().x, speedText->getLoc().y } + levelTextOffset);
-	catchChanceLevelText->setLoc(vector{ catchChanceUpgradeButton->getLoc().x, catchChanceText->getLoc().y } + levelTextOffset);
+	catchChanceText->setLoc(catchChanceUpgradeButton->getAbsoluteLoc() + vector{ offset.x, catchChanceUpgradeButton->getSize().y / 2.f });
+
+	powerButtonPrice->setLoc(powerUpgradeButton->getAbsoluteLoc() + (powerUpgradeButton->getSize() / 2.f));
+	speedButtonPrice->setLoc(speedUpgradeButton->getAbsoluteLoc() + (speedUpgradeButton->getSize() / 2.f));
+	catchChanceButtonPrice->setLoc(catchChanceUpgradeButton->getAbsoluteLoc() + (catchChanceUpgradeButton->getSize() / 2.f));
+
+	float levelTextOffset = -5.f;
+	powerLevelText->setLoc(powerUpgradeButton->getAbsoluteLoc() + vector{ levelTextOffset, powerUpgradeButton->getSize().y / 2.f });
+	speedLevelText->setLoc(speedUpgradeButton->getAbsoluteLoc() + vector{ levelTextOffset, speedUpgradeButton->getSize().y / 2.f });
+	catchChanceLevelText->setLoc(catchChanceUpgradeButton->getAbsoluteLoc() + vector{ levelTextOffset, catchChanceUpgradeButton->getSize().y / 2.f });
 
 	// fishing rod stats
-	vector textOffset = { 0, 10 * stuff::pixelSize };
-	vector textNumOffset = { 100 * stuff::pixelSize, 0 };
-	powerStatsText->setLoc((stuff::screenSize / 2.f).floor() + vector{ -475, 30 });
-	speedStatsText->setLoc(powerStatsText->getLoc() + textOffset);
-	catchChanceStatsText->setLoc(speedStatsText->getLoc() + textOffset);
-	powerStatsTextNum->setLoc(powerStatsText->getLoc() + textNumOffset);
-	speedStatsTextNum->setLoc(speedStatsText->getLoc() + textNumOffset);
-	catchChanceStatsTextNum->setLoc(catchChanceStatsText->getLoc() + textNumOffset);
+	vector textOffset = { 0.f, -10.f };
+	vector textNumOffset = { 100.f, 0.f };
+	powerStatsText->setLoc(infoBackground->getAbsoluteLoc() + vector{ 5.f, infoBackground->getSize().y - 5.f });
+	speedStatsText->setLoc(powerStatsText->getAbsoluteLoc() + textOffset);
+	catchChanceStatsText->setLoc(speedStatsText->getAbsoluteLoc() + textOffset);
+	powerStatsTextNum->setLoc(powerStatsText->getAbsoluteLoc() + textNumOffset);
+	speedStatsTextNum->setLoc(speedStatsText->getAbsoluteLoc() + textNumOffset);
+	catchChanceStatsTextNum->setLoc(catchChanceStatsText->getAbsoluteLoc() + textNumOffset);
 }
 
 void UfishermanWidget::upgradePower() {

@@ -13,6 +13,9 @@ public:
 	void scrolling();
 	void scrolling(int mouseWheelDir);
 
+private:
 	vector mouseStartPos;
 	vector startLoc;
+
+	bool scrollingActive = false;
 };

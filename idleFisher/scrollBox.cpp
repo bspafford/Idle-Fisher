@@ -12,20 +12,30 @@ void UscrollBox::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
-	if (mouseOver()) {
+	if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT) && mouseOver()) {
+		scrollingActive = true;
+	} else if (Input::getMouseButtonUp(MOUSE_BUTTON_RIGHT)) {
+		scrollingActive = false;
+	}
+
+	bool isRightMouseHeld = Input::getMouseButtonHeld(MOUSE_BUTTON_RIGHT);
+
+	if (scrollingActive) {
 		IHoverable::setHoveredItem(this);
 		if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
 			startLoc = loc;
 			mouseStartPos = Input::getMousePos();
 		}
 
-		if (Input::getMouseButtonHeld(MOUSE_BUTTON_RIGHT)) {
+		if (isRightMouseHeld) {
 			setCursorHoverIcon(CURSOR_GRAB);
 			scrolling();
-		} else {
-			scrolling(Input::getMouseScrollDir());
-			setCursorHoverIcon(CURSOR_DEFAULT);
 		}
+	}
+
+	if (!isRightMouseHeld) {
+		scrolling(Input::getMouseScrollDir());
+		setCursorHoverIcon(CURSOR_DEFAULT);
 	}
 
 	ScissorTest::Enable(ogLoc, size);
@@ -41,6 +51,8 @@ void UscrollBox::scrolling() {
 		loc.y = -overflowSizeY + size.y;
 		return;
 	}
+
+	scrollingActive = true;
 
 	vector diff = mouseStartPos - startLoc;
 	loc.y = math::clamp(Input::getMousePos().y - diff.y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
