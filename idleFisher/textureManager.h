@@ -37,18 +37,19 @@ struct textureStruct {
 	int w = 0;
 	int h = 0;
 	int nChannels;
+	std::vector<uint8_t> alphaBits; // stores which pixels are transparent for mouse over checks
 
-	textureStruct(const std::string& path, bool _useAlpha);
+	textureStruct(const std::string& path);
 	~textureStruct() {}
 
-private:
+	bool GetAlphaAtPos(vector pos);
 };
 
 class textureManager {
 public:
 	textureManager();
 	static void Deconstructor();
-	static textureStruct* loadTexture(std::string path, bool loadSurface = false);
+	static textureStruct* loadTexture(std::string path);
 	static textureStruct* getTexture(std::string name);
 
 	static void StartFrame();

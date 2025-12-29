@@ -8,7 +8,7 @@
 
 #include "debugger.h"
 
-textureStruct::textureStruct(const std::string& path, bool useAlpha) {
+textureStruct::textureStruct(const std::string& path) {
 	this->useAlpha = useAlpha;
 
 	stbi_set_flip_vertically_on_load(true);
@@ -38,9 +38,30 @@ textureStruct::textureStruct(const std::string& path, bool useAlpha) {
 
 		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
 		glMakeTextureHandleResidentARB(handle);
+
+		// make alpha data list
+		alphaBits.resize((w * h + 7) / 8, 0);
+		const int pixelCount = w * h;
+		if (nChannels == 4) {
+			for (int i = 0; i < pixelCount; ++i) {
+				uint8_t a = bytes[i * 4 + 3];
+				alphaBits[i >> 3] |= (a > 0) << (i & 7);
+			}
+		}
 	}
 
 	stbi_image_free(bytes);
+}
+
+bool textureStruct::GetAlphaAtPos(vector pos) {
+	pos = pos.floor();
+	if (pos.x < 0 || pos.y < 0 || pos.x >= w || pos.y >= h)
+		return false;
+
+	int index = pos.y * w + pos.x;
+	int byteIndex = index >> 3;
+	int bitIndex = index & 7;
+	return (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
 }
 
 textureManager::textureManager() {
@@ -90,8 +111,8 @@ void textureManager::Deconstructor() {
 	textureMap.clear();
 }
 
-textureStruct* textureManager::loadTexture(std::string path, bool loadSurface) {
-	textureMap[path] = std::make_unique<textureStruct>(path, loadSurface);
+textureStruct* textureManager::loadTexture(std::string path) {
+	textureMap[path] = std::make_unique<textureStruct>(path);
 	return textureMap[path].get();
 }
 

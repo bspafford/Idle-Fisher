@@ -6,6 +6,8 @@
 #include "math.h"
 #include "Anchor.h"
 
+class textureStruct;
+
 class Image {
 public:
 	Image(std::string image, vector loc, bool useWorldPos);
@@ -55,6 +57,7 @@ private:
 	Rect normalizedSource; // 0 -> 1
 	float rotation;
 	std::string path;
+	textureStruct* textureStructPtr = NULL;
 	
 	glm::vec4 colorMod = glm::vec4(1.f);
 

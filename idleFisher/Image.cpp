@@ -1,8 +1,6 @@
 #include "Image.h"
 #include "Input.h"
-#include "stuff.h"
 #include "textureManager.h"
-#include <glm/gtx/rotate_vector.hpp>
 
 #include "debugger.h"
 
@@ -29,14 +27,14 @@ Image::Image(std::string image, vector loc, bool useWorldPos) {
 	path = image;
 	this->useWorldPos = useWorldPos;
 
-	textureStruct* img = textureManager::getTexture(path);
+	textureStructPtr = textureManager::getTexture(path);
 
-	handle = img->handle;
+	handle = textureStructPtr->handle;
 
-	ogW = img->w;
-	ogH = img->h;
-	w = img->w;
-	h = img->h;
+	ogW = textureStructPtr->w;
+	ogH = textureStructPtr->h;
+	w = textureStructPtr->w;
+	h = textureStructPtr->h;
 
 	// sets up absolute loc
 	setLoc(loc);
@@ -76,26 +74,19 @@ void Image::setRotation(float rot) {
 
 bool Image::isMouseOver(bool ignoreTransparent) {
 	vector mousePos = Input::getMousePos();
-	if (useWorldPos) {
-		vector screenLoc = math::worldToScreen(absoluteLoc);
+	vector imgLoc = absoluteLoc;
+	if (useWorldPos) // converts to screen position
+		imgLoc = math::worldToScreen(absoluteLoc);
 
-		vector size = getSize();
-		vector min = screenLoc;
-		vector max = min + size;
-		if (mousePos.x >= min.x && mousePos.x <= max.x && mousePos.y >= min.y && mousePos.y <= max.y) {
-			if (ignoreTransparent) {
-				vector pos = { mousePos.x - min.x, mousePos.y - min.y };
-				glm::vec4 pixelColor = GetPixelColor((int)pos.x, (int)pos.y);
-				if ((int)pixelColor.a != 0)
-					return true;
-				return false;
-			} else
+	vector size = getSize();
+	vector min = imgLoc;
+	vector max = min + size;
+	if (mousePos.x >= min.x && mousePos.x <= max.x && mousePos.y >= min.y && mousePos.y <= max.y) {
+		if (ignoreTransparent) {
+			vector relPos = mousePos - min;
+			if (textureStructPtr->GetAlphaAtPos(relPos))
 				return true;
-		}
-	} else {
-		bool inX = mousePos.x >= absoluteLoc.x && mousePos.x <= absoluteLoc.x + w;
-		bool inY = mousePos.y >= absoluteLoc.y && mousePos.y <= absoluteLoc.y + h;
-		if (inX && inY)
+		} else
 			return true;
 	}
 
@@ -126,22 +117,6 @@ void Image::setUseAlpha(bool useAlpha) {
 
 void Image::setColorMod(glm::vec4 colorMod) {
 	this->colorMod = colorMod;
-}
-
-glm::vec4 Image::GetPixelColor(const int X, const int Y) {
-	return glm::vec4(1);
-
-	/*const int x = X / stuff::pixelSize;
-	const int y = Y / stuff::pixelSize;
-
-	unsigned char* pixels = texture;
-	int index = (y * ogW + x) * 4;
-	unsigned char r = pixels[index];
-	unsigned char g = pixels[index + 1];
-	unsigned char b = pixels[index + 2];
-	unsigned char a = pixels[index + 3];
-
-	return glm::vec4(r, g, b, a);*/
 }
 
 void Image::SetAnchor(Anchor xAnchor, Anchor yAnchor) {

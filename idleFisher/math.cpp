@@ -135,7 +135,7 @@ vector math::screenToWorld(vector mousePos, bool round) {
 }
 
 vector math::worldToScreen(vector pos) {
-	return (pos - SaveData::saveData.playerLoc + stuff::screenSize / (stuff::pixelSize * 2.f)) * stuff::pixelSize;
+	return (pos - SaveData::saveData.playerLoc + stuff::screenSize / (stuff::pixelSize * 2.f));
 }
 
 std::string math::toLower(std::string str) {

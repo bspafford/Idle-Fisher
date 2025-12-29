@@ -33,7 +33,6 @@ void Cursor::calcMouseImg() {
 }
 
 void Cursor::setCursorIcon(CursorType cursorName) {
-	return;
 	// return if same cursor
 	if (currCursor == cursorName)
 		return;
@@ -48,7 +47,7 @@ void Cursor::setCursorIcon(CursorType cursorName) {
 		cursorImg.height = mouseImg->h;
 		//cursorImg.pixels = mouseImg->texture;
 
-		cursor = glfwCreateCursor(&cursorImg, 0, 0);
+		//cursor = glfwCreateCursor(&cursorImg, 0, 0);
 		if (cursor)
 			glfwSetCursor(Main::GetWindow(), cursor);
 	} else {
