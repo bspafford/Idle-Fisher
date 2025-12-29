@@ -45,9 +45,10 @@ void Cursor::setCursorIcon(CursorType cursorName) {
 		GLFWimage cursorImg;
 		cursorImg.width = mouseImg->w;
 		cursorImg.height = mouseImg->h;
-		//cursorImg.pixels = mouseImg->texture;
+		cursorImg.pixels = mouseImg->FlipBytesVertically();
 
-		//cursor = glfwCreateCursor(&cursorImg, 0, 0);
+		cursor = glfwCreateCursor(&cursorImg, 0, 0);
+		delete[] cursorImg.pixels;
 		if (cursor)
 			glfwSetCursor(Main::GetWindow(), cursor);
 	} else {

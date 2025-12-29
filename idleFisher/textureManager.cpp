@@ -8,11 +8,11 @@
 
 #include "debugger.h"
 
-textureStruct::textureStruct(const std::string& path) {
+textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 	this->useAlpha = useAlpha;
 
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
+	bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
 	if (!bytes) {
 		std::cout << "Filepath NOT Found: " << path << std::endl;
 		stbi_image_free(bytes);
@@ -39,29 +39,61 @@ textureStruct::textureStruct(const std::string& path) {
 		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
 		glMakeTextureHandleResidentARB(handle);
 
-		// make alpha data list
-		alphaBits.resize((w * h + 7) / 8, 0);
-		const int pixelCount = w * h;
-		if (nChannels == 4) {
-			for (int i = 0; i < pixelCount; ++i) {
-				uint8_t a = bytes[i * 4 + 3];
-				alphaBits[i >> 3] |= (a > 0) << (i & 7);
+		keptData = keepData;
+		if (keptData == 0) { // delete all pixel data
+			stbi_image_free(bytes);
+		} else if (keptData == GL_R) { // only keep alpha
+			// make alpha data list
+			alphaBits.resize((w * h + 7) / 8, 0);
+			const int pixelCount = w * h;
+			if (nChannels == 4) {
+				for (int i = 0; i < pixelCount; ++i) {
+					uint8_t a = bytes[i * 4 + 3];
+					alphaBits[i >> 3] |= (a > 0) << (i & 7);
+				}
 			}
-		}
-	}
 
-	stbi_image_free(bytes);
+			stbi_image_free(bytes);
+		} // else don't delete anything
+	}
 }
 
 bool textureStruct::GetAlphaAtPos(vector pos) {
+	// out of bounds check
 	pos = pos.floor();
 	if (pos.x < 0 || pos.y < 0 || pos.x >= w || pos.y >= h)
 		return false;
 
-	int index = pos.y * w + pos.x;
-	int byteIndex = index >> 3;
-	int bitIndex = index & 7;
-	return (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
+	if (keptData == GL_R) { // alpha data kept
+		int index = pos.y * w + pos.x;
+		int byteIndex = index >> 3;
+		int bitIndex = index & 7;
+		return (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
+	} else if (keptData == GL_RGBA) { // all data kept
+		int index = pos.y * w + pos.x * 4;
+		unsigned char* pixels = bytes;
+		unsigned char a = pixels[index + 3];
+		return a > 0;
+	}
+
+	return true; // no data kept, assume opaque
+}
+
+unsigned char* textureStruct::FlipBytesVertically() {
+	int size = w * h * nChannels;
+	unsigned char* newBytes = new unsigned char[size];
+	std::memcpy(newBytes, bytes, size);
+	int rowSize = w * nChannels;
+	std::vector<unsigned char> tempRow(rowSize);
+	for (int y = 0; y < h / 2; ++y) {
+		unsigned char* top = newBytes + y * rowSize;
+		unsigned char* bottom = newBytes + (h - 1 - y) * rowSize;
+		// swap top and bottom
+		std::memcpy(tempRow.data(), top, rowSize);
+		std::memcpy(top, bottom, rowSize);
+		std::memcpy(bottom, tempRow.data(), rowSize);
+	}
+	return newBytes;
 }
 
 textureManager::textureManager() {
@@ -75,9 +107,34 @@ textureManager::textureManager() {
 	if (colFile.is_open()) {
 		std::string line;
 		while (colFile.good()) {
+			// get the line
 			std::getline(colFile, line);
+			if (line == "")
+				continue;
+
+			if (line == "./images/cursor0.png|rgba")
+				std::cout << "puase\n";
+
 			line = math::toLower(line);
-			loadTexture(line);
+
+			// delimiter it
+			std::vector<std::string> delimLine;
+			std::string subData;
+			std::istringstream stream(line);
+			while (std::getline(stream, subData, '|'))
+				delimLine.push_back(subData);
+
+
+			std::string path = delimLine[0];
+			GLuint keepData = 0;
+			if (delimLine.size() > 1) {
+				if (delimLine[1] == "a")
+					keepData = GL_R;
+				else if (delimLine[1] == "rgba")
+					keepData = GL_RGBA;
+			}
+
+			loadTexture(delimLine[0], keepData);
 		}
 	}
 	colFile.close();
@@ -111,8 +168,8 @@ void textureManager::Deconstructor() {
 	textureMap.clear();
 }
 
-textureStruct* textureManager::loadTexture(std::string path) {
-	textureMap[path] = std::make_unique<textureStruct>(path);
+textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
+	textureMap[path] = std::make_unique<textureStruct>(path, keptData);
 	return textureMap[path].get();
 }
 
@@ -124,7 +181,7 @@ textureStruct* textureManager::getTexture(std::string name) {
 		return textureMap[name].get();
 	else { // backup
 		std::cout << "Image path not in textureMap but loading anyways: " << name << "\n";
-		return loadTexture(name);
+		return loadTexture(name, 0);
 	}
 }
 

@@ -38,18 +38,28 @@ struct textureStruct {
 	int h = 0;
 	int nChannels;
 	std::vector<uint8_t> alphaBits; // stores which pixels are transparent for mouse over checks
+	GLuint keptData = 0;
+	unsigned char* bytes = NULL;
 
-	textureStruct(const std::string& path);
+	// keepData: what pixel data to keep in CPU memory: 
+	//	GL_R for only alpha
+	//	GL_RGBA for full data
+	//	0 for none
+	textureStruct(const std::string& path, GLuint keepData);
 	~textureStruct() {}
 
 	bool GetAlphaAtPos(vector pos);
+	// returns a copy of the flipped bytes
+	// so responsible for freeing memory
+	// and so it doesn't continue to flip back and forth
+	unsigned char* FlipBytesVertically();
 };
 
 class textureManager {
 public:
 	textureManager();
 	static void Deconstructor();
-	static textureStruct* loadTexture(std::string path);
+	static textureStruct* loadTexture(std::string path, GLuint keptData);
 	static textureStruct* getTexture(std::string name);
 
 	static void StartFrame();
