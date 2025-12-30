@@ -50,14 +50,14 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 
 		worldProgress1 = std::make_unique<UprogressBar>(this, vector{ 100.f, 5.f }, false);
 		worldProgress1->SetPivot({ 0.5f, 0.f });
-		worldProgress1->setForegroundColor({ 227, 120, 64, 255 }, 0);
-		worldProgress1->addProgressBar(0, 3, { 232, 210, 75, 255 });
-		worldProgress1->addProgressBar(0, 1, { 120, 158, 36, 255 });
+		worldProgress1->setForegroundColor({ 227.f / 255.f, 120.f / 255.f, 64.f / 255.f, 1.f }, 0);
+		worldProgress1->addProgressBar(0, 3, { 232.f / 255.f, 210.f / 255.f, 75.f / 255.f, 1.f });
+		worldProgress1->addProgressBar(0, 1, { 120.f / 255.f, 158.f / 255.f, 36.f / 255.f, 1.f });
 		worldProgress2 = std::make_unique<UprogressBar>(this, vector{ 100.f, 5.f }, false);
 		worldProgress2->SetPivot({ 0.5f, 0.f });
-		worldProgress2->setForegroundColor({ 227, 120, 64, 255 }, 0);
-		worldProgress2->addProgressBar(0, 3, { 232, 210, 75, 255 });
-		worldProgress2->addProgressBar(0, 1, { 120, 158, 36, 255 });
+		worldProgress2->setForegroundColor({ 227.f / 255.f, 120.f / 255.f, 64.f / 255.f, 1.f }, 0);
+		worldProgress2->addProgressBar(0, 3, { 232.f / 255.f, 210.f / 255.f, 75.f / 255.f, 1.f });
+		worldProgress2->addProgressBar(0, 1, { 120.f / 255.f, 158.f / 255.f, 36.f / 255.f, 1.f });
 
 		journalProgressWidget = std::make_unique<UjournalProgressWidget>(this, 5, 15, 5);
 	}
@@ -174,14 +174,14 @@ void Ujournal::draw(Shader* shaderProgram) {
 		if (SaveData::saveData.worldList[pageNum].unlocked) {
 			worldProgress1->draw(shaderProgram);
 			worldProgress2->draw(shaderProgram);
-		}
 
-		if (worldProgress1->mouseOver()) {
-			journalProgressWidget->draw(shaderProgram);
-			journalProgressWidget->updateNumbers(unlockedFish1, fishStars1, maxFishSize1);
-		} else if (worldProgress2->mouseOver()) {
-			journalProgressWidget->draw(shaderProgram);
-			journalProgressWidget->updateNumbers(unlockedFish2, fishStars2, maxFishSize2);
+			if (worldProgress1->mouseOver()) {
+				journalProgressWidget->draw(shaderProgram);
+				journalProgressWidget->updateNumbers(unlockedFish1, fishStars1, maxFishSize1);
+			} else if (worldProgress2->mouseOver()) {
+				journalProgressWidget->draw(shaderProgram);
+				journalProgressWidget->updateNumbers(unlockedFish2, fishStars2, maxFishSize2);
+			}
 		}
 
 	} else {
@@ -364,12 +364,21 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	map->SetPivot({ 0.5f, 0.5f });
 	map->setLoc(center + vector{ 63.f, -35.f });
 
+	// update stars
 	if (saveFishData->totalNumOwned[1] != 0)
 		star1->setImage("./images/widget/bronzeStar.png");
+	else
+		star1->setImage("./images/emptyStar.png");
+
 	if (saveFishData->totalNumOwned[2] != 0)
 		star2->setImage("./images/widget/silverStar.png");
+	else
+		star2->setImage("./images/emptyStar.png");
+
 	if (saveFishData->totalNumOwned[3] != 0)
 		star3->setImage("./images/widget/goldStar.png");
+	else
+		star3->setImage("./images/emptyStar.png");
 
 	star1Text->setText(shortNumbers::convert2Short(saveFishData->totalNumOwned[1]));
 	star2Text->setText(shortNumbers::convert2Short(saveFishData->totalNumOwned[2]));
@@ -460,8 +469,8 @@ void Ujournal::setupLocs() {
 	worldName1->setLoc(center + vector{ -63.f, 80.f });
 	worldName2->setLoc(center + vector{ 68.f, 80.f });
 
-	worldProgress1->setLoc(center + vector{ -63.f, 72.f });
-	worldProgress2->setLoc(center + vector{ 68.f, 72.f });
+	worldProgress1->setLoc(center + vector{ -63.f, 71.f });
+	worldProgress2->setLoc(center + vector{ 68.f, 71.f });
 }
 
 void Ujournal::calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, int worldId) {

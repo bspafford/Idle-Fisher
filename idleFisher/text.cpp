@@ -276,10 +276,10 @@ void text::makeTextTexture() {
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
-			letters[i]->setLoc({letters[i]->getLoc().x, letters[i]->getLoc().y - textHeight + fboSize.y}); // push to top of fbo
+			letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - textHeight + fboSize.y}.round()); // push to top of fbo
 			std::string dropList("qypgj");
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
-				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - dropHeight }); // add add dropHeight
+				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - dropHeight }.round()); // add add dropHeight
 			letters[i]->draw(Main::twoDShader);
 		}
 	// Unbind FBO
@@ -301,11 +301,11 @@ void text::draw(Shader* shader) {
 }
 
 void text::setLocAndSize(vector loc, vector size) {
-	setLoc(loc.round());
+	setLoc(loc);
 }
 
 void text::setLoc(vector loc) {
-	loc = loc.floor();
+	loc = loc.ToPixel();
 	__super::setLoc(loc);
 
 	size = getSize();

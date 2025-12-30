@@ -26,21 +26,18 @@ void UjournalProgressWidget::draw(Shader* shaderProgram) {
 	background->draw(shaderProgram);
 
 	float offset = -9;
-	fishNumTextNum->setLoc(mousePos + vector{ 6, -20 + offset } *stuff::pixelSize);
-	starsNumTextNum->setLoc(mousePos + vector{ 6, -13 + offset } *stuff::pixelSize);
-	sizeNumTextNum->setLoc(mousePos + vector{ 6, -6 + offset } *stuff::pixelSize);
+	fishNumTextNum->setLoc(mousePos + vector{ 6.f, -20.f + offset });
+	starsNumTextNum->setLoc(mousePos + vector{ 6.f, -13.f + offset });
+	sizeNumTextNum->setLoc(mousePos + vector{ 6.f, -6.f + offset });
 
 	// gets the biggest text to push back the text by
 	float max = math::max(fishNumTextNum->getSize().x, starsNumTextNum->getSize().x);
 	max = math::max(max, sizeNumTextNum->getSize().x);
-	//std::cout << fishNumTextNum->getSize().x << ", " << starsNumTextNum->getSize().x << ", " << sizeNumTextNum->getSize().x << ", max: " << max << std::endl;
 
-	fishNumText->setLoc(mousePos + vector{ max + 7 * stuff::pixelSize, (-20 + offset) * stuff::pixelSize});
-	starsNumText->setLoc(mousePos + vector{ max + 7 * stuff::pixelSize, (-13 + offset) * stuff::pixelSize});
-	sizeNumText->setLoc(mousePos + vector{ max + 7 * stuff::pixelSize, (-6 + offset) * stuff::pixelSize});
+	fishNumText->setLoc(mousePos + vector{ max + 7.f, (-20.f + offset)});
+	starsNumText->setLoc(mousePos + vector{ max + 7.f, (-13.f + offset)});
+	sizeNumText->setLoc(mousePos + vector{ max + 7.f, (-6.f + offset)});
 	
-	
-
 	fishNumText->draw(shaderProgram);
 	starsNumText->draw(shaderProgram);
 	sizeNumText->draw(shaderProgram);
@@ -64,6 +61,4 @@ void UjournalProgressWidget::updateNumbers(int fishNum, int starsNum, int sizeNu
 		starsNumTextNum->setText(stars);
 	if (sizeNumTextNum->getString() != size)
 		sizeNumTextNum->setText(size);
-
-
 }

@@ -313,6 +313,7 @@
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="vaultPlacedItems.cpp" />
     <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="vector.cpp" />
     <ClCompile Include="verticalBox.cpp" />
     <ClCompile Include="widget.cpp" />
     <ClCompile Include="worlds.cpp" />

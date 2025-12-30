@@ -105,11 +105,24 @@ void Image::setSize(vector size) {
 }
 
 void Image::setImage(std::string path) {
-	textureStruct* texStruct = textureManager::getTexture(path);
-	if (texStruct) {
+	textureStructPtr = textureManager::getTexture(path);
+	if (textureStructPtr) {
 		this->path = path;
-		w = texStruct->w;
-		h = texStruct->h;
+		w = textureStructPtr->w;
+		h = textureStructPtr->h;
+
+		this->loc = loc;
+		
+		handle = textureStructPtr->handle;
+
+		ogW = textureStructPtr->w;
+		ogH = textureStructPtr->h;
+
+		// sets up absolute loc
+		setLoc(loc);
+
+		if (source)
+			this->normalizedSource = *source / vector{ ogW, ogH };
 	}
 }
 

@@ -23,6 +23,6 @@ vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, A
 			 newLoc.y = (loc.y + pixelScreenSize.y);
 		 }
 
-		 return (newLoc - pivotLoc).round(); // rounds to nearest pixel
+		 return (newLoc - pivotLoc).ToPixel(); // rounds to nearest pixel
 	 }
 }

@@ -40,6 +40,9 @@ public:
 		return vector{ ceilf(x), ceilf(y) };
 	}
 
+	// rounds to the nearest pixel based on pixel size
+	vector ToPixel();
+
 	// Addition
 	vector operator+ (const vector& other) const {
 		return { x + other.x, y + other.y };

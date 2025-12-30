@@ -71,7 +71,7 @@ void widget::setVisibility(bool visible) {
 
 bool widget::mouseOver() {
 	vector mousePos = Input::getMousePos();
-	vector loc = getLoc();
+	vector loc = getAbsoluteLoc();
 	vector size = getSize();
 	if (mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
 		return true;

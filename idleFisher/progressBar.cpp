@@ -9,7 +9,7 @@ UprogressBar::UprogressBar(widget* parent, vector size, bool useWorldLoc, int di
 	this->reverse = reverse;
 
 	foregrounds.push_back(std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc, glm::vec4(1.f)));
-	background = std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc, glm::vec4(1.f));
+	background = std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc, glm::vec4(0.f, 0.f, 0.f, 1.f));
 }
 
 void UprogressBar::draw(Shader* shaderProgram) {
