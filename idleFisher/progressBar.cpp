@@ -77,7 +77,7 @@ float UprogressBar::calcTotalWeight() {
 void UprogressBar::setLoc(vector loc) {
 	__super::setLoc(loc);
 
-	background->setLoc(loc);
+	background->setLoc(absoluteLoc);
 }
 
 void UprogressBar::setSize(vector size) {

@@ -16,7 +16,12 @@
 
 Ujournal::Ujournal(widget* parent) : widget(parent) {
 	background = std::make_unique<Image>("./images/widget/journal.png", vector{ 0, 0 }, false);
+	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	background->SetPivot({ 0.5f, 0.5f });
+
 	journalClosed = std::make_unique<Image>("./images/widget/journalClosed.png", vector{ 0, 0 }, false);
+	journalClosed->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	journalClosed->SetPivot({ 0.5f, 0.5f });
 
 	std::unordered_map < std::string, animDataStruct> anim;
 	anim.insert({ "open", animDataStruct({0, 0}, {5, 0}, false) });
@@ -29,22 +34,27 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	journalTimer->addUpdateCallback(this, &Ujournal::moveAnim);
 	journalTimer->addCallback(this, &Ujournal::journalTimerFinish);
 
-	forwardButton = std::make_unique<Ubutton>(this, "widget/fowardButton.png", 19, 12, 1, vector{ 0, 0 }, false, false);
-	backButton = std::make_unique<Ubutton>(this, "widget/backButton.png", 19, 12, 1, vector{ 0, 0 }, false, false);
-	xButton = std::make_unique<Ubutton>(this, "widget/xButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	forwardButton = std::make_unique<Ubutton>(this, "widget/fowardButton.png", 19, 12, 1, vector{ 102, -71 }, false, false);
+	forwardButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	forwardButton->addCallback(this, &Ujournal::forwardPage);
+	backButton = std::make_unique<Ubutton>(this, "widget/backButton.png", 19, 12, 1, vector{ -121, -71 }, false, false);
+	backButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	backButton->addCallback(this, &Ujournal::backwardPage);
+	xButton = std::make_unique<Ubutton>(this, "widget/xButton.png", 11, 11, 1, vector{ 114, 79 }, false, false);
+	xButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	xButton->addCallback(this, &Ujournal::closeWidget);
 
 	if (SaveData::data.worldData.size() >= 2) {
-		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
+		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
 
-		worldProgress1 = std::make_unique<UprogressBar>(this, vector{ 100.f, 3.f }, false);
+		worldProgress1 = std::make_unique<UprogressBar>(this, vector{ 100.f, 5.f }, false);
+		worldProgress1->SetPivot({ 0.5f, 0.f });
 		worldProgress1->setForegroundColor({ 227, 120, 64, 255 }, 0);
 		worldProgress1->addProgressBar(0, 3, { 232, 210, 75, 255 });
 		worldProgress1->addProgressBar(0, 1, { 120, 158, 36, 255 });
-		worldProgress2 = std::make_unique<UprogressBar>(this, vector{ 100.f, 3.f }, false);
+		worldProgress2 = std::make_unique<UprogressBar>(this, vector{ 100.f, 5.f }, false);
+		worldProgress2->SetPivot({ 0.5f, 0.f });
 		worldProgress2->setForegroundColor({ 227, 120, 64, 255 }, 0);
 		worldProgress2->addProgressBar(0, 3, { 232, 210, 75, 255 });
 		worldProgress2->addProgressBar(0, 1, { 120, 158, 36, 255 });
@@ -62,39 +72,65 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	}
 
 	// selected fish page
-	fishThumbnail = std::make_unique<Image>("", vector{ 0, 0 }, false);
+	fishThumbnail = std::make_unique<Image>("./images/fish/dirtFish.png", vector{ 0, 0 }, false);
+	fishThumbnail->SetPivot({ 0.5f, 0.5f });
 	notesBackground = std::make_unique<Image>("./images/widget/journalNotes.png", vector{ 0, 0 }, false);
+	notesBackground->SetPivot({ 0.5f, 0.f });
 	selectedFishName = std::make_unique<text>(this, " ", "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	selectedFishDescription = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 });
 
 	statsTitle = std::make_unique<text>(this, "Stats", "biggerStraightDark", vector{ 0 , 0 }, false, false, TEXT_ALIGN_CENTER);
 	baseCurrency = std::make_unique<text>(this, "Base Currency", "straightDark", vector{ 0, 0 });
+	baseCurrency->SetPivot({ 0, 1.f });
 	baseCurrencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	baseCurrencyNum->SetPivot({ 0, 1.f });
 	currency = std::make_unique<text>(this, "Currency", "straightDark", vector{ 0, 0 });
+	currency->SetPivot({ 0, 1.f });
 	currencyNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	currencyNum->SetPivot({ 0, 1.f });
 	caught = std::make_unique<text>(this, "Caught", "straightDark", vector{ 0, 0 });
+	caught->SetPivot({ 0, 1.f });
 	caughtNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	caughtNum->SetPivot({ 0, 1.f });
 	power = std::make_unique<text>(this, "Power", "straightDark", vector{ 0, 0 });
+	power->SetPivot({ 0, 1.f });
 	powerNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	powerNum->SetPivot({ 0, 1.f });
 	speed = std::make_unique<text>(this, "Speed", "straightDark", vector{ 0, 0 });
+	speed->SetPivot({ 0, 1.f });
 	speedNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	speedNum->SetPivot({ 0, 1.f });
 	yellow = std::make_unique<text>(this, "Yellow", "straightDark", vector{ 0, 0 });
+	yellow->SetPivot({ 0, 1.f });
 	yellowNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	yellowNum->SetPivot({ 0, 1.f });
 	green = std::make_unique<text>(this, "Green", "straightDark", vector{ 0, 0 });
+	green->SetPivot({ 0, 1.f });
 	greenNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	greenNum->SetPivot({ 0, 1.f });
 	probability = std::make_unique<text>(this, "Probability", "straightDark", vector{ 0, 0 });
+	probability->SetPivot({ 0, 1.f });
 	probabilityNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	probabilityNum->SetPivot({ 0, 1.f });
 	fishSize = std::make_unique<text>(this, "Biggest (Max: 0)", "straightDark", vector{ 0, 0 });
+	fishSize->SetPivot({ 0, 1.f });
 	fishSizeNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	fishSizeNum->SetPivot({ 0, 1.f });
 
 	star1 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star1->SetPivot({ 0.5f, 0.f });
 	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	star1Text->SetPivot({ 0.f, 0.5f });
 	star1Text->setTextColor(85, 177, 241);
 	star2 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star2->SetPivot({ 0.5f, 0.f });
 	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	star2Text->SetPivot({ 0.f, 0.5f });
 	star2Text->setTextColor(85, 177, 241);
 	star3 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star3->SetPivot({ 0.5f, 0.f });
 	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	star3Text->SetPivot({ 0.f, 0.5f });
 	star3Text->setTextColor(85, 177, 241);
 
 	setupLocs();
@@ -235,56 +271,60 @@ void Ujournal::updatePages() {
 		else
 			worldName2->setText("");
 
-		vector center = stuff::screenSize / 2;
-		vector firstFish = center + vector{ -110, -67 } *stuff::pixelSize;
-		vector increment = vector{ 48, 48 } * stuff::pixelSize;
-		vector secondpageDist = { 130 * stuff::pixelSize, 0 };
+		vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
+		vector firstFish = center + vector{ -98.f, 30.f };
+		vector increment = vector{ 64.f, -48.f };
+		vector secondpageDist = { 130, 0 };
 		fishBoxList[pageNum * 10 + 1]->setLoc(firstFish);
-		fishBoxList[pageNum * 10 + 2]->setLoc(firstFish + vector{ increment.x, 0 });
-		fishBoxList[pageNum * 10 + 3]->setLoc(firstFish + vector{ 0, increment.y });
+		fishBoxList[pageNum * 10 + 2]->setLoc(firstFish + vector{ increment.x, 0.f });
+		fishBoxList[pageNum * 10 + 3]->setLoc(firstFish + vector{ 0.f, increment.y });
 		fishBoxList[pageNum * 10 + 4]->setLoc(firstFish + vector{ increment.x, increment.y });
-		fishBoxList[pageNum * 10 + 5]->setLoc(firstFish + vector{ increment.x / 2, increment.y * 2 });
+		fishBoxList[pageNum * 10 + 5]->setLoc(firstFish + vector{ increment.x / 2.f, increment.y * 2.f });
 
 		fishBoxList[pageNum * 10 + 6]->setLoc(firstFish + secondpageDist);
-		fishBoxList[pageNum * 10 + 7]->setLoc(firstFish + vector{ increment.x, 0 } + secondpageDist);
-		fishBoxList[pageNum * 10 + 8]->setLoc(firstFish + vector{ 0, increment.y } + secondpageDist);
+		fishBoxList[pageNum * 10 + 7]->setLoc(firstFish + vector{ increment.x, 0.f } + secondpageDist);
+		fishBoxList[pageNum * 10 + 8]->setLoc(firstFish + vector{ 0.f, increment.y } + secondpageDist);
 		fishBoxList[pageNum * 10 + 9]->setLoc(firstFish + vector{ increment.x, increment.y } + secondpageDist);
-		fishBoxList[pageNum * 10 + 10]->setLoc(firstFish + vector{ increment.x / 2, increment.y * 2 } + secondpageDist);
+		fishBoxList[pageNum * 10 + 10]->setLoc(firstFish + vector{ increment.x / 2.f, increment.y * 2.f } + secondpageDist);
 	} else {
-		selectedFishName->setLoc(vector{ 256, 98 } * stuff::pixelSize); // 174 57
-		selectedFishDescription->setLoc(vector{ 126+ 80, 150+40 } * stuff::pixelSize);
+		vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
+
+		selectedFishName->setLoc(center + vector{ -63.f, 80.f });
+		selectedFishDescription->setLoc(center + vector{ -113.f, -8.f });
+		selectedFishDescription->setLineLength(102);
 		fishThumbnail->setSize(fishThumbnail->getSize() * 3.f);
-		fishThumbnail->setLoc((vector{ 150 + 80 + 25, 83 + 41 + 27 } * stuff::pixelSize) - (fishThumbnail->getSize() / 2.f * stuff::pixelSize));
-		notesBackground->setLoc(vector{ 123 + 80, 140 + 41 } * stuff::pixelSize);
-		selectedFishDescription->setLineLength(102 * stuff::pixelSize);
+		fishThumbnail->setLoc(center + vector{ -63.f, 32.f });
+		notesBackground->setLoc(center + vector{ -63.f, -60.f });
 
-		statsTitle->setLoc(vector{ 256 + 129, 98 } * stuff::pixelSize);
-		baseCurrency->setLoc(vector{ 254 + 80, 60 + 50 } *stuff::pixelSize);
-		baseCurrencyNum->setLoc(vector{ 352 + 80, 60 + 50 } *stuff::pixelSize);
-		currency->setLoc(vector{254 + 80, 68 + 50 } * stuff::pixelSize);
-		currencyNum->setLoc(vector{ 352 + 80, 68 + 50 } * stuff::pixelSize);
-		caught->setLoc(vector{ 254 + 80, 76 + 50 } * stuff::pixelSize);
-		caughtNum->setLoc(vector{ 352 + 80, 76 + 50 } * stuff::pixelSize);
-		power->setLoc(vector{ 254 + 80, 84 + 50 } * stuff::pixelSize);
-		powerNum->setLoc(vector{ 352 + 80, 84 + 50 } * stuff::pixelSize);
-		speed->setLoc(vector{ 254 + 80, 92 + 50 } * stuff::pixelSize);
-		speedNum->setLoc(vector{ 352 + 80, 92 + 50 } * stuff::pixelSize);
-		yellow->setLoc(vector{ 254 + 80, 100 + 50 } * stuff::pixelSize);
-		yellowNum->setLoc(vector{ 352 + 80, 100 + 50 } * stuff::pixelSize);
-		green->setLoc(vector{ 254 + 80, 108 + 50 } * stuff::pixelSize);
-		greenNum->setLoc(vector{ 352 + 80, 108 + 50 } * stuff::pixelSize);
-		probability->setLoc(vector{ 254 + 80, 116 + 50 } * stuff::pixelSize);
-		probabilityNum->setLoc(vector{ 352 + 80, 116 + 50 } * stuff::pixelSize);
-		fishSize->setLoc(vector{ 254 + 80, 124 + 50 } * stuff::pixelSize);
-		fishSizeNum->setLoc(vector{ 352 + 80, 124 + 50 } * stuff::pixelSize);
+		vector horizOffset = vector{ 100.f, 9.f };
+		vector vertOffset = vector{ 0.f, -8.f };
+		statsTitle->setLoc(center + vector{ 68.f, 80.f });
+		baseCurrency->setLoc(statsTitle->getAbsoluteLoc() + vector{ -50.f, -6.f });
+		baseCurrencyNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset);
+		currency->setLoc(baseCurrency->getAbsoluteLoc() + vector{ 0.f, 1.f });
+		currencyNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset);
+		caught->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset);
+		caughtNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 2.f);
+		power->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 2.f);
+		powerNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 3.f);
+		speed->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 3.f);
+		speedNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 4.f);
+		yellow->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 4.f);
+		yellowNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 5.f);
+		green->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 5.f);
+		greenNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 6.f);
+		probability->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 6.f);
+		probabilityNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 7.f);
+		fishSize->setLoc(baseCurrency->getAbsoluteLoc() + vertOffset * 7.f);
+		fishSizeNum->setLoc(baseCurrency->getAbsoluteLoc() + horizOffset + vertOffset * 8.f);
 
-		star1->setLoc(vector{ 174 + 58, 65 + 41 } * stuff::pixelSize);
-		star2->setLoc(vector{ 174 + 74, 65 + 41 } * stuff::pixelSize);
-		star3->setLoc(vector{ 174 + 90, 65 + 41 } * stuff::pixelSize);
+		star1->setLoc(center + vector{ -78.f, 65.f });
+		star2->setLoc(center + vector{ -63.f, 65.f });
+		star3->setLoc(center + vector{ -48.f, 65.f });
 
-		star1Text->setLoc(star1->getLoc() + star1->getSize() / 2.f - vector{ 0, star1Text->getSize().y / 2.f });
-		star2Text->setLoc(star2->getLoc() + star2->getSize() / 2.f - vector{ 0, star2Text->getSize().y / 2.f });
-		star3Text->setLoc(star3->getLoc() + star3->getSize() / 2.f - vector{ 0, star3Text->getSize().y / 2.f });
+		star1Text->setLoc(star1->getAbsoluteLoc() + star1->getSize() / 2.f);
+		star2Text->setLoc(star2->getAbsoluteLoc() + star2->getSize() / 2.f);
+		star3Text->setLoc(star3->getAbsoluteLoc() + star3->getSize() / 2.f);
 	}
 }
 
@@ -319,8 +359,10 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	fishSizeNum->setText(shortNumbers::convert2Short(saveFishData->biggestSizeCaught) + "in");
 	fishSize->setText("Biggest (Max: " + std::to_string(fishData->maxSize) + "in)");
 
+	vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
 	map = std::make_unique<Image>("./images/widget/maps/" + fishData->levelName + ".png", vector{ 0, 0 }, false);
-	map->setLoc(vector{ 252+80, 134+46+6 } * stuff::pixelSize);
+	map->SetPivot({ 0.5f, 0.5f });
+	map->setLoc(center + vector{ 63.f, -35.f });
 
 	if (saveFishData->totalNumOwned[1] != 0)
 		star1->setImage("./images/widget/bronzeStar.png");
@@ -363,11 +405,11 @@ void Ujournal::addedToViewport() {
 void Ujournal::moveAnim() {
 	float percent = journalTimer->getTime() / journalTimer->getMaxTime();
 
-	std::vector<vector> locs = { {0, 1000}, { 0, 500 }, {0, 100}, {0, 30}, {0, 10}, {0, 0}, {0, 0} };
+	std::vector<float> percents = { -0.926f, -0.463f, -0.093f, -0.028f, -0.009f, 0.f, 0.f };
 	if (opening) // open anim
-		journalClosed->setLoc(background->getLoc() + locs[floor(percent * 6)] - vector{ 0, 27 } *stuff::pixelSize);
+		journalClosed->setLoc(vector{ 0.f, percents[floor(percent * 6)] * stuff::screenSize.y / stuff::pixelSize });
 	else // close anim
-		journalClosed->setLoc(background->getLoc() + locs[floor((1 - percent) * 6)] - vector{0, 27} *stuff::pixelSize);
+		journalClosed->setLoc(vector{ 0.f, percents[floor((1 - percent) * 6)] * stuff::screenSize.y / stuff::pixelSize });
 }
 
 void Ujournal::journalTimerFinish() {
@@ -411,20 +453,15 @@ void Ujournal::removeFromViewport() {
 
 void Ujournal::setupLocs() {
 	__super::setupLocs();
-	
-	background->setLoc((stuff::screenSize - background->getSize()) / 2);
-	journalAnim->setLoc(background->getLoc() - vector{0, 28 * stuff::pixelSize});
-	journalClosed->setLoc(background->getLoc() + stuff::screenSize);
 
-	forwardButton->setLoc(stuff::screenSize / 2 + vector{ 107, 71 } *stuff::pixelSize);
-	backButton->setLoc(stuff::screenSize / 2 + vector{ -126, 71 } *stuff::pixelSize);
-	xButton->setLoc(stuff::screenSize / 2 + vector{ 114, -84 } * stuff::pixelSize);
+	journalAnim->setLoc(background->getAbsoluteLoc());
 
-	worldName1->setLoc(stuff::screenSize / 2 + vector{ -63, -80 } * stuff::pixelSize);
-	worldName2->setLoc(stuff::screenSize / 2 + vector{ 68, -80 } * stuff::pixelSize);
+	vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
+	worldName1->setLoc(center + vector{ -63.f, 80.f });
+	worldName2->setLoc(center + vector{ 68.f, 80.f });
 
-	worldProgress1->setLoc(stuff::screenSize / 2 + vector{ -63-50, -80+11 } * stuff::pixelSize);
-	worldProgress2->setLoc(stuff::screenSize / 2 + vector{ 68-50, -80+11 } * stuff::pixelSize);
+	worldProgress1->setLoc(center + vector{ -63.f, 72.f });
+	worldProgress2->setLoc(center + vector{ 68.f, 72.f });
 }
 
 void Ujournal::calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, int worldId) {

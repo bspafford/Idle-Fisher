@@ -7,6 +7,7 @@
 #include <cassert>
 #include <functional>
 
+#include "Anchor.h"
 #include "math.h"
 
 class timer;
@@ -73,10 +74,9 @@ public:
 
 	std::string GetCurrAnim();
 
-	void SetColorMod(glm::vec4 colorMod);
-
 	bool IsMouseOver(bool useAlpha);
 
+	void SetColorMod(glm::vec4 colorMod);
 	void SetUseAlpha(bool useAlpha);
 
 	void SetAnimDuration(std::string animName, float duration);

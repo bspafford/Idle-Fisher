@@ -92,11 +92,11 @@ void UsailorWidget::addedToViewport() {
 void UsailorWidget::moveAnim() {
 	float percent = mapTimer->getTime() / mapTimer->getMaxTime();
 
-	std::vector<float> percents = { -0.926f, 0.463f, -0.093f, -0.028f, -0.009f, 0.f, 0.f };
+	std::vector<float> percents = { -0.926f, -0.463f, -0.093f, -0.028f, -0.009f, 0.f, 0.f };
 	if (opening) // open anim
-		mapClosed->setLoc(vector{ 0.f, percents[floor(percent * 6)] * stuff::screenSize.y });
+		mapClosed->setLoc(vector{ 0.f, percents[floor(percent * 6)] * stuff::screenSize.y / stuff::pixelSize });
 	else // close anim
-		mapClosed->setLoc(vector{ 0.f, percents[floor((1 - percent) * 6)] * stuff::screenSize.y });
+		mapClosed->setLoc(vector{ 0.f, percents[floor((1 - percent) * 6)] * stuff::screenSize.y / stuff::pixelSize });
 }
 
 void UsailorWidget::mapTimerFinish() {

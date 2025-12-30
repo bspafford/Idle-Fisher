@@ -308,34 +308,35 @@ void text::setLoc(vector loc) {
 	loc = loc.floor();
 	__super::setLoc(loc);
 
-	vector size = getSize();
+	size = getSize();
 	vector pivotLoc = size * pivot;
-	if (useWorldPos) {
 
+	vector textAlignOffset = { 0, 0 };
+	if (useWorldPos) {
 		if (alignment == TEXT_ALIGN_LEFT) {
-			absoluteLoc = loc;
+			textAlignOffset = loc;
 			if (isometric)
-				absoluteLoc += vector{ 0, size.y };
+				textAlignOffset += vector{ 0, size.y };
 		} else if (alignment == TEXT_ALIGN_RIGHT) {
-			absoluteLoc = loc - vector{ size.x, 0 };
+			textAlignOffset = loc - vector{ size.x, 0 };
 			if (isometric)
-				absoluteLoc -= vector{ 0, size.y };
+				textAlignOffset -= vector{ 0, size.y };
 		} else if (alignment == TEXT_ALIGN_CENTER) {
-			absoluteLoc = loc - vector{ size.x / 2.f, 0.f };
+			textAlignOffset = loc - vector{ size.x / 2.f, 0.f };
 		}
 	} else {
 		vector halfScreen = (stuff::screenSize / 2.f);
 
 		if (alignment == TEXT_ALIGN_LEFT) {
-			absoluteLoc = loc;
+			textAlignOffset = loc;
 		} else if (alignment == TEXT_ALIGN_RIGHT) {
-			absoluteLoc = loc - vector{ size.x, 0.f };
+			textAlignOffset = loc - vector{ size.x, 0.f };
 		} else if (alignment == TEXT_ALIGN_CENTER) {
-			absoluteLoc = loc - vector{ (size.x / 2.f), 0.f };
+			textAlignOffset = loc - vector{ (size.x / 2.f), 0.f };
 		}
 	}
 
-	absoluteLoc -= pivotLoc;
+	absoluteLoc = textAlignOffset - pivotLoc;
 }
 
 void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {

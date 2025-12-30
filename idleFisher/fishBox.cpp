@@ -18,6 +18,7 @@ UfishBox::UfishBox(Ujournal* parent, FfishData* fishData, FsaveFishData* saveFis
 	std::string fishThumbnail = fishData->thumbnail;
 	fishThumbnail.erase(0, 9);
 	fishButton = std::make_unique<Ubutton>(this, fishThumbnail, 16, 16, 1, vector{ 0, 0 }, false, false);
+	fishButton->SetPivot({ 0.5f, 0.f });
 	fishButton->addCallback(this, &UfishBox::openFishPage);
 	name = std::make_unique<text>(this, fishData->name, "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	checkMark = std::make_unique<Image>("./images/widget/check.png", vector{ 0, 0 }, false);
@@ -48,16 +49,14 @@ void UfishBox::openFishPage() {
 void UfishBox::setLoc(vector loc) {
 	__super::setLoc(loc);
 
-	//img->loc = loc;
-	if (fishButton) {
-		vector buttonSize = fishButton->getSize();
-		fishButton->setLoc(loc + vector{ 22.f * stuff::pixelSize - buttonSize.x / 2, 17.f * stuff::pixelSize - buttonSize.y / 2 });
-	}
 	if (name)
-		name->setLoc(loc + vector{ 23, 26 } * stuff::pixelSize);
+		name->setLoc(loc);
 
-	if (checkMark && isUnlocked() && hasAllStars() && hasBiggestSize())
-		checkMark->setLoc(loc + vector{ 25, 20 } * stuff::pixelSize);
+	if (fishButton)
+		fishButton->setLoc(name->getAbsoluteLoc() + vector{ 0, 9.f });
+
+	if (checkMark)
+		checkMark->setLoc(fishButton->getAbsoluteLoc() + vector{ fishButton->getSize().x / 2.f + 3.f, 0.f });
 }
 
 void UfishBox::updateUI() {
