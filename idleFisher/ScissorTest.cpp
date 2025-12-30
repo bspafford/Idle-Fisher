@@ -32,5 +32,5 @@ void ScissorTest::Disable() {
 }
 
 Rect ScissorTest::GetCurrRect() {
-	return scissorStack.empty() ? Rect{ 0.f, 0.f, stuff::screenSize.x, stuff::screenSize.y } : scissorStack.top();
+	return scissorStack.empty() ? Rect{ 0.f, 0.f, stuff::screenSize.x / stuff::pixelSize, stuff::screenSize.y / stuff::pixelSize } : scissorStack.top();
 }

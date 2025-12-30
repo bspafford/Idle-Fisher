@@ -5,7 +5,7 @@
 
 class UscrollBox : public verticalBox, public IHoverable {
 public:
-	UscrollBox(widget* parent);
+	UscrollBox(widget* parent) : verticalBox(parent) {}
 
 	void draw(Shader* shaderProgram) override;
 
@@ -14,6 +14,8 @@ public:
 	void scrolling(int mouseWheelDir);
 
 private:
+	float clampY(float y);
+
 	vector mouseStartPos;
 	vector startLoc;
 

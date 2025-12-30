@@ -4,10 +4,6 @@
 
 #include "debugger.h"
 
-UscrollBox::UscrollBox(widget* parent) : verticalBox(parent) {
-
-}
-
 void UscrollBox::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
@@ -23,7 +19,7 @@ void UscrollBox::draw(Shader* shaderProgram) {
 	if (scrollingActive) {
 		IHoverable::setHoveredItem(this);
 		if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-			startLoc = loc;
+			startLoc = absoluteLoc;
 			mouseStartPos = Input::getMousePos();
 		}
 
@@ -48,14 +44,14 @@ void UscrollBox::draw(Shader* shaderProgram) {
 // mouse right click scrolling
 void UscrollBox::scrolling() {
 	if (overflowSizeY < size.y) {
-		loc.y = -overflowSizeY + size.y;
+		absoluteLoc.y = -overflowSizeY + size.y;
 		return;
 	}
 
 	scrollingActive = true;
 
-	vector diff = mouseStartPos - startLoc;
-	loc.y = math::clamp(Input::getMousePos().y - diff.y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
+	float diff = mouseStartPos.y - startLoc.y;
+	absoluteLoc.y = clampY(Input::getMousePos().y - diff);
 
 	UpdateChildren();
 }
@@ -66,12 +62,12 @@ void UscrollBox::scrolling(int mouseWheelDir) {
 		return;
 
 	if (overflowSizeY < size.y) {
-		loc.y = -overflowSizeY + size.y;
+		absoluteLoc.y = -overflowSizeY + size.y;
 		return;
 	}
 
-	vector diff = vector{ 0, -mouseWheelDir * 10.f } + loc;
-	loc.y = math::clamp(diff.y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
+	float diff = -mouseWheelDir * 10.f + absoluteLoc.y;
+	absoluteLoc.y = clampY(diff);
 
 	UpdateChildren();
 }
@@ -81,4 +77,8 @@ bool UscrollBox::mouseOver() {
 	if (mousePos.x >= ogLoc.x && mousePos.x <= ogLoc.x + size.x && mousePos.y >= ogLoc.y && mousePos.y <= ogLoc.y + size.y)
 		return true;
 	return false;
+}
+
+float UscrollBox::clampY(float y) {
+	return math::clamp(y, ogLoc.y, ogLoc.y + overflowSizeY - size.y);
 }

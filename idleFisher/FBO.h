@@ -27,7 +27,7 @@ public:
 	void Bind(glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));
 	void Unbind();
 
-	static GLuint GetCurrFBO();
+	static FBOData GetCurrFBO();
 
 private:
 	GLuint ID = 0;

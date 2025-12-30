@@ -17,6 +17,8 @@
 
 UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 	background = std::make_unique<Image>("./images/widget/achievementBackground.png", vector{ 0, 0 }, false);
+	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	background->SetPivot({ 0.5f, 0.5f });
 
 	startTimeText = std::make_unique<text>(this, "", "straight", vector{ 0, 0 });
 	changeTextTimer = std::make_unique<timer>();
@@ -24,21 +26,24 @@ UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 	updateText();
 
 	scrollBox = std::make_unique<UscrollBox>(this);
+	scrollBox->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	scrollBox->SetPivot({ 0.5f, 0.5f });
+
 	equippedWidget = std::make_unique<UequippedWidget>(this);
 	equippedWidget->setParent(scrollBox.get());
 	achievementHolder = std::make_unique<UwrapBox>(this, loc, size);
 	achievementText = std::make_unique<text>(this, "Achievements - 0/500 (0%)", "straight", vector{ 0, 0 });
 	hoverBox = std::make_unique<UhoverBox>(this);
 	xButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	xButton->SetPivot({ 0.5f, 0.5f });
 	xButton->addCallback(this, &UachievementWidget::closeWidget);
 	if (scrollBox) {
-		scrollBox->addChild(NULL, 2 * stuff::pixelSize);
-		scrollBox->addChild(startTimeText.get(), 7 * stuff::pixelSize);
+		scrollBox->addChild(NULL, 2);
+		scrollBox->addChild(startTimeText.get(), 7);
 		scrollBox->addChild(equippedWidget.get(), equippedWidget->getSize().y);
 		scrollBox->addChild(achievementText.get(), achievementText->getSize().y);
-		scrollBox->addChild(achievementHolder.get(), 5.f); // achievementHolder->getOverflowSize().y
+		scrollBox->addChild(achievementHolder.get(), 5.f);
 	}
-
 
 	for (int i = 0; i < SaveData::data.achievementData.size(); i++) {
 		std::unique_ptr<UachievementBox> achievementBox = std::make_unique<UachievementBox>(achievementHolder.get(), i);
@@ -64,8 +69,7 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 			if (SaveData::saveData.achievementList[i].unlocked) {
 				hoverBox->setInfo(SaveData::data.achievementData[i].name, SaveData::data.achievementData[i].description);
 				hoverBox->draw(shaderProgram);
-			}// else
-			//	hoverBox->setInfo("???", "???");
+			}
 			break;
 		}
 	}
@@ -96,28 +100,21 @@ void UachievementWidget::addedToViewport() {
 	else
 		percentAchievements = std::format("{:.1f}", percent);
 
-	achievementText->setText("Achievements - " + std::to_string(achievementsUnlocked) + "/" + std::to_string(totalAchievements) + " (" + percentAchievements + "%)");
+	achievementText->setText("Achievements - " + std::to_string(static_cast<int>(achievementsUnlocked)) + "/" + std::to_string(static_cast<int>(totalAchievements)) + " (" + percentAchievements + "%)");
 }
 
 void UachievementWidget::setupLocs() {
 	__super::setupLocs();
 
-	background->setLoc(vector{ stuff::screenSize.x / 2.f, stuff::screenSize.y / 2.f } - background->getSize() / 2);
+	vector scrollBoxLoc = background->getAbsoluteLoc() + vector{ 11.f, 9.f };
+	vector scrollBoxSize = vector{ 17.f * 25.f + 2.f, background->getSize().y - 19.f };
+	//scrollBox->setOgLoc(scrollBoxLoc);
+	achievementHolder->setLocAndSize(scrollBoxLoc, { scrollBoxSize.x, achievementHolder->getSize().y });
+	scrollBox->changeChildHeight(achievementHolder.get(), achievementHolder->getOverflowSize());
+	scrollBox->setLocAndSize({ 0.f, 0.f }, scrollBoxSize);
 
-	vector scrollBoxLoc = background->getLoc() + vector{11, 8} * stuff::pixelSize;
-	vector scrollBoxSize = vector{ (17 * 25 + 2) * stuff::pixelSize, background->getSize().y - 15 * stuff::pixelSize };
-	scrollBox->setOgLoc(scrollBoxLoc);
-	achievementHolder->setOgLoc(scrollBoxLoc);
-	achievementHolder->setSize({ scrollBoxSize.x, achievementHolder->getSize().y });
-	scrollBox->changeChildHeight(achievementHolder.get(), achievementHolder->getOverflowSize().y);
-	scrollBox->setLocAndSize(scrollBoxLoc, scrollBoxSize);
-
-	if (xButton) {
-		vector buttonSize = xButton->getSize();
-		//vector buttonLoc = //vector{ stuff::screenSize.x * .85f - buttonSize.x / 2, stuff::screenSize.y * .2f - buttonSize.y / 2};
-		vector buttonLoc = vector{ vector{background->getSize().x - 10 * stuff::pixelSize, 0} + background->getLoc() };
-		xButton->setLoc(buttonLoc);
-	}
+	if (xButton)
+		xButton->setLoc(background->getAbsoluteLoc() + background->getSize());
 }
 
 void UachievementWidget::updateText() {

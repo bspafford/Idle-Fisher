@@ -1,6 +1,7 @@
 #include "Image.h"
 #include "Input.h"
 #include "textureManager.h"
+#include "ScissorTest.h"
 
 #include "debugger.h"
 
@@ -83,7 +84,10 @@ bool Image::isMouseOver(bool ignoreTransparent) {
 	vector size = getSize();
 	vector min = imgLoc;
 	vector max = min + size;
-	if (mousePos.x >= min.x && mousePos.x <= max.x && mousePos.y >= min.y && mousePos.y <= max.y) {
+
+	// checks to see if there is a scissor test and if the mouse is inside of it
+	bool insideScissor = math::IsPointInRect(mousePos, ScissorTest::GetCurrRect());
+	if (insideScissor && math::IsPointInRect(mousePos, min, max)) {
 		if (ignoreTransparent) {
 			vector relPos = mousePos - min;
 			if (textureStructPtr->GetAlphaAtPos(relPos))

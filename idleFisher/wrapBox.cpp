@@ -3,26 +3,13 @@
 #include "debugger.h"
 
 UwrapBox::UwrapBox(widget* parent, vector loc, vector size) : widget(parent) {
-	this->loc = loc;
-	ogLoc = loc;
-	this->size = size;
+	setLocAndSize(loc, size);
 }
 
 void UwrapBox::draw(Shader* shaderProgram) {
-	vector offset = loc + vector{ 0, stuff::pixelSize };
-
-	for (widget* child : childrenList) {
-		// need to update position depending on index in horizontal box
-		vector childSize = child->getSize();
-		if (offset.x + childSize.x > size.x + loc.x - stuff::pixelSize) { // if loc + size is out of box, then change y and set x to loc.x
-			offset.x = loc.x;
-			offset.y += childSize.y;
-		}
-
-		child->setLoc(offset);
-		child->draw(shaderProgram);
-		offset.x += childSize.x;
-	}
+	for (widget* child : childrenList)
+		if (child)
+			child->draw(shaderProgram);
 }
 
 void UwrapBox::addChild(widget* child) {
@@ -38,24 +25,41 @@ std::vector<widget*> UwrapBox::getAllChildren() {
 	return childrenList;
 }
 
-vector UwrapBox::getOverflowSize() {
-	vector offset = vector{ stuff::pixelSize, stuff::pixelSize };
-
-	for (widget* child : childrenList) {
-		// need to update position depending on index in horizontal box
-		vector childSize = child->getSize();
-		if (offset.x + childSize.x > size.x + loc.x - stuff::pixelSize) { // if loc + size is out of box, then change y and set x to loc.x
-			offset.x = loc.x;
-			offset.y += childSize.y;
-		}
-
-		offset.x += childSize.x;
+void UwrapBox::UpdateChildren() {
+	if (childrenList.empty()) {
+		overflowSizeY = 0.f;
+		return;
 	}
 
-	if (childrenList.size() > 0)
-		overflowSizeY = offset.y + childrenList[int(childrenList.size()) - 1]->getSize().y;
-	else
-		overflowSizeY = 0;
+	vector initialOffset = absoluteLoc + vector{ 0.f, size.y }; // keep left and bottom aligned
+	vector offset = initialOffset;
 
-	return { size.x, overflowSizeY };
+	
+	vector childSize;
+	for (widget* child : childrenList) {
+		if (!child)
+			continue;
+
+		childSize = child->getSize();
+		child->setLoc(offset - vector{ 0.f, childSize.y });
+
+		if (offset.x + childSize.x > initialOffset.x + size.x) { // wrap to next line
+			offset.x = initialOffset.x;
+			offset.y -= childSize.y;
+		} else
+			offset.x += childSize.x;
+		
+	}
+
+	offset.y -= childSize.y; // account for last row height
+	overflowSizeY = initialOffset.y - offset.y;
+}
+
+void UwrapBox::setLoc(vector loc) {
+	__super::setLoc(loc);
+	UpdateChildren();
+}
+
+float UwrapBox::getOverflowSize() {
+	return std::abs(overflowSizeY);
 }

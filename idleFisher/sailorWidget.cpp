@@ -22,6 +22,7 @@ UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
 	map = std::make_unique<Umap>(this, mapSize);
 
 	xButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	xButton->SetPivot({ 0.5f, 0.5f });
 	xButton->addCallback(this, &UsailorWidget::closeWidget);
 
 	mapClosed = std::make_unique<Image>("./images/widget/mapClosed.png", vector{ 0, 0 }, false);
@@ -68,7 +69,7 @@ void UsailorWidget::draw(Shader* shaderProgram) {
 
 void UsailorWidget::setupLocs() {
 	if (xButton)
-		xButton->setLoc(mapBackground->getAbsoluteLoc() + vector{ mapBackground->getSize().x - 13.f, 5 });
+		xButton->setLoc(mapBackground->getAbsoluteLoc() + mapBackground->getSize() - 10.f);
 
 	if (mapAnim && mapBackground)
 		mapAnim->setLoc(mapBackground->getAbsoluteLoc());

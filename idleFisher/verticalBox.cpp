@@ -55,7 +55,6 @@ void verticalBox::setLocAndSize(vector loc, vector size) {
 }
 
 void verticalBox::UpdateChildren() {
-	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
 	float initialOffset = absoluteLoc.y + size.y;
 	float yOffset = initialOffset;
 

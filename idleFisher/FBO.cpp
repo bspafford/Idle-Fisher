@@ -19,7 +19,7 @@ FBO::FBO(vector size, bool useWorldPos) {
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "FBO is incomplete!" << std::endl;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, GetCurrFBO());
+	glBindFramebuffer(GL_FRAMEBUFFER, GetCurrFBO().ID);
 }
 
 FBO::~FBO() {
@@ -66,6 +66,6 @@ void FBO::Unbind() {
 	glScissor(scissorRect.x * stuff::pixelSize, scissorRect.y * stuff::pixelSize, scissorRect.w * stuff::pixelSize, scissorRect.h * stuff::pixelSize);
 }
 
-GLuint FBO::GetCurrFBO() {
-	return fboStack.empty() ? 0 : fboStack.top().ID;
+FBOData FBO::GetCurrFBO() {
+	return fboStack.empty() ? FBOData(0, stuff::screenSize / stuff::pixelSize) : fboStack.top();
 }

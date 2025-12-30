@@ -9,6 +9,7 @@
 
 UhoverBox::UhoverBox(widget* parent) : widget(parent) {
 	img = std::make_unique<Image>("./images/widget/hoverImg.png", Input::getMousePos(), false);
+	img->SetPivot({ 0.f, 1.f });
 	name = std::make_unique<text>(this, " ", "straight", vector{0, 0});
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
 	description->setLineLength(250);
@@ -23,23 +24,26 @@ UhoverBox::~UhoverBox() {
 void UhoverBox::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
-	// if right is off screen, add offset
-	// same for bottom
 
 	vector mousePos = Input::getMousePos();
-	if (mousePos.x + size.x + 7 * stuff::pixelSize >= stuff::screenSize.x) // out of range on right
-		img->setLoc({ mousePos.x - size.x - 7 * stuff::pixelSize, img->getLoc().y });
+	vector screenSize = stuff::screenSize / (stuff::pixelSize / 2.f);
+	vector pivot = { 0.f, 0.f };
+	if (mousePos.x + size.x + 7.f >= screenSize.x) // out of range on right
+		pivot.x = 1.f;
 	else
-		img->setLoc({ mousePos.x + 7 * stuff::pixelSize, img->getLoc().y });
-
-	if (mousePos.y + size.y + 7 * stuff::pixelSize >= stuff::screenSize.y) // out of range on bottom
-		img->setLoc({ img->getLoc().x, mousePos.y - size.y - 7 * stuff::pixelSize });
+		pivot.x = 0.f;
+	
+	if (mousePos.y + size.y + 7.f >= screenSize.y) // out of range on bottom
+		pivot.y = 0.f;
 	else
-		img->setLoc({ img->getLoc().x, mousePos.y + 7 * stuff::pixelSize });
+		pivot.y = 1.f;
 
-	name->setLoc(img->getLoc() + 5 * stuff::pixelSize);
-	description->setLoc({ img->getLoc() + vector{5, 11} *stuff::pixelSize});
-	other->setLoc(img->getLoc() + vector{img->getSize().x, 0} + vector{-5, 5} *stuff::pixelSize);
+	img->SetPivot(pivot);
+	img->setLoc(mousePos + vector{ 7.f, 7.f } * vector{ 1.f - pivot.x * 2.f, 1.f - pivot.y * 2.f });
+
+	name->setLoc(img->getAbsoluteLoc() + 5.f);
+	description->setLoc(img->getAbsoluteLoc() + vector{ 5.f, 11.f });
+	other->setLoc(img->getAbsoluteLoc() + vector{ img->getSize().x - 5.f, 5.f });
 
 	img->draw(shaderProgram);
 	name->draw(shaderProgram);

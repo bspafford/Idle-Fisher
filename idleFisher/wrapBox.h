@@ -11,9 +11,14 @@ public:
 	widget* getChildAt(int index);
 	std::vector<widget*> getAllChildren();
 
-	vector getOverflowSize();
+	void setLoc(vector loc) override;
+
+	float getOverflowSize();
+
 private:
+	void UpdateChildren();
+
 	std::vector<widget*> childrenList;
 
-	float overflowSizeY = 0;
+	float overflowSizeY = 0.f;
 };

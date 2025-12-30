@@ -67,4 +67,8 @@ public:
 
 	// lowercases string
 	static std::string toLower(std::string str);
+
+	// rect: location and size
+	static bool IsPointInRect(vector p, Rect rect);
+	static bool IsPointInRect(vector p, vector min, vector max);
 };

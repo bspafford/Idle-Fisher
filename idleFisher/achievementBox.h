@@ -26,10 +26,6 @@ private:
 	FachievementStruct* achievementStruct;
 	FsaveAchievementStruct* saveAchievementStruct;
 
-	bool isMouseOver;
-	// was the mouser over last frame
-	bool isMouseOverPrev;
-
 	vector startSize;
 	static inline float rot;
 

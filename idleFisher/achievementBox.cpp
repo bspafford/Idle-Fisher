@@ -52,8 +52,6 @@ void UachievementBox::updateAchievementImage() {
 void UachievementBox::draw(Shader* shaderProgram) {
 	if (icon) {
 		if (mouseOver()) {
-			isMouseOver = true;
-
 			float scale = 1.3f;
 			icon->setSize(startSize * scale);
 
@@ -75,19 +73,6 @@ vector UachievementBox::getSize() {
 		return startSize;
 	return { 0, 0 };
 }
-
 bool UachievementBox::mouseOver() {
-	vector mousePos = Input::getMousePos();
-
-	if (!getParent() && mousePos.x >= loc.x && mousePos.x <= loc.x + startSize.x && mousePos.y >= loc.y && mousePos.y <= loc.y + startSize.y)
-		return true;
-	else if (getParent()) {
-		vector parentLoc = getParent()->getLoc();
-		vector parentSize = getParent()->getSize();
-		if (mousePos.x >= loc.x && mousePos.x <= loc.x + startSize.x && mousePos.y >= loc.y && mousePos.y <= loc.y + startSize.y)
-			// test if inside the rect too
-			if (mousePos.x >= parentLoc.x && mousePos.x <= parentLoc.x + parentSize.x && mousePos.y >= parentLoc.y && mousePos.y <= parentLoc.y + parentSize.y)
-				return true;
-	}
-	return false;
+	return icon->isMouseOver();
 }

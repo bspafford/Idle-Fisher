@@ -144,3 +144,11 @@ std::string math::toLower(std::string str) {
 		});
 	return str;
 }
+
+bool math::IsPointInRect(vector p, Rect rect) {
+	return (p.x >= rect.x && p.x <= rect.x + rect.w && p.y >= rect.y && p.y <= rect.y + rect.h);
+}
+
+bool math::IsPointInRect(vector p, vector min, vector max) {
+	return (p.x >= min.x && p.x <= max.x && p.y >= min.y && p.y <= max.y);
+}
