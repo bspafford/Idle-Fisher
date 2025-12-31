@@ -2,13 +2,18 @@
 
 ConfirmWidget::ConfirmWidget(widget* parent) : widget(parent) {
 	backgroundImage = std::make_unique<Image>("./images/widget/confirmBox.png", vector{ 0, 0 }, false);
+	backgroundImage->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	backgroundImage->SetPivot({ 0.5f, 0.5f });
 	saveText = std::make_unique<text>(this, "Do you want to save settings?", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	saveButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	revertButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	cancelButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
 	saveButtonText = std::make_unique<text>(this, "Save", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	saveButtonText->SetPivot({ 0.f, 0.5f });
 	revertButtonText = std::make_unique<text>(this, "Revert", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	revertButtonText->SetPivot({ 0.f, 0.5f });
 	cancelButtonText = std::make_unique<text>(this, "Cancel", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	cancelButtonText->SetPivot({ 0.f, 0.5f });
 
 	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.333f));
 	rect->setBlockCursor(true);
@@ -31,13 +36,11 @@ void ConfirmWidget::draw(Shader* shader) {
 }
 
 void ConfirmWidget::setLoc(vector loc) {
-	vector center = stuff::screenSize / 2.f;
-	vector backgroundLoc = center - backgroundImage->getSize() / 2.f;
-	backgroundImage->setLoc(backgroundLoc);
-	saveText->setLoc(center + vector(0, -8) * stuff::pixelSize);
-	saveButton->setLoc(backgroundLoc + vector(7, 55) * stuff::pixelSize);
-	revertButton->setLoc(backgroundLoc + vector(47, 55) * stuff::pixelSize);
-	cancelButton->setLoc(backgroundLoc + vector(87, 55) * stuff::pixelSize);
+	vector backgroundLoc = backgroundImage->getAbsoluteLoc();
+	saveText->setLoc(backgroundLoc + backgroundImage->getSize() / 2.f + vector(0.f, 8.f));
+	saveButton->setLoc(backgroundLoc + vector(7.f, 10.f));
+	revertButton->setLoc(backgroundLoc + vector(47.f, 10.f));
+	cancelButton->setLoc(backgroundLoc + vector(87.f, 10.f));
 	saveButtonText->setLoc(saveButton->getLoc() + saveButton->getSize() / 2.f);
 	revertButtonText->setLoc(revertButton->getLoc() + revertButton->getSize() / 2.f);
 	cancelButtonText->setLoc(cancelButton->getLoc() + cancelButton->getSize() / 2.f);

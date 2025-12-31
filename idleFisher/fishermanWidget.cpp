@@ -45,7 +45,7 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 
 	// fishing rod page
 	fishingRodThumbnail = std::make_unique<Image>("./images/widget/thumbnails/fishingRodThumbnail1.png", vector{ 0, 0 }, false);
-	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 2.f);
+	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 4.f);
 	fishingRodThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishingRodThumbnail->SetPivot({ 1.f, 0.5f });
 
@@ -223,7 +223,7 @@ void UfishermanWidget::setupLocs() {
 
 	closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 
-	fishingRodThumbnail->setLoc(vector{ 5.f, 0 });
+	fishingRodThumbnail->setLoc(vector{ 30.f, 0 });
 
 	// price buttons, name, and levels
 	vector offset = { -45.f, 30.f };

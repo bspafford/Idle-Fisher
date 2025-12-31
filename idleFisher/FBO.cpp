@@ -28,7 +28,7 @@ FBO::~FBO() {
 }
 
 void FBO::Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color) {
-	textureManager::DrawImage(shader, position, size, source, useWorldPos, glm::vec4(1), texture->GetHandle());
+	textureManager::DrawImage(shader, position, size, source, useWorldPos, color, texture->GetHandle());
 }
 
 vector FBO::GetSize() {

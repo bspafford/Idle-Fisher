@@ -24,6 +24,7 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	background->SetPivot({ 0.5f, 0.5f });
 
 	backButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	backButton->SetPivot({ 0.5f, 0.5f });
 	backButton->addCallback(this, &Usettings::goBack);
 
 	scrollBox = std::make_unique<UscrollBox>(this);
@@ -39,14 +40,18 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	scrollBox->addChild(settingsTitle.get(), settingsTitle->getSize().y + 3);
 
 	saveButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
+	saveButton->SetPivot({ 1.f, 0.f });
 	saveButton->addCallback(this, &Usettings::SaveSettings);
 	saveText = std::make_unique<text>(this, "Save", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	
+	saveText->SetPivot({ 0.f, 0.5f });
+
 	cancelButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
+	cancelButton->SetPivot({ 1.f, 0.f });
 	cancelButton->addCallback(this, &Usettings::cancel);
 	
 	cancelText = std::make_unique<text>(this, "Revert", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	
+	cancelText->SetPivot({ 0.f, 0.5f });
+
 // audio
 	scrollBox->addChild(audioTitle.get(), audioTitle->getSize().y + 3);
 
@@ -198,23 +203,17 @@ void Usettings::goBack() {
 }
 
 void Usettings::setupLocs() {
-	if (backButton) {
-		vector backButtonSize = backButton->getSize();
-		backButton->setLoc({ float(background->getLoc().x + (background->getSize().x - 4.f) - backButtonSize.x / 2.f), float(background->getLoc().y - backButtonSize.y / 2.f + 4.f)});
-	}
+	if (backButton)
+		backButton->setLoc(background->getAbsoluteLoc() + background->getSize() - 3.f);
 
 	vector scrollBoxLoc = background->getAbsoluteLoc() + vector{ 9.f, 8.f };
 	vector scrollBoxSize = background->getSize() - 17.f;
 	scrollBox->setLocAndSize(scrollBoxLoc, scrollBoxSize);
 
-	if (cancelButton && background && saveButton)
-		cancelButton->setLoc(background->getLoc() + background->getSize() - saveButton->getSize() - vector{10.f, 10.f});
-	if (cancelText && cancelButton)
-		cancelText->setLoc(cancelButton->getLoc() + cancelButton->getSize() / 2.f);
-	if (saveButton && cancelButton)
-		saveButton->setLoc(cancelButton->getLoc() - vector{saveButton->getSize().x + 2.f, 0 });
-	if (saveText && saveButton)
-		saveText->setLoc(saveButton->getLoc() + saveButton->getSize() / 2.f);
+	cancelButton->setLoc(background->getAbsoluteLoc() + vector{ background->getSize().x - 10.f, 10.f });
+	cancelText->setLoc(cancelButton->getAbsoluteLoc() + cancelButton->getSize() / 2.f);
+	saveButton->setLoc(cancelButton->getAbsoluteLoc() - vector{ 2.f, 0 });
+	saveText->setLoc(saveButton->getAbsoluteLoc() + saveButton->getSize() / 2.f);
 }
 
 void Usettings::cancel() {

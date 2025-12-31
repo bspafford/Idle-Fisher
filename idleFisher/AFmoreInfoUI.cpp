@@ -17,6 +17,8 @@ AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(par
 	this->autoFisher = autoFisher;
 
 	background = std::make_unique<Image>("./images/autoFisher/moreUI/UI.png", vector{ 0, 0 }, false);
+	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	background->SetPivot({ 0.5f, 0.5f });
 
 	fisherNum = std::make_unique<text>(this, "#" + std::to_string(autoFisher->autoFisherNum + 1), "afScreen", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 
@@ -25,6 +27,7 @@ AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(par
 	fullnessText = std::make_unique<text>(this, "42/122", "afScreen", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 
 	closeButton = std::make_unique<Ubutton>(this, "autoFisher/moreUI/xButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	closeButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	closeButton->addCallback(this, &AFmoreInfoUI::closeUI);
 
 	fpsText = std::make_unique<text>(this, shortNumbers::convert2Short(autoFisher->calcFPS()), "afScreen", vector{ 0, 0 });
@@ -42,18 +45,17 @@ AFmoreInfoUI::~AFmoreInfoUI() {
 }
 
 void AFmoreInfoUI::setupLocs() {
-	background->setLoc((stuff::screenSize - background->getSize()) / 2.f);
-	fisherNum->setLoc({ stuff::screenSize.x / 2.f + 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f - 73 * stuff::pixelSize });
-	levelText->setLoc({stuff::screenSize.x / 2.f + 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f - 40 * stuff::pixelSize});
-	fullnessText->setLoc({ stuff::screenSize.x / 2.f,  stuff::screenSize.y / 2.f - 6 * stuff::pixelSize });
+	fisherNum->setLoc(background->getAbsoluteLoc() + vector{ 141.f, 178.f });
+	levelText->setLoc(background->getAbsoluteLoc() + vector{ 141.f, 145.f });
+	fullnessText->setLoc(background->getAbsoluteLoc() + vector{ background->getSize().x / 2.f, 111.f });
 	if (closeButton)
-		closeButton->setLoc({ stuff::screenSize.x / 2.f + 72 * stuff::pixelSize,  stuff::screenSize.y / 2.f - 108 * stuff::pixelSize });
+		closeButton->setLoc({ 72.f, 98.f });
 	if (fpsText)
-		fpsText->setLoc({ stuff::screenSize.x / 2.f - 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f + 28 * stuff::pixelSize });
+		fpsText->setLoc(background->getAbsoluteLoc() + vector{ 34.f, 70.f});
 	if (mpsText)
-		mpsText->setLoc({ stuff::screenSize.x / 2.f - 54 * stuff::pixelSize,  stuff::screenSize.y / 2.f + 48 * stuff::pixelSize });
-	fullnessBar->setLoc(background->getLoc());
-	levelBar->setLoc(background->getLoc());
+		mpsText->setLoc(background->getAbsoluteLoc() + vector{ 34.f, 50.f });
+	fullnessBar->setLoc(background->getAbsoluteLoc());
+	levelBar->setLoc(background->getAbsoluteLoc());
 }
 
 void AFmoreInfoUI::draw(Shader* shaderProgram) {
