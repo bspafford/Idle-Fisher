@@ -40,6 +40,7 @@
 #include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
 #include "blurBox.h"
+#include "settings.h"
 
 #include "debugger.h"
 
@@ -73,18 +74,10 @@ Main::~Main() {
 }
 
 int Main::createWindow() {
-	fpsCap = 0;
-
-	stuff::screenSize = { 1920, 1080 };
+	SaveData::loadSettings();
 
 	// Initialize GLFW
 	glfwInit();
-
-	// full screen
-	if (false) {
-		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // Set no decorations
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent resizing
-	}
 
 	// Tell GLFW what version of OpenGL we are using 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -93,7 +86,8 @@ int Main::createWindow() {
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
+	Rect monitorRect = GetMonitorRect();
+
 	window = glfwCreateWindow(static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y), "Idle Fisher", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == nullptr) {
@@ -102,8 +96,10 @@ int Main::createWindow() {
 		return -1;
 	}
 
-	// borderless fullscreen
-	glfwSetWindowPos(window, 0, 0);
+	SetVsync();
+	SetFpsLimit();
+	SetResolution();
+	glfwSetWindowPos(window, monitorRect.x, monitorRect.y);
 
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
@@ -165,8 +161,12 @@ int Main::createWindow() {
 	while (!glfwWindowShouldClose(window)) {
 		auto currentTime = std::chrono::steady_clock::now();
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+
+		if (fpsCap != 0 && deltaTime < 1.f / fpsCap)
+			continue;
+
 		lastTime = currentTime;
-		//std::cout << "fps: " << 1.f / deltaTime << std::endl;
+
 		//fps::showFPS(true);
 		//fps::update(deltaTime);
 
@@ -244,15 +244,12 @@ int Main::createWindow() {
 
 		glfwSwapBuffers(window);
 
+#ifdef _DEBUG
 		// checks for errors
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR)
 			std::cout << "OpenGL Error: " << err << std::endl;
-
-		if (fpsCap != 0) {
-			const auto cappedFPS = std::chrono::milliseconds(int(1000.f / float(fpsCap)));
-			std::this_thread::sleep_until(currentTime + cappedFPS);
-		}
+#endif
 	}
 
 	running = false;
@@ -278,13 +275,13 @@ void Main::Start() {
 	glfwSetMouseButtonCallback(window, Input::mouseButtonCallback);
 	glfwSetScrollCallback(window, Input::scrollCallback);
 	glfwSetCursorPosCallback(window, Input::cursorPosCallback);
+	glfwSetMonitorCallback(monitorCallback);
 
 	Input::Init();
 	textureManager::textureManager();
 	sounds::sounds();
 	csvReader();
 	SaveData::load();
-	SaveData::loadSettings();
 	upgrades::init();
 	achievementBuffs::init();
 
@@ -519,6 +516,103 @@ void Main::setTaskbarIcon(GLFWwindow* window) {
 	// polls events to update the taskbar icon
 	// otherwise something like loading all the textures will cause too long of a hold
 	glfwPollEvents();
+}
+
+GLFWmonitor* Main::GetCurrentMonitor() {
+	int count;
+	GLFWmonitor** monitors = glfwGetMonitors(&count); // for now just returns primary monitor
+	if (SaveData::settingsData.monitorIdx < 0 || SaveData::settingsData.monitorIdx >= count)
+		SaveData::settingsData.monitorIdx = 0; // set to primary default
+
+	return monitors[SaveData::settingsData.monitorIdx];
+}
+
+Rect Main::GetMonitorRect() {
+	int xPos, yPos, width, height;
+	int count;
+	GLFWmonitor* monitors = GetCurrentMonitor();
+	glfwGetMonitorPos(monitors, &xPos, &yPos);
+	const GLFWvidmode* mode = glfwGetVideoMode(monitors);
+	stuff::screenSize = { static_cast<float>(mode->width), static_cast<float>(mode->height) };
+	return Rect{ static_cast<float>(xPos), static_cast<float>(yPos), stuff::screenSize.x, stuff::screenSize.y };
+}
+
+void Main::SetFullScreen() {
+	// Get the primary monitor and its current video mode
+	GLFWmonitor* monitor = GetCurrentMonitor();
+	Rect monitorRect = GetMonitorRect();
+
+	switch (SaveData::settingsData.fullScreen) {
+		case 0: // fullscreen
+			glfwSetWindowMonitor(window, monitor, monitorRect.x, monitorRect.y, monitorRect.w, monitorRect.h, GLFW_DONT_CARE);
+			break;
+		case 1: // borderless
+			glfwSetWindowMonitor(window, NULL, monitorRect.x, monitorRect.y, monitorRect.w, monitorRect.h, GLFW_DONT_CARE);
+			break;
+		case 2: // windowed
+			glfwSetWindowMonitor(window, NULL, monitorRect.x + 20, monitorRect.y + 20, 800, 600, GLFW_DONT_CARE);
+			break;
+	}
+}
+
+void Main::SetVsync() {
+	fpsCap = SaveData::settingsData.vsync ? glfwGetVideoMode(GetCurrentMonitor())->refreshRate : 0;
+}
+
+void Main::SetResolution() {
+	switch(SaveData::settingsData.resolution) {
+		case RES_NATIVE: {
+			Rect monitorRect = GetMonitorRect();
+			stuff::screenSize = { monitorRect.w, monitorRect.h };
+			break;
+		}
+		case RES_1280x720:
+			stuff::screenSize = { 1280, 720 };
+			break;
+		case RES_1920x1080:
+			stuff::screenSize = { 1920, 1080 };
+			break;
+		case RES_2560x1440:
+			stuff::screenSize = { 2560, 1440 };
+			break;
+	}
+
+	glfwSetWindowSize(window, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
+}
+
+void Main::SetFpsLimit() {
+	if (SaveData::settingsData.vsync)
+		return;
+
+	switch (SaveData::settingsData.fpsLimit) {
+	case 0:
+		fpsCap = 0;
+		break;
+	case 1:
+		fpsCap = 1;
+		break;
+	case 2:
+		fpsCap = 30;
+		break;
+	case 3:
+		fpsCap = 60;
+		break;
+	case 4:
+		fpsCap = 120;
+		break;
+	case 5:
+		fpsCap = 240;
+		break;
+	}
+}
+
+int Main::GetFPSLimit() {
+	return fpsCap;
+}
+
+void Main::monitorCallback(GLFWmonitor* monitor, int event) {
+	if (event == GLFW_CONNECTED || event == GLFW_DISCONNECTED)
+		pauseMenu->GetSettingsWidget()->getAllMonitors();
 }
 
 bool Main::IsRunning() {

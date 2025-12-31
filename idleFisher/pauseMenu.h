@@ -14,6 +14,9 @@ public:
 	UpauseMenu(widget* parent);
 	~UpauseMenu();
 	void draw(Shader* shaderProgram);
+
+	Usettings* GetSettingsWidget();
+
 private:
 	void setupLocs() override;
 

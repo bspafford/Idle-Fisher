@@ -4,6 +4,13 @@
 #include <chrono>
 #include <string>
 
+enum Resolution {
+    RES_NATIVE,
+    RES_1280x720,
+    RES_1920x1080,
+    RES_2560x1440
+};
+
 struct FfishData {
     int id;
     std::string name;
@@ -505,11 +512,16 @@ struct FsettingsData {
     float dialogVolume = 100;
 
     // graphics
-    bool pixelFont = true;
-    bool shortNumbers = true;
-    bool showPets = true;
-    bool showRain = true;
-    bool cursor = true;
+    int monitorIdx = 0; // 0 = primary
+    int fullScreen = false;
+    int resolution = RES_NATIVE;
+    int vsync = false;
+    int fpsLimit = 0; // 0 is uncapped
+    int pixelFont = true;
+    int shortNumbers = true;
+    int showPets = true;
+    int showRain = true;
+    int cursor = true;
 
     // compares the struct byte by byte, so i don't have to manually update it
     bool operator==(const FsettingsData other) {

@@ -17,7 +17,16 @@ public:
 	~Usettings();
 	void draw(Shader* shaderProgram);
 	void setupLocs() override;
+
+	// adds which settings block was changed to the queue to update once user pressed the save button
+	static void AddToQueue(UsettingsBlock* settingsBlock);
+
+	// Updates the monitor options in the settings menu
+	void getAllMonitors();
+
 private:
+	static inline std::vector<UsettingsBlock*> settingsChangedQueue;
+
 	virtual void addedToViewport() override;
 
 	void SaveSettings();
@@ -64,6 +73,11 @@ private:
 
 	// graphics
 	std::unique_ptr<text> graphicsTitle;
+	std::unique_ptr<UsettingsBlock> monitorBlock;
+	std::unique_ptr<UsettingsBlock> fullScreenBlock;
+	std::unique_ptr<UsettingsBlock> vsyncBlock;
+	std::unique_ptr<UsettingsBlock> resolutionBlock;
+	std::unique_ptr<UsettingsBlock> fpsLimitBlock;
 	std::unique_ptr<UsettingsBlock> pixelFontBlock;
 	std::unique_ptr<UsettingsBlock> shortNumBlock;
 	std::unique_ptr<UsettingsBlock> petBlock;

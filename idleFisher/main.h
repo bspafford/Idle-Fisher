@@ -87,6 +87,13 @@ public:
 
 	static void drawWidgets(Shader* shaderProgram);
 
+	// window stuff
+	static void SetFullScreen();
+	static void SetVsync();
+	static void SetResolution();
+	static void SetFpsLimit();
+	static int GetFPSLimit();
+
 private:
 	static inline GLFWwindow* window;
 
@@ -95,7 +102,12 @@ private:
 	void updateShaders(float deltaTime);
 	void draw3D(Shader* shaderProgram);
 	void draw(Shader* shaderProgram);
+
+	// window stuff
 	void setTaskbarIcon(GLFWwindow* window);
+	static GLFWmonitor* GetCurrentMonitor();
+	static Rect GetMonitorRect();
+	static void monitorCallback(GLFWmonitor* monitor, int event);
 
 	static void windowSizeCallback(GLFWwindow* window, int width, int height);
 	static void checkInputs();
@@ -104,7 +116,7 @@ private:
 
 	bool renderShadows = false;
 
-	int fpsCap = 0; // 0 is not cap
+	static inline int fpsCap = 0; // 0 is uncapped
 	static inline bool running = true;
 
 	// water stuff

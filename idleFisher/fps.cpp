@@ -1,5 +1,6 @@
 #include "fps.h"
 #include "timer.h"
+#include "main.h"
 
 #include <iostream>
 
@@ -22,8 +23,9 @@ void fps::update(float deltaTime) {
 	num++;
 	total += deltaTime;
 
-	if (1 / deltaTime < 1000) {
-		std::cout << "low fps: " << 1 / deltaTime << std::endl;
+	float fps = 1.f / deltaTime;
+	if (Main::GetFPSLimit() == 0 && fps < 1000.f) {
+		std::cout << "low fps: " << fps << std::endl;
 	}
 }
 

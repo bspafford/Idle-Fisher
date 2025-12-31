@@ -61,14 +61,14 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	float titleSliderLength = 38;
 	glm::vec4 sliderForegroundColor = glm::vec4(0.94901960784, 0.91372549019, 0.82745098039, 1);
 	glm::vec4 sliderBackgroundColor = glm::vec4(181.f / 255.f, 145.f / 255.f, 101.f/255.f, 1);
-	masterVolumeSlider = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0, 100);
+	masterVolumeSlider = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0.f, 100.f);
 	masterVolumeSlider->setForegroundColor(sliderForegroundColor);
 	masterVolumeSlider->setBackgroundColor(sliderBackgroundColor);
 	masterVolumeSlider->setSliderTitle("     Master");
 	masterVolumeSlider->bindValue(&SaveData::settingsData.masterVolume);
 	masterVolumeSlider->setTitleLength(titleSliderLength);
 
-	musicVolume = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0, 100);
+	musicVolume = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0.f, 100.f);
 	musicVolume->setForegroundColor(sliderForegroundColor);
 	musicVolume->setBackgroundColor(sliderBackgroundColor);
 	musicVolume->setSliderTitle("     Music");
@@ -98,6 +98,26 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 
 // graphics
 	scrollBox->addChild(graphicsTitle.get(), graphicsTitle->getSize().y + 3);
+
+	monitorBlock = std::make_unique<UsettingsBlock>(this, "Monitor", length, std::vector<std::string>{}, & SaveData::settingsData.monitorIdx);
+	monitorBlock->addCallback(Main::SetFullScreen);
+	getAllMonitors();
+	scrollBox->addChild(monitorBlock.get(), monitorBlock->getSize().y);
+
+	fullScreenBlock = std::make_unique<UsettingsBlock>(this, "Full Screen", length, std::vector<std::string>{ "Full Screen", "Borderless", "Windowed" }, & SaveData::settingsData.fullScreen);
+	fullScreenBlock->addCallback(Main::SetFullScreen);
+	scrollBox->addChild(fullScreenBlock.get(), fullScreenBlock->getSize().y);
+	// drop down
+	resolutionBlock = std::make_unique<UsettingsBlock>(this, "Resolution", length, std::vector<std::string>{ "Native", "1280x720", "1920x1080", "2560x1440" }, & SaveData::settingsData.resolution);
+	resolutionBlock->addCallback(Main::SetResolution);
+	scrollBox->addChild(resolutionBlock.get(), resolutionBlock->getSize().y);
+	vsyncBlock = std::make_unique<UsettingsBlock>(this, "Vsync", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.vsync);
+	vsyncBlock->addCallback(Main::SetVsync);
+	scrollBox->addChild(vsyncBlock.get(), vsyncBlock->getSize().y);
+	// drop down
+	fpsLimitBlock = std::make_unique<UsettingsBlock>(this, "Limit FPS", length, std::vector<std::string>{ "Off", "1", "30", "60", "120", "240" }, & SaveData::settingsData.fpsLimit);
+	fpsLimitBlock->addCallback(Main::SetFpsLimit);
+	scrollBox->addChild(fpsLimitBlock.get(), fpsLimitBlock->getSize().y);
 
 	pixelFontBlock = std::make_unique<UsettingsBlock>(this, "Pixel Font", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.pixelFont);
 	pixelFontBlock->addCallback(text::changeFontAll);
@@ -156,6 +176,11 @@ void Usettings::addedToViewport() {
 }
 
 void Usettings::SaveSettings() {
+	// apply all of the settings / call all callback functions
+	for (UsettingsBlock* settingsBlock : settingsChangedQueue)
+		settingsBlock->CallCallback();
+	settingsChangedQueue.clear();
+
 	prevSettingsData = SaveData::settingsData;
 	SaveData::saveSettings();
 }
@@ -168,6 +193,10 @@ void Usettings::UpdateData() {
 	dialogVolume->UpdateValue();
 
 	// graphics
+	fullScreenBlock->UpdateValue();
+	vsyncBlock->UpdateValue();
+	resolutionBlock->UpdateValue();
+	fpsLimitBlock->UpdateValue();
 	pixelFontBlock->UpdateValue();
 	shortNumBlock->UpdateValue();
 	petBlock->UpdateValue();
@@ -246,4 +275,22 @@ void Usettings::revertConfirm() {
 // cancels and returns to page
 void Usettings::cancelConfirm() {
 	showingConfirmationBox = false;
+}
+
+void Usettings::AddToQueue(UsettingsBlock* settingsBlock) {
+	settingsChangedQueue.push_back(settingsBlock);
+}
+
+void Usettings::getAllMonitors() {
+	monitorBlock->ClearOptions();
+
+	int count;
+	GLFWmonitor** monitors = glfwGetMonitors(&count);
+	for (int i = 0; i < count; i++) {
+		const char* monitorName = glfwGetMonitorName(monitors[i]);
+		std::string primaryString = i == 0 ? " (primary)" : "";
+		monitorBlock->AddOption(std::string(monitorName) + primaryString);
+	}
+
+	monitorBlock->UpdateValue();
 }

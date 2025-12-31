@@ -7,7 +7,7 @@ class Ubutton;
 
 class UsettingsBlock : public widget {
 public:
-	UsettingsBlock(widget* parent, std::string optionsName, int length, std::vector<std::string> options, bool* settingsValue);
+	UsettingsBlock(widget* parent, std::string optionsName, int length, std::vector<std::string> options, int* settingsValue);
 
 	void draw(Shader* shaderProgram) override;
 
@@ -19,10 +19,15 @@ public:
 	}
 	void addCallback(void (*callback) ());
 
+	void CallCallback();
+
 	void toggleOption();
 	std::string getSelectedOption();
 
 	void UpdateValue();
+
+	void AddOption(std::string option);
+	void ClearOptions();
 
 private:
 	void SetValue(int value);
@@ -36,5 +41,6 @@ private:
 	std::function<void()> callback_;
 
 	int currOptionsIdx = 0;
-	bool* settingsValue;
+
+	int* settingsValue;
 };

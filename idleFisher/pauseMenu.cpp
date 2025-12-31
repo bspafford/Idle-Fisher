@@ -94,3 +94,7 @@ void UpauseMenu::exitToMenu() {
 void UpauseMenu::exitToDesktop() {
 	glfwSetWindowShouldClose(Main::GetWindow(), true);
 }
+
+Usettings* UpauseMenu::GetSettingsWidget() {
+	return settingsWidget.get();
+}
