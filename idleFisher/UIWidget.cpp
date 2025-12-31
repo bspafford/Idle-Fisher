@@ -121,10 +121,10 @@ void UUIWidget::updateProgressBar(double points, double progress, double needed)
 
 void UUIWidget::setupLocs() {
 	vector size = progressBar->getSize();
-	vector loc = { stuff::screenSize.x - size.x - 2 * stuff::pixelSize, 2 * stuff::pixelSize};
+	vector loc = { stuff::screenSize.x - size.x - 2.f, 2.f };
 	progressBar->setLoc(loc);
 	currRunRebirthPoints->setLoc(loc);
-	rebirthPointNum->setLoc(vector{ stuff::screenSize.x - stuff::pixelSize, loc.y + rebirthPointNum->getSize().y + stuff::pixelSize });
+	rebirthPointNum->setLoc(vector{ stuff::screenSize.x - 1.f, loc.y + rebirthPointNum->getSize().y + 1.f });
 
 	if (NPCshowButton) {
 		NPCshowButton->setLoc({ 4, 4 });
@@ -182,12 +182,13 @@ void UUIWidget::updateButtonsLoc() {
 	if (SaveData::saveData.npcSave[worldId].atmDiscovered)
 		buttonsList.push_back(atmButton.get());
 
-	vector startLoc = NPCshowButton->getLoc() + vector{ 8 * stuff::pixelSize, 2 * stuff::pixelSize };
-	float end = buttonsList.size() * 60.f + startLoc.x;
+	vector startLoc = NPCshowButton->getLoc() + vector{ 8.f, 2.f };
+	float length = 20.f;
+	float end = buttonsList.size() * length + startLoc.x;
 	for (int i = 0; i < buttonsList.size(); i++) {
-		vector endLoc = vector{ 60.f * (i+1), 0 } + startLoc;
+		vector endLoc = vector{ length * (i+1), 0 } + startLoc;
 		if (buttonsList[i]->getLoc().x >= endLoc.x && !open) {
-			buttonsList[i]->setLoc(endLoc - vector{ 0, stuff::pixelSize });
+			buttonsList[i]->setLoc(endLoc - vector{ 0, 1.f });
 			continue;
 		}
 
@@ -203,7 +204,7 @@ void UUIWidget::updateButtonsLoc() {
 		float y = startLoc.y;
 
 		float distance = math::distance({ x, y }, endLoc);
-		float distFromStart = 80;
+		float distFromStart = 80.f;
 		float startToEndDist = math::distance(startLoc, endLoc);
 		float m = 1 / (startToEndDist - (startToEndDist - distFromStart));
 		

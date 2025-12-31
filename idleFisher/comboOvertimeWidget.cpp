@@ -7,6 +7,8 @@
 
 UcomboOvertimeWidget::UcomboOvertimeWidget(widget* parent) : widget(parent) {
 	progressBar = std::make_unique<UprogressBar>(this, vector{ 45.f, 3.f }, false, FprogressBarDir::right, true);
+	progressBar->SetAnchor(ANCHOR_CENTER, ANCHOR_TOP);
+	progressBar->SetPivot({ 0.5f, 0.f });
 	setVisibility(false);
 
 	setupLocs();
@@ -33,5 +35,5 @@ void UcomboOvertimeWidget::updateProgressBar() {
 }
 
 void UcomboOvertimeWidget::setupLocs() {
-	progressBar->setLoc(vector{ stuff::screenSize.x / 2.f, 12 * stuff::pixelSize } - vector{ progressBar->getSize().x / 2, 0 });
+	progressBar->setLoc(vector{ 0.f, -16.f });
 }

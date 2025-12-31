@@ -289,10 +289,11 @@ void Main::Start() {
 	achievementBuffs::init();
 
 	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
-	character = std::make_unique<Acharacter>();
 
 	updateShaders(0);
 	setupWidgets();
+
+	character = std::make_unique<Acharacter>();
 
 	Scene::openLevel("world1", WORLD_SET_LOC_NONE, true);
 

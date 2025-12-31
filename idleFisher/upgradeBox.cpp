@@ -244,7 +244,9 @@ bool UupgradeBox::mouseOver() {
 }
 
 void UupgradeBox::buyUpgrade() {
-	if (!upgradeStruct) {
+	if (upgradeStruct) {
+		upgrades::upgrade(SaveData::data.upgradeData[upgrades::getUpgrade(upgradeStruct->upgradeFunctionName)->id], this, price);
+	} else {
 		if ((!unlocked || !*unlocked) && (!price || *price > SaveData::saveData.currencyList[*currencyId].numOwned))
 			return;
 		

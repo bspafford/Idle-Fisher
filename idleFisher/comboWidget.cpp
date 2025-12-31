@@ -11,6 +11,7 @@
 
 UcomboWidget::UcomboWidget(widget* parent) : widget(parent) {
 	comboText = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	comboText->SetPivot({ 0.f, 1.f });
 
 	spawnComboNumber(1);
 }
@@ -43,7 +44,7 @@ void UcomboWidget::spawnComboNumber(double comboNum) {
 }
 
 void UcomboWidget::setupLocs() {
-	comboText->setLoc({ stuff::screenSize.x / 2.f, 4 * stuff::pixelSize });
+	comboText->setLoc({ stuff::screenSize.x / (stuff::pixelSize * 2.f), stuff::screenSize.y / stuff::pixelSize - 4.f });
 }
 
 void UcomboWidget::showComboText() {

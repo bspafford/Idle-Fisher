@@ -49,7 +49,6 @@ animation::~animation() {
 
 void animation::draw(Shader* shaderProgram) {
 	spriteSheet->draw(shaderProgram);
-	int frameNum = calcFrameDistance(true);
 }
 
 void animation::start() {

@@ -14,6 +14,7 @@ public:
 	void setColor(glm::vec4 color);
 	void setLoc(vector loc);
 	vector getLoc();
+	vector getAbsoluteLoc();
 	void setSize(vector size);
 	vector getSize();
 	void setAnchor(Anchor xAnchor, Anchor yAnchor);

@@ -28,7 +28,6 @@ public:
 
 	void draw(Shader* shaderProgram);
 	void setupRandomCombo();
-	void updateComboStartEnd();
 	int getCombo();
 
 	float getValidWidth();
@@ -37,7 +36,6 @@ public:
 	std::unique_ptr<URectangle> yellowRect;
 	std::unique_ptr<URectangle> backgroundRect;
 
-	float comboStart = 0, comboEnd = 0;
 	float comboLoc = 0;
 
 	bool visible = false;

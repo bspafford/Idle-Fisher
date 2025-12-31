@@ -41,6 +41,10 @@ vector URectangle::getLoc() {
 	return loc;
 }
 
+vector URectangle::getAbsoluteLoc() {
+	return absoluteLoc;
+}
+
 void URectangle::setSize(vector size) {
 	this->size = size;
 }
