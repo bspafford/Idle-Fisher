@@ -158,12 +158,32 @@ int animation::calcFrameDistance(bool getFrameNum) {
 
 void animation::setLoc(vector loc) {
 	this->loc = loc;
-	spriteSheet->setLoc(loc);
-
+	absoluteLoc = GetAbsoluteLoc(loc, { cellSize.x, cellSize.y }, useWorldLoc, pivot, xAnchor, yAnchor);
+	spriteSheet->setLoc(absoluteLoc);
 }
 
 vector animation::getLoc() {
 	return loc;
+}
+
+vector animation::getAbsoluteLoc() {
+	return absoluteLoc;
+}
+
+void animation::SetAnchor(Anchor xAnchor, Anchor yAnchor) {
+	if (useWorldLoc) {
+		std::cout << "This is a world object, it doesn't work";
+		return;
+	}
+
+	this->xAnchor = xAnchor;
+	this->yAnchor = yAnchor;
+	setLoc(loc);
+}
+
+void animation::SetPivot(vector pivot) {
+	this->pivot = vector::clamp(pivot, 0.f, 1.f);
+	setLoc(loc);
 }
 
 void animation::shouldntDeleteTimer(bool dontDelete) {

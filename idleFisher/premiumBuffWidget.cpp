@@ -17,7 +17,7 @@ UpremiumBuffWidget::UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenF
 	lifeTimer->addUpdateCallback(this, &UpremiumBuffWidget::timerUpdate);
 	lifeTimer->start(goldenFish.time);
 
-	progressBar = std::make_unique<UprogressBar>(this, vector{ 15.f, 15.f }, false, FprogressBarDir::up, true);
+	progressBar = std::make_unique<UprogressBar>(this, vector{ 15.f, 15.f }, false, PROGRESSBAR_DIR_DOWN, true);
 	progressBar->setBackgroundColor({ 0, 0, 0, 0 });
 	progressBar->setForegroundColor({ 0, 0, 0, 50 });
 

@@ -59,9 +59,9 @@ template <typename T> void readData(std::vector<T>& a, std::string csvName) {
             if (row.size() == 0)
                 return;
 
-            T temp;
-            temp.parseData(row);
-            a.push_back(temp);
+            T data;
+            data.parseData(row);
+            a.push_back(data);
         }
     }
 }

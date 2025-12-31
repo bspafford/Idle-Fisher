@@ -76,6 +76,4 @@ private:
 	static inline std::vector<Fcollision*> allCollision;
 	// holds unique_ptr for allCollision
 	static inline std::vector<std::unique_ptr<Fcollision>> collisionStorage;
-
-	static inline std::vector<std::vector<vector>> temp;
 };

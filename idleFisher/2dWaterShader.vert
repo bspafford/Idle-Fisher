@@ -27,6 +27,6 @@ layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
 
 void main() {
 	InstanceData data = instances[gl_InstanceID];
-	gl_Position = projection * vec4(aPos.xy * data.size * pixelSize - playerPos, 0.0, 1.0);
+	gl_Position = projection * vec4(aPos * data.size * pixelSize - playerPos * data.useWorldPos, 0.0, 1.0);
 	textureCoords = aTexCoord;
 }

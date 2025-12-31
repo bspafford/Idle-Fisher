@@ -48,23 +48,29 @@ titleScreen::titleScreen() {
 	std::unordered_map<std::string, animDataStruct> fishermanDockAnimData;
 	fishermanDockAnimData.insert({ "anim", animDataStruct({0, 0}, {48, 0}, true) });
 	fishermanDock = std::make_unique<animation>("worlds/titleScreen/characterDockSpriteSheet.png", 403, 303, fishermanDockAnimData, false);
+	fishermanDock->SetAnchor(ANCHOR_RIGHT, ANCHOR_BOTTOM);
+	fishermanDock->SetPivot({ 1.f, 0.f });
 	fishermanDock->setAnimation("anim");
 	fishermanDock->start();
-	title = std::make_unique<Image>("./images/worlds/titleScreen/title.png", vector{ 0, 0 }, false);
+	title = std::make_unique<Image>("./images/worlds/titleScreen/title.png", vector{ 0.f, 0.f }, false);
+	title->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
+	title->SetPivot({ 0.f, 1.f });
 
 	std::unordered_map<std::string, animDataStruct> treesAnimData;
 	treesAnimData.insert({ "anim", animDataStruct({0, 0}, {14, 0}, true) });
 	trees = std::make_unique<animation>("worlds/titleScreen/treesSpriteSheet.png", 337, 96, treesAnimData, false);
+	trees->SetAnchor(ANCHOR_RIGHT, ANCHOR_TOP);
+	trees->SetPivot({ 1.f, 1.f });
 	trees->setAnimation("anim");
 	trees->start();
 
-	newGameButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/newGame.png", 66, 20, 1, vector{ 45.f * stuff::pixelSize, 150.f * stuff::pixelSize }, false, false);
+	newGameButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/newGame.png", 66, 20, 1, vector{ 45.f, 184.f }, false, false);
 	newGameButton->addCallback(this, &titleScreen::newGame);
 
-	continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 45.f * stuff::pixelSize, 182.f * stuff::pixelSize }, false, false);
+	continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 45.f, 152.f }, false, false);
 	continueButton->addCallback(this, &titleScreen::continueGame);
 
-	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f * stuff::pixelSize, 214.f * stuff::pixelSize }, false, false);
+	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 120.f }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
 
 	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));
@@ -81,13 +87,14 @@ void titleScreen::start() {
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/water.png", "underwaterTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/reflections.png", "reflectionTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "", "underwaterObjectTexture");
 	Texture::bindTextureToShader(Main::twoDWaterShader, "", "underwaterObjectDepthMap");
 	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f / 255.f, 107.f / 255.f, 138.f / 255.f));
 	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Main::twoDWaterShader->setFloat("causticSize", 6.f);
+	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 }
 
 void titleScreen::newGame() {
@@ -100,7 +107,6 @@ void titleScreen::continueGame() {
 	fadeTimer->addUpdateCallback(this, &titleScreen::fadeToBlack);
 	fadeTimer->addCallback(this, &titleScreen::openWorld);
 	fadeTimer->start(0.3f);
-	//openWorld();
 }
 
 void titleScreen::fadeToBlack() {
@@ -121,23 +127,14 @@ void titleScreen::exit() {
 
 void titleScreen::draw(Shader* shaderProgram) {
 	if (waterImg)
-		waterImg->draw(Main::twoDWaterShader); // Main::twoDWaterShader
+		waterImg->draw(Main::twoDWaterShader);
 
-	// set bottom right
-	if (fishermanDock)
-		fishermanDock->setLoc(stuff::screenSize - fishermanDock->GetCellSize() * stuff::pixelSize);
-	// set top left
-	if (title)
-		title->setLoc({0, 0});
-	// set top right
-	if (trees) {
-		trees->setLoc({ stuff::screenSize.x - trees->GetCellSize().x * stuff::pixelSize, 0 });
-		trees->draw(shaderProgram);
-	}
 	if (fishermanDock)
 		fishermanDock->draw(shaderProgram);
 	if (title)
 		title->draw(shaderProgram);
+	if (trees)
+		trees->draw(shaderProgram);
 	if (newGameButton)
 		newGameButton->draw(shaderProgram);
 	if (continueButton)
@@ -239,6 +236,7 @@ void rebirthWorld::start() {
 	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(0, 64.f/255.f, 81.f/255.f));
 	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(0, 130.f/255.f, 121.f/255.f));
 	Main::twoDWaterShader->setFloat("causticSize", 16.f);
+	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 }
 
 void rebirthWorld::draw(Shader* shaderProgram) {
@@ -349,6 +347,7 @@ void world::start() {
 	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
 	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Main::twoDWaterShader->setFloat("causticSize", 16.f);
+	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 	setupAutoFishers();
 
 	// load idle profits
@@ -592,7 +591,7 @@ void world::setWorldChangeLoc(WorldLoc worldChangeLoc) {
 
 // world 1
 world1::world1(WorldLoc worldChangeLoc) {
-	spawnLoc = { 517, 476 };
+	spawnLoc = { 517, 506 };
 	houseLoc = { 1670, -870 };
 	bankSellLoc = { 1000, 650 };
 
@@ -601,37 +600,42 @@ world1::world1(WorldLoc worldChangeLoc) {
 	mapImg = std::make_unique<Image>("./images/map1.png", vector{ 0, 0 }, true);
 	for (int i = 0; i < 19; i++)
 		mapAnimList.push_back("./images/worlds/world1/map" + std::to_string(i + 1) + ".png");
-	ship = std::make_unique<Aship>(vector{ -164 + 500, 495 - 25 });
+	ship = std::make_unique<Aship>(vector{ 336.f, 470.f });
 
-	sellFish = std::make_unique<dumpster>(vector{ 739 + 110, 672 + 50 });
+	sellFish = std::make_unique<dumpster>(vector{ 849.f, 722.f });
 
 	// npcs
-	sailor = std::make_unique<Asailor>(vector{ 10 + 500, -5 + 554 - 5 });
-	fisherman = std::make_unique<Afisherman>(vector{ 143 + 8 + 500, 190 + 550 - 9 });
-	atm = std::make_unique<Aatm>(vector{ 327 + 500 - 52, 186 + 547 - 9 + 12 });
-	scuba = std::make_unique<Ascuba>(vector{ 354 - 105 + 500, -133 + 554 - 9 });
-	petSeller = std::make_unique<ApetSeller>(vector{ 365 + 100 + 500, 255 + 554 - 9 });
-	merchant = std::make_unique<Amerchant>(vector{ 143 + 410 + 500, 270 + 554 - 9 });
-	mechanic = std::make_unique<Amechanic>(vector{ 560 + 60 + 500, 150 + 560 - 9 });
+	sailor = std::make_unique<Asailor>(vector{ 510, 544 });
+	fisherman = std::make_unique<Afisherman>(vector{ 651.f, 731.f });
+	atm = std::make_unique<Aatm>(vector{ 775.f, 736.f });
+	scuba = std::make_unique<Ascuba>(vector{ 749.f, 412.f });
+	petSeller = std::make_unique<ApetSeller>(vector{ 965.f, 800.f });
+	merchant = std::make_unique<Amerchant>(vector{ 1053.f, 815.f });
+	mechanic = std::make_unique<Amechanic>(vector{ 1120.f, 701.f });
 
 	if (SaveData::saveData.mechanicStruct[0].unlocked)
-		fishTransporter = std::make_unique<AfishTransporter>(vector{ 417 - 140 + 500, 157 + 554 });
+		fishTransporter = std::make_unique<AfishTransporter>(vector{ 777.f, 711.f });
 
 	// npc buildings
-	house = std::make_unique<Ahouse>(vector{ 1157, 429 + 346 });
-	merchantShop = std::make_unique<AmerchantShop>(vector{ 998, 368 + 405 });
-	mechanicHouse = std::make_unique<AmechanicHouse>(vector{ 1130, 251 + 363 });
-	petShop = std::make_unique<ApetShop>(vector{ 930, 321 + 440 });
+	house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });
+	merchantShop = std::make_unique<AmerchantShop>(vector{ 998.f, 773.f });
+	mechanicHouse = std::make_unique<AmechanicHouse>(vector{ 1130.f, 614.f });
+	petShop = std::make_unique<ApetShop>(vector{ 930.f, 761.f });
 
 	// make trees
-	std::vector<vector> treeLocs = { {624, 524}, {739, 514},{842, 502},{944, 485},{229, 480},{415, 477},{525, 477},{1101, 460},{663, 454},{310, 448},{114, 433},{475, 432},{773, 426},{574, 425},{1012, 425},{869, 422},{709, 409},{380, 406},{215, 402},{935, 385},{622, 384},{1155, 372},{803, 371},{1063, 368},{546, 367},{288, 349},{461, 338},{373, 332},{869, 330},{1000, 323},{231, 298},{331, 279},{922, 279},{988, 247},{910, 224} };
-	std::vector<vector> bushLocs = { { 736, 434 }, { 166, 409 }, { 792, 392 }, { 528, 380 }, { 609, 369 }, { 408, 365 }, { 266, 332 }, { 955, 239 } };
+	std::vector<vector> treeLocs = { 
+		{ 1124.f, 1146.f }, { 1239.f, 1136.f }, { 1342.f, 1124.f }, { 1444.f, 1107.f }, { 729.f, 1102.f }, { 915.f, 1099.f },
+		{ 1025.f, 1099.f }, { 1601.f, 1082.f }, { 1163.f, 1076.f }, { 810.f, 1070.f }, { 614.f, 1055.f }, { 975.f, 1054.f }, 
+		{ 1273.f, 1048.f }, { 1074.f, 1047.f }, { 1512.f, 1047.f }, { 1369.f, 1044.f }, { 1209.f, 1031.f }, { 880.f, 1028.f }, 
+		{ 715.f, 1024.f }, { 1435.f, 1007.f }, { 1122.f, 1006.f }, { 1655.f, 994.f }, { 1303.f, 993.f }, { 1563.f, 990.f },
+		{ 1046.f, 989.f }, { 788.f, 971.f }, { 961.f, 960.f }, { 873.f, 954.f }, { 1369.f, 952.f }, { 1500.f, 945.f }, 
+		{ 731.f, 920.f }, { 831.f, 901.f }, { 1422.f, 901.f }, { 1488.f, 869.f }, { 1410.f, 846.f } 
+	};
 
-	// temp
-	for (int i = 0; i < treeLocs.size(); i++)
-		treeLocs[i] += vector{ 500, 622 };
-	for (int i = 0; i < bushLocs.size(); i++)
-		bushLocs[i] += vector{ 500, 531 };
+	std::vector<vector> bushLocs = { 
+		{ 1236.f, 965.f }, { 666.f, 940.f }, { 1292.f, 923.f }, { 1028.f, 911.f }, { 1109.f, 900.f },
+		{ 908.f, 896.f }, { 766.f, 863.f }, { 1455.f, 770.f }
+	};
 
 	for (int i = 0; i < treeLocs.size(); i++)
 		trees.push_back(std::make_unique<Atree>(treeLocs[i], true));

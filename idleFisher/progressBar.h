@@ -3,16 +3,20 @@
 #include "widget.h"
 #include "Rectangle.h"
 
-struct FprogressBarDir {
-	static inline int left = 0;
-	static inline int right = 1;
-	static inline int up = 2;
-	static inline int down = 3;
+enum ProgressBarDir {
+	// fills from left to right
+	PROGRESSBAR_DIR_LEFT,
+	// fills from right to left
+	PROGRESSBAR_DIR_RIGHT,
+	// fills from bottom to top
+	PROGRESSBAR_DIR_DOWN,
+	// fills from top to bottom
+	PROGRESSBAR_DIR_UP
 };
 
 class UprogressBar : public widget {
 public:
-	UprogressBar(widget* parent, vector size, bool useCharLoc, int dir = FprogressBarDir::right, bool reverse = false);
+	UprogressBar(widget* parent, vector size, bool useCharLoc, ProgressBarDir dir = PROGRESSBAR_DIR_LEFT, bool reverse = false);
 	// background color, foreground color, direction (left, up, reverse), width, height
 	void setBackgroundColor(glm::vec4 color);
 	// id is when the progress bar has mutliple preogress bars
@@ -32,7 +36,7 @@ private:
 	std::vector<float> percent = { 0 };
 	std::vector<float> weight = { 1 };
 	bool useWorldLoc;
-	int dir;
+	ProgressBarDir dir;
 	bool reverse;
 	
 	std::vector<std::unique_ptr<URectangle>> foregrounds;

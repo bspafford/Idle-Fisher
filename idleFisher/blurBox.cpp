@@ -54,7 +54,6 @@ void BlurBox::Init() {
 }
 
 void BlurBox::DrawFinal(Shader* shader) {
-	glClear(GL_COLOR_BUFFER_BIT);
 	shader->Activate();
 	sceneFBO->Draw(shader, {0, 0}, {0, 0, 1, 1}, false, glm::vec4(1));
 }

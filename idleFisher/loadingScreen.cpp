@@ -24,5 +24,5 @@ void LoadingScreen::loadingTimerCallback() {
 }
 
 void LoadingScreen::setupLocs() {
-	loadingText->setLoc(stuff::screenSize - vector{ 135, 50 } * stuff::pixelSize);
+	loadingText->setLoc(vector{ stuff::screenSize.x / stuff::pixelSize - 135.f, 50.f });
 }

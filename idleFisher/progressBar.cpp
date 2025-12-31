@@ -2,7 +2,7 @@
 
 #include "debugger.h"
 
-UprogressBar::UprogressBar(widget* parent, vector size, bool useWorldLoc, int dir, bool reverse) : widget(parent) {
+UprogressBar::UprogressBar(widget* parent, vector size, bool useWorldLoc, ProgressBarDir dir, bool reverse) : widget(parent) {
 	this->size = size;
 	this->useWorldLoc = useWorldLoc;
 	this->dir = dir;
@@ -22,20 +22,20 @@ void UprogressBar::draw(Shader* shaderProgram) {
 	float totalWeight = calcTotalWeight();
 	for (int i = 0; i < percent.size(); i++) {
 		float percentVal = reverse ? 1 - percent[i] : percent[i];
-		if (dir == FprogressBarDir::left) {
+		if (dir == PROGRESSBAR_DIR_RIGHT) {
 			float scaledSize = round(size.x * percentVal);
 			foregrounds[0]->setLoc({ offset.x + size.x - scaledSize, offset.y });
 			foregrounds[0]->setSize({ scaledSize, size.y });
-		} else if (dir == FprogressBarDir::right) {
+		} else if (dir == PROGRESSBAR_DIR_LEFT) {
 			foregrounds[i]->setLoc(offset);
 			foregrounds[i]->setSize({ size.x * percentVal * (weight[i] / totalWeight), size.y });
 			offset.x += size.x * percentVal * (weight[i] / totalWeight);
 
-		} else if (dir == FprogressBarDir::up) {
+		} else if (dir == PROGRESSBAR_DIR_DOWN) {
 			float scaledSize = round(size.y * percentVal);
 			foregrounds[0]->setLoc({ offset.x, offset.y + size.y - scaledSize });
 			foregrounds[0]->setLoc({ size.x, scaledSize });
-		} else if (dir == FprogressBarDir::down) {
+		} else if (dir == PROGRESSBAR_DIR_UP) {
 			foregrounds[0]->setLoc(offset);
 			foregrounds[0]->setSize({ size.x, size.y * percentVal });
 		}

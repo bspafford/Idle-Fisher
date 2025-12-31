@@ -6,8 +6,8 @@ in vec4 clipSpace;
 
 out vec4 FragColor;
 
-uniform sampler2D underwaterTexture;
 uniform sampler2D dudvMap;
+uniform sampler2D underwaterTexture;
 uniform sampler2D causticTexture;
 uniform sampler2D waterDepthTexture;
 uniform sampler2D reflectionTexture;
@@ -16,16 +16,15 @@ uniform sampler2D underwaterObjectDepthMap;
 uniform vec3 shallowWaterColor;
 uniform vec3 deepWaterColor;
 uniform float causticSize;
+uniform vec2 waterImgSize;
 
 uniform float moveFactor;
+uniform float pixelSize;
 
 const float waveStrength = 0.005f;
 
 void main() {
-    vec2 waterImgSize = vec2(1860, 1275);
-	float pixelSize = 3.0;
-	
-	vec2 blockSize = vec2(1.0) / waterImgSize; // UV size of one 6x6 block
+	vec2 blockSize = vec2(1.0) / waterImgSize;
 	vec2 pixelCoords = (floor(textureCoords / blockSize) + 0.5) * blockSize;
 	pixelCoords = vec2(pixelCoords.x, 1.f - pixelCoords.y);
 
@@ -50,7 +49,6 @@ void main() {
 	vec4 caustics = texture(causticTexture, reflectTexCoords.xy * causticSize);
 
 	float waterDepth = texture(waterDepthTexture, pixelCoords.xy).r + .1f; //  + .1f // give a lil offset
-	//vec4 waterColor = vec4(mix(vec3(0.21176470588f, 0.41960784313f, 0.54117647058), vec3(0.59607843137f, 0.8862745098f, 0.8431372549f), waterDepth), 1.f);
 	vec4 waterColor = vec4(mix(deepWaterColor, shallowWaterColor, waterDepth), 1.f);
 
 	float waterBrightness = (dot(waterColor.xyz, vec3(0.2126, 0.7152, 0.0722)) * waterColor.w); // r * .21 + b * .71 + ...
@@ -80,5 +78,5 @@ void main() {
 	// make the objects get less transparent as they get deeper
 	vec4 testColor = texture(underwaterObjectDepthMap, refractTexCoords);
 	if (testColor.a != 0)
-		FragColor = mix(FragColor, mix(FragColor, underwaterObjectColor, .3), testColor.r-.5);
+		FragColor = mix(FragColor, mix(FragColor, underwaterObjectColor, 0.3), testColor.r - 0.5);
 }

@@ -170,10 +170,8 @@ void AautoFisher::collectFish() {
 void AautoFisher::catchFish() {
 	FfishData currFish = calcFish();
 
-	// temp
 	int catchNum = 1;
 
-	// temp
 	// if there is enough room for the fish
 	if (calcCurrencyHeld() + upgrades::getFishSellPrice(currFish, 0) * catchNum <= maxCurrency) {
 		int index = calcCurrencyInList(currFish, heldFish);
@@ -184,7 +182,6 @@ void AautoFisher::catchFish() {
 		} else {
 			FsaveFishData saveFish;
 			saveFish.id = currFish.id;
-			// temp
 			saveFish.numOwned.push_back(0);
 			saveFish.numOwned.push_back(0);
 			saveFish.numOwned.push_back(0);
@@ -274,7 +271,7 @@ void AautoFisher::calcIfPlayerInfront() {
 
 void AautoFisher::setStats() {
 	// 1: .1, 100 = .01
-	// updates the animation speed // temp values
+	// updates the animation speed
 	float y = -(1.f / 1100.f) * *level + 0.100909f;
 
 	if (anim)
@@ -331,7 +328,6 @@ void AautoFisher::upgrade() {
 
 // [0] for level, [1] for price
 std::vector<double> AautoFisher::getUpgradeCost() {
-	// temp
 	double currency = SaveData::saveData.currencyList[1].numOwned;
 
 	// int multiplier = multiplierList[multiplierIndex];
@@ -346,7 +342,6 @@ std::vector<double> AautoFisher::getUpgradeCost() {
 			tempLevel++;
 		}
 
-		// temp
 		if (UI)
 			UI->buttonText->setText(shortNumbers::convert2Short(cost));
 
@@ -404,8 +399,7 @@ std::vector<vector> AautoFisher::calcAutoFishList(int fishNum) {
 	std::vector<FfishData> fishList;
 	std::vector<vector> fishNumList;
 
-	// temp
-	int fishingRodId = 0; // saveData.currFishingRod.id;
+	int fishingRodId = 0;
 	if (fishingRodId == -1)
 		fishingRodId = 0;
 

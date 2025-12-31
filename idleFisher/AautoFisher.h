@@ -74,19 +74,15 @@ public:
 	int maxLevel = 100;
 	int maxCurrency = 100;
 
-	// temp
 	std::vector<FsaveFishData> heldFish = std::vector<FsaveFishData>();
 
 	std::unique_ptr<autoFisherUI> UI;
 
-	// temp
 	float fishingPower = 50;
 
 	// multiplier stuff
-	// std::vector<int> multiplierList{ 1, 10, (int)INFINITY };
 	int multiplier = 1;
 
-	// temp
 	int currencyId = 1;
 
 	int autoFisherNum = 0;

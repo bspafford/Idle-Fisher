@@ -525,7 +525,7 @@ void Acharacter::premiumFishBuff() {
 		for (FfishData fish : SaveData::data.fishData) {
 			if (fish.levelName == Scene::getCurrWorldName()) {
 				FsaveFishData* saveFish = &SaveData::saveData.fishData[fish.id];
-				heldCurrency += saveFish->numOwned[0] /* temp */ * upgrades::getFishSellPrice(fish, 0);
+				heldCurrency += saveFish->numOwned[0] * upgrades::getFishSellPrice(fish, 0);
 			}
 		}
 
@@ -558,19 +558,19 @@ bool Acharacter::getCanMove() {
 	return canMove;
 }
 
-// temp straight line to character
+// straight line to character
 void Acharacter::bobberCatchAnim() {
 	int pullFrames = 4;
 
-	vector temp = stuff::screenSize / (stuff::pixelSize * 2.f) - vector{ 0.f, anim->GetCellSize().y / 2 };
+	vector goToLoc = stuff::screenSize / (stuff::pixelSize * 2.f) - vector{ 0.f, anim->GetCellSize().y / 2 };
 
 	float time = bobberCatchTimer->getTime();
 	float timer = bobberCatchTimer->getMaxTime();
 
 	float percent = floor(time / timer * pullFrames) / pullFrames;
 
-	float x = math::lerp(tempBobberLoc.x, temp.x, percent);
-	float y = math::lerp(tempBobberLoc.y, temp.y, percent);
+	float x = math::lerp(tempBobberLoc.x, goToLoc.x, percent);
+	float y = math::lerp(tempBobberLoc.y, goToLoc.y, percent);
 
 	bobberLoc = { x, y };
 	fishImg->setLoc({ x, y });

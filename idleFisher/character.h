@@ -72,7 +72,6 @@ public:
 	inline static vector bobberLoc;
 	vector tempBobberLoc;
 
-	// temp
 	float minFishTime = 5;
 	float maxFishTime = 10;
 
@@ -84,7 +83,6 @@ public:
 	float bobTime = 1.5;
 
 	void animFinished();
-	// temp
 	std::vector<vector> fishLineTipLocs;
 	void setFishingTipLoc(int frame);
 

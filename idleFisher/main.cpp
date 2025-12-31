@@ -74,7 +74,7 @@ Main::~Main() {
 
 int Main::createWindow() {
 	fpsCap = 0;
-	// temp
+
 	stuff::screenSize = { 1920, 1080 };
 
 	// Initialize GLFW
@@ -316,7 +316,7 @@ void Main::Update(float deltaTime) {
 	collision::testMouse(Input::getMousePos());
 	Cursor::calcMouseImg();
 
-	if (world::currWorld) {
+	if (!Scene::isLoading() && world::currWorld) {
 		for (int i = 0; i < world::currWorld->autoFisherList.size(); i++)
 			world::currWorld->autoFisherList[i]->Update(deltaTime);
 		if (fishComboWidget)
@@ -331,11 +331,8 @@ void Main::Update(float deltaTime) {
 void Main::updateShaders(float deltaTime) {
 	// set water movement
 	waveFactor += waveSpeed * deltaTime;
-	tideFactor += deltaTime;
 	if (waveFactor >= 1.f) // loop if hit 1
 		waveFactor -= 1.f;
-	if (tideFactor >= 3.f)
-		tideFactor -= 3.f;
 
 	twoDShader->Activate();
 	twoDShader->setMat4("projection", camera->getProjectionMat());
@@ -411,10 +408,16 @@ void Main::checkInputs() {
 			pauseMenu->addToViewport(true);
 	}
 
-	// temp
+	std::string currWorldName = Scene::getCurrWorldName();
+	if (Input::getKeyDown(GLFW_KEY_C) && currWorldName != "titleScreen")
+		achievementWidget->addToViewport(true);
+	if (Input::getKeyDown(GLFW_KEY_V) && currWorldName != "titleScreen")
+		journal->addToViewport(true);
+
+
+#ifdef _DEBUG // only for debug testing
 	if (Input::getKeyDown(GLFW_KEY_K))
 		SaveData::save();
-	// temp
 	if (Input::getKeyDown(GLFW_KEY_J)) {
 		SaveData::saveData.currencyList[1].numOwned += 9000;
 		SaveData::saveData.currencyList[1].totalNumOwned += 9000;
@@ -427,15 +430,9 @@ void Main::checkInputs() {
 		}
 		currencyWidget->updateList();
 	}
-
-	std::string currWorldName = Scene::getCurrWorldName();
-	if (Input::getKeyDown(GLFW_KEY_C) && currWorldName != "titleScreen")
-		achievementWidget->addToViewport(true);
-	if (Input::getKeyDown(GLFW_KEY_V) && currWorldName != "titleScreen")
-		journal->addToViewport(true);
-
-	if (Input::getKeyDown(GLFW_KEY_O)) // temp
+	if (Input::getKeyDown(GLFW_KEY_O))
 		Scene::openLevel("rebirth", WORLD_SET_LOC_SAILOR, false);
+#endif
 }
 
 void Main::drawWidgets(Shader* shaderProgram) {
@@ -454,7 +451,7 @@ void Main::drawWidgets(Shader* shaderProgram) {
 void Main::rebirth() {
 	// resest all progress
 	// gives rebirth currency and total rebirth currency
-	double addedRebirth = calcRebirthCurrency(); // temp
+	double addedRebirth = calcRebirthCurrency();
 	SaveData::saveData.rebirthCurrency += addedRebirth;
 	SaveData::saveData.totalRebirthCurrency += addedRebirth;
 

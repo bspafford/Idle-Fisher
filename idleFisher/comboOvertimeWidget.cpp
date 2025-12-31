@@ -6,7 +6,7 @@
 #include "debugger.h"
 
 UcomboOvertimeWidget::UcomboOvertimeWidget(widget* parent) : widget(parent) {
-	progressBar = std::make_unique<UprogressBar>(this, vector{ 45.f, 3.f }, false, FprogressBarDir::right, true);
+	progressBar = std::make_unique<UprogressBar>(this, vector{ 45.f, 3.f }, false, PROGRESSBAR_DIR_LEFT, true);
 	progressBar->SetAnchor(ANCHOR_CENTER, ANCHOR_TOP);
 	progressBar->SetPivot({ 0.5f, 0.f });
 	setVisibility(false);

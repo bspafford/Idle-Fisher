@@ -39,6 +39,9 @@ public:
 
 	void setLoc(vector loc);
 	vector getLoc();
+	vector getAbsoluteLoc();
+	void SetAnchor(Anchor xAnchor, Anchor yAnchor);
+	void SetPivot(vector pivot);
 
 	void start();
 	void stop();
@@ -94,6 +97,11 @@ public:
 
 private:
 	vector loc;
+	vector absoluteLoc;
+	vector pivot = { 0, 0 };
+	Anchor xAnchor = ANCHOR_LEFT;
+	Anchor yAnchor = ANCHOR_BOTTOM;
+
 	vector cellSize;
 	vector cellNum;
 

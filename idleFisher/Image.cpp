@@ -26,8 +26,6 @@ Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector 
 }
 
 Image::Image(std::string image, vector loc, bool useWorldPos) {
-	this->loc = loc;
-
 	path = image;
 	this->useWorldPos = useWorldPos;
 

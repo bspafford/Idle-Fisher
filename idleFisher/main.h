@@ -110,7 +110,6 @@ private:
 	// water stuff
 	static inline float waveSpeed = 0.03f;
 	static inline float waveFactor = 0;
-	static inline float tideFactor = 0;
 
 	// 3d
 	std::unique_ptr<Model> house;

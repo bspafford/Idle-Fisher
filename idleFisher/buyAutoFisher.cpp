@@ -88,7 +88,7 @@ void buyAutoFisher::spawnAutoFisher() {
 }
 
 int buyAutoFisher::calcAutoFisherId() {
-	int autoFisherNumPerWorld = 0; // temp
+	int autoFisherNumPerWorld = 0;
 	int autoFisherWorldNum = 0;
 	std::string currWorldName = Scene::getCurrWorldName();
 	for (FautoFisherStruct autoFisher : SaveData::data.autoFisherData) {
@@ -111,7 +111,6 @@ double buyAutoFisher::calcPrice() {
 }
 
 bool buyAutoFisher::hasCurrency() {
-	// temp
 	if (SaveData::saveData.currencyList[1].numOwned >= calcPrice())
 		return true;
 	return false;

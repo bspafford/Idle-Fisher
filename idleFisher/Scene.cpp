@@ -8,9 +8,6 @@
 #include "timer.h"
 #include "loadingScreen.h"
 #include "GPULoadCollector.h"
-#include "Image.h"
-#include "animation.h"
-#include "text.h"
 
 #include "debugger.h"
 
@@ -142,7 +139,7 @@ void Scene::deferredChangeWorld() {
 	loadingDone = false;
 
 	timer::clearInstanceList(true);
-	//openLevelThread(worldName, worldChangeLoc, overrideIfInWorld);
+
 	std::thread loader(&Scene::openLevelThread, worldName, worldChangeLoc, overrideIfInWorld);
 	loader.detach();
 }

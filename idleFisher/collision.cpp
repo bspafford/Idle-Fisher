@@ -91,17 +91,17 @@ void collision::getCollisionObjects() {
 				for (int i = 0; i < line.size(); i++) {
 					// if char == "(" then break into a string
 					if (line[i] == '(') {
-						std::string temp(1, line[i]);
-						stringList.push_back(temp);
+						std::string stringChar(1, line[i]);
+						stringList.push_back(stringChar);
 					} else {
-						std::string temp(1, line[i]);
-						stringList[stringList.size() - 1].append(temp);
+						std::string stringChar(1, line[i]);
+						stringList[stringList.size() - 1].append(stringChar);
 					}
 				}
 
 				if ((int)coords.size() - 1 < lineNum) {
-					std::vector<vector> temp(stringList.size());
-					coords.push_back(temp);
+					std::vector<vector> charString(stringList.size());
+					coords.push_back(charString);
 				}
 
 				for (int i = 0; i < stringList.size(); i++) {
@@ -345,8 +345,8 @@ void collision::removeSpaces(std::string& str) {
 	std::string newStr;
 	for (int i = 0; i < str.size(); i++) {
 		if (str[i] != ' ') {
-			std::string temp(1, str[i]);
-			newStr.append(temp);
+			std::string stringChar(1, str[i]);
+			newStr.append(stringChar);
 		}
 	}
 
@@ -357,8 +357,8 @@ std::string collision::getIdentifier(std::string str) {
 	std::string identifier;
 	for (int i = 0; i < str.size(); i++) {
 		if (str[i] != '(') {
-			std::string temp(1, str[i]);
-			identifier.append(temp);
+			std::string stringChar(1, str[i]);
+			identifier.append(stringChar);
 		} else {
 			return identifier;
 		}
@@ -529,7 +529,6 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 // this doesn't reallistically needed to be calculated every frame, could do this once at the beginning and save it in another collision list, it would contain all the min and maxs, should make a collision struct
 bool collision::isCloseEnough(const Fcollision* a, const Fcollision* col) {
 	if (a->minX < col->maxX && a->maxX > col->minX && a->minY < col->maxY && a->maxY > col->minY) {
-		//temp.push_back(col->points);
 		return true;
 	}
 	return false;
@@ -601,8 +600,6 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 
 bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	std::lock_guard<std::mutex> lock(mutex);
-
-	temp.clear();
 
 	const int maxIterations = 2;
 
