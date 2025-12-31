@@ -7,11 +7,6 @@
 #include "debugger.h"
 
 void Cursor::calcMouseImg() {
-	if (Scene::isLoading()) {
-		setCursorIcon(CURSOR_DEFAULT);
-		return;
-	}
-
 	IHoverable* hoveredItem = IHoverable::getHoveredItem();
 	bool canHover = IHoverable::checkValidInteract();
 	if (hoveredItem && canHover) {

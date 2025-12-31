@@ -15,8 +15,8 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	this->NPCParent = NPCParent;
 
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
-	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
 	closeButton->SetPivot({ 0.5f, 0.5f });
+	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
 
 	npcImg = std::make_unique<Image>("./images/widget/npcbuttons/fisherman.png", vector{ 0, 0 }, false);
 	npcImg->SetPivot({ 0.5f, 0.f });
@@ -221,7 +221,6 @@ void UfishermanWidget::setupLocs() {
 		buttonList[i]->setLoc(upgradeBackground->getAbsoluteLoc() + vector{ (worldButtonSize.x + 1.f) * i + 1.f, upgradeBackground->getSize().y + 1.f});
 	}
 
-	vector closeButtonSize = closeButton->getSize();
 	closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 
 	fishingRodThumbnail->setLoc(vector{ 5.f, 0 });

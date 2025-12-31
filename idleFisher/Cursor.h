@@ -8,6 +8,7 @@
 struct GLFWcursor;
 
 enum CursorType {
+	CURSOR_NONE = -1,
 	CURSOR_DEFAULT,
 	CURSOR_POINT,
 	CURSOR_HOVER,
@@ -29,7 +30,7 @@ private:
 	static void setCursorIcon(CursorType cursorName);
 
 	static inline GLFWcursor* cursor;
-	static inline CursorType currCursor;
+	static inline CursorType currCursor = CURSOR_NONE;
 
 	// if mouse is over water
 	static inline bool mouseOverWater = false;
