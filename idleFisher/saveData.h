@@ -460,7 +460,7 @@ struct FsaveData {
     //static inline std::chrono::system_clock::time_point lastPlayed;
 
     // player loc
-    vector playerLoc = { 200, -84 };
+    vector playerLoc = { 500, 500 };
 
     std::string currWorld = "world1";
     std::string prevWorld = "world1"; // incase the player is in the vault when they exit / save
