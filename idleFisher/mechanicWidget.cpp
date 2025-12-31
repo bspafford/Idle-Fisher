@@ -23,24 +23,35 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	mechanicStruct = &SaveData::data.mechanicStruct[id];
 
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
+	closeButton->SetPivot({ 0.5f, 0.5f });
 	closeButton->addCallback<widget>(this, &UmechanicWidget::removeFromViewport);
+
 	npcImg = std::make_unique<Image>("./images/widget/npcButtons/mechanic.png", vector{ 0, 0 }, false);
+	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0,0 });
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0,0 });
 	nameHolder = std::make_unique<verticalBox>(this);
-	nameHolder->addChild(name.get(), 8 * stuff::pixelSize);
-	nameHolder->addChild(description.get(), 4 * stuff::pixelSize);
+	nameHolder->addChild(name.get(), 8.f);
+	nameHolder->addChild(description.get(), 4.f);
 
 	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	npcBackground->SetPivot({ 1.f, 0.f });
 	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	infoBackground->SetPivot({ 1.f, 1.f });
 	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
 	// fish transporter
 	buyFishTransporterButton = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 2, vector{ 0, 0 }, false, false);
+	buyFishTransporterButton->SetPivot({ 0.5f, 0.5f });
 	buyFishTransporterButton->addCallback(this, &UmechanicWidget::buyFishTransporter);
 	buyFishTransporterText = std::make_unique<text>(this, "Buy Fish Transporter", "biggerStraight", vector{ 0, 0 });
 	buyFishTransporterPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(mechanicStruct->currencyNum), "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
+	buyFishTransporterPriceText->SetPivot({ 0.f, 0.5f });
 
 	// bought screen
 	fishTransporterName = std::make_unique<text>(this, "Fish Transporter", "biggerStraight", vector{ 0, 0 });
@@ -52,6 +63,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 		fishTransporterImg->setColorMod(glm::vec4(glm::vec3(0), 1.f));
 
 	fishTransporterImg->setSize(fishTransporterImg->getSize() * 2.5f);
+	fishTransporterImg->SetPivot({ 0.f, 1.f });
 	level = std::make_unique<text>(this, "0/100", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	levelProgress = std::make_unique<UprogressBar>(this, vector{ 125.f, 7.f }, false);
 	maxHoldText = std::make_unique<text>(this, "Max Hold:", "straight", vector{ 0, 0 });
@@ -68,7 +80,9 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	multiMax = std::make_unique<Ubutton>(this, "widget/button.png", 27, 13, 2, vector{ 0, 0 }, false, false);
 
 	upgradePriceText = std::make_unique<text>(this, "0.00k", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	upgradePriceText->SetPivot({ 0.f, 0.5f });
 	currencyIcon = std::make_unique<Image>("./images/currency/coin" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+	currencyIcon->SetPivot({ 1.f, 0.5f });
 
 	setup();
 }
@@ -136,62 +150,48 @@ void UmechanicWidget::setNameDescription(std::string nameString, std::string des
 void UmechanicWidget::setupLocs() {
 	__super::setupLocs();
 
-	float x = (npcBackground->getSize().x + 1) * stuff::pixelSize;
-	float y = (npcBackground->getSize().y + 1) * stuff::pixelSize;
-	vector size = vector{ x, 0 } + upgradeBackground->getSize();
-	vector center = { stuff::screenSize.x / 2, stuff::screenSize.y / 2 };
-	vector topLeft = center - size / 2;
-	npcBackground->setLoc(topLeft);
-	if (infoBackground)
-		infoBackground->setLoc(topLeft + vector{ 0, y });
-	upgradeBackground->setLoc(topLeft + vector{x, 0});
+	float widgetWidth = npcBackground->getSize().x + upgradeBackground->getSize().x;
+	vector center = vector{ widgetWidth / 2.f - upgradeBackground->getSize().x, 0.f };
+	npcBackground->setLoc(center + vector{ -1.f, 1.f });
+	infoBackground->setLoc(center + vector{ -1.f, -1.f });
+	upgradeBackground->setLoc(center + vector{ 1.f, 1.f });
 
-	vector npcBackgroundSize = npcBackground->getSize();
-	vector npcSize = npcImg->getSize();
-	npcImg->setLoc(npcBackground->getLoc() + vector{npcBackgroundSize.x / 2, npcBackgroundSize.y} - vector{npcSize.x / 2, npcSize.y});
+	if (npcImg)
+		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, 0.f });
 
-	if (closeButton) {
-		vector closeButtonSize = closeButton->getSize();
-		closeButton->setLoc({ float(upgradeBackground->getLoc().x + upgradeBackground->getSize().x * stuff::pixelSize - closeButtonSize.x / 2), float(upgradeBackground->getLoc().y - closeButtonSize.y / 2)});
-	}
+	if (closeButton)
+		closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 
-	if (infoBackground) {
-		nameHolder->setLocAndSize({ float(infoBackground->getLoc().x) + 6 * stuff::pixelSize, float(infoBackground->getLoc().y) + 6 * stuff::pixelSize}, infoBackground->getSize() * stuff::pixelSize);
-		name->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
-		description->setLineLength((infoBackground->getSize().x - 10) * stuff::pixelSize);
-	}
+	vector nameHolderSize = infoBackground->getSize() - 10.f;
+	name->setLineLength(nameHolderSize.x);
+	description->setLineLength(nameHolderSize.x);
+	nameHolder->setLocAndSize(infoBackground->getAbsoluteLoc() + 5.f, nameHolderSize);
 
 	// bought fish transporter
-	fishTransporterName->setLoc(upgradeBackground->getLoc() + vector{6, 9} * stuff::pixelSize);
-	buyFishTransporterText->setLoc(fishTransporterName->getLoc());
-	fishTransporterImg->setLoc(fishTransporterName->getLoc() + vector{2 * stuff::pixelSize, fishTransporterName->getSize().y + 15 * stuff::pixelSize});
+	fishTransporterName->setLoc(upgradeBackground->getAbsoluteLoc() + vector{ 6.f, upgradeBackground->getSize().y - 13.f });
+	buyFishTransporterText->setLoc(fishTransporterName->getAbsoluteLoc());
+	fishTransporterImg->setLoc(fishTransporterName->getAbsoluteLoc() + vector{ 2.f, -15.f });
 
-	float xStart = fishTransporterImg->getLoc().x + fishTransporterImg->getSize().x;
-	float xEnd = upgradeBackground->getLoc().x + upgradeBackground->getSize().x - 6 * stuff::pixelSize;
-	float xMid = (xEnd - xStart) / 2.f + xStart;
 	if (buyFishTransporterButton) {
-		//buyFishTransporterButton->setLoc(upgradeBackground->loc + upgradeBackground->getSize() / 2 - buyFishTransporterButton->getSize() / 2);
-		// find mid between fish transporter and edge of shop
-		buyFishTransporterButton->setLoc(vector{ xMid - buyFishTransporterButton->getSize().x / 2.f, upgradeBackground->getLoc().y + upgradeBackground->getSize().y / 2 - buyFishTransporterButton->getSize().y / 2});
-		buyFishTransporterPriceText->setLoc({ xMid, upgradeBackground->getLoc().y + upgradeBackground->getSize().y / 2});
+		buyFishTransporterButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize() / 2.f + vector{ 15.f, 0.f });
+		buyFishTransporterPriceText->setLoc(buyFishTransporterButton->getAbsoluteLoc() + buyFishTransporterButton->getSize() / 2.f);
 	}
 
-	level->setLoc(vector{ fishTransporterImg->getLoc().x + fishTransporterImg->getSize().x + 130 * stuff::pixelSize, upgradeBackground->getLoc().y + 15 * stuff::pixelSize});
-	levelProgress->setLoc(level->getLoc() + vector{ -125, 9 } * stuff::pixelSize);
-	maxHoldText->setLoc(levelProgress->getLoc() + vector{ 0, 23 * stuff::pixelSize });
-	maxHoldValue->setLoc(vector{ upgradeBackground->getLoc().x + upgradeBackground->getSize().x - 5 * stuff::pixelSize, maxHoldText->getLoc().y});
-	speedText->setLoc(maxHoldText->getLoc() + vector{ 0, 23 * stuff::pixelSize });
-	speedValue->setLoc(maxHoldValue->getLoc() + vector{ 0, 20 * stuff::pixelSize });
-	collectSpeedText->setLoc(speedText->getLoc() + vector{ 0, 23 * stuff::pixelSize });
-	collectSpeedValue->setLoc(speedValue->getLoc() + vector{ 0, 20 * stuff::pixelSize });
+	level->setLoc(fishTransporterName->getAbsoluteLoc() + vector{ fishTransporterName->getSize().x + 200.f, -20.f });
+	levelProgress->setLoc(level->getAbsoluteLoc() + vector{ -125.f, -9.f });
+	maxHoldText->setLoc(levelProgress->getAbsoluteLoc() + vector{ 0.f, -23.f });
+	maxHoldValue->setLoc(vector{ upgradeBackground->getAbsoluteLoc().x + upgradeBackground->getSize().x - 5.f, maxHoldText->getAbsoluteLoc().y});
+	speedText->setLoc(maxHoldText->getAbsoluteLoc() + vector{ 0.f, -23.f });
+	speedValue->setLoc(maxHoldValue->getAbsoluteLoc() + vector{ 0.f, -20.f });
+	collectSpeedText->setLoc(speedText->getAbsoluteLoc() + vector{ 0.f, -23.f });
+	collectSpeedValue->setLoc(speedValue->getAbsoluteLoc() + vector{ 0.f, -20.f });
 	if (buyButton) {
-		buyButton->setLoc({ xMid - buyButton->getSize().x / 2.f, collectSpeedText->getLoc().y + 20 * stuff::pixelSize });
-		//buyButtonText->setLoc(buyButton->getLoc() + buyButton->getSize() / 2 - buyButtonText->getSize() / 2);
-		multiMax->setLoc(buyButton->getLoc() - vector{ buyButton->getSize().x + 3 * stuff::pixelSize, 0 });
-		multi10x->setLoc(multiMax->getLoc() - vector{ multiMax->getSize().x, 0 });
-		multi1x->setLoc(multi10x->getLoc() - vector{ multi10x->getSize().x, 0 });
-		upgradePriceText->setLoc(buyButton->getLoc() + buyButton->getSize() / 2.f);
-		currencyIcon->setLoc(buyButton->getLoc() + vector{ -currencyIcon->getSize().x - stuff::pixelSize * 2.f, buyButton->getSize().y / 2.f - currencyIcon->getSize().y / 2.f});
+		buyButton->setLoc(collectSpeedText->getAbsoluteLoc() + vector{ 50.f, -30.f });
+		multiMax->setLoc(buyButton->getAbsoluteLoc() - vector{ buyButton->getSize().x + 3.f, 0 });
+		multi10x->setLoc(multiMax->getAbsoluteLoc() - vector{ multiMax->getSize().x, 0 });
+		multi1x->setLoc(multi10x->getAbsoluteLoc() - vector{ multi10x->getSize().x, 0 });
+		upgradePriceText->setLoc(buyButton->getAbsoluteLoc() + buyButton->getSize() / 2.f);
+		currencyIcon->setLoc(buyButton->getAbsoluteLoc() + vector{ -4.f, buyButton->getSize().y / 2.f });
 	}
 }
 
