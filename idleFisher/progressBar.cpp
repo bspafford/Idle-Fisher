@@ -52,6 +52,10 @@ void UprogressBar::setForegroundColor(glm::vec4 color, int id) {
 	foregrounds[id]->setColor(color);
 }
 
+float UprogressBar::getPercent(int id) {
+	return percent[id];
+}
+
 void UprogressBar::setPercent(float percent, int id) {
 	this->percent[id] = math::clamp(percent, 0, 1);
 }

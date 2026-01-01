@@ -12,12 +12,14 @@ class collision;
 class timer;
 class AfishSchool;
 class Shader;
+class UcomboOvertimeWidget;
 
 class Acharacter {
 public:
 	Acharacter();
 
 	void draw(Shader* shaderProgram);
+	void DrawWidgets(Shader* shaderProgram);
 	void drawFishingLine(Shader* shaderProgram);
 	void Update(float deltaTime);
 
@@ -89,7 +91,6 @@ public:
 	// stops player from moving if they start fishing
 	bool fishingStop = false;
 
-	std::unique_ptr<timer> comboOvertimer;
 	void comboOvertimeFinished();
 
 	static inline std::unique_ptr<Fcollision> col;
@@ -133,6 +134,8 @@ private:
 	std::vector<vector> transition = std::vector<vector>{ { 107, 63 }, { 105, 54 }, { 91, 50 } };
 	std::vector<vector> pullAnim = std::vector<vector>{ { 96, 44 }, { 90, 48 }, { 97, 42 }, { 89, 52 } };
 	std::vector<vector> catchAnim = std::vector<vector>{ { 97, 44 }, { 97, 52 }, { 60, 96 }, { 29, 79 }, { 32, 80 }, { 32, 80 }, { 32, 80 }, { 29, 81 }, { 51, 83 }, { 88, 73 }, { 95, 36 }, { 31, 81 } };
+
+	std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWidget;
 };
 
 Acharacter* GetCharacter();

@@ -22,6 +22,7 @@ public:
 	// id is when the progress bar has mutliple preogress bars
 	void setForegroundColor(glm::vec4 color, int id = 0);
 	void draw(Shader* shaderProgram);
+	float getPercent(int id = 0);
 	// id is when the progress bar has mutliple preogress bars
 	void setPercent(float percent, int id = 0);
 	// if this is the first time adding, make sure to update the weight of the first progress bar

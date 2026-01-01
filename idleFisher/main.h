@@ -76,7 +76,6 @@ public:
 	static inline std::unique_ptr<UfishUnlocked> fishUnlocked;
 	static inline std::unique_ptr<UUIWidget> UIWidget;
 	static inline std::unique_ptr<UidleProfitWidget> idleProfitWidget;
-	static inline std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWiget;
 	static inline std::unique_ptr<UnewRecordWidget> newRecordWidget;
 
 	static inline std::unique_ptr<Apet> pet;

@@ -46,7 +46,7 @@ void timer::setFps(float fps) {
 }
 
 void timer::Update(float deltaTime) {
-	if (!bStart)
+	if (!bGoing)
 		return;
 
 	time += deltaTime;
@@ -60,6 +60,8 @@ void timer::Update(float deltaTime) {
 		bFinished = true;
 		if (callback_)
 			callback_();
+		if (finishedCallback_)
+			finishedCallback_();
 	}
 }
 
@@ -71,12 +73,20 @@ float timer::getMaxTime() {
 	return maxTime;
 }
 
+float timer::getPercent() {
+	return time / maxTime;
+}
+
 bool timer::IsFinished() {
 	return bFinished;
 }
 
+bool timer::IsGoing() {
+	return bGoing;
+}
+
 void timer::start(float maxTime) {
-	bStart = true;
+	bGoing = true;
 	bFinished = false;
 
 	time = 0;
@@ -84,7 +94,7 @@ void timer::start(float maxTime) {
 }
 
 void timer::stop() {
-	bStart = false;
+	bGoing = false;
 	time = 0;
 }
 

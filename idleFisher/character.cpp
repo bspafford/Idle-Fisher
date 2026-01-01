@@ -28,6 +28,7 @@
 #include "comboOvertimeWidget.h"
 #include "achievementWidget.h"
 #include "newRecordWidget.h"
+#include "comboOvertimeWidget.h"
 
 #include "debugger.h"
 
@@ -114,10 +115,8 @@ Acharacter::Acharacter() {
 	premiumCatchTimer = std::make_unique<timer>();
 	premiumCatchTimer->addCallback(this, &Acharacter::setCatchPremium);
 
-	comboOvertimer = std::make_unique<timer>();
-	comboOvertimer->addCallback(this, &Acharacter::comboOvertimeFinished);
-	if (Main::comboOvertimeWiget)
-		Main::comboOvertimeWiget->addTimer(comboOvertimer.get());
+	comboOvertimeWidget = std::make_unique<UcomboOvertimeWidget>(nullptr);
+	comboOvertimeWidget->addFinishedCallback(this, &Acharacter::comboOvertimeFinished);
 }
 
 void Acharacter::animFinished() {
@@ -224,6 +223,10 @@ void Acharacter::draw(Shader* shaderProgram) {
 		drawFishingLine(shaderProgram);
 }
 
+void Acharacter::DrawWidgets(Shader* shaderProgram) {
+	comboOvertimeWidget->draw(shaderProgram);
+}
+
 vector Acharacter::getCharLoc() {
 	return SaveData::saveData.playerLoc - vector{ 0.f, anim->GetCellSize().y / 2.f };
 }
@@ -264,8 +267,7 @@ void Acharacter::leftClick() {
 	if (Cursor::getMouseOverWater() && !IHoverable::getHoveredItem() && SaveData::saveData.fishingRod.powerLevel > 0 && !isFishing) {
 		fishingStop = true;
 
-		comboOvertimer->stop();
-		//Main::comboOvertimeWiget->setVisibility(false);
+		comboOvertimeWidget->Refill();
 
 		isFishing = true;
 		canMove = false;
@@ -488,15 +490,14 @@ void Acharacter::stopFishing() {
 	bobberBobTimer->stop();
 
 	if (comboNum > 1) {
-		comboOvertimer->start(1);
-		Main::comboOvertimeWiget->setVisibility(true);
+		comboOvertimeWidget->Start(1.f);
 	} else
 		Main::comboWidget->hideComboText();
 }
 
 void Acharacter::comboOvertimeFinished() {
 	// remove widget
-	Main::comboOvertimeWiget->setVisibility(false);
+	comboOvertimeWidget->setVisibility(false);
 	comboNum = upgrades::calcComboStart(upgrades::calcComboMax());
 	Main::comboWidget->hideComboText();
 }

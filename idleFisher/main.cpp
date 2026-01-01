@@ -37,7 +37,6 @@
 #include "fishUnlocked.h"
 #include "UIWidget.h"
 #include "idleProfitWidget.h"
-#include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
 #include "blurBox.h"
 #include "settings.h"
@@ -368,7 +367,6 @@ void Main::setupWidgets() {
 	fishUnlocked = std::make_unique<UfishUnlocked>(nullptr);
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
-	comboOvertimeWiget = std::make_unique<UcomboOvertimeWidget>(nullptr);
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
 }
 
@@ -448,7 +446,7 @@ void Main::drawWidgets(Shader* shaderProgram) {
 	currencyWidget->draw(shaderProgram);
 	comboWidget->draw(shaderProgram);
 	UIWidget->draw(shaderProgram);
-	comboOvertimeWiget->draw(shaderProgram);
+	GetCharacter()->DrawWidgets(shaderProgram);
 	newRecordWidget->draw(shaderProgram);
 }
 

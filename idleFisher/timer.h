@@ -25,7 +25,10 @@ public:
 
 	float getTime();
 	float getMaxTime();
+	float getPercent();
+
 	bool IsFinished();
+	bool IsGoing();
 
 	void shouldntDelete(bool dontDelete);
 
@@ -49,6 +52,14 @@ public:
 		updateCallback_ = callback;
 	}
 
+	template <class T> void addFinishedCallback(T* const object, void(T::* const update)()) {
+		finishedCallback_ = std::bind_front(update, object);
+	}
+
+	void addFinishedCallback(void (*callback) ()) {
+		finishedCallback_ = callback;
+	}
+
 private:
 	// recursive incase Update() or callbacks create a timer and lock mutex while its already locked
 	static inline std::recursive_mutex mutex;
@@ -58,11 +69,12 @@ private:
 
 	float time = 0;
 	float maxTime;
-	bool bStart = false;
+	bool bGoing = false;
 	bool bFinished = false;
 
 	std::function<void()> callback_ = nullptr;
 	std::function<void()> updateCallback_ = nullptr;
+	std::function<void()> finishedCallback_ = nullptr;
 
 	// whether or not this object should be removed from instance list when changing worlds
 	bool dontDelete;
