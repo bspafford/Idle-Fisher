@@ -24,9 +24,8 @@ void fps::update(float deltaTime) {
 	total += deltaTime;
 
 	float fps = 1.f / deltaTime;
-	if (Main::GetFPSLimit() == 0 && fps < 1000.f) {
+	if (Main::GetFPSLimit() == 0 && fps < 1000.f)
 		std::cout << "low fps: " << fps << std::endl;
-	}
 }
 
 void fps::returnTimer() {

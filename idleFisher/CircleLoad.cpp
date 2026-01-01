@@ -22,6 +22,9 @@ void CircleLoad::draw() {
 	Main::circleShader->setMat4("projection", Camera::getProjectionMat());
 	Main::circleShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
 	Main::circleShader->setFloat("percent", circleRadius[circleIndex]);
+	Main::circleShader->setFloat("pixelSize", stuff::pixelSize);
+	
+	URectangle::setSize(stuff::screenSize);
 	URectangle::draw(Main::circleShader);
 }
 
