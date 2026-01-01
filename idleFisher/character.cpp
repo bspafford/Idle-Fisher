@@ -69,13 +69,7 @@ Acharacter::Acharacter() {
 	animData.insert({ "waitSE", animDataStruct({3, 7}, {6, 7}, true) });
 	animData.insert({ "pullSE", animDataStruct({7, 7}, {18, 7}, false) });
 
-	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, true, vector{ 0, 0 });
-	anim->shouldntDeleteTimer(true);
-	anim->setAnimation("idleSE", true);
-	anim->addFinishedCallback(this, &Acharacter::animFinished);
-	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
-	anim->start();
-
+	// fishing rod
 	std::unordered_map<std::string, animDataStruct> fishingRodData;
 	fishingRodData.insert({ "castSE", animDataStruct({0, 0}, {17, 0}, false) });
 	fishingRodData.insert({ "idleFishingSE", animDataStruct({18, 0}, {31, 0}, true) });
@@ -86,6 +80,13 @@ Acharacter::Acharacter() {
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, true);
 	fishingRod->shouldntDeleteTimer(true);
 
+	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, true, vector{ 0, 0 });
+	anim->shouldntDeleteTimer(true);
+	anim->setAnimation("idleSE", true);
+	anim->addFinishedCallback(this, &Acharacter::animFinished);
+	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
+	anim->start();
+
 	fishingTimer = std::make_unique<timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);
 	bobberCatchTimer = std::make_unique<timer>();
@@ -93,7 +94,8 @@ Acharacter::Acharacter() {
 	bobberBobTimer = std::make_unique<timer>();
 	bobberBobTimer->addCallback(this, &Acharacter::bobberBobAnim, &Acharacter::bobberBobAnim);
 
-	bobberImg = std::make_unique<Image>("./images/bobber.png", vector{ 100, 100 }, false);
+	bobberImg = std::make_unique<Image>("./images/bobber.png", vector{ 100, 100 }, true);
+	bobberImg->SetPivot({ 0.5f, 0.5f });
 	bobberWaterOverlay = std::make_unique<Image>("./images/bobberWaterOverlay.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> bobberData;
@@ -139,27 +141,21 @@ void Acharacter::animFinished() {
 }
 
 void Acharacter::setFishingTipLoc(int frame) {
-	vector loc = stuff::screenSize / (stuff::pixelSize * 2.f) - anim->GetCellSize() / 2.f + vector{ -46.f, -14.f };
-
+	vector loc = anim->getAbsoluteLoc() - anim->GetCellSize() / 2.f + vector{ -34.f, 11.f };
 	if (anim->GetCurrAnim() == "castSE") {
-		std::vector<vector> castAnimLocs = std::vector<vector>{ {95, 41}, {95, 41}, {94, 41}, {94, 41}, {95, 42}, {80, 1}, {48, -1}, {21, 43}, {27, 55}, {30, 56}, {47, 0}, {105, 11}, {105, 11}, {100, 4}, {98, 10}, {98, 10}, {98, 10}, {98, 10} };
 		fishingTipLoc = castAnimLocs[frame] + loc;
 		if (frame >= 11)
 			showFishingLine = true;
 	} else if (anim->GetCurrAnim() == "idleSE") {
-		std::vector<vector> idleFishing = std::vector<vector>{ {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 10}, {98, 11}, {98, 11}, {98, 11}, {98, 11}, {98, 11} };
 		fishingTipLoc = idleFishing[frame] + loc;
 		showFishingLine = true;
 	} else if (anim->GetCurrAnim() == "transitionSE") {
-		std::vector<vector> transition = std::vector<vector>{ {107, 14}, {105, 23}, {91, 27} };
 		fishingTipLoc = transition[frame] + loc;
 		showFishingLine = true;
 	} else if (anim->GetCurrAnim() == "waitSE") {
-		std::vector<vector> pullAnim = std::vector<vector>{ {96, 33}, {90, 29}, {97, 35}, {89, 25} };
 		fishingTipLoc = pullAnim[frame] + loc;
 		showFishingLine = true;
 	} else if (anim->GetCurrAnim() == "pullSE") {
-		std::vector<vector> catchAnim = std::vector<vector>{ {71 + 26, 33}, {71 + 26, 25}, {34 + 26, -19}, {3 + 26, -2}, {6 + 26, -3}, {6 + 26, -3}, {6 + 26, -3}, {3 + 26, -4}, {25 + 26, -6}, {62 + 26, 4}, {69 + 26, 41}, {31, -4} };
 		fishingTipLoc = catchAnim[frame] + loc;
 		if (frame >= 4)
 			showFishingLine = false;
@@ -273,7 +269,7 @@ void Acharacter::leftClick() {
 
 		isFishing = true;
 		canMove = false;
-		bobberLoc = Input::getMousePos();
+		bobberLoc = math::screenToWorld(Input::getMousePos());
 		tempBobberLoc = bobberLoc;
 
 		bobberBobTimer->start(bobTime);
@@ -380,10 +376,10 @@ void Acharacter::leftClick() {
 		fishingTimer->start(catchTimer);
 
 		// set fish image
-		fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, false);
+		fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, true);
+		fishImg->SetPivot({ 0.5f, 0.5f });
 		showFish = true;
 
-		tempBobberLoc = bobberLoc;
 		bobberBobTimer->stop();
 		bobberCatchTimer->start(stuff::animSpeed * 4.f);
 	} else if (isFishing) { // stop fishing
@@ -562,7 +558,7 @@ bool Acharacter::getCanMove() {
 void Acharacter::bobberCatchAnim() {
 	int pullFrames = 4;
 
-	vector goToLoc = stuff::screenSize / (stuff::pixelSize * 2.f) - vector{ 0.f, anim->GetCellSize().y / 2 };
+	vector goToLoc = anim->getAbsoluteLoc() + vector{ anim->GetCellSize().x / 2.f, anim->GetCellSize().y + 10.f };
 
 	float time = bobberCatchTimer->getTime();
 	float timer = bobberCatchTimer->getMaxTime();
@@ -650,95 +646,23 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	if (!isFishing || !showFishingLine)
 		return;
 
-	vector start = fishingTipLoc;
-	vector end = Acharacter::bobberLoc + (Acharacter::bobberImg->getSize() / 2.f);
+	vector start = math::worldToScreen(fishingTipLoc).ToPixel();
+	vector end = math::worldToScreen(bobberLoc).ToPixel();
 
-	vector negative{ 1.f, 1.f };
-	vector diff = (end - start).round();
-	if (diff.x < 0.f) {
-		negative.x = -1.f;
-		diff.x *= -1.f;
-	}
-	if (diff.y < 0.f) {
-		negative.y = -1.f;
-		diff.y *= -1.f;
-	}
+	vector min = vector::min(start, end);
+	vector max = vector::max(start, end);
+	vector size = max - min;
 
-	// offset
-	vector p1 = diff;
-	vector p2 = { 0, 0 };
+	URectangle* rectangle = new URectangle(min, size, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
+	Main::fishingLineShader->Activate();
 
-	float minX = math::min(0, diff.x);
-	float maxX = math::max(0, diff.x);
-	float minY = math::min(0, diff.y);
-	float maxY = math::max(0, diff.y);
+	Main::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));
+	Main::fishingLineShader->setVec2("end", glm::vec2(end.x, end.y));
+	bool tight = anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos;
+	Main::fishingLineShader->setInt("tight", tight);
 
-	int sizeX = static_cast<int>(roundf(maxX - minX));
-	int sizeY = static_cast<int>(roundf(maxY - minY));
-
-	float prevY = 0;
-	float diffY;
-	float x, y, a;
-	if (sizeX > 0 && sizeY > 0) {
-		Rect* points = new Rect[sizeX];
-		for (int i = 1; i < sizeX + 1; i++) {
-			x = minX + i;
-
-			// linear
-			if (anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos) {
-				float m = (p2.y - p1.y) / (p2.x - p1.x);
-				float b = p1.y - m * p1.x;
-				y = m * x + b;
-			// parabola
-			} else {
-				a = (p2.y - p1.y) / ((-p1.x + p2.x) * (-p1.x + p2.x));
-				y = a * ((x - p1.x) * (x - p1.x)) + p1.y;
-			}
-
-			float yInt = round(y * negative.y);
-
-			diffY = yInt - prevY;
-			if (diffY < 1)
-				diffY = 1;
-
-			points[i - 1] = Rect{ round(x * negative.x) + start.x, (yInt - diffY) + start.y, 1.f, diffY };
-
-			prevY = yInt;
-		}
-		// draw a straight line
-		for (int i = 0; i < sizeX; i++) {
-			URectangle* rectangle = new URectangle({ points[i].x, points[i].y }, { points[i].w, points[i].h }, false, glm::vec4(242.f/255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
-			rectangle->draw(shaderProgram);
-			delete rectangle;
-		}
-
-		if (points) {
-			delete[] points;
-			points = nullptr;
-		}
-	} else {
-		if (diff.x < 1)
-			diff.x = 1;
-		else if (diff.y < 1)
-			diff.y = 1;
-
-		vector loc;
-		if (start.x > end.x)
-			loc.x = end.x;
-		else
-			loc.x = start.x;
-
-		if (start.y > end.y)
-			loc.y = end.y;
-		else
-			loc.y = start.y;
-
-		for (int i = 0; i < sizeX; i++) {
-			URectangle* rectangle = new URectangle(loc, diff, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
-			rectangle->draw(shaderProgram);
-			delete rectangle;
-		}
-	}
+	rectangle->draw(Main::fishingLineShader);
+	delete rectangle;
 
 	bobberImg->setLoc(bobberLoc);
 	bobberWaterOverlay->setLoc(tempBobberLoc);

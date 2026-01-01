@@ -183,6 +183,7 @@
     <None Include="circleShader.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="fishingLineShader.frag" />
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
     <None Include="test.frag" />

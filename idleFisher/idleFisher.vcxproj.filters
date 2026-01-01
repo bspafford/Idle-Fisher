@@ -96,6 +96,9 @@
     <None Include="circleShader.frag">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fishingLineShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">

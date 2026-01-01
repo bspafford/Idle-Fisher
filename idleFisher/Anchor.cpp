@@ -3,7 +3,7 @@
 vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, Anchor xAnchor, Anchor yAnchor) {
 	 vector pivotLoc = size * pivot;
 	 if (useWorldPos) {
-		 return loc - pivotLoc;
+		 return (loc - pivotLoc).ToPixel();
 	 } else {
 		 vector newLoc;
 		 vector pixelScreenSize = stuff::screenSize / stuff::pixelSize;
@@ -23,6 +23,6 @@ vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, A
 			 newLoc.y = (loc.y + pixelScreenSize.y);
 		 }
 
-		 return (newLoc - pivotLoc).ToPixel(); // rounds to nearest pixel
+		 return (newLoc - pivotLoc).ToPixel();
 	 }
 }

@@ -126,6 +126,13 @@ private:
 	bool canMove = true;
 	vector prevMove = { 1, -1 };
 	double comboNum = 1;
+
+	// fishing line locs
+	std::vector<vector> castAnimLocs = std::vector<vector>{ { 95, 36 }, { 95, 36 }, { 94, 36 }, { 94, 36 }, { 95, 35 }, { 80, 76 }, { 48, 78 }, { 21, 34 }, { 27, 22 }, { 30, 21 }, { 47, 77 }, { 105, 66 }, { 105, 66 }, { 100, 73 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 } };
+	std::vector<vector> idleFishing = std::vector<vector>{ { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 67 }, { 98, 66 }, { 98, 66 }, { 98, 66 }, { 98, 66 }, { 98, 66 } };
+	std::vector<vector> transition = std::vector<vector>{ { 107, 63 }, { 105, 54 }, { 91, 50 } };
+	std::vector<vector> pullAnim = std::vector<vector>{ { 96, 44 }, { 90, 48 }, { 97, 42 }, { 89, 52 } };
+	std::vector<vector> catchAnim = std::vector<vector>{ { 97, 44 }, { 97, 52 }, { 60, 96 }, { 29, 79 }, { 32, 80 }, { 32, 80 }, { 32, 80 }, { 29, 81 }, { 51, 83 }, { 88, 73 }, { 95, 36 }, { 31, 81 } };
 };
 
 Acharacter* GetCharacter();

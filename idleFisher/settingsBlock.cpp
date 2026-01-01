@@ -66,8 +66,6 @@ void UsettingsBlock::SetValue(int value) {
 	selectedOptionText->setText(options[value]);
 	*settingsValue = value;
 	currOptionsIdx = value;
-
-	std::cout << "value: " << options[value] << "\n";
 }
 
 void UsettingsBlock::AddOption(std::string option) {

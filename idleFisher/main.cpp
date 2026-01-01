@@ -63,6 +63,7 @@ Main::~Main() {
 	delete twoDWaterShader;
 	delete circleShader;
 	delete blurShader;
+	delete fishingLineShader;
 
 	textureManager::Deconstructor();
 	timer::clearInstanceList(false);
@@ -266,6 +267,7 @@ void Main::Start() {
 	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
 	circleShader = new Shader("2dShader.vert", "circleShader.frag");
 	blurShader = new Shader("blurShader.vert", "blurShader.frag");
+	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
 
 	shaderProgram->Activate();
 
@@ -335,6 +337,11 @@ void Main::updateShaders(float deltaTime) {
 	twoDShader->setMat4("projection", camera->getProjectionMat());
 	twoDShader->setVec2("playerPos", camera->GetPosition());
 	twoDShader->setFloat("pixelSize", stuff::pixelSize);
+
+	fishingLineShader->Activate();
+	fishingLineShader->setMat4("projection", camera->getProjectionMat());
+	fishingLineShader->setVec2("playerPos", camera->GetPosition());
+	fishingLineShader->setFloat("pixelSize", stuff::pixelSize);
 
 	twoDWaterShader->Activate();
 	twoDWaterShader->setFloat("moveFactor", waveFactor);

@@ -20,6 +20,14 @@ public:
 		return v;
 	}
 
+	static vector min(vector a, vector b) {
+		return { std::min(a.x, b.x), std::min(a.y, b.y) };
+	}
+
+	static vector max(vector a, vector b) {
+		return { std::max(a.x, b.x), std::max(a.y, b.y) };
+	}
+
 	static vector zero() {
 		return { 0, 0 };
 	}

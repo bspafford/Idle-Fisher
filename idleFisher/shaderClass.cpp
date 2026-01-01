@@ -133,7 +133,7 @@ int Shader::GetUniformLocation(const std::string& key) {
 	int loc = glGetUniformLocation(ID, key.c_str());
 	if (loc == -1) {
 		std::cout << "Uniform \"" + key + "\" is not a valid uniform\n";
-		abort();
+		//abort();
 	}
 
 	uniformCache.emplace(key, loc);
