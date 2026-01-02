@@ -62,6 +62,8 @@ class textureManager {
 public:
 	// creates objects for GPU
 	textureManager();
+	// parses the file into a map, so i can load images for something like the title screen, without having to load all images or keep all data
+	static void ParseImageFile();
 	// loads all of the images
 	static void LoadTextures();
 	static void Deconstructor();
@@ -88,6 +90,9 @@ private:
 	// uploads data to the CPU if the shader has changed, or the end of the frame has been reached
 	// bypass: uploads GPU data even if the shader hasn't changed
 	static void UploadGPUData();
+
+	// path and keep data
+	static inline std::unordered_map<std::string, GLuint> imageData;
 
 	static inline Shader* currShader = NULL;
 	static inline Shader* prevShader = NULL;

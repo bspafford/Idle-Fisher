@@ -136,9 +136,11 @@ textureManager::textureManager() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribDivisor(0, 0);
 	glVertexAttribDivisor(1, 0);
+
+	ParseImageFile();
 }
 
-void textureManager::LoadTextures() {
+void textureManager::ParseImageFile() {
 	std::ifstream colFile("./data/png_files.txt");
 	if (colFile.is_open()) {
 		std::string line;
@@ -167,10 +169,16 @@ void textureManager::LoadTextures() {
 					keepData = GL_RGBA;
 			}
 
-			loadTexture(delimLine[0], keepData);
+			imageData.insert({ delimLine[0], keepData });
 		}
 	}
 	colFile.close();
+}
+
+void textureManager::LoadTextures() {
+	for (auto& data : imageData)
+		loadTexture(data.first, data.second);
+	imageData.clear();
 }
 
 void textureManager::Deconstructor() {
@@ -200,7 +208,7 @@ textureStruct* textureManager::getTexture(std::string name) {
 		return it->second.get();
 	else { // backup
 		std::cout << "Image path not in textureMap but loading anyways: " << name << "\n";
-		return loadTexture(name, 0);
+		return loadTexture(name, imageData[name]);
 	}
 }
 

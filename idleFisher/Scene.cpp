@@ -194,7 +194,7 @@ void Scene::CreateShaders() {
 
 void Scene::StartSetup() {
 	Input::Init();
-	textureManager::LoadTextures();
+	textureManager::LoadTextures(); // will be moved later
 	sounds();
 	csvReader();
 
