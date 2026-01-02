@@ -14,8 +14,10 @@ void SaveData::save() {
 	long long currEpochMS = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	// check if file exists
-	if (!std::filesystem::exists(filename))
+	if (!std::filesystem::exists(filename)) {
 		SaveData::saveData.startTime = currEpochMS;
+		startTime = std::chrono::system_clock::time_point{ std::chrono::milliseconds(SaveData::saveData.startTime) };
+	}
 	SaveData::saveData.lastPlayed = currEpochMS;
 
 	// Serialize to file
@@ -52,6 +54,9 @@ void SaveData::load() {
 
 		is.close();
 	}
+
+	lastPlayed = std::chrono::system_clock::time_point{std::chrono::milliseconds(SaveData::saveData.lastPlayed) };
+	startTime = std::chrono::system_clock::time_point{ std::chrono::milliseconds(SaveData::saveData.startTime) };
 
 	// setup auto saving
 	autoSaveTimer = std::make_unique<timer>();
@@ -137,7 +142,6 @@ void SaveData::loadSettings() {
 		std::string file_contents(std::istreambuf_iterator<char>(is), {});
 		// bytes to json
 		nlohmann::json data = nlohmann::json::from_bson(file_contents);
-		std::cout << "saveSettings: \n" << data << "\n";
 		// json to struct
 		SaveData::settingsData = data.get<FsettingsData>();
 

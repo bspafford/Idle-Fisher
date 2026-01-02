@@ -16,10 +16,13 @@ enum TextAlign {
 	TEXT_ALIGN_CENTER,
 };
 
-struct FtextInfo {
-	vector loc = { 0, 0 };
-	vector size = { 0, 0 };
+struct FfontInfo {
+	int textHeight = 0;
+	// How many pixels chars like 'g', 'y', etc, should be dropped
+	int dropHeight = 0;
+	std::vector<Rect> letterRect = std::vector<Rect>(126);
 };
+
 
 class text : public widget {
 public:
@@ -77,7 +80,9 @@ private:
 	int numLetters = 0;
 
 	std::shared_ptr<Image> textImg;
-	std::vector<FtextInfo> textInfo = std::vector<FtextInfo>(126);
+
+	static inline std::unordered_map<std::string, FfontInfo> fontInfoMap;
+	FfontInfo* fontInfo = nullptr;
 
 	glm::vec4 colorMod = glm::vec4(1.f);
 
@@ -87,8 +92,5 @@ private:
 	Anchor xAnchor = ANCHOR_LEFT;
 	Anchor yAnchor = ANCHOR_TOP;
 
-	int textHeight = 0;
-	// How many pixels chars like 'g', 'y', etc, should be dropped
-	int dropHeight = 0;
 	bool hasDropChar = false;
 };

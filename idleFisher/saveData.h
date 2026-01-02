@@ -495,8 +495,8 @@ struct Fdata {
 
 struct FsaveData {
     // stored in milliseconds
-    double startTime;
-    double lastPlayed;
+    long long startTime;
+    long long lastPlayed;
 
     // player loc
     vector playerLoc = { 500, 500 };
