@@ -2,6 +2,7 @@
 #include "main.h"
 #include "shaderClass.h"
 #include "FBO.h"
+#include "GPULoadCollector.h"
 
 #include <fstream>
 #include <sstream>
@@ -10,6 +11,7 @@
 
 textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 	this->useAlpha = useAlpha;
+	keptData = keepData;
 
 	stbi_set_flip_vertically_on_load(true);
 	bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
@@ -19,6 +21,14 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 		return;
 	}
 
+	GPULoadCollector::add(this);
+}
+
+textureStruct::~textureStruct() {
+	GPULoadCollector::remove(this);
+}
+
+void textureStruct::LoadGPU() {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, id);
@@ -38,7 +48,6 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 		handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
 		glMakeTextureHandleResidentARB(handle);
 
-		keptData = keepData;
 		if (keptData == 0) { // delete all pixel data
 			stbi_image_free(bytes);
 			bytes = NULL;
@@ -104,6 +113,32 @@ textureManager::textureManager() {
 	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+	float vertices[] = {
+		// positions       // texture coordinates
+		0.0f, 1.0f,      0.0f, 0.0f,  // top-left
+		0.0f, 0.0f,      0.0f, 1.0f,  // bottom-left
+		1.0f, 0.0f,      1.0f, 1.0f,  // bottom-right
+		1.0f, 1.0f,      1.0f, 0.0f   // top-right
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	vao = std::make_unique<VAO>();
+	vao->Bind();
+	vbo = std::make_unique<VBO>(vertices, sizeof(vertices));
+	ebo = std::make_unique<EBO>(indices, sizeof(indices));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribDivisor(0, 0);
+	glVertexAttribDivisor(1, 0);
+}
+
+void textureManager::LoadTextures() {
 	std::ifstream colFile("./data/png_files.txt");
 	if (colFile.is_open()) {
 		std::string line;
@@ -136,30 +171,6 @@ textureManager::textureManager() {
 		}
 	}
 	colFile.close();
-
-	float vertices[] = {
-		// positions       // texture coordinates
-		0.0f, 1.0f,      0.0f, 0.0f,  // top-left
-		0.0f, 0.0f,      0.0f, 1.0f,  // bottom-left
-		1.0f, 0.0f,      1.0f, 1.0f,  // bottom-right
-		1.0f, 1.0f,      1.0f, 0.0f   // top-right
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	vao = std::make_unique<VAO>();
-	vao->Bind();
-	vbo = std::make_unique<VBO>(vertices, sizeof(vertices));
-	ebo = std::make_unique<EBO>(indices, sizeof(indices));
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 0);
 }
 
 void textureManager::Deconstructor() {
@@ -178,11 +189,15 @@ textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
 }
 
 textureStruct* textureManager::getTexture(std::string name) {
+	if (name == "")
+		return nullptr;
+
 	// to lower
 	name = math::toLower(name);
 
-	if (textureMap.find(name) != textureMap.end())
-		return textureMap[name].get();
+	auto it = textureMap.find(name);
+	if (it != textureMap.end())
+		return it->second.get();
 	else { // backup
 		std::cout << "Image path not in textureMap but loading anyways: " << name << "\n";
 		return loadTexture(name, 0);

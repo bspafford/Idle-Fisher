@@ -9,7 +9,7 @@
 #include "debugger.h"
 
 void SaveData::save() {
-	const auto filename = "./data/saves/save.save";
+	const auto filename = GetSaveDataPath();
 
 	long long currEpochMS = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
@@ -34,7 +34,7 @@ void SaveData::save() {
 void SaveData::load() {
 	recalcLists();
 
-	const auto filename = "./data/saves/save.save";
+	const auto filename = GetSaveDataPath();
 
 	// if save file doesn't exist, make one and setup default values
 	if (!std::filesystem::exists(filename)) {
@@ -114,7 +114,7 @@ void SaveData::recalcLists() {
 }
 
 void SaveData::saveSettings() {
-	const auto filename = "./data/saves/settings.save";
+	const auto filename = GetSettingsDataPath();
 
 	// Serialize to file
 	std::ofstream os;
@@ -128,7 +128,7 @@ void SaveData::saveSettings() {
 }
 
 void SaveData::loadSettings() {
-	const auto filename = "./data/saves/settings.save";
+	const std::string filename = GetSettingsDataPath();
 
 	if (!std::filesystem::exists(filename)) {
 		saveSettings(); // makes save file if there isn't one
@@ -147,4 +147,12 @@ void SaveData::loadSettings() {
 
 		is.close();
 	}
+}
+
+std::string SaveData::GetSaveDataPath() {
+	return "./data/saves/save.save";
+}
+
+std::string SaveData::GetSettingsDataPath() {
+	return "./data/saves/settings.save";
 }

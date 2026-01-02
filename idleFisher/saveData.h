@@ -595,6 +595,9 @@ public:
 
     // used to setup default values and vector sizes for all the save stuff
     static void recalcLists();
+
+    static std::string GetSaveDataPath();
+    static std::string GetSettingsDataPath();
 private:
     static void autoSave();
     static inline float autoSaveInterval = 60.f; // in seconds

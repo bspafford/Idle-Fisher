@@ -47,7 +47,9 @@ struct textureStruct {
 	//	GL_RGBA for full data
 	//	0 for none
 	textureStruct(const std::string& path, GLuint keepData);
-	~textureStruct() {}
+	~textureStruct();
+
+	void LoadGPU();
 
 	bool GetAlphaAtPos(vector pos);
 	// returns a copy of the flipped bytes
@@ -58,9 +60,12 @@ struct textureStruct {
 
 class textureManager {
 public:
+	// creates objects for GPU
 	textureManager();
+	// loads all of the images
+	static void LoadTextures();
 	static void Deconstructor();
-	static textureStruct* loadTexture(std::string path, GLuint keptData);
+	// retreives texture from the texture map or loads it if there wasn't one in the map
 	static textureStruct* getTexture(std::string name);
 
 	static void StartFrame();
@@ -76,6 +81,8 @@ public:
 	static GLuint GetSamplerID();
 
 private:
+	// loads in the texture from memory and adds it to a texture map
+	static textureStruct* loadTexture(std::string path, GLuint keptData);
 	// checks if the shader has changed
 	static void CheckShaders();
 	// uploads data to the CPU if the shader has changed, or the end of the frame has been reached

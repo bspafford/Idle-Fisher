@@ -29,7 +29,6 @@ public:
 private:
 	// Stores the main vectors of the camera
 	glm::vec3 position;
-	glm::mat4 projection = glm::mat4(1.0f);
 	float speed = 37.5f;
 
 	static inline Camera* cameraPtr;

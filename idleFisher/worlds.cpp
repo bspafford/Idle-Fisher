@@ -64,11 +64,13 @@ titleScreen::titleScreen() {
 	trees->setAnimation("anim");
 	trees->start();
 
-	newGameButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/newGame.png", 66, 20, 1, vector{ 45.f, 184.f }, false, false);
-	newGameButton->addCallback(this, &titleScreen::newGame);
-
-	continueButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/continue.png", 69, 20, 1, vector{ 45.f, 152.f }, false, false);
-	continueButton->addCallback(this, &titleScreen::continueGame);
+	std::string startButtonPath;
+	if (std::filesystem::exists(SaveData::GetSaveDataPath())) // if save exists, continue
+		startButtonPath = "widget/pauseMenu/continue.png";
+	else
+		startButtonPath = "widget/pauseMenu/newGame.png";
+	startButton = std::make_unique<Ubutton>(nullptr, startButtonPath, 66, 20, 1, vector{ 45.f, 184.f }, false, false);
+	startButton->addCallback(this, &titleScreen::startGame);
 
 	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 120.f }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
@@ -84,26 +86,20 @@ titleScreen::~titleScreen() {
 
 void titleScreen::start() {
 	// setup water shader images
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/titleScreen/reflections.png", "reflectionTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "", "underwaterObjectDepthMap");
-	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f / 255.f, 107.f / 255.f, 138.f / 255.f));
-	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
-	Main::twoDWaterShader->setFloat("causticSize", 6.f);
-	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/reflections.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "", "underwaterObjectDepthMap");
+	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f / 255.f, 107.f / 255.f, 138.f / 255.f));
+	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
+	Scene::twoDWaterShader->setFloat("causticSize", 6.f);
+	Scene::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 }
 
-void titleScreen::newGame() {
-	fadeTimer->addUpdateCallback(this, &titleScreen::fadeToBlack);
-	fadeTimer->start(0.3f);
-	fadeTimer->addCallback(this, &titleScreen::openWorld);
-}
-
-void titleScreen::continueGame() {
+void titleScreen::startGame() {
 	fadeTimer->addUpdateCallback(this, &titleScreen::fadeToBlack);
 	fadeTimer->addCallback(this, &titleScreen::openWorld);
 	fadeTimer->start(0.3f);
@@ -117,7 +113,7 @@ void titleScreen::fadeToBlack() {
 
 void titleScreen::openWorld() {
 	fadeToBlack(); // makes sure it goes to alpha 100% instead of like 99%
-	Scene::openLevel("world1");
+	Scene::openLevel("world1", WORLD_SET_LOC_NONE);
 	alpha = 0;
 }
 
@@ -127,7 +123,7 @@ void titleScreen::exit() {
 
 void titleScreen::draw(Shader* shaderProgram) {
 	if (waterImg)
-		waterImg->draw(Main::twoDWaterShader);
+		waterImg->draw(Scene::twoDWaterShader);
 
 	if (fishermanDock)
 		fishermanDock->draw(shaderProgram);
@@ -135,10 +131,8 @@ void titleScreen::draw(Shader* shaderProgram) {
 		title->draw(shaderProgram);
 	if (trees)
 		trees->draw(shaderProgram);
-	if (newGameButton)
-		newGameButton->draw(shaderProgram);
-	if (continueButton)
-		continueButton->draw(shaderProgram);
+	if (startButton)
+		startButton->draw(shaderProgram);
 	if (exitButton)
 		exitButton->draw(shaderProgram);
 
@@ -226,21 +220,21 @@ void rebirthWorld::deconstructor() {
 
 void rebirthWorld::start() {
 	// setup water shader images
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/rebirth/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader({ Main::twoDWaterShader, Main::twoDShader }, "./images/worlds/rebirth/depthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/rebirth/reflectionTexture.png", "reflectionTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectTexture.png", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
-	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(0, 64.f/255.f, 81.f/255.f));
-	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(0, 130.f/255.f, 121.f/255.f));
-	Main::twoDWaterShader->setFloat("causticSize", 16.f);
-	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/depthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/reflectionTexture.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectTexture.png", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
+	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(0, 64.f/255.f, 81.f/255.f));
+	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(0, 130.f/255.f, 121.f/255.f));
+	Scene::twoDWaterShader->setFloat("causticSize", 16.f);
+	Scene::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 }
 
 void rebirthWorld::draw(Shader* shaderProgram) {
-	waterImg->draw(Main::twoDWaterShader);
+	waterImg->draw(Scene::twoDWaterShader);
 
 	shaderProgram->Activate();
 	
@@ -337,17 +331,17 @@ void world::start() {
 	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
 
 	// bind texture stuff for water
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/waterDepthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/reflectionTexture.png", "reflectionTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Main::twoDWaterShader, "./images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
-	Main::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
-	Main::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
-	Main::twoDWaterShader->setFloat("causticSize", 16.f);
-	Main::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDepthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/reflectionTexture.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
+	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
+	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
+	Scene::twoDWaterShader->setFloat("causticSize", 16.f);
+	Scene::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
 	setupAutoFishers();
 
 	// load idle profits
@@ -441,8 +435,8 @@ void world::draw(Shader* shaderProgram) {
 	if (sellFish)
 		sellFish->draw(shaderProgram);
 	
-	if (Main::pet)
-		Main::pet->draw(shaderProgram);
+	if (Scene::pet)
+		Scene::pet->draw(shaderProgram);
 	
 	sortDraw(shaderProgram);
 
@@ -461,21 +455,21 @@ void world::draw(Shader* shaderProgram) {
 
 void world::renderWater() {
 	if (waterImg)
-		waterImg->draw(Main::twoDWaterShader);
+		waterImg->draw(Scene::twoDWaterShader);
 
 	glDisable(GL_DEPTH_TEST);
 
 	// ==== DRAW 2D STUFF ====
-	Main::twoDShader->Activate();
+	Scene::twoDShader->Activate();
 
 	// draws ship inbetween water and dock
 	if (ship)
-		ship->draw(Main::twoDShader);
+		ship->draw(Scene::twoDShader);
 	
 	if (beachAnim)
-		beachAnim->draw(Main::twoDShader);
+		beachAnim->draw(Scene::twoDShader);
 	if (mapImg)
-		mapImg->draw(Main::twoDShader);
+		mapImg->draw(Scene::twoDShader);
 }
 
 void world::sortDraw(Shader* shaderProgram) {

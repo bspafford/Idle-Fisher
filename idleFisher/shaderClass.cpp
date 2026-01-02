@@ -59,7 +59,6 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	// Delete the now useless Vertex and Fragment Shader objects
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-
 }
 
 Shader::~Shader() {

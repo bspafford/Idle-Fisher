@@ -6,16 +6,42 @@
 #include "Texture.h"
 #include "AStar.h"
 #include "timer.h"
-#include "loadingScreen.h"
 #include "GPULoadCollector.h"
+
+#include "upgrades.h"
+#include "achievementBuffs.h"
+#include "achievement.h"
+#include "main.h"
+#include "pet.h"
+#include "Input.h"
+#include "textureManager.h"
+#include "sounds.h"
+#include "csvReader.h"
+#include "camera.h"
+#include "character.h"
 
 #include "debugger.h"
 
-void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _overrideIfInWorld) {
+void Scene::Destructor() {
+	delete shaderProgram;
+	delete shadowMapProgram;
+	delete twoDShader;
+	delete twoDWaterShader;
+	delete circleShader;
+	delete blurShader;
+	delete fishingLineShader;
+}
+
+void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _overrideIfInWorld, bool _isStartup) {
+	isStartup = _isStartup;
+
 	worldName = _worldName;
 	worldChangeLoc = _worldChangeLoc;
 	overrideIfInWorld = _overrideIfInWorld;
 	loadWorld = true;
+
+	if (isStartup)
+		LoadRequired();
 
 	if (!loadingScreen)
 		loadingScreen = std::make_unique<LoadingScreen>(nullptr);
@@ -27,7 +53,7 @@ void Scene::draw(Shader* shaderProgram) {
 		hasFinishedLoading = true;
 		finishedLoading();
 	// draw loading screen while loading
-	} else if (!loadingDone && world::currWorld) {
+	} else if (!loadingDone) {
 		loadingScreen->draw(shaderProgram);
 	}
 
@@ -47,6 +73,9 @@ void Scene::draw(Shader* shaderProgram) {
 
 void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld) {
 	GPULoadCollector::open();
+
+	if (isStartup)
+		StartSetup();
 
 	if (worldName == "vault" && currWorldName != "vault")
 		prevWorld = currWorldName;
@@ -93,7 +122,10 @@ void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool
 	} else if (currWorldName == "world10") {
 		world::currWorld = std::make_unique<world10>(worldChangeLoc);
 	}
-	
+
+	if (isStartup)
+		FinishSetup();
+
 	AStar::init();
 	loadingDone = true;
 }
@@ -142,4 +174,69 @@ void Scene::deferredChangeWorld() {
 
 	std::thread loader(&Scene::openLevelThread, worldName, worldChangeLoc, overrideIfInWorld);
 	loader.detach();
+}
+
+void Scene::LoadRequired() {
+	CreateShaders();
+	textureManager();
+	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
+}
+
+void Scene::CreateShaders() {
+	shaderProgram = new Shader("default.vert", "default.frag");
+	shadowMapProgram = new Shader("shadowMap.vert", "shadowMap.frag");
+	twoDShader = new Shader("2dShader.vert", "2dShader.frag");
+	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
+	circleShader = new Shader("2dShader.vert", "circleShader.frag");
+	blurShader = new Shader("blurShader.vert", "blurShader.frag");
+	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
+}
+
+void Scene::StartSetup() {
+	Input::Init();
+	textureManager::LoadTextures();
+	sounds();
+	csvReader();
+
+	updateShaders(0);
+
+	character = std::make_unique<Acharacter>();
+}
+
+void Scene::FinishSetup() {
+	SaveData::load();
+	upgrades::init();
+	achievementBuffs::init();
+	Main::setupWidgets();
+	if (SaveData::saveData.equippedPet.id != -1)
+		pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
+	achievement::createAchievementList();
+}
+
+void Scene::updateShaders(float deltaTime) {
+	// set water movement
+	waveFactor += waveSpeed * deltaTime;
+	if (waveFactor >= 1.f) // loop if hit 1
+		waveFactor -= 1.f;
+
+	twoDShader->Activate();
+	twoDShader->setMat4("projection", camera->getProjectionMat());
+	twoDShader->setVec2("playerPos", camera->GetPosition());
+	twoDShader->setFloat("pixelSize", stuff::pixelSize);
+
+	fishingLineShader->Activate();
+	fishingLineShader->setMat4("projection", camera->getProjectionMat());
+	fishingLineShader->setVec2("playerPos", camera->GetPosition());
+	fishingLineShader->setFloat("pixelSize", stuff::pixelSize);
+
+	twoDWaterShader->Activate();
+	twoDWaterShader->setFloat("moveFactor", waveFactor);
+	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
+	twoDWaterShader->setVec2("playerPos", camera->GetPosition());
+	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
+
+	blurShader->Activate();
+	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
+	blurShader->setVec2("playerPos", camera->GetPosition());
+	blurShader->setFloat("pixelSize", stuff::pixelSize);
 }

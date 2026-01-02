@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "textureManager.h"
 #include "ScissorTest.h"
+#include "GPULoadCollector.h"
 
 #include "debugger.h"
 
@@ -12,35 +13,48 @@ Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector 
 	this->source = source;
 	this->useWorldPos = useWorldPos;
 
-	textureStructPtr = textureManager::getTexture(path);
-	handle = textureStructPtr->handle;
+	textureStructPtr = image->textureStructPtr;
+	if (!handle || !textureStructPtr)
+		GPULoadCollector::add(this);
 
 	ogW = image->ogW;
 	ogH = image->ogH;
 	w = source->w;
 	h = source->h;
 
-	setLoc(loc);
-
 	this->normalizedSource = *source / vector{ ogW, ogH };
+
+	setLoc(loc);
 }
 
 Image::Image(std::string image, vector loc, bool useWorldPos) {
 	path = image;
 	this->useWorldPos = useWorldPos;
 
-	textureStructPtr = textureManager::getTexture(path);
-	handle = textureStructPtr->handle;
+	normalizedSource = { 0, 0, 1, 1 };
 
-	ogW = textureStructPtr->w;
-	ogH = textureStructPtr->h;
-	w = textureStructPtr->w;
-	h = textureStructPtr->h;
+	textureStructPtr = textureManager::getTexture(path);
+	if (textureStructPtr) {
+		w = textureStructPtr->w;
+		h = textureStructPtr->h;
+		ogW = textureStructPtr->w;
+		ogH = textureStructPtr->h;
+		GPULoadCollector::add(this);
+	}
+
+	setLoc(loc);
+}
+
+Image::~Image() {
+	GPULoadCollector::remove(this);
+}
+
+void Image::LoadGPU() {
+	if (textureStructPtr)
+		handle = textureStructPtr->handle;
 
 	// sets up absolute loc
 	setLoc(loc);
-
-	normalizedSource = { 0, 0, 1, 1 };
 }
 
 void Image::draw(Shader* shader) {
@@ -104,6 +118,10 @@ vector Image::getSize() {
 void Image::setSize(vector size) {
 	w = size.x;
 	h = size.y;
+}
+
+std::string Image::getPath() {
+	return path;
 }
 
 void Image::setImage(std::string path) {

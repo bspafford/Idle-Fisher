@@ -1,8 +1,7 @@
 #include "blurBox.h"
 #include "Texture.h"
-#include "camera.h"
 #include "textureManager.h"
-#include "main.h"
+#include "Scene.h"
 
 #include "debugger.h"
 
@@ -31,15 +30,15 @@ void BlurBox::setSize(vector size) {
 }
 
 void BlurBox::draw() {
-	Main::blurShader->Activate();
-	Main::blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
-	Main::blurShader->setInt("radius", blurStrength);
+	Scene::blurShader->Activate();
+	Scene::blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
+	Scene::blurShader->setInt("radius", blurStrength);
 
 	// need to render everything first
 	textureManager::ForceGPUUpload();
 
 	GenerateSubTexture(texture.get());
-	textureManager::DrawImage(Main::blurShader, loc, size, { 0, 0, 1, 1 }, useWorldPos, glm::vec4(1), texture->GetHandle());
+	textureManager::DrawImage(Scene::blurShader, loc, size, { 0, 0, 1, 1 }, useWorldPos, glm::vec4(1), texture->GetHandle());
 }
 
 void BlurBox::GenerateSubTexture(Texture* texture) {

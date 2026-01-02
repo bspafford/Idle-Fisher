@@ -28,7 +28,6 @@
 #include "comboOvertimeWidget.h"
 #include "achievementWidget.h"
 #include "newRecordWidget.h"
-#include "comboOvertimeWidget.h"
 
 #include "debugger.h"
 
@@ -655,14 +654,14 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	vector size = max - min;
 
 	URectangle* rectangle = new URectangle(min, size, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
-	Main::fishingLineShader->Activate();
+	Scene::fishingLineShader->Activate();
 
-	Main::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));
-	Main::fishingLineShader->setVec2("end", glm::vec2(end.x, end.y));
+	Scene::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));
+	Scene::fishingLineShader->setVec2("end", glm::vec2(end.x, end.y));
 	bool tight = anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos;
-	Main::fishingLineShader->setInt("tight", tight);
+	Scene::fishingLineShader->setInt("tight", tight);
 
-	rectangle->draw(Main::fishingLineShader);
+	rectangle->draw(Scene::fishingLineShader);
 	delete rectangle;
 
 	bobberImg->setLoc(bobberLoc);

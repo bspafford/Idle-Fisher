@@ -1,6 +1,7 @@
 #include"Texture.h"
 #include "main.h"
 #include "textureManager.h"
+#include "GPULoadCollector.h"
 
 #include "debugger.h"
 
@@ -8,83 +9,97 @@ Texture::Texture(const char* imgPath) {
 	if (imgPath == "")
 		return;
 
-	int widthImg, heightImg, numColCh;
-	unsigned char* bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
+	bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
 	if (!bytes)
 		return;
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ID);
-
-	if (numColCh == 4)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-	else if (numColCh == 3)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-	else if (numColCh == 1)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, GL_UNSIGNED_BYTE, bytes);
-	else
-		throw std::invalid_argument("Automatic Texture type recognition failed");
-
-	stbi_image_free(bytes);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	functionIdx = 0;
+	this->imgPath = imgPath;
+	GPULoadCollector::add(this);
 }
 
 Texture::Texture(vector size) {
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ID);
-
-	glTextureStorage2D(ID, 1, GL_RGBA8, size.x, size.y);
-	handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());
-	glMakeTextureHandleResidentARB(handle);
+	functionIdx = 1;
+	this->size = size;
+	GPULoadCollector::add(this);
 }
 
 Texture::Texture(const char* imgPath, bool binding) {
-	if (usedSlots.size() == 0) {
-		GLint maxCombined;
-		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombined);
-		usedSlots.resize(maxCombined, false);
-		usedSlots[0] = true;
+	functionIdx = 2;
+	this->imgPath = imgPath;
+	GPULoadCollector::add(this);
+}
+
+void Texture::LoadGPU() {
+	if (functionIdx == 0) {
+		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ID);
+
+		if (numColCh == 4)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+		else if (numColCh == 3)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+		else if (numColCh == 1)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, GL_UNSIGNED_BYTE, bytes);
+		else
+			throw std::invalid_argument("Automatic Texture type recognition failed");
+
+		stbi_image_free(bytes);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	} else if (functionIdx == 1) {
+		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ID);
+
+		glTextureStorage2D(ID, 1, GL_RGBA8, size.x, size.y);
+		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());
+		glMakeTextureHandleResidentARB(handle);
+	} else if (functionIdx == 2) {
+		if (usedSlots.size() == 0) {
+			GLint maxCombined;
+			glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombined);
+			usedSlots.resize(maxCombined, false);
+			usedSlots[0] = true;
+		}
+
+		if (imgPath == "")
+			return;
+
+		unsigned char* bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
+		if (!bytes)
+			return;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+		GLuint slot = takeOpenSlot();
+		if (slot == -1) {
+			std::cout << "slots are full!\n";
+			abort();
+		}
+
+		unit = slot;
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(GL_TEXTURE_2D, ID);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		if (numColCh == 4)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+		else if (numColCh == 3)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+		else if (numColCh == 1)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, GL_UNSIGNED_BYTE, bytes);
+		else
+			throw std::invalid_argument("Automatic Texture type recognition failed");
+
+		stbi_image_free(bytes);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	if (imgPath == "")
-		return;
-
-	int widthImg, heightImg, numColCh;
-	unsigned char* bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
-	if (!bytes)
-		return;
-
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-	GLuint slot = takeOpenSlot();
-	if (slot == -1) {
-		std::cout << "slots are full!\n";
-		abort();
-	}
-
-	unit = slot;
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, ID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	if (numColCh == 4)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-	else if (numColCh == 3)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-	else if (numColCh == 1)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RED, GL_UNSIGNED_BYTE, bytes);
-	else
-		throw std::invalid_argument("Automatic Texture type recognition failed");
-
-	stbi_image_free(bytes);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture() {
@@ -95,6 +110,8 @@ Texture::~Texture() {
 
 	Unbind();
 	Delete();
+
+	GPULoadCollector::remove(this);
 }
 
 void Texture::texUnit(Shader* shader, const char* uniform) {

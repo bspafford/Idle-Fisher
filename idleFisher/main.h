@@ -55,17 +55,8 @@ public:
 	static bool IsRunning();
 	static GLFWwindow* GetWindow();
 
-	// shaders
-	static inline Shader* shaderProgram;
-	static inline Shader* shadowMapProgram;
-	static inline Shader* twoDShader;
-	static inline Shader* twoDWaterShader;
-	static inline Shader* circleShader;
-	static inline Shader* blurShader;
-	static inline Shader* fishingLineShader;
-
 	// widgets
-	void setupWidgets();
+	static void setupWidgets();
 	static inline std::unique_ptr<UpauseMenu> pauseMenu;
 	static inline std::unique_ptr<UfishComboWidget> fishComboWidget;
 	static inline std::unique_ptr<UheldFishWidget> heldFishWidget;
@@ -77,8 +68,6 @@ public:
 	static inline std::unique_ptr<UUIWidget> UIWidget;
 	static inline std::unique_ptr<UidleProfitWidget> idleProfitWidget;
 	static inline std::unique_ptr<UnewRecordWidget> newRecordWidget;
-
-	static inline std::unique_ptr<Apet> pet;
 
 	static void rebirth();
 	static double calcRebirthCurrency();
@@ -99,7 +88,6 @@ private:
 
 	void Start();
 	void Update(float deltaTime);
-	void updateShaders(float deltaTime);
 	void draw3D(Shader* shaderProgram);
 	void draw(Shader* shaderProgram);
 
@@ -112,19 +100,12 @@ private:
 	static void windowSizeCallback(GLFWwindow* window, int width, int height);
 	static void checkInputs();
 
-	static inline std::unique_ptr<Acharacter> character;
-
 	bool renderShadows = false;
 
 	static inline int fpsCap = 0; // 0 is uncapped
 	static inline bool running = true;
 
-	// water stuff
-	static inline float waveSpeed = 0.03f;
-	static inline float waveFactor = 0;
-
 	// 3d
 	std::unique_ptr<Model> house;
 	std::unique_ptr<Model> characterModel;
-	static inline std::unique_ptr<Camera> camera;
 };

@@ -17,6 +17,8 @@ public:
 
 	~Texture();
 
+	void LoadGPU();
+
 	// Assigns a texture unit to a texture
 	void texUnit(Shader* shader, const char* uniform);
 	// Binds a texture
@@ -46,4 +48,11 @@ private:
 	static inline std::vector<bool> usedSlots;
 	static GLuint takeOpenSlot();
 	static void releaseSlot(GLuint slot);
+
+	// gpu load stuff
+	int functionIdx = -1;
+	const char* imgPath;
+	unsigned char* bytes;
+	int widthImg, heightImg, numColCh;
+	vector size;
 };

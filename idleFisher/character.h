@@ -6,13 +6,13 @@
 #include "collision.h"
 #include "animation.h"
 #include "Image.h"
+#include "comboOvertimeWidget.h"
 
 class saveData;
 class collision;
 class timer;
 class AfishSchool;
 class Shader;
-class UcomboOvertimeWidget;
 
 class Acharacter {
 public:

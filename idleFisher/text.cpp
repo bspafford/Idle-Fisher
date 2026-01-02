@@ -1,6 +1,5 @@
 #include "text.h"
-
-#include "main.h"
+#include "Scene.h"
 #include "saveData.h"
 
 #include <fstream>
@@ -281,8 +280,8 @@ void text::makeTextTexture() {
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
 	fbo->Bind();
 	
-	Main::twoDShader->Activate();
-	Main::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
+	Scene::twoDShader->Activate();
+	Scene::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
 
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
@@ -291,13 +290,13 @@ void text::makeTextTexture() {
 			std::string dropList("qypgj");
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight
-			letters[i]->draw(Main::twoDShader);
+			letters[i]->draw(Scene::twoDShader);
 		}
 	// Unbind FBO
 	fbo->Unbind();
 
 	// restores projection
-	Main::twoDShader->setMat4("projection", Camera::getProjectionMat());
+	Scene::twoDShader->setMat4("projection", Camera::getProjectionMat());
 
 	setLoc(loc);
 	
@@ -305,7 +304,7 @@ void text::makeTextTexture() {
 }
 
 void text::draw(Shader* shader) {
-	if (textString == "")
+	if (!fbo || textString == "")
 		return;
 
 	fbo->Draw(shader, absoluteLoc, Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);

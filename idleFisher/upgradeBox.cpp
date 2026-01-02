@@ -280,7 +280,7 @@ void UupgradeBox::buyUpgrade() {
 
 			if (petStruct) {
 				// since happening after function its gotta be reversed
-				if (Main::pet.get() && petStruct == Main::pet->getPetStruct()) {
+				if (Scene::pet.get() && petStruct == Scene::pet->getPetStruct()) {
 					NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
 					if (npcWidget)
 						for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
@@ -347,10 +347,10 @@ void UupgradeBox::openWorld() {
 void UupgradeBox::spawnPet() {
 	// remove already existing pet
 	// set pet
-	if (!Main::pet.get() || Main::pet && petStruct->id != Main::pet->getPetStruct()->id) {
-		Main::pet = std::make_unique<Apet>(savePetStruct, vector{ 400, -200 });
-	} else if (Main::pet && petStruct->id == Main::pet->getPetStruct()->id) {
-		Main::pet.reset();
+	if (!Scene::pet.get() || Scene::pet && petStruct->id != Scene::pet->getPetStruct()->id) {
+		Scene::pet = std::make_unique<Apet>(savePetStruct, vector{ 400, -200 });
+	} else if (Scene::pet && petStruct->id == Scene::pet->getPetStruct()->id) {
+		Scene::pet.reset();
 	}
 
 	Main::heldFishWidget->updateList();

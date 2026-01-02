@@ -94,10 +94,10 @@ void UequippedWidget::setLoc(vector loc) {
 bool UequippedWidget::mouseOverSlot(std::string &name, std::string &description) {
 	bool hovering = false;
 	if (fishingRodEquip && fishingRodEquip->isMouseOver()) {
-		name = "Fishing Rod"; // SaveData::saveData.equippedFishingRod.name;
-		description = "Fishing Rod"; // SaveData::saveData.equippedFishingRod.description;
+		name = "Fishing Rod";
+		description = "Fishing Rod";
 		hovering = true;
-	} else if (baitEquip && baitEquip->isMouseOver()) {
+	} else if (SaveData::saveData.equippedBait.id != -1 && baitEquip && baitEquip->isMouseOver()) {
 		name = SaveData::data.baitData[SaveData::saveData.equippedBait.id].name;
 		description = SaveData::data.baitData[SaveData::saveData.equippedBait.id].description;
 		hovering = true;

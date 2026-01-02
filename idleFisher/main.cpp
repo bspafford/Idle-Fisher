@@ -56,13 +56,7 @@ int main(int argc, char* argv[]) {
 }
 
 Main::~Main() {
-	delete shaderProgram;
-	delete shadowMapProgram;
-	delete twoDShader;
-	delete twoDWaterShader;
-	delete circleShader;
-	delete blurShader;
-	delete fishingLineShader;
+	Scene::Destructor();
 
 	textureManager::Deconstructor();
 	timer::clearInstanceList(false);
@@ -177,7 +171,6 @@ int Main::createWindow() {
 
 		checkInputs();
 		Update(deltaTime);
-		updateShaders(deltaTime);
 
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -186,7 +179,7 @@ int Main::createWindow() {
 
 		// Compute full light-space matrix
 		float size = 300.f; // 100.f;// 35
-		glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + camera->GetPosition() - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
+		glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + GetMainCamera()->GetPosition() - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
 		glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, -1.f, 300.0f);
 		glm::mat4 lightView = glm::lookAt(lightPos, lightPos - glm::vec3(-1, 1, 1), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView; // This is what you send to shaders
@@ -198,12 +191,12 @@ int Main::createWindow() {
 			glClear(GL_DEPTH_BUFFER_BIT);
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 
-			shadowMapProgram->Activate();
-			shadowMapProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+			Scene::shadowMapProgram->Activate();
+			Scene::shadowMapProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 			// Render objects (WITHOUT camera)
-			draw3D(shadowMapProgram);
-			characterModel->Draw(shadowMapProgram, *camera);
+			draw3D(Scene::shadowMapProgram);
+			characterModel->Draw(Scene::shadowMapProgram, *GetMainCamera());
 
 			// Unbind FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -213,30 +206,30 @@ int Main::createWindow() {
 		
 		// === MAIN RENDER PASS (Render Scene with Shadows) ===
 
-		characterModel->setPos(camera->GetPosition() + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
+		characterModel->setPos(GetMainCamera()->GetPosition() + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
 
 		glDisable(GL_DEPTH_TEST);
 		// ==== DRAW 2D STUFF ====
-		twoDShader->Activate();
+		Scene::twoDShader->Activate();
 
 		BlurBox::BindFramebuffer();
-		draw(twoDShader);
+		draw(Scene::twoDShader);
 		BlurBox::UnbindFramebuffer();
 
-		BlurBox::DrawFinal(twoDShader);
+		BlurBox::DrawFinal(Scene::twoDShader);
 
 		textureManager::EndFrame();
 
 		glEnable(GL_DEPTH_TEST);
 		// ==== DRAW SHADOW MESH ====
-		shaderProgram->Activate();
-		shaderProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+		Scene::shaderProgram->Activate();
+		Scene::shaderProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
 		if (renderShadows) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, shadowMap);
-			shaderProgram->setInt("shadowMap", 1);
-			shaderProgram->setInt("shadowOnly", 1);
-			draw3D(shaderProgram);
+			Scene::shaderProgram->setInt("shadowMap", 1);
+			Scene::shaderProgram->setInt("shadowOnly", 1);
+			draw3D(Scene::shaderProgram);
 		}
 
 		Input::fireHeldInputs();
@@ -261,17 +254,6 @@ int Main::createWindow() {
 void Main::Start() {
 	GPULoadCollector::setMainThread(std::this_thread::get_id());
 
-	// Generates Shader object using shaders default.vert and default.frag
-	shaderProgram = new Shader("default.vert", "default.frag");
-	shadowMapProgram = new Shader("shadowMap.vert", "shadowMap.frag");
-	twoDShader = new Shader("2dShader.vert", "2dShader.frag");
-	twoDWaterShader = new Shader("2dWaterShader.vert", "2dWaterShader.frag");
-	circleShader = new Shader("2dShader.vert", "circleShader.frag");
-	blurShader = new Shader("blurShader.vert", "blurShader.frag");
-	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
-
-	shaderProgram->Activate();
-
 	// setup callbacks for input
 	glfwSetFramebufferSizeCallback(window, windowSizeCallback);
 	glfwSetKeyCallback(window, Input::keyCallback);
@@ -280,29 +262,10 @@ void Main::Start() {
 	glfwSetCursorPosCallback(window, Input::cursorPosCallback);
 	glfwSetMonitorCallback(monitorCallback);
 
-	Input::Init();
-	textureManager::textureManager();
-	sounds::sounds();
-	csvReader();
-	SaveData::load();
-	upgrades::init();
-	achievementBuffs::init();
-
-	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
-
-	updateShaders(0);
-	setupWidgets();
-
-	character = std::make_unique<Acharacter>();
-
-	Scene::openLevel("world1", WORLD_SET_LOC_NONE, true);
-
-	if (SaveData::saveData.equippedPet.id != -1)
-		Main::pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
-
+	Scene::openLevel("titleScreen", WORLD_SET_LOC_NONE, true, true);
+	Scene::deferredChangeWorld();
+	
 	fps::fps();
-
-	achievement::createAchievementList();
 
 	BlurBox::Init();
 }
@@ -310,50 +273,25 @@ void Main::Start() {
 void Main::Update(float deltaTime) {
 	timer::callUpdate(deltaTime);
 
-	character->Update(deltaTime);
-	camera->Update(window, deltaTime);
+	Scene::updateShaders(deltaTime);
 
-	collision::testMouse(Input::getMousePos());
 	Cursor::calcMouseImg();
 
 	if (!Scene::isLoading() && world::currWorld) {
+		GetCharacter()->Update(deltaTime);
+		GetMainCamera()->Update(window, deltaTime);
+
+		collision::testMouse(Input::getMousePos());
+
 		for (int i = 0; i < world::currWorld->autoFisherList.size(); i++)
 			world::currWorld->autoFisherList[i]->Update(deltaTime);
 		if (fishComboWidget)
 			fishComboWidget->Update(deltaTime);
 		if (world::currWorld->fishTransporter)
 			world::currWorld->fishTransporter->update(deltaTime);
-		if (pet)
-			pet->update(deltaTime);
+		if (Scene::pet)
+			Scene::pet->update(deltaTime);
 	}
-}
-
-void Main::updateShaders(float deltaTime) {
-	// set water movement
-	waveFactor += waveSpeed * deltaTime;
-	if (waveFactor >= 1.f) // loop if hit 1
-		waveFactor -= 1.f;
-
-	twoDShader->Activate();
-	twoDShader->setMat4("projection", camera->getProjectionMat());
-	twoDShader->setVec2("playerPos", camera->GetPosition());
-	twoDShader->setFloat("pixelSize", stuff::pixelSize);
-
-	fishingLineShader->Activate();
-	fishingLineShader->setMat4("projection", camera->getProjectionMat());
-	fishingLineShader->setVec2("playerPos", camera->GetPosition());
-	fishingLineShader->setFloat("pixelSize", stuff::pixelSize);
-
-	twoDWaterShader->Activate();
-	twoDWaterShader->setFloat("moveFactor", waveFactor);
-	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
-	twoDWaterShader->setVec2("playerPos", camera->GetPosition());
-	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
-
-	blurShader->Activate();
-	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
-	blurShader->setVec2("playerPos", camera->GetPosition());
-	blurShader->setFloat("pixelSize", stuff::pixelSize);
 }
 
 void Main::setupWidgets() {
@@ -373,7 +311,7 @@ void Main::setupWidgets() {
 }
 
 void Main::draw3D(Shader* shaderProgram) {
-	house->Draw(shaderProgram, *camera);
+	house->Draw(shaderProgram, *GetMainCamera());
 }
 
 void Main::draw(Shader* shaderProgram) {
@@ -479,7 +417,7 @@ void Main::rebirth() {
 	SaveData::saveData.equippedBait = FsaveBaitStruct();
 	SaveData::saveData.buffList = std::vector<FsaveBuffStruct>(0);
 
-	pet = nullptr;
+	Scene::pet = nullptr;
 
 	SaveData::recalcLists();
 

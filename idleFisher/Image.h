@@ -13,6 +13,10 @@ public:
 	Image(std::string image, vector loc, bool useWorldPos);
 	Image(std::shared_ptr<Image> image, std::shared_ptr<Rect>, vector loc, bool useWorldPos);
 
+	~Image();
+
+	void LoadGPU();
+
 	// Adds to a queue that is drawn at the end of the frame or when the shader is swapped
 	void draw(Shader* shader);
 	// Instantly draws the Image
@@ -26,6 +30,7 @@ public:
 
 	vector getSize();
 	void setSize(vector scale);
+	std::string getPath();
 	void setImage(std::string path);
 	void setUseAlpha(bool useAlpha);
 	void setColorMod(glm::vec4 colorMod);
