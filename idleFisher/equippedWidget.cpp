@@ -46,7 +46,10 @@ void UequippedWidget::update() {
 	fishingRodEquip = std::make_unique<Image>("./images/widget/thumbnails/fishingRodThumbnail1.png", vector{0, 0}, false);
 	fishingRodEquip->setLoc(fishingRodEquipSlot->getLoc());
 
-	baitEquip = std::make_unique<Image>(SaveData::saveData.equippedBait.thumbnail, vector{ 0, 0 }, false);
+	std::string thumbnail = "";
+	if (SaveData::saveData.equippedBait.id != -1)
+		thumbnail = SaveData::data.baitData[SaveData::saveData.equippedBait.id].thumbnail;
+	baitEquip = std::make_unique<Image>(thumbnail, vector{ 0, 0 }, false);
 	baitEquip->setLoc(baitEquipSlot->getLoc());
 }
 
@@ -95,8 +98,8 @@ bool UequippedWidget::mouseOverSlot(std::string &name, std::string &description)
 		description = "Fishing Rod"; // SaveData::saveData.equippedFishingRod.description;
 		hovering = true;
 	} else if (baitEquip && baitEquip->isMouseOver()) {
-		name = SaveData::saveData.equippedBait.name;
-		description = SaveData::saveData.equippedBait.description;
+		name = SaveData::data.baitData[SaveData::saveData.equippedBait.id].name;
+		description = SaveData::data.baitData[SaveData::saveData.equippedBait.id].description;
 		hovering = true;
 	} else if (headEquip && headEquip->isMouseOver()) {
 		//hoverBox->setInfo();

@@ -60,11 +60,6 @@ public:
 
 	static vector worldToScreen(vector pos);
 
-	// time stuff
-	// Y-M-D h:m:s
-	static std::chrono::system_clock::time_point getTimeFromString(std::string timeString);
-	static std::string getStringFromTime(std::chrono::system_clock::time_point timePoint);
-
 	// lowercases string
 	static std::string toLower(std::string str);
 

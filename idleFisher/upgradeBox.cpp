@@ -348,7 +348,7 @@ void UupgradeBox::spawnPet() {
 	// remove already existing pet
 	// set pet
 	if (!Main::pet.get() || Main::pet && petStruct->id != Main::pet->getPetStruct()->id) {
-		Main::pet = std::make_unique<Apet>(petStruct, vector{ 400, -200 });
+		Main::pet = std::make_unique<Apet>(savePetStruct, vector{ 400, -200 });
 	} else if (Main::pet && petStruct->id == Main::pet->getPetStruct()->id) {
 		Main::pet.reset();
 	}

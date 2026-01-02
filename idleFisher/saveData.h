@@ -1,8 +1,10 @@
 #pragma once
 
 #include "math.h"
+#include "timer.h"
 #include <chrono>
 #include <string>
+#include <nlohmann/json.hpp>
 
 enum Resolution {
     RES_NATIVE,
@@ -56,6 +58,8 @@ struct FsaveFishData {
     std::vector<double> totalNumOwned = std::vector<double>(0);
     int biggestSizeCaught = 0;
 
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishData, id, unlocked, numOwned, totalNumOwned, biggestSizeCaught);
+
     double calcTotalCaughtFish() {
         double total = 0;
         for (int i = 0; i < totalNumOwned.size(); i++)
@@ -88,6 +92,8 @@ struct FsaveCurrencyStruct {
     double numOwned = 0;
     double totalNumOwned = 0;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveCurrencyStruct, id, numOwned, totalNumOwned, unlocked);
 };
 
 struct FautoFisherStruct {
@@ -109,6 +115,8 @@ struct FsaveAutoFisherStruct {
     bool unlocked = false;
     int level = 1;
     double fullness = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAutoFisherStruct, id, unlocked, level, fullness);
 };
 
 struct FworldStruct {
@@ -132,6 +140,8 @@ struct FworldStruct {
 struct FsaveWorldStruct {
     int id = -1;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveWorldStruct, id, unlocked);
 };
 
 struct FfishingRodStruct {
@@ -152,6 +162,8 @@ struct FsaveFishingRodStruct {
     int powerLevel = 1;
     int speedLevel = 1;
     int catchChanceLevel = 1;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishingRodStruct, id, unlocked, powerLevel, speedLevel, catchChanceLevel);
 };
 
 struct FbaitStruct {
@@ -201,6 +213,8 @@ struct FbaitStruct {
 struct FsaveBaitStruct {
     int id = -1;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveBaitStruct, id, unlocked);
 };
 
 struct FachievementStruct {
@@ -220,6 +234,8 @@ struct FachievementStruct {
 struct FsaveAchievementStruct {
     int id = -1;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAchievementStruct, id, unlocked);
 };
 
 struct FupgradeStruct {
@@ -255,6 +271,8 @@ struct FsaveUpgradeStruct {
     int upgradeLevel = 0;
     double value = 0;
     double price = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveUpgradeStruct, id, upgradeLevel, value, price);
 };
 
 struct FrebirthStruct {
@@ -305,6 +323,8 @@ struct FrebirthStruct {
 struct FsaveRebirthStruct {
     int id = -1;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveRebirthStruct, id, unlocked);
 };
 
 struct FpetStruct {
@@ -330,6 +350,8 @@ struct FpetStruct {
 struct FsavePetStruct {
     int id = -1;
     bool unlocked = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsavePetStruct, id, unlocked);
 };
 
 struct FmechanicStruct {
@@ -348,6 +370,8 @@ struct FsaveMechanicStruct {
     int id = -1;
     bool unlocked = false;
     int level = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveMechanicStruct, id, unlocked, level);
 };
 
 struct FgoldenFishStruct {
@@ -385,6 +409,8 @@ struct FbuffStruct {
 struct FsaveBuffStruct {
     int id = -1;
     int buffNum = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveBuffStruct, id, buffNum);
 };
 
 struct FvaultUnlocksStruct {
@@ -414,6 +440,8 @@ struct FsaveVaultUnlocksStruct {
     bool unlocked = false;
     bool placed = false;
     vector loc;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveVaultUnlocksStruct, id, unlocked, placed, loc);
 };
 
 struct FsaveNPCStruct {
@@ -424,8 +452,9 @@ struct FsaveNPCStruct {
     bool mechanicDiscovered = false;
     bool petSellerDiscovered = false;
     bool atmDiscovered = false;
-
     bool scubaDiscovered = false;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveNPCStruct, id, merchantDiscovered, sailorDiscovered, fishermanDiscovered, mechanicDiscovered, petSellerDiscovered, atmDiscovered, scubaDiscovered);
 };
 
 struct FcurrencyConversionStruct {
@@ -434,6 +463,8 @@ struct FcurrencyConversionStruct {
     bool converting = false;// is converting
     double price = 100;     // base input
     double yield = 1;       // base output
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FcurrencyConversionStruct, id, timerMax, converting, price, yield);
 };
 
 struct Fdata {
@@ -463,8 +494,9 @@ struct Fdata {
 };
 
 struct FsaveData {
-    // last time played
-    //static inline std::chrono::system_clock::time_point lastPlayed;
+    // stored in milliseconds
+    double startTime;
+    double lastPlayed;
 
     // player loc
     vector playerLoc = { 500, 500 };
@@ -486,12 +518,12 @@ struct FsaveData {
     std::vector<FsaveMechanicStruct> mechanicStruct;
     std::vector<FsaveAutoFisherStruct> autoFisherList;
     std::vector<FsavePetStruct> petList;
-    FpetStruct equippedPet;
+    FsavePetStruct equippedPet;
     std::vector<FsaveVaultUnlocksStruct> vaultUnlockList;
 
     // upgrades
     FsaveFishingRodStruct fishingRod;
-    FbaitStruct equippedBait;
+    FsaveBaitStruct equippedBait;
     std::vector<FsaveBaitStruct> baitList;
     std::vector<FsaveBuffStruct> buffList;
 
@@ -502,6 +534,10 @@ struct FsaveData {
     std::vector<FsaveRebirthStruct> rebirthList;
     double rebirthCurrency = 0;
     double totalRebirthCurrency = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, npcSave, upgradeList,
+        worldList, mechanicStruct, autoFisherList, petList, equippedPet, vaultUnlockList, fishingRod, equippedBait, baitList, buffList, achievementList,
+        rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 
 struct FsettingsData {
@@ -513,7 +549,7 @@ struct FsettingsData {
 
     // graphics
     int monitorIdx = 0; // 0 = primary
-    int fullScreen = false;
+    int fullScreen = 1;
     int resolution = RES_NATIVE;
     int vsync = false;
     int fpsLimit = 0; // 0 is uncapped
@@ -522,6 +558,8 @@ struct FsettingsData {
     int showPets = true;
     int showRain = true;
     int cursor = true;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor);
 
     // compares the struct byte by byte, so i don't have to manually update it
     bool operator==(const FsettingsData other) {
@@ -558,8 +596,8 @@ public:
     // used to setup default values and vector sizes for all the save stuff
     static void recalcLists();
 private:
+    static void autoSave();
+    static inline float autoSaveInterval = 60.f; // in seconds
 
-    // gets data thats put into the saveData struct
-    static void getSaveInfo();
-    static void getLoadInfo();
+    static inline std::unique_ptr<timer> autoSaveTimer;
 };

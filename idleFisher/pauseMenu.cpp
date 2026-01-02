@@ -88,10 +88,12 @@ void UpauseMenu::settings() {
 }
 
 void UpauseMenu::exitToMenu() {
+	SaveData::save(); // save on quit
 	Scene::openLevel("titleScreen");
 }
 
 void UpauseMenu::exitToDesktop() {
+	SaveData::save(); // save on quit
 	glfwSetWindowShouldClose(Main::GetWindow(), true);
 }
 

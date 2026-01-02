@@ -5,8 +5,8 @@
 
 #include "debugger.h"
 
-Apet::Apet(FpetStruct* pet, vector loc) {
-	this->pet = pet;
+Apet::Apet(FsavePetStruct* pet, vector loc) {
+	this->pet = &SaveData::data.petData[pet->id];
 	SaveData::saveData.equippedPet = *pet;
 	img = std::make_unique<Image>("./images/pets/" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
 	setLoc(loc);

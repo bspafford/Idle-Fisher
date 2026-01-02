@@ -115,21 +115,6 @@ float math::Q_rsqrt(float number) {
 	return y;
 }
 
-std::chrono::system_clock::time_point math::getTimeFromString(std::string timeString) {
-	// from string, back to time
-	std::tm tm = {};
-	std::istringstream ss(timeString);
-	ss >> std::get_time(&tm, "%Y-%m-%d %X");
-
-	time_t t = std::mktime(&tm) - _timezone;
-	return std::chrono::system_clock::from_time_t(t);
-}
-
-std::string math::getStringFromTime(std::chrono::system_clock::time_point timePoint) {
-	std::string timestring = std::format("{:%Y-%m-%d %X}", timePoint);
-	return timestring;
-}
-
 vector math::screenToWorld(vector mousePos, bool round) {
 	return SaveData::saveData.playerLoc - stuff::screenSize / (stuff::pixelSize * 2.f) + mousePos;
 }

@@ -2,11 +2,14 @@
 
 #include <iostream>
 #include <algorithm>
+#include <nlohmann/json.hpp>
 
 class vector {
 public:
 	float x = 0;
 	float y = 0;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(vector, x, y);
 
 	static vector clamp(vector v, float min, float max) {
 		v.x = std::clamp(v.x, min, max);

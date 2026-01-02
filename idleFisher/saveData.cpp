@@ -1,58 +1,32 @@
 #include "saveData.h"
 
 #include <iostream>
+#include <alpaca/alpaca.h>
 
 #include "main.h"
-#include <alpaca/alpaca.h>
+#include "timer.h"
 
 #include "debugger.h"
 
 void SaveData::save() {
 	const auto filename = "./data/saves/save.save";
 
+	long long currEpochMS = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
 	// check if file exists
-	std::ifstream is;
-	bool saveStartTime = false;
-	is.open(filename, std::ios::in | std::ios::binary);
-	if (!is) {
-		saveStartTime = true;
-	}
+	if (!std::filesystem::exists(filename))
+		SaveData::saveData.startTime = currEpochMS;
+	SaveData::saveData.lastPlayed = currEpochMS;
 
 	// Serialize to file
 	std::ofstream os;
 	os.open(filename, std::ios::out | std::ios::binary);
-
-	if (saveStartTime) // save time if new save file
-		os << math::getStringFromTime(std::chrono::system_clock::now()) << std::endl;
-	else // save time from startTime if save file already exists
-		os << math::getStringFromTime(startTime) << std::endl;
-	os << math::getStringFromTime(std::chrono::system_clock::now()) << std::endl;
-
-	getSaveInfo();
-
-	std::vector<uint8_t> bytes;
-	alpaca::serialize(saveData, bytes);
-
-	// byte to string
-	std::string text;
-	for (uint8_t byte : bytes) {
-		char c = (char)byte;
-		std::string s(1, c);
-		text.append(s);
+	
+	if (os.is_open()) {
+		std::vector<uint8_t> bytes = nlohmann::json::to_bson(SaveData::saveData);
+		os.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+		os.close();
 	}
-
-	os << text;
-
-	os.close();
-}
-
-void SaveData::getSaveInfo() {
-	std::cout << "saving: " << saveData.currWorld << ", " << saveData.prevWorld << std::endl;
-	//saveData.currWorld = Main::currWorld;
-	//saveData.prevWorld = Main::prevWorld;
-
-	//for (int i = 0; i < world::autoFisherList.size(); i++)
-	//	saveData.autoFisherList[i].fullness = world::autoFisherList[i]->calcCurrencyHeld();
 }
 
 void SaveData::load() {
@@ -60,33 +34,34 @@ void SaveData::load() {
 
 	const auto filename = "./data/saves/save.save";
 
-	std::ifstream is;
-	is.open(filename, std::ios::in | std::ios::binary);
-	if (!is) {
-		save(); // makes save file if there isn't one
-		startTime = std::chrono::system_clock::now(); // sets start time if no save file
-		saveData.currWorld = "world1";
-		saveData.prevWorld = "world1";
+	// if save file doesn't exist, make one and setup default values
+	if (!std::filesystem::exists(filename)) {
+		save();
 		return;
 	}
 
-	std::string line;
-	std::getline(is, line);
-	startTime = math::getTimeFromString(line);
-	std::getline(is, line);
-	lastPlayed = math::getTimeFromString(line);
+	std::ifstream is;
+	is.open(filename, std::ios::in | std::ios::binary);
+	if (is.is_open()) {
+		// read in the whole file
+		std::string file_contents(std::istreambuf_iterator<char>(is), {});
+		// bytes to json
+		nlohmann::json data = nlohmann::json::from_bson(file_contents);
+		// json to struct
+		SaveData::saveData = data.get<FsaveData>();
 
-	std::error_code ec;
-	auto size = std::filesystem::file_size(filename);
+		is.close();
+	}
 
-	saveData = alpaca::deserialize<FsaveData>(is, size, ec);
-
-	getLoadInfo();
+	// setup auto saving
+	autoSaveTimer = std::make_unique<timer>();
+	autoSaveTimer->addFinishedCallback(SaveData::autoSave);
+	autoSaveTimer->start(autoSaveInterval);
 }
 
-void SaveData::getLoadInfo() {
-	if (saveData.currWorld == "")
-		saveData.currWorld = "world1";
+void SaveData::autoSave() {
+	save();
+	autoSaveTimer->start(autoSaveInterval);
 }
 
 template <typename T1, typename T2> static void recalcList(std::vector<T1>& data, std::vector<T2>& saveData) {
@@ -122,7 +97,6 @@ void SaveData::recalcLists() {
 	recalcList(data.autoFisherData, saveData.autoFisherList);
 	recalcList(data.petData, saveData.petList);
 	recalcList(data.vaultUnlockData, saveData.vaultUnlockList);
-	recalcList(data.baitData, saveData.baitList);
 	recalcList(data.buffData, saveData.buffList);
 	recalcList(data.rebirthData, saveData.rebirthList);
 	recalcList(data.achievementData, saveData.achievementList);
@@ -141,34 +115,32 @@ void SaveData::saveSettings() {
 	std::ofstream os;
 	os.open(filename, std::ios::out | std::ios::binary);
 
-	std::vector<uint8_t> bytes;
-	alpaca::serialize(settingsData, bytes);
-
-	// byte to string
-	std::string text;
-	for (uint8_t byte : bytes) {
-		char c = (char)byte;
-		std::string s(1, c);
-		text.append(s);
+	if (os.is_open()) {
+		std::vector<uint8_t> bytes = nlohmann::json::to_bson(SaveData::settingsData);
+		os.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+		os.close();
 	}
-
-	os << text;
-
-	os.close();
 }
 
 void SaveData::loadSettings() {
 	const auto filename = "./data/saves/settings.save";
 
-	std::ifstream is;
-	is.open(filename, std::ios::in | std::ios::binary);
-	if (!is) {
+	if (!std::filesystem::exists(filename)) {
 		saveSettings(); // makes save file if there isn't one
 		return;
 	}
 
-	std::error_code ec;
-	auto size = std::filesystem::file_size(filename);
+	std::ifstream is;
+	is.open(filename, std::ios::in | std::ios::binary);
+	if (is.is_open()) {
+		// read in the whole file
+		std::string file_contents(std::istreambuf_iterator<char>(is), {});
+		// bytes to json
+		nlohmann::json data = nlohmann::json::from_bson(file_contents);
+		std::cout << "saveSettings: \n" << data << "\n";
+		// json to struct
+		SaveData::settingsData = data.get<FsettingsData>();
 
-	settingsData = alpaca::deserialize<FsettingsData>(is, size, ec);
+		is.close();
+	}
 }

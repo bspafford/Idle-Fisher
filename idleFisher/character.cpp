@@ -686,7 +686,7 @@ void Acharacter::equipFishingRod(FfishingRodStruct* fishingRod) {
 }
 
 void Acharacter::equipBait(FbaitStruct* bait) {
-	SaveData::saveData.equippedBait = *bait;
+	SaveData::saveData.equippedBait.id = bait->id;
 	Main::achievementWidget->updateEquipmentWidget();
 }
 

@@ -252,6 +252,8 @@ int Main::createWindow() {
 #endif
 	}
 
+	SaveData::save(); // when closing window
+
 	running = false;
 	return 0;
 }
@@ -474,7 +476,7 @@ void Main::rebirth() {
 	SaveData::saveData.petList = std::vector<FsavePetStruct>(0);
 	SaveData::saveData.equippedPet.id = -1;
 	SaveData::saveData.fishingRod = FsaveFishingRodStruct();
-	SaveData::saveData.baitList = std::vector<FsaveBaitStruct>(0);
+	SaveData::saveData.equippedBait = FsaveBaitStruct();
 	SaveData::saveData.buffList = std::vector<FsaveBuffStruct>(0);
 
 	pet = nullptr;

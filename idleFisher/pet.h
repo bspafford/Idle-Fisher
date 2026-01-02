@@ -6,10 +6,11 @@
 
 class Shader;
 struct FpetStruct;
+struct FsavePetStruct;
 
 class Apet {
 public:
-	Apet(FpetStruct* pet, vector loc);
+	Apet(FsavePetStruct* pet, vector loc);
 	~Apet();
 	void draw(Shader* shaderProgram);
 	void update(float deltaTime);
