@@ -65,14 +65,18 @@ titleScreen::titleScreen() {
 	trees->start();
 
 	std::string startButtonPath;
-	if (std::filesystem::exists(SaveData::GetSaveDataPath())) // if save exists, continue
+	vector startButtonSize;
+	if (std::filesystem::exists(SaveData::GetSaveDataPath())) { // if save exists, continue
 		startButtonPath = "widget/pauseMenu/continue.png";
-	else
+		startButtonSize = { 69.f, 20.f };
+	} else {
 		startButtonPath = "widget/pauseMenu/newGame.png";
-	startButton = std::make_unique<Ubutton>(nullptr, startButtonPath, 66, 20, 1, vector{ 45.f, 184.f }, false, false);
+		startButtonSize = { 66.f, 20.f };
+	}
+	startButton = std::make_unique<Ubutton>(nullptr, startButtonPath, startButtonSize.x, startButtonSize.y, 1, vector{ 45.f, 184.f }, false, false);
 	startButton->addCallback(this, &titleScreen::startGame);
 
-	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 120.f }, false, false);
+	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 150.f }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
 
 	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));

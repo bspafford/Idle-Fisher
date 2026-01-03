@@ -109,6 +109,8 @@ public:
 	}
 
 	static void LoadAllGPUData() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+
 		for (textureStruct* t : textureStructToUpload)
 			t->LoadGPU();
 		textureStructToUpload.clear();

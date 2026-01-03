@@ -48,11 +48,20 @@ void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _ov
 }
 
 void Scene::draw(Shader* shaderProgram) {
+	if (loadingTexturesDone && !hasLoadedGPUData) {
+		std::unique_lock<std::mutex> lock(mtx);
+		hasLoadedGPUData = true;
+		GPULoadCollector::LoadAllGPUData();
+		Main::setupWidgets();
+		waitToUploadGPUdata = false;
+		cv.notify_one();
+	}
+
 	// first frame after finished loading
 	if (loadingDone && !hasFinishedLoading) {
 		hasFinishedLoading = true;
 		finishedLoading();
-	// draw loading screen while loading
+		// draw loading screen while loading
 	} else if (!loadingDone) {
 		loadingScreen->draw(shaderProgram);
 	}
@@ -72,6 +81,12 @@ void Scene::draw(Shader* shaderProgram) {
 }
 
 void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld) {
+	std::unique_lock<std::mutex> lock(mtx);
+
+	// a wait to make sure the textures get created properly before loading the world
+	if (waitToUploadGPUdata && worldName != "titleScreen")
+		cv.wait(lock, [] {return waitToUploadGPUdata == false; });
+
 	GPULoadCollector::open();
 
 	if (isStartup)
@@ -127,7 +142,16 @@ void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool
 		FinishSetup();
 
 	AStar::init();
+
 	loadingDone = true;
+
+	if (!textureManager::GetTexturesLoaded()) {
+		textureManager::LoadTextures();
+		loadingTexturesDone = true;
+	}
+
+	if (currWorldName == "titleScreen")
+		std::cout << "initial load: loading textures finished!\n";
 }
 
 void Scene::finishedLoading() {
@@ -194,7 +218,6 @@ void Scene::CreateShaders() {
 
 void Scene::StartSetup() {
 	Input::Init();
-	textureManager::LoadTextures(); // will be moved later
 	sounds();
 	csvReader();
 
@@ -207,7 +230,6 @@ void Scene::FinishSetup() {
 	SaveData::load();
 	upgrades::init();
 	achievementBuffs::init();
-	Main::setupWidgets();
 	if (SaveData::saveData.equippedPet.id != -1)
 		pet = std::make_unique<Apet>(&SaveData::saveData.equippedPet, vector{ 400, -200 });
 	achievement::createAchievementList();

@@ -64,6 +64,13 @@ private:
 	static inline std::atomic<bool> loadingDone = false;
 	static inline std::atomic<bool> hasFinishedLoading = false;
 
+	static inline std::atomic<bool> loadingTexturesDone = false;
+	static inline std::atomic<bool> hasFinishedLoadingTextures = false;
+	static inline std::atomic<bool> hasLoadedGPUData = false;
+	static inline std::atomic<bool> waitToUploadGPUdata = true;
+
+
+
 	static inline std::string prevWorld;
 	static inline std::string currWorldName;
 
@@ -87,4 +94,8 @@ private:
 	static inline std::unique_ptr<Camera> camera;
 public:
 	static inline std::unique_ptr<Apet> pet;
+
+private:
+	static inline std::mutex mtx;
+	static inline std::condition_variable cv;
 };

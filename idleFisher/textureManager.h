@@ -82,6 +82,9 @@ public:
 
 	static GLuint GetSamplerID();
 
+	// returns true if already called LoadTextures() function
+	static bool GetTexturesLoaded();
+
 private:
 	// loads in the texture from memory and adds it to a texture map
 	static textureStruct* loadTexture(std::string path, GLuint keptData);
@@ -107,4 +110,6 @@ private:
 	static inline std::unique_ptr<EBO> ebo;
 
 	static inline GLuint samplerID = -1;
+
+	static inline bool areTexturesLoaded = false;
 };

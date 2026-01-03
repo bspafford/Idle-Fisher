@@ -17,7 +17,6 @@ textureStruct::textureStruct(const std::string& path, GLuint keepData) {
 	bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
 	if (!bytes) {
 		std::cout << "Filepath NOT Found: " << path << std::endl;
-		stbi_image_free(bytes);
 		return;
 	}
 
@@ -78,7 +77,7 @@ bool textureStruct::GetAlphaAtPos(vector pos) {
 		int index = pos.y * w + pos.x;
 		int byteIndex = index >> 3;
 		int bitIndex = index & 7;
-		return (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
+		return !alphaBits.empty() && (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
 	} else if (keptData == GL_RGBA) { // all data kept
 		int index = pos.y * w + pos.x * 4;
 		unsigned char* pixels = bytes;
@@ -179,6 +178,7 @@ void textureManager::LoadTextures() {
 	for (auto& data : imageData)
 		loadTexture(data.first, data.second);
 	imageData.clear();
+	areTexturesLoaded = true;
 }
 
 void textureManager::Deconstructor() {
@@ -192,6 +192,10 @@ void textureManager::Deconstructor() {
 }
 
 textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
+	auto it = textureMap.find(path);
+	if (it != textureMap.end()) // already in map don't add again
+		return it->second.get();
+
 	textureMap[path] = std::make_unique<textureStruct>(path, keptData);
 	return textureMap[path].get();
 }
@@ -272,4 +276,8 @@ void textureManager::UploadGPUData() {
 
 GLuint textureManager::GetSamplerID() {
 	return samplerID;
+}
+
+bool textureManager::GetTexturesLoaded() {
+	return areTexturesLoaded;
 }
