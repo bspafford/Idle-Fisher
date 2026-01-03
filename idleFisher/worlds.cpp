@@ -76,7 +76,10 @@ titleScreen::titleScreen() {
 	startButton = std::make_unique<Ubutton>(nullptr, startButtonPath, startButtonSize.x, startButtonSize.y, 1, vector{ 45.f, 184.f }, false, false);
 	startButton->addCallback(this, &titleScreen::startGame);
 
-	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 150.f }, false, false);
+	settingsButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/settings.png", 70, 20, 1, vector{45.f, 152.f}, false, false);
+	settingsButton->addCallback(this, &titleScreen::showSettings);
+
+	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 120.f }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
 
 	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));
@@ -101,12 +104,18 @@ void titleScreen::start() {
 	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Scene::twoDWaterShader->setFloat("causticSize", 6.f);
 	Scene::twoDWaterShader->setVec2("waterImgSize", glm::vec2(waterImg->getSize().x, waterImg->getSize().y));
+
+	alpha = 0.f;
 }
 
 void titleScreen::startGame() {
 	fadeTimer->addUpdateCallback(this, &titleScreen::fadeToBlack);
 	fadeTimer->addCallback(this, &titleScreen::openWorld);
 	fadeTimer->start(0.3f);
+}
+
+void titleScreen::showSettings() {
+	// show settings menu
 }
 
 void titleScreen::fadeToBlack() {
@@ -116,9 +125,8 @@ void titleScreen::fadeToBlack() {
 }
 
 void titleScreen::openWorld() {
-	fadeToBlack(); // makes sure it goes to alpha 100% instead of like 99%
+	transitionBox->setColor(glm::vec4(18 / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f)); // makes sure it goes to alpha 100% instead of like 99%
 	Scene::openLevel("world1", WORLD_SET_LOC_NONE);
-	alpha = 0;
 }
 
 void titleScreen::exit() {
@@ -137,11 +145,14 @@ void titleScreen::draw(Shader* shaderProgram) {
 		trees->draw(shaderProgram);
 	if (startButton)
 		startButton->draw(shaderProgram);
+	if (settingsButton)
+		settingsButton->draw(shaderProgram);
 	if (exitButton)
 		exitButton->draw(shaderProgram);
 
 	if (transitionBox)
-	transitionBox->draw(shaderProgram);
+		transitionBox->draw(shaderProgram);
+	std::cout << "transitionbox alpha:" << alpha << "\n";
 }
 
 vaultWorld::vaultWorld() {

@@ -8,8 +8,8 @@ Aship::Aship(vector loc) {
 
 	shipImg = std::make_unique<Image>("./images/ship1.png", loc, true);
 	bobTimer = CreateDeferred<Timer>();
-	bobTimer->addCallback(this, &Aship::shipbob, &Aship::shipbob);
-	bobTimer->start(5);
+	bobTimer->addUpdateCallback(this, &Aship::shipbob);
+	bobTimer->start(5.f);
 }
 
 Aship::~Aship() {
@@ -21,16 +21,13 @@ void Aship::draw(Shader* shaderProgram) {
 }
 
 void Aship::shipbob() {
-	float time = bobTimer->getTime();
-	float timer = bobTimer->getMaxTime();
-
-	vector bobberY(0, roundf(sin(time / timer * 2 * M_PI) * 2));
+	vector bobberY(0.f, roundf(sin(bobTimer->getPercent() * 2.f * M_PI) * 2.f));
 
 	loc = tempLoc + bobberY;
 	shipImg->setLoc(loc);
 
 	if (bobTimer->IsFinished()) {
 		tempLoc = loc;
-		bobTimer->start(5);
+		bobTimer->start(5.f);
 	}
 }

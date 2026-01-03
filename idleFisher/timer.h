@@ -36,10 +36,8 @@ public:
 	void shouldntDelete(bool dontDelete);
 
 	// sets up callback and fps
-	template <class T> void addCallback(T* const object, void(T::* const finish)(), void(T::* const update)() = NULL) {
+	template <typename T> void addCallback(T* const object, void(T::* const finish)()) {
 		callback_ = std::bind_front(finish, object);
-		if (update != NULL)
-			updateCallback_ = std::bind_front(update, object);
 	}
 
 	// works for static functions
@@ -47,7 +45,7 @@ public:
 		callback_ = callback;
 	}
 
-	template <class T> void addUpdateCallback(T* const object, void(T::* const update)()) {
+	template <typename T> void addUpdateCallback(T* const object, void(T::* const update)()) {
 		updateCallback_ = std::bind_front(update, object);
 	}
 

@@ -197,8 +197,11 @@ textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
 	if (it != textureMap.end()) // already in map don't add again
 		return it->second.get();
 
-	textureMap[path] = std::make_unique<textureStruct>(path, keptData);
-	return textureMap[path].get();
+	if (Main::IsRunning()) {
+		textureMap[path] = std::make_unique<textureStruct>(path, keptData);
+		return textureMap[path].get();
+	} else
+		return nullptr;
 }
 
 textureStruct* textureManager::getTexture(std::string name) {

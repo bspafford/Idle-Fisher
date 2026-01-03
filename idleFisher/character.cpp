@@ -90,9 +90,11 @@ Acharacter::Acharacter() {
 	fishingTimer = CreateDeferred<Timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);
 	bobberCatchTimer = CreateDeferred<Timer>();
-	bobberCatchTimer->addCallback(this, &Acharacter::bobberCatchAnim, &Acharacter::bobberCatchAnim);
+	bobberCatchTimer->addCallback(this, &Acharacter::bobberCatchAnim);
+	bobberCatchTimer->addUpdateCallback(this, &Acharacter::bobberCatchAnim);
 	bobberBobTimer = CreateDeferred<Timer>();
-	bobberBobTimer->addCallback(this, &Acharacter::bobberBobAnim, &Acharacter::bobberBobAnim);
+	bobberBobTimer->addCallback(this, &Acharacter::bobberBobAnim);
+	bobberBobTimer->addUpdateCallback(this, &Acharacter::bobberBobAnim);
 
 	bobberImg = std::make_unique<Image>("./images/bobber.png", vector{ 100, 100 }, true);
 	bobberImg->SetPivot({ 0.5f, 0.5f });

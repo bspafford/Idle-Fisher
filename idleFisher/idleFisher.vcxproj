@@ -223,7 +223,6 @@
     <ClCompile Include="decorationBox.cpp" />
     <ClCompile Include="decorator.cpp" />
     <ClCompile Include="decoratorWidget.cpp" />
-    <ClCompile Include="deferredPtr.cpp" />
     <ClCompile Include="dumpster.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="equippedWidget.cpp" />

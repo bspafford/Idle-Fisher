@@ -66,12 +66,14 @@ public:
 	std::unique_ptr<animation> trees;
 
 	std::unique_ptr<Ubutton> startButton;
+	std::unique_ptr<Ubutton> settingsButton;
 	std::unique_ptr<Ubutton> exitButton;
 
 	std::unique_ptr<URectangle> transitionBox;
 
 	// button callback
 	void startGame();
+	void showSettings();
 	void exit();
 
 	void fadeToBlack();

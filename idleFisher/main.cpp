@@ -60,7 +60,7 @@ Main::~Main() {
 	Scene::Destructor();
 
 	textureManager::Deconstructor();
-	DeferredPtr<Timer>::FlushDeferred();
+	DeferredPtr<Timer>::BeginShutdown();
 
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
