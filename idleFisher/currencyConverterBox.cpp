@@ -50,7 +50,7 @@ void UcurrencyConverterBox::setup() {
 	if (currencyConversionStruct->converting) {
 		Aatm* atm = dynamic_cast<Aatm*>(widgetParent->parent);
 		if (atm) {
-			atm->startConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
+			//atm->startConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
 			buttonPriceText->setText("Stop");
 			setupLocs(); // updates the locks of the button and the upgrade text
 		}
@@ -134,11 +134,11 @@ void UcurrencyConverterBox::buyUpgrade() {
 
 	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList[currencyStruct->id];
 	if (currencyConversionStruct->converting) {
-		atm->stopConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
+		//atm->stopConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
 		buttonPriceText->setText("Start");
 		// start stuff in atm npc
 	} else {
-		atm->startConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
+		//atm->startConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
 		buttonPriceText->setText("Stop");
 	}
 

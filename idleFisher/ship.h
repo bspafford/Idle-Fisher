@@ -1,9 +1,10 @@
 #pragma once
 
 #include "math.h"
+#include "deferredPtr.h"
 
 class Shader;
-class timer;
+class Timer;
 
 class Aship {
 public:
@@ -12,7 +13,7 @@ public:
 	void draw(Shader* shaderProgram);
 private:
 	void shipbob();
-	std::unique_ptr<timer> bobTimer;
+	DeferredPtr<Timer> bobTimer;
 	std::unique_ptr<Image> shipImg;
 
 	vector loc;

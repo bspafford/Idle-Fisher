@@ -1,11 +1,12 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
 class text;
 class Ubutton;
 class UfishBox;
-class timer;
+class Timer;
 class animation;
 class UprogressBar;
 class UjournalProgressWidget;
@@ -38,7 +39,7 @@ private:
 	std::unique_ptr<animation> journalAnim;
 	std::unique_ptr<Image> journalClosed;
 
-	std::unique_ptr<timer> journalTimer;
+	DeferredPtr<Timer> journalTimer;
 
 	void moveAnim();
 	void journalTimerFinish();

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
 class text;
 class Ubutton;
 class Umap;
 class animation;
-class timer;
+class Timer;
 
 class UsailorWidget : public widget {
 public:
@@ -35,7 +36,7 @@ private:
 
 	void setupLocs() override;
 
-	std::unique_ptr<timer> mapTimer;
+	DeferredPtr<Timer> mapTimer;
 	void moveAnim();
 	void mapTimerFinish();
 	void mapAnimFinish();

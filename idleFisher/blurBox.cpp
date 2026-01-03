@@ -12,7 +12,7 @@ BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : wi
 	
 	setLocAndSize(loc, size);
 
-	texture = std::make_unique<Texture>(stuff::screenSize);
+	texture = std::make_unique<Texture>(vector{ 0, 0 });
 }
 
 BlurBox::~BlurBox() {
@@ -63,4 +63,8 @@ void BlurBox::BindFramebuffer() {
 
 void BlurBox::UnbindFramebuffer() {
 	sceneFBO->Unbind();
+}
+
+void BlurBox::ResizeScreen() {
+	sceneFBO->ResizeTexture(stuff::screenSize / stuff::pixelSize);
 }

@@ -19,7 +19,7 @@ UfishUnlocked::UfishUnlocked(widget* parent) : widget(parent) {
 	anim->setAnimation("normal");
 	anim->addFinishedCallback(this, &UfishUnlocked::finished);
 
-	finishedTimer = std::make_unique<timer>();
+	finishedTimer = CreateDeferred<Timer>();
 	finishedTimer->addCallback(this, &UfishUnlocked::reverse);
 
 	visible = false;

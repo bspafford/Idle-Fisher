@@ -81,7 +81,7 @@ titleScreen::titleScreen() {
 
 	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));
 
-	fadeTimer = std::make_unique<timer>();
+	fadeTimer = CreateDeferred<Timer>();
 }
 
 titleScreen::~titleScreen() {
@@ -191,7 +191,7 @@ rebirthWorld::rebirthWorld() {
 
 	rebirthWorldImg = new Image("./images/worlds/rebirth/rebirthWorld.png", vector{ 0, 0 }, true);
 
-	waterTimer = new timer();
+	waterTimer = CreateDeferred<Timer>();
 	waterTimer->addCallback(rebirthWorld::addAnim);
 	waterTimer->start(.13f * 3.f);
 
@@ -203,14 +203,12 @@ rebirthWorld::rebirthWorld() {
 }
 
 void rebirthWorld::deconstructor() {
-	delete waterTimer;
 	delete fishGod;
 	delete rebirthWorldImg;
 	delete rebirthExit;
 	delete doorGlow;
 	delete waterImg;
 
-	waterTimer = nullptr;
 	fishGod = nullptr;
 	rebirthWorldImg = nullptr;
 	rebirthExit = nullptr;
@@ -288,11 +286,11 @@ void rebirthWorld::removeAnim() {
 
 world::world() {
 	rain = std::make_unique<Arain>();
-	rainStartTimer = std::make_unique<timer>();
+	rainStartTimer = CreateDeferred<Timer>();
 	rainStartTimer->addCallback(this, &world::startRain);
-	rainDurationTimer = std::make_unique<timer>();
+	rainDurationTimer = CreateDeferred<Timer>();
 	rainDurationTimer->addCallback(this, &world::stopRain);
-	darkenScreenTimer = std::make_unique<timer>();
+	darkenScreenTimer = CreateDeferred<Timer>();
 	darkenScreenTimer->addUpdateCallback(this, &world::darkenScreen);
 	darkenValue = 0;
 	isRaining = false;
@@ -330,7 +328,7 @@ world::~world() {
 
 void world::start() {
 	// on init make the circle appear
-	fishSchoolSpawnTimer = std::make_unique<timer>();
+	fishSchoolSpawnTimer = CreateDeferred<Timer>();
 	fishSchoolSpawnTimer->addCallback(this, &world::spawnFishSchool);
 	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
 
@@ -357,6 +355,9 @@ void world::start() {
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
 
 	circleAnim->Start();
+
+	if (fishTransporter)
+		fishTransporter->startPathFinding();
 }
 
 void world::loadIdleProfits() {
@@ -367,8 +368,8 @@ void world::loadIdleProfits() {
 
 	if (currWorld->fishTransporter)
 		currWorld->fishTransporter->calcIdleProfits(timeDiff);
-	if (currWorld->atm)
-		currWorld->atm->calcIdleProfits(timeDiff);
+	//if (currWorld->atm)
+	//	currWorld->atm->calcIdleProfits(timeDiff);
 }
 
 void world::spawnFishSchool() {

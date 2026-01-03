@@ -7,7 +7,7 @@ Aship::Aship(vector loc) {
 	tempLoc = loc;
 
 	shipImg = std::make_unique<Image>("./images/ship1.png", loc, true);
-	bobTimer = std::make_unique<timer>();
+	bobTimer = CreateDeferred<Timer>();
 	bobTimer->addCallback(this, &Aship::shipbob, &Aship::shipbob);
 	bobTimer->start(5);
 }

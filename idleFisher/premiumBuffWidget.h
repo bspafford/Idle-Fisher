@@ -3,7 +3,7 @@
 #include "widget.h"
 #include "saveData.h"
 
-class timer;
+class Timer;
 class UprogressBar;
 class UhoverBox;
 class Image;
@@ -19,7 +19,7 @@ private:
 	FgoldenFishStruct goldenFish;
 	void timerFinished();
 	void timerUpdate();
-	std::unique_ptr<timer> lifeTimer;
+	DeferredPtr<Timer> lifeTimer;
 
 	std::unique_ptr<UprogressBar> progressBar;
 	std::unique_ptr<Image> img;

@@ -8,7 +8,7 @@
 
 Arain::Arain() {
 	rainDrop = std::make_unique<Image>("./images/rain.png", vector{ 0, 0 }, true);
-	rainTimer = std::make_unique<timer>();
+	rainTimer = CreateDeferred<Timer>();
 	rainTimer->addCallback(this, &Arain::updateRain);
 
 	std::string path = "./images/misc/rainDropAnim/rainDropAnim";

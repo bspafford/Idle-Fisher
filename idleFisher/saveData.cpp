@@ -59,8 +59,8 @@ void SaveData::load() {
 	startTime = std::chrono::system_clock::time_point{ std::chrono::milliseconds(SaveData::saveData.startTime) };
 
 	// setup auto saving
-	autoSaveTimer = std::make_unique<timer>();
-	autoSaveTimer->addFinishedCallback(SaveData::autoSave);
+	autoSaveTimer = CreateDeferred<Timer>();
+	autoSaveTimer->addCallback(SaveData::autoSave);
 	autoSaveTimer->start(autoSaveInterval);
 }
 

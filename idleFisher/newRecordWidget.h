@@ -1,9 +1,10 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
 class text;
-class timer;
+class Timer;
 
 class UnewRecordWidget : public widget {
 public:
@@ -15,5 +16,5 @@ public:
 
 private:
 	std::unique_ptr<text> recordText;
-	std::unique_ptr<timer> startTimer;
+	DeferredPtr<Timer> startTimer;
 };

@@ -10,7 +10,7 @@ UachievementBox::UachievementBox(widget* parent, int id) : widget(parent) {
 	this->id = id;
 
 	if (!rotateTimer) {
-		rotateTimer = std::make_unique<timer>();
+		rotateTimer = CreateDeferred<Timer>();
 		rotateTimerSpeed = 4;
 		rotateTimer->addUpdateCallback(UachievementBox::rotateUpdate);
 		rotateTimer->addCallback(UachievementBox::finishRotateTimer);

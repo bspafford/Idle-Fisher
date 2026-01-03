@@ -13,7 +13,7 @@
 #include "tree.h"
 
 class animation;
-class timer;
+class Timer;
 class Ubutton;
 class Shader;
 class URectangle;
@@ -77,7 +77,7 @@ public:
 	void fadeToBlack();
 	void openWorld();
 
-	std::unique_ptr<timer> fadeTimer;
+	DeferredPtr<Timer> fadeTimer;
 	float alpha;
 };
 
@@ -109,7 +109,7 @@ public:
 	static inline void addAnim();
 	static inline void removeAnim();
 	static inline std::vector<animation*> waterRippleList;
-	static inline timer* waterTimer;
+	static inline DeferredPtr<Timer> waterTimer;
 
 	static inline AfishGod* fishGod;
 	static inline Image* rebirthWorldImg;
@@ -186,7 +186,7 @@ public:
 
 	void spawnFishSchool();
 	void removeFishSchool(AfishSchool* fishSchool);
-	std::unique_ptr<timer> fishSchoolSpawnTimer;
+	DeferredPtr<Timer> fishSchoolSpawnTimer;
 	int maxFishSchoolNum = 5;
 
 	// rain
@@ -194,9 +194,9 @@ public:
 	void stopRain();
 	void darkenScreen();
 	std::unique_ptr<Arain> rain;
-	std::unique_ptr<timer> rainStartTimer;
-	std::unique_ptr<timer> rainDurationTimer;
-	std::unique_ptr<timer> darkenScreenTimer;
+	DeferredPtr<Timer> rainStartTimer;
+	DeferredPtr<Timer> rainDurationTimer;
+	DeferredPtr<Timer> darkenScreenTimer;
 	float darkenValue = 0;
 	bool isRaining = false;
 	float minRainStartTime = 30*60, maxRainStartTime = 60*60;

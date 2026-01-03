@@ -1,8 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include "deferredPtr.h"
 
-class timer;
+class Timer;
 
 class fps {
 public:
@@ -14,8 +15,8 @@ public:
 	static void outliers(float deltaTime);
 	static void returnTimerOutlier();
 
-	static inline std::unique_ptr<timer> fpsTimer;
-	static inline std::unique_ptr<timer> outlierTimer;
+	static inline DeferredPtr<Timer> fpsTimer;
+	static inline DeferredPtr<Timer> outlierTimer;
 
 	static inline bool bShow = false;
 	static inline float total = 0;

@@ -153,7 +153,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 
 	fullnessText = std::make_unique<text>(nullptr, "0/" + shortNumbers::convert2Short(maxHoldNum), "straight", loc, true, false, TEXT_ALIGN_CENTER);
 
-	collectTimer = std::make_unique<timer>();
+	collectTimer = CreateDeferred<Timer>();
 	collectTimer->addCallback(this, &AfishTransporter::finishCollectTimer);
 	collectTimer->addUpdateCallback(this, &AfishTransporter::collectTimerUpdate);
 
@@ -164,7 +164,6 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	setupCollision();
 
 	Astar = std::make_unique<AStar>();
-	startPathFinding();
 
 	discovered = &discoveredFallback;
 }
@@ -469,7 +468,7 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 	// temp
 	FsaveFishData fish;
 	fish.id = 1;
-	fish.numOwned[0] = currencyMade;
+	fish.numOwned = { currencyMade, 0, 0, 0 };
 	std::vector<FsaveFishData> temp = std::vector<FsaveFishData>{fish};
 
 	Main::idleProfitWidget->setup(temp);

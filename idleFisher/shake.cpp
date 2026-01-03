@@ -4,7 +4,7 @@
 #include "debugger.h"
 
 Eshake::Eshake(float shakeDist) {
-	shakeTimer = std::make_unique<timer>();
+	shakeTimer = CreateDeferred<Timer>();
 	shakeTimer->addCallback(this, &Eshake::setShakeLoc);
 	this->shakeDist = shakeDist;
 	shakeTimer->start(.1);

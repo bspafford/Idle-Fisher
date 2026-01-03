@@ -1,12 +1,13 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
 class text;
 class UpremiumBuffWidget;
 class UprogressBar;
 class Ubutton;
-class timer;
+class Timer;
 
 class UUIWidget : public widget {
 public:
@@ -33,7 +34,7 @@ private:
 	void showNPCButtons();
 
 	// show npc button stuff
-	std::unique_ptr<timer> buttonsTimer;
+	DeferredPtr<Timer> buttonsTimer;
 	void updateButtonsLoc();
 	void finishButtons();
 	std::vector<Ubutton*> buttonsList;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "math.h"
+#include "deferredPtr.h"
 
-class timer;
+class Timer;
 class animation;
 class Shader;
 
@@ -20,7 +21,7 @@ private:
 	std::vector<std::string> animImgList;
 
 	std::unique_ptr<Image> rainDrop;
-	std::unique_ptr<timer> rainTimer;
+	DeferredPtr<Timer> rainTimer;
 	std::vector<std::unique_ptr<animation>> animList;
 
 	// temp

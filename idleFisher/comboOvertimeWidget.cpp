@@ -12,13 +12,13 @@ UcomboOvertimeWidget::UcomboOvertimeWidget(widget* parent) : widget(parent) {
 	progressBar->setPercent(1.f);
 	setVisibility(false);
 
-	comboTimer = std::make_unique<timer>();
+	comboTimer = CreateDeferred<Timer>();
 	comboTimer->addUpdateCallback(this, &UcomboOvertimeWidget::updateProgressBar);
-	comboTimer->addFinishedCallback(this, &UcomboOvertimeWidget::OvertimeFinished);
+	comboTimer->addCallback(this, &UcomboOvertimeWidget::OvertimeFinished);
 
-	refillTimer = std::make_unique<timer>();
+	refillTimer = CreateDeferred<Timer>();
 	refillTimer->addUpdateCallback(this, &UcomboOvertimeWidget::updateProgressBar);
-	refillTimer->addFinishedCallback(this, &UcomboOvertimeWidget::FinishedRefill);
+	refillTimer->addCallback(this, &UcomboOvertimeWidget::FinishedRefill);
 
 	setupLocs();
 

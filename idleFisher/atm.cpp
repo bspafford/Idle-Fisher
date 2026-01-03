@@ -8,9 +8,9 @@
 #include "debugger.h"
 
 Aatm::Aatm(vector loc) : npc(loc) {
-	for (int i = 0; i < SaveData::data.currencyData.size(); i++) {
-		conversionTimers.push_back(std::make_unique<timer>());
-	}
+	/*for (int i = 0; i < SaveData::data.currencyData.size(); i++) {
+		conversionTimers.push_back(CreateDeferred<Timer>());
+	}*/
 
 	setup("atm");
 	currencyConverterWidget = std::make_unique<UcurrencyConverterWidget>(nullptr, this);
@@ -32,12 +32,15 @@ void Aatm::click() {
 void Aatm::draw(Shader* shaderProgram) {
 	__super::draw(shaderProgram);
 
+	/*
 	for (int i = 0; i < conversionTimers.size(); i++) {
 		if (conversionTimers[i]->IsFinished())
 			finishConversion(i);
 	}
+	*/
 }
 
+/*
 void Aatm::startConversion(FcurrencyStruct* currency, FsaveCurrencyStruct* saveCurrency, FcurrencyConversionStruct* currencyConversionStruct) {
 	currencyConversionStruct->converting = true;
 	conversionTimers[currency->id]->start(upgrades::calcConversionTime(currencyConversionStruct));
@@ -84,3 +87,4 @@ void Aatm::calcIdleProfits(float timeDiff) {
 	if (Main::currencyWidget)
 		Main::currencyWidget->updateList();
 }
+*/

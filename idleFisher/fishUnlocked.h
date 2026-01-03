@@ -1,8 +1,9 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
-class timer;
+class Timer;
 class animation;
 struct FfishData;
 class Image;
@@ -28,5 +29,5 @@ private:
 	std::unique_ptr<Image> thumbnail;
 	std::unique_ptr<text> name;
 
-	std::unique_ptr<timer> finishedTimer;
+	DeferredPtr<Timer> finishedTimer;
 };

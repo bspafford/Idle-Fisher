@@ -10,7 +10,7 @@
 
 class saveData;
 class collision;
-class timer;
+class Timer;
 class AfishSchool;
 class Shader;
 
@@ -79,9 +79,9 @@ public:
 
 	float catchTimer = 0;
 
-	std::unique_ptr<timer> fishingTimer;
-	std::unique_ptr<timer> bobberCatchTimer;
-	std::unique_ptr<timer> bobberBobTimer;
+	DeferredPtr<Timer> fishingTimer;
+	DeferredPtr<Timer> bobberCatchTimer;
+	DeferredPtr<Timer> bobberBobTimer;
 	float bobTime = 1.5;
 
 	void animFinished();
@@ -107,7 +107,7 @@ public:
 	void premiumFishBuff();
 
 	// if going can't catch golden fihs
-	std::unique_ptr<timer> premiumCatchTimer;
+	DeferredPtr<Timer> premiumCatchTimer;
 	bool canCatchPremium = true;
 	void setCatchPremium();
 

@@ -67,7 +67,7 @@ UUIWidget::UUIWidget(widget* parent) : widget(parent) {
 
 	if (NPCshowButton)
 		NPCshowButton->addCallback(this, &UUIWidget::showNPCButtons);
-	buttonsTimer = std::make_unique<timer>();
+	buttonsTimer = CreateDeferred<Timer>();
 	buttonsTimer->addUpdateCallback(this, &UUIWidget::updateButtonsLoc);
 	buttonsTimer->addCallback(this, &UUIWidget::finishButtons);
 

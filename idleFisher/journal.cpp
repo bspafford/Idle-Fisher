@@ -30,7 +30,7 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	journalAnim->addFinishedCallback(this, &Ujournal::journalAnimFinish);
 	journalAnim->setAnimation("open");
 
-	journalTimer = std::make_unique<timer>();
+	journalTimer = CreateDeferred<Timer>();
 	journalTimer->addUpdateCallback(this, &Ujournal::moveAnim);
 	journalTimer->addCallback(this, &Ujournal::journalTimerFinish);
 

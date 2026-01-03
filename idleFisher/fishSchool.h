@@ -1,10 +1,11 @@
 #pragma once
 
 #include "math.h"
+#include "deferredPtr.h"
 
 class Shader;
 class animation;
-class timer;
+class Timer;
 class Image;
 
 class AfishSchool {
@@ -24,6 +25,6 @@ private:
 
 	// amount of times you can fish from, random
 	// alive time, random
-	std::unique_ptr<timer> lifeTimer;
+	DeferredPtr<Timer> lifeTimer;
 	float fishNum;
 };

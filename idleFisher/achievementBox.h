@@ -29,7 +29,7 @@ private:
 	vector startSize;
 	static inline float rot;
 
-	static inline std::unique_ptr<timer> rotateTimer;
+	static inline DeferredPtr<Timer> rotateTimer;
 	static inline float rotateTimerSpeed;
 	static void rotateUpdate();
 	static void finishRotateTimer();

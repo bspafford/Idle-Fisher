@@ -17,5 +17,5 @@ private:
 	float shakeDist;
 	vector shakeLoc;
 
-	std::unique_ptr<timer> shakeTimer;
+	DeferredPtr<Timer> shakeTimer;
 };

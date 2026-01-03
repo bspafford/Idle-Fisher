@@ -1,9 +1,10 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
 class UprogressBar;
-class timer;
+class Timer;
 
 class UcomboOvertimeWidget : public widget {
 public:
@@ -25,8 +26,8 @@ private:
 	void OvertimeFinished();
 
 	std::unique_ptr<UprogressBar> progressBar;
-	std::unique_ptr<timer> comboTimer;
-	std::unique_ptr<timer> refillTimer;
+	DeferredPtr<Timer> comboTimer;
+	DeferredPtr<Timer> refillTimer;
 
 	bool refilling = false;
 	// the ammount the percent that the previous timer left off at

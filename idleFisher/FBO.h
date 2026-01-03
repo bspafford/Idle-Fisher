@@ -22,6 +22,9 @@ public:
 	~FBO();
 
 	void Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color);
+
+	void ResizeTexture(vector size);
+
 	vector GetSize();
 
 	void Bind(glm::vec4 clearColor = glm::vec4(0, 0, 0, 0));

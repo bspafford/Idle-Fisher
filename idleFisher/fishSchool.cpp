@@ -15,7 +15,7 @@ AfishSchool::AfishSchool(vector loc) {
 	anim->start();
 
 	fishNum = math::randRange(1.f, 5.f);
-	lifeTimer = std::make_unique<timer>();
+	lifeTimer = CreateDeferred<Timer>();
 	lifeTimer->start(math::randRange(30.f, 60.f));
 	lifeTimer->addCallback(this, &AfishSchool::remove);
 }

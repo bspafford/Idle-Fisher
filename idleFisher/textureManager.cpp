@@ -29,7 +29,6 @@ textureStruct::~textureStruct() {
 
 void textureStruct::LoadGPU() {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	if (bytes) {
@@ -65,6 +64,8 @@ void textureStruct::LoadGPU() {
 			bytes = NULL;
 		} // else don't delete anything
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 bool textureStruct::GetAlphaAtPos(vector pos) {
@@ -109,8 +110,8 @@ textureManager::textureManager() {
 	glCreateSamplers(1, &samplerID);
 	glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	float vertices[] = {
 		// positions       // texture coordinates

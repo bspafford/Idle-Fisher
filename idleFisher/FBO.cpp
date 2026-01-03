@@ -31,6 +31,23 @@ void FBO::Draw(Shader* shader, const vector& position, const Rect& source, const
 	textureManager::DrawImage(shader, position, size, source, useWorldPos, color, texture->GetHandle());
 }
 
+void FBO::ResizeTexture(vector size) {
+	this->size = size;
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+
+	texture = std::make_unique<Texture>(size * stuff::pixelSize);
+	texture->Bind();
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cerr << "FBO is incomplete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, GetCurrFBO().ID);
+
+}
+
 vector FBO::GetSize() {
 	return size;
 }

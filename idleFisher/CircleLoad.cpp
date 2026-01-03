@@ -5,7 +5,7 @@
 #include "camera.h"
 
 CircleLoad::CircleLoad() : URectangle({ 0, 0 }, stuff::screenSize, false, glm::vec4(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f)), widget(NULL) {
-	circleTimer = std::make_unique<timer>();
+	circleTimer = CreateDeferred<Timer>();
 	circleTimer->addCallback(this, &CircleLoad::NextCircle);
 }
 

@@ -7,11 +7,11 @@
 #include "debugger.h"
 
 fps::fps() {
-	fpsTimer = std::make_unique<timer>();
+	fpsTimer = CreateDeferred<Timer>();
 	fpsTimer->addCallback(fps::returnTimer);
 	fpsTimer->start(.1);
 
-	outlierTimer = std::make_unique<timer>();
+	outlierTimer = CreateDeferred<Timer>();
 	outlierTimer->addCallback(fps::returnTimerOutlier);
 	outlierTimer->start(.1);
 }

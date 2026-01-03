@@ -20,6 +20,7 @@
 #include "Scene.h"
 #include "Cursor.h"
 #include "GPULoadCollector.h"
+#include "Texture.h""
 
 // npc
 #include "fishTransporter.h"
@@ -59,7 +60,7 @@ Main::~Main() {
 	Scene::Destructor();
 
 	textureManager::Deconstructor();
-	timer::clearInstanceList(false);
+	DeferredPtr<Timer>::FlushDeferred();
 
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
@@ -271,7 +272,7 @@ void Main::Start() {
 }
 
 void Main::Update(float deltaTime) {
-	timer::callUpdate(deltaTime);
+	Timer::callUpdate(deltaTime);
 
 	Scene::updateShaders(deltaTime);
 
@@ -333,6 +334,8 @@ void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 
 	widget::resizeScreen();
+	BlurBox::ResizeScreen();
+	Texture::ResizeAllTextures();
 }
 
 void Main::checkInputs() {

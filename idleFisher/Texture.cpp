@@ -6,6 +6,8 @@
 #include "debugger.h"
 
 Texture::Texture(const char* imgPath) {
+	instances.push_back(this);
+
 	if (imgPath == "")
 		return;
 
@@ -14,17 +16,26 @@ Texture::Texture(const char* imgPath) {
 		return;
 
 	functionIdx = 0;
+	size = { static_cast<float>(widthImg), static_cast<float>(heightImg) };
 	this->imgPath = imgPath;
 	GPULoadCollector::add(this);
 }
 
 Texture::Texture(vector size) {
+	instances.push_back(this);
+
+	if (size == vector{ 0.f, 0.f })
+		size = stuff::screenSize;
+	else
+		this->size = size;
+
 	functionIdx = 1;
-	this->size = size;
 	GPULoadCollector::add(this);
 }
 
 Texture::Texture(const char* imgPath, bool binding) {
+	instances.push_back(this);
+
 	functionIdx = 2;
 	this->imgPath = imgPath;
 	GPULoadCollector::add(this);
@@ -34,7 +45,6 @@ void Texture::LoadGPU() {
 	if (functionIdx == 0) {
 		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
 
-		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, ID);
 
 		if (numColCh == 4)
@@ -50,13 +60,16 @@ void Texture::LoadGPU() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	} else if (functionIdx == 1) {
 		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-
-		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, ID);
 
-		glTextureStorage2D(ID, 1, GL_RGBA8, size.x, size.y);
+		vector tempSize = size;
+		if (size == vector{ 0.f, 0.f })
+			tempSize = stuff::screenSize;
+
+		glTextureStorage2D(ID, 1, GL_RGBA8, tempSize.x, tempSize.y);
 		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());
 		glMakeTextureHandleResidentARB(handle);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	} else if (functionIdx == 2) {
 		if (usedSlots.size() == 0) {
 			GLint maxCombined;
@@ -71,6 +84,8 @@ void Texture::LoadGPU() {
 		unsigned char* bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
 		if (!bytes)
 			return;
+
+		size = { static_cast<float>(widthImg), static_cast<float>(heightImg) };
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
 		GLuint slot = takeOpenSlot();
@@ -103,15 +118,29 @@ void Texture::LoadGPU() {
 }
 
 Texture::~Texture() {
-	if (handle)
-		glMakeTextureHandleNonResidentARB(handle);
-	if (ID)
-		glDeleteTextures(1, &ID);
+	auto it = std::find(instances.begin(), instances.end(), this);
+	if (it != instances.end())
+		instances.erase(it);
 
 	Unbind();
 	Delete();
 
 	GPULoadCollector::remove(this);
+}
+
+void Texture::Resize(vector size) {
+	this->size = size;
+
+	Delete();
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+	glBindTexture(GL_TEXTURE_2D, ID);
+
+	glTextureStorage2D(ID, 1, GL_RGBA8, size.x, size.y);
+	handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());
+	glMakeTextureHandleResidentARB(handle);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::texUnit(Shader* shader, const char* uniform) {
@@ -132,6 +161,7 @@ void Texture::Unbind() {
 }
 
 void Texture::Delete() {
+	glMakeTextureHandleNonResidentARB(handle);
 	glDeleteTextures(1, &ID);
 }
 
@@ -168,6 +198,13 @@ void Texture::deleteCache() {
 	for (std::unique_ptr<Texture>& texture : textureCache)
 		texture->Delete();
 	textureCache.clear();
+}
+
+void Texture::ResizeAllTextures() {
+	for (Texture* texture : instances) {
+		if (texture->size == vector{ 0.f, 0.f })
+			texture->Resize(stuff::screenSize);
+	}
 }
 
 GLuint Texture::takeOpenSlot() {

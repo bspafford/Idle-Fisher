@@ -69,8 +69,6 @@ private:
 	static inline std::atomic<bool> hasLoadedGPUData = false;
 	static inline std::atomic<bool> waitToUploadGPUdata = true;
 
-
-
 	static inline std::string prevWorld;
 	static inline std::string currWorldName;
 

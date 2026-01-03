@@ -87,11 +87,11 @@ Acharacter::Acharacter() {
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
 	anim->start();
 
-	fishingTimer = std::make_unique<timer>();
+	fishingTimer = CreateDeferred<Timer>();
 	fishingTimer->addCallback(this, &Acharacter::fishing);
-	bobberCatchTimer = std::make_unique<timer>();
+	bobberCatchTimer = CreateDeferred<Timer>();
 	bobberCatchTimer->addCallback(this, &Acharacter::bobberCatchAnim, &Acharacter::bobberCatchAnim);
-	bobberBobTimer = std::make_unique<timer>();
+	bobberBobTimer = CreateDeferred<Timer>();
 	bobberBobTimer->addCallback(this, &Acharacter::bobberBobAnim, &Acharacter::bobberBobAnim);
 
 	bobberImg = std::make_unique<Image>("./images/bobber.png", vector{ 100, 100 }, true);
@@ -111,7 +111,7 @@ Acharacter::Acharacter() {
 
 	setPlayerColPoints();
 
-	premiumCatchTimer = std::make_unique<timer>();
+	premiumCatchTimer = CreateDeferred<Timer>();
 	premiumCatchTimer->addCallback(this, &Acharacter::setCatchPremium);
 
 	comboOvertimeWidget = std::make_unique<UcomboOvertimeWidget>(nullptr);

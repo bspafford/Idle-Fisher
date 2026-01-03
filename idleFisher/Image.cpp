@@ -172,4 +172,8 @@ void Image::SetPivot(vector pivot) {
 
 void Image::flipHoizontally(bool flip) {
 	flipHoriz = flip;
+
+	normalizedSource.w = abs(normalizedSource.w);
+	if (flip)
+		normalizedSource.w *= -1.f;
 }

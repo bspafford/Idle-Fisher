@@ -6,7 +6,7 @@
 
 LoadingScreen::LoadingScreen(widget* parent) : widget(parent) {
 	loadingText = std::make_unique<text>(this, "Loading...", "afScreen", vector{ 0, 0 });
-	loadingTextTimer = std::make_unique<timer>();
+	loadingTextTimer = CreateDeferred<Timer>();
 	loadingTextTimer->addCallback(this, &LoadingScreen::loadingTimerCallback);
 	loadingTextTimer->start(0.25f);
 	setupLocs();

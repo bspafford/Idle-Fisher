@@ -12,7 +12,7 @@
 UpremiumBuffWidget::UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenFish) : widget(parent) {
 	this->goldenFish = goldenFish;
 
-	lifeTimer = std::make_unique<timer>();
+	lifeTimer = CreateDeferred<Timer>();
 	lifeTimer->addCallback(this, &UpremiumBuffWidget::timerFinished);
 	lifeTimer->addUpdateCallback(this, &UpremiumBuffWidget::timerUpdate);
 	lifeTimer->start(goldenFish.time);

@@ -9,8 +9,9 @@
 
 #include "Anchor.h"
 #include "math.h"
+#include "deferredPtr.h"
 
-class timer;
+class Timer;
 class Image;
 class Shader;
 
@@ -96,12 +97,6 @@ public:
 	int calcFrameDistance(bool getFrameNum);
 
 private:
-	vector loc;
-	vector absoluteLoc;
-	vector pivot = { 0, 0 };
-	Anchor xAnchor = ANCHOR_LEFT;
-	Anchor yAnchor = ANCHOR_BOTTOM;
-
 	vector cellSize;
 	vector cellNum;
 
@@ -113,13 +108,11 @@ private:
 	bool bFinished = false;
 	bool bStopped = false;
 
-	std::unique_ptr<timer> animTimer;
+	DeferredPtr<Timer> animTimer;
 
 	std::unordered_map<std::string, animDataStruct> animData;
 	std::shared_ptr<Image> spriteSheet;
-	bool useWorldLoc;
 
 	std::string currAnim; // which animation is currently selected
 	vector currFrameLoc; // which frame the animation is on
-	std::shared_ptr<Rect> source;
 };

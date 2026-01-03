@@ -6,7 +6,7 @@
 #include "path.h"
 
 class AautoFisher;
-class timer;
+class Timer;
 class UprogressBar;
 class animation;
 class text;
@@ -55,7 +55,7 @@ private:
 	bool canMove = true;
 	vector moveDir;
 	vector prevMove;
-	std::unique_ptr<timer> collectTimer;
+	DeferredPtr<Timer> collectTimer;
 	std::unique_ptr<text> fullnessText;
 
 	std::vector<FsaveFishData> holding;

@@ -21,7 +21,7 @@ UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 	background->SetPivot({ 0.5f, 0.5f });
 
 	startTimeText = std::make_unique<text>(this, "", "straight", vector{ 0, 0 });
-	changeTextTimer = std::make_unique<timer>();
+	changeTextTimer = CreateDeferred<Timer>();
 	changeTextTimer->addCallback(this, &UachievementWidget::updateText);
 	updateText();
 

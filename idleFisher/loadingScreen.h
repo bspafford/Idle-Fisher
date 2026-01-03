@@ -1,8 +1,9 @@
 #pragma once
 
 #include "widget.h"
+#include "deferredPtr.h"
 
-class timer;
+class Timer;
 class text;
 
 class LoadingScreen : public widget {
@@ -14,7 +15,7 @@ public:
 
 private:
 	std::unique_ptr<text> loadingText;
-	std::unique_ptr<timer> loadingTextTimer;
+	DeferredPtr<Timer> loadingTextTimer;
 	void loadingTimerCallback();
 
 	int periodNum = 0;

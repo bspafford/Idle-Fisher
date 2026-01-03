@@ -36,7 +36,7 @@ UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
 	mapAnim->addFinishedCallback(this, &UsailorWidget::mapAnimFinish);
 	mapAnim->setAnimation("open");
 
-	mapTimer = std::make_unique<timer>();
+	mapTimer = CreateDeferred<Timer>();
 	mapTimer->addUpdateCallback(this, &UsailorWidget::moveAnim);
 	mapTimer->addCallback(this, &UsailorWidget::mapTimerFinish);
 

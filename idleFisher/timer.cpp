@@ -7,45 +7,32 @@
 
 #include "debugger.h"
 
-timer::timer() {
+Timer::Timer() {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-	instances.push_back(this);
+
 }
 
-timer::~timer() {
+Timer::~Timer() {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-	auto it = std::find(instances.begin(), instances.end(), this);
-	if (it != instances.end())
-		instances.erase(it);
+
+	stop();
 }
 
 // calls update function to all instances of object
-void timer::callUpdate(float deltaTime) {
+void Timer::callUpdate(float deltaTime) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-	for (int i = 0; i < instances.size(); i++) {
-		instances[i]->Update(deltaTime);
-	}
+	for (auto& instance : DeferredPtr<Timer>::GetInstanceList())
+		instance->Update(deltaTime);
+
+	DeferredPtr<Timer>::FlushDeferred();
 }
 
-void timer::clearInstanceList(bool changingWorlds) {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
-	if (changingWorlds) {
-		instances.erase(
-			std::remove_if(instances.begin(), instances.end(),
-				[](auto& timer) { return !timer->dontDelete; }
-			),
-			instances.end()
-		);
-	} else {
-		instances.clear();
-	}
-}
-
-void timer::setFps(float fps) {
+void Timer::setFps(float fps) {
 	maxTime = fps;
 }
 
-void timer::Update(float deltaTime) {
+void Timer::Update(float deltaTime) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	if (!bGoing)
 		return;
 
@@ -60,32 +47,30 @@ void timer::Update(float deltaTime) {
 		bFinished = true;
 		if (callback_)
 			callback_();
-		if (finishedCallback_)
-			finishedCallback_();
 	}
 }
 
-float timer::getTime() {
+float Timer::getTime() {
 	return time;
 }
 
-float timer::getMaxTime() {
+float Timer::getMaxTime() {
 	return maxTime;
 }
 
-float timer::getPercent() {
+float Timer::getPercent() {
 	return time / maxTime;
 }
 
-bool timer::IsFinished() {
+bool Timer::IsFinished() {
 	return bFinished;
 }
 
-bool timer::IsGoing() {
+bool Timer::IsGoing() {
 	return bGoing;
 }
 
-void timer::start(float maxTime) {
+void Timer::start(float maxTime) {
 	bGoing = true;
 	bFinished = false;
 
@@ -93,11 +78,11 @@ void timer::start(float maxTime) {
 	this->maxTime = maxTime;
 }
 
-void timer::stop() {
+void Timer::stop() {
 	bGoing = false;
 	time = 0;
 }
 
-void timer::shouldntDelete(bool dontDelete) {
+void Timer::shouldntDelete(bool dontDelete) {
 	this->dontDelete = dontDelete;
 }

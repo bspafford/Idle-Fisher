@@ -28,7 +28,7 @@ private:
 
 	std::unique_ptr<Image> background;
 
-	std::unique_ptr<timer> changeTextTimer;
+	DeferredPtr<Timer> changeTextTimer;
 
 	std::unique_ptr<text> startTimeText;
 	std::unique_ptr<UequippedWidget> equippedWidget;

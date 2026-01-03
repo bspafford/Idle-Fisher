@@ -602,5 +602,5 @@ private:
     static void autoSave();
     static inline float autoSaveInterval = 60.f; // in seconds
 
-    static inline std::unique_ptr<timer> autoSaveTimer;
+    static inline DeferredPtr<Timer> autoSaveTimer;
 };
