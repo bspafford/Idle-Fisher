@@ -31,7 +31,6 @@ void pathfinding::findPath(vector startPos, vector targetPos, AStar* AStarRef) {
 		if (currentNode == targetNode) { // finished
 			std::vector<vector> waypoints = retracePath(startNode, targetNode, AStarRef);
 			AStarRef->onPathFound(waypoints, true);
-			std::cout << "path was found!: " << waypoints.size() << std::endl;
 			return;
 		}
 

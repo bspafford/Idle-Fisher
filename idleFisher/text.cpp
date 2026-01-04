@@ -258,8 +258,9 @@ void text::setText(std::string text) {
 
 		if (GPULoadCollector::isOnMainThread())
 			makeTextTexture();
-		else
+		else {
 			updateWhileOnMain = true;
+		}
 	}
 }
 
@@ -361,7 +362,7 @@ void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {
 }
 
 vector text::getSize() {
-	return fbo ? fbo->GetSize() : vector{0, 0};
+	return fbo ? fbo->GetSize() : getFBOSize();
 }
 
 vector text::getFBOSize() {

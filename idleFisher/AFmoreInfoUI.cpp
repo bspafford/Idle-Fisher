@@ -86,7 +86,7 @@ void AFmoreInfoUI::updateUI() {
 
 	double fullness = autoFisher->calcCurrencyHeld();
 	double maxFullness = autoFisher->maxCurrency;
-	int fullnessPercent = int(round(fullness / maxFullness * 100));
+	int fullnessPercent = int(math::clamp(roundf(fullness / maxFullness * 100.f), 0.f, 100.f));
 	fullnessText->setText(shortNumbers::convert2Short(fullness) + "/" + shortNumbers::convert2Short(maxFullness));
 	fullnessBar->setImage("./images/autoFisher/moreUI/fullness/fullness" + std::to_string(fullnessPercent + 1) + ".png");
 }

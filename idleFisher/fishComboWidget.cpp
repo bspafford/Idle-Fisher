@@ -25,6 +25,8 @@ UfishComboWidget::UfishComboWidget(widget* parent) : widget(parent) {
 	backgroundRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, fishComboBorderImg->getSize() - 10.f, false, glm::vec4(0.3608, 0.4980, 0.6000, 1.0));
 
 	shake = std::make_unique<Eshake>(0);
+
+	setVisibility(false);
 }
 
 UfishComboWidget::~UfishComboWidget() {
@@ -44,7 +46,7 @@ void UfishComboWidget::Start(FfishData fish, int quality) {
 	updateComboSize();
 	fishSpeed = upgrades::calcFishComboSpeed(currFish, quality);
 
-	visible = true;
+	setVisibility(true);
 	fishMoveBack = false;
 	fishLoc = 0;
 	setupRandomCombo();
@@ -144,5 +146,5 @@ float UfishComboWidget::calcYellowSize() {
 }
 
 float UfishComboWidget::getValidWidth() {
-	return fishComboBorderImg->getSize().x - 8.f;
+	return fishComboBorderImg->getSize().x - 10.f;
 }

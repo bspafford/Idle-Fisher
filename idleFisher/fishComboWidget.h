@@ -38,8 +38,6 @@ public:
 
 	float comboLoc = 0;
 
-	bool visible = false;
-
 	float fishLoc = 0; // percent of its location on bar
 	float fishSpeed = 0;
 

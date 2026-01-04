@@ -309,7 +309,7 @@ void Acharacter::leftClick() {
 		//anim->setAnimation(idleAnimWheel[y], -1, true);
 
 	// catch fish
-	} else if (isFishing && Main::fishComboWidget->visible) {
+	} else if (isFishing && Main::fishComboWidget->isVisible()) {
 		// catch fish
 		if (upgrades::IsComboUnlocked()) {
 			int combo = Main::fishComboWidget->click(Acharacter::isFishing);
@@ -328,7 +328,7 @@ void Acharacter::leftClick() {
 			Main::comboWidget->spawnComboNumber(comboNum);
 		}
 
-		Main::fishComboWidget->visible = false;
+		Main::fishComboWidget->setVisibility(false);
 
 		// set animation
 		anim->setAnimation("pullSE", true);
@@ -480,11 +480,10 @@ std::vector<std::pair<int, double>> Acharacter::calcFishProbability(std::vector<
 void Acharacter::stopFishing() {
 	setCanMove(true);
 
-	// catchTimerGoing = false;
 	fishingTimer->stop();
 
 	Main::fishComboWidget->fishLoc = 0;
-	Main::fishComboWidget->visible = false;
+	Main::fishComboWidget->setVisibility(false);
 	Main::fishComboWidget->fishMoveBack = false;
 
 	isFishing = false;

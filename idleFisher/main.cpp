@@ -1,9 +1,6 @@
 #include "main.h"
 
-#include "Image.h"
 #include "model.h"
-#include "csvReader.h"
-#include "sounds.h"
 #include "stuff.h"
 #include "timer.h"
 #include "fps.h"
@@ -13,18 +10,13 @@
 #include "camera.h"
 #include "AautoFisher.h"
 #include "collision.h"
-#include "upgrades.h"
-#include "achievement.h"
-#include "achievementBuffs.h"
 #include "Input.h"
 #include "Scene.h"
 #include "Cursor.h"
 #include "GPULoadCollector.h"
-#include "Texture.h""
 
 // npc
 #include "fishTransporter.h"
-#include "pet.h"
 
 // widgets
 #include "widget.h"

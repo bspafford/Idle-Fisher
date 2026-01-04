@@ -177,7 +177,8 @@ void UmechanicWidget::setupLocs() {
 		buyFishTransporterPriceText->setLoc(buyFishTransporterButton->getAbsoluteLoc() + buyFishTransporterButton->getSize() / 2.f);
 	}
 
-	level->setLoc(fishTransporterName->getAbsoluteLoc() + vector{ fishTransporterName->getSize().x + 200.f, -20.f });
+	std::cout << "name loc: " << fishTransporterName->getAbsoluteLoc() << ", size: " << fishTransporterName->getSize() << "\n";
+	level->setLoc(fishTransporterName->getAbsoluteLoc() + vector{ fishTransporterName->getSize().x + 92.f, -20.f });
 	levelProgress->setLoc(level->getAbsoluteLoc() + vector{ -125.f, -9.f });
 	maxHoldText->setLoc(levelProgress->getAbsoluteLoc() + vector{ 0.f, -23.f });
 	maxHoldValue->setLoc(vector{ upgradeBackground->getAbsoluteLoc().x + upgradeBackground->getSize().x - 5.f, maxHoldText->getAbsoluteLoc().y});

@@ -38,7 +38,7 @@ void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
 	fishNumList.clear();
 
 	float biggestSizeX = 0.f;
-	float yOffset = 6.f;
+	float yOffset = 1.f;
 	for (int i = 0; i < fishList.size(); i++) { // loop through fish
 		for (int j = 0; j < fishList[i].numOwned.size(); j++) { // loop through fish qualities
 			if (fishList[i].numOwned[j] == 0) // if no fish of this quality, skip

@@ -80,6 +80,7 @@ vector Image::getLoc() {
 }
 
 vector Image::getAbsoluteLoc() {
+	absoluteLoc = GetAbsoluteLoc(loc, { w, h }, useWorldPos, pivot, xAnchor, yAnchor);
 	return absoluteLoc;
 }
 

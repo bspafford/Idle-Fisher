@@ -230,6 +230,9 @@ void Usettings::goBack() {
 }
 
 void Usettings::setupLocs() {
+	if (stuff::screenSize.x < 1000.f)
+		std::cout << "pause\n";
+
 	if (backButton)
 		backButton->setLoc(background->getAbsoluteLoc() + background->getSize() - 3.f);
 

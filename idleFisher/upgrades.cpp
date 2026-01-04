@@ -74,7 +74,6 @@ double upgrades::upgradeEquation(FupgradeStruct* upgradeStruct, FsaveUpgradeStru
 	if (!parser.compile(expression_string, expression))
 		std::cout << "parser error\n";
 	double result = expression.value();
-	std::cout << "level: " << level << ", " << "result: " << result << std::endl;
 	return result;
 }
 

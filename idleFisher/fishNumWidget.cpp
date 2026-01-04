@@ -47,9 +47,6 @@ UfishNumWidget::~UfishNumWidget() {
 
 void UfishNumWidget::setupText() {
 	numText = std::make_unique<text>(this, shortNumbers::convert2Short(saveFish ? saveFish->numOwned[fishQuality] : currencyNum), "straight", vector{ 0.f, 0.f });
-
-	if (thumbnail)
-		size = thumbnail->getSize() + vector{ 30.f, 1.f };
 }
 
 void UfishNumWidget::draw(Shader* shaderProgram) {
@@ -69,7 +66,7 @@ void UfishNumWidget::setLoc(vector loc) {
 	
 	if (numText && thumbnail) {
 		numText->setLoc((absoluteLoc + vector{ 18.f, (thumbnail->getSize().y - numText->getSize().y) / 2.f }));
-		setSize((numText->getAbsoluteLoc() + numText->getSize()) - thumbnail->getAbsoluteLoc());
+		setSize((numText->getAbsoluteLoc() + vector{ numText->getSize().x, thumbnail->getSize().y }) - thumbnail->getAbsoluteLoc());
 	}
 
 	if (fishQuality != 0 && star)

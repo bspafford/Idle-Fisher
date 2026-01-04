@@ -8,6 +8,7 @@
 UcurrencyWidget::UcurrencyWidget(widget* parent) : widget(parent) {
 	SetAnchor(ANCHOR_RIGHT, ANCHOR_TOP);
 	SetPivot({ 1.f, 1.f });
+	setLoc({ -5.f, 0.f });
 }
 
 UcurrencyWidget::~UcurrencyWidget() {
