@@ -559,7 +559,10 @@ struct FsettingsData {
     int showRain = true;
     int cursor = true;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor);
+    // Misc
+    int interpMethod = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor, interpMethod);
 
     // compares the struct byte by byte, so i don't have to manually update it
     bool operator==(const FsettingsData other) {

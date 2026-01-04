@@ -115,8 +115,7 @@ void titleScreen::startGame() {
 }
 
 void titleScreen::showSettings() {
-	// show settings menu
-
+	Main::settingsWidget->addToViewport(nullptr);
 }
 
 void titleScreen::fadeToBlack() {

@@ -84,5 +84,12 @@ private:
 	std::unique_ptr<UsettingsBlock> rainBlock;
 	std::unique_ptr<UsettingsBlock> cursorBlock;
 
+	// Misc
+	std::unique_ptr<text> miscTitle;
+	std::unique_ptr<UsettingsBlock> interpMethodBlock;
+
 	std::unique_ptr<ConfirmWidget> confirmWidget;
+
+	// callback functions
+	void SetInterpMethod();
 };

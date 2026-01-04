@@ -285,3 +285,43 @@ GLuint textureManager::GetSamplerID() {
 bool textureManager::GetTexturesLoaded() {
 	return areTexturesLoaded;
 }
+
+void textureManager::SetInterpMethod(int method) {
+	// Step 0: Make old handles non-resident
+	for (auto& texture : textureMap) {
+		if (texture.second->handle != 0) {
+			glBindTexture(GL_TEXTURE_2D, texture.second->id);
+			glMakeTextureHandleNonResidentARB(texture.second->handle);
+			texture.second->handle = 0;
+		}
+	}
+
+	// Step 1: Delete old sampler (optional if you want to reuse)
+	if (samplerID != 0) {
+		glDeleteSamplers(1, &samplerID);
+		samplerID = 0;
+	}
+
+	// Step 2: Create new sampler
+	glGenSamplers(1, &samplerID);
+	glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Step 3: Create new handles
+	for (auto& texture : textureMap) {
+		if (texture.second->id == 0) continue; // skip uninitialized textures
+
+		// Make sure texture has storage
+		GLint width, height;
+		glBindTexture(GL_TEXTURE_2D, texture.second->id);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+		if (width == 0) continue; // incomplete texture
+
+		texture.second->handle = glGetTextureSamplerHandleARB(texture.second->id, samplerID);
+
+		if (texture.second->handle != 0)
+			glMakeTextureHandleResidentARB(texture.second->handle);
+	}
+}

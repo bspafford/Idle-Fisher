@@ -8,7 +8,7 @@
 #include "saveData.h"
 #include "settingsBlock.h"
 #include "confirmWidget.h"
-
+#include "textureManager.h"
 #include "Cursor.h"
 
 #include "debugger.h"
@@ -32,6 +32,7 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	settingsTitle = std::make_unique<text>(this, "Settings", "biggerStraight", vector{ 0, 0 });
 	audioTitle = std::make_unique<text>(this, "  Audio:", "biggerStraight", vector{ 0, 0 });
 	graphicsTitle = std::make_unique<text>(this, "  Graphics:", "biggerStraight", vector{ 0, 0 });
+	miscTitle = std::make_unique<text>(this, "  Misc:", "biggerStraight", vector{ 0, 0 });
 
 	// padding
 	scrollBox->addChild(nullptr, 6);
@@ -138,6 +139,13 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	cursorBlock->addCallback(Cursor::toggleCursor);
 	scrollBox->addChild(cursorBlock.get(), cursorBlock->getSize().y);
 
+// Misc
+	scrollBox->addChild(miscTitle.get(), miscTitle->getSize().y + 3.f);
+
+	interpMethodBlock = std::make_unique<UsettingsBlock>(this, "Interpolation", length, std::vector<std::string>{ "Nearest", "Linear" }, &SaveData::settingsData.interpMethod);
+	interpMethodBlock->addCallback(this, &Usettings::SetInterpMethod);
+	scrollBox->addChild(interpMethodBlock.get(), interpMethodBlock->getSize().y);
+	
 	// add bottom padding
 	scrollBox->addChild(nullptr, 20);
 
@@ -253,13 +261,15 @@ bool Usettings::checkIfSettingsChanged() {
 // saves then leaves page
 void Usettings::saveConfirm() {
 	SaveSettings();
-	goBack();
+	showingConfirmationBox = false;
+	removeFromViewport();
 }
 
 // reverts then leaves page
 void Usettings::revertConfirm() {
 	RevertSettings();
-	goBack();
+	showingConfirmationBox = false;
+	removeFromViewport();
 }
 
 // cancels and returns to page
@@ -283,4 +293,15 @@ void Usettings::getAllMonitors() {
 	}
 
 	monitorBlock->UpdateValue();
+}
+
+void Usettings::SetInterpMethod() {
+	switch (SaveData::settingsData.interpMethod) {
+	case 0:
+		textureManager::SetInterpMethod(GL_NEAREST);
+		break;
+	case 1:
+		textureManager::SetInterpMethod(GL_LINEAR);
+		break;
+	}
 }

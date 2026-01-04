@@ -160,6 +160,9 @@ void Scene::finishedLoading() {
 		world::currWorld->start();
 	if (titleScreen::currTitleScreen)
 		titleScreen::currTitleScreen->start();
+
+	if (!Main::settingsWidget) // load settings widget for titleScreen
+		Main::settingsWidget = std::make_unique<Usettings>(nullptr);
 }
 
 int Scene::getWorldIndexFromName(std::string worldName) {

@@ -85,6 +85,9 @@ public:
 	// returns true if already called LoadTextures() function
 	static bool GetTexturesLoaded();
 
+	// GL_NEAREST, GL_LINEAR
+	static void SetInterpMethod(int method);
+
 private:
 	// loads in the texture from memory and adds it to a texture map
 	static textureStruct* loadTexture(std::string path, GLuint keptData);

@@ -22,11 +22,21 @@ template <typename T>
 class DeferredPtr {
 public:
 	// default constructor
-	DeferredPtr() : ptr(nullptr) {}
+	DeferredPtr() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		ptr = nullptr;
+	}
 
-	DeferredPtr(CreateDeferred<T>&& cd) noexcept : ptr(cd.ptr) { CreateNew(cd); } // not adding object here
+	DeferredPtr(CreateDeferred<T>&& cd) {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		ptr = cd.ptr;
+		CreateNew(cd);
+	}
 
-	~DeferredPtr() { if (ptr) DeferredDelete(ptr); }
+	~DeferredPtr() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (ptr) DeferredDelete(ptr);
+	}
 
 	T* operator->() const { return ptr; }
 	T& operator*() const { return *ptr; }
@@ -76,7 +86,6 @@ private:
 		instances.push_back(obj);
 	}
 
-public:
 	static std::vector<T*>& GetInstanceList() {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> instances;
@@ -87,6 +96,12 @@ public:
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> deferred;
 		return deferred;
+	}
+
+public:
+	static std::vector<T*> GetInstanceListVal() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return GetInstanceList();
 	}
 
 	static void FlushDeferred() {
@@ -109,5 +124,3 @@ public:
 		shuttingDown = true;
 	}
 };
-
-// i think im adding to the deferred list while flush is being called, could be bad?

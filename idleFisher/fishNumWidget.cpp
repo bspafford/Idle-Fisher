@@ -30,6 +30,7 @@ void UfishNumWidget::setup(FfishData* fish, FsaveFishData* saveFish, int fishQua
 		star = std::make_unique<Image>("./images/widget/tinyGoldStar.png", vector{ 0, 0 }, false);
 
 	setupText();
+	setLoc(loc);
 }
 
 void UfishNumWidget::setup(FcurrencyStruct* currency, double num) {
@@ -37,6 +38,7 @@ void UfishNumWidget::setup(FcurrencyStruct* currency, double num) {
 
 	currencyNum = num;
 	setupText();
+	setLoc(loc);
 }
 
 UfishNumWidget::~UfishNumWidget() {
@@ -65,8 +67,10 @@ void UfishNumWidget::setLoc(vector loc) {
 	if (thumbnail)
 		thumbnail->setLoc(absoluteLoc);
 	
-	if (numText && thumbnail)
-		numText->setLoc((absoluteLoc + vector{ 18.f, (thumbnail->getSize().y - numText->getSize().y) / 2.f}));
+	if (numText && thumbnail) {
+		numText->setLoc((absoluteLoc + vector{ 18.f, (thumbnail->getSize().y - numText->getSize().y) / 2.f }));
+		setSize((numText->getAbsoluteLoc() + numText->getSize()) - thumbnail->getAbsoluteLoc());
+	}
 
 	if (fishQuality != 0 && star)
 		star->setLoc((absoluteLoc + vector{ 10.f, 0.f }));

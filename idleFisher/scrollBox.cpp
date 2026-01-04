@@ -8,7 +8,8 @@ void UscrollBox::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
-	if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT) && mouseOver()) {
+	bool isMouseOver = mouseOver();
+	if (Input::getMouseButtonDown(MOUSE_BUTTON_RIGHT) && isMouseOver) {
 		scrollingActive = true;
 	} else if (Input::getMouseButtonUp(MOUSE_BUTTON_RIGHT)) {
 		scrollingActive = false;
@@ -29,7 +30,7 @@ void UscrollBox::draw(Shader* shaderProgram) {
 		}
 	}
 
-	if (!isRightMouseHeld) {
+	if (!isRightMouseHeld && isMouseOver) {
 		scrolling(Input::getMouseScrollDir());
 		setCursorHoverIcon(CURSOR_DEFAULT);
 	}

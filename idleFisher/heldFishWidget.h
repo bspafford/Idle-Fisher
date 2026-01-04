@@ -10,6 +10,7 @@
 class Shader;
 class URectangle;
 class verticalBox;
+class UscrollBox;
 
 class UheldFishWidget : public widget {
 public:
@@ -21,6 +22,8 @@ public:
 	void draw(Shader* shaderProgram);
 
 private:
+	void setupLocs() override;
+
 	// removes all fish that there are 0 of
 	std::vector<FsaveFishData> removeUnneededFish();
 	void getCurrency();
@@ -37,4 +40,6 @@ private:
 	std::unique_ptr<URectangle> line;
 
 	std::unique_ptr<verticalBox> vertBox;
+	std::unique_ptr<UscrollBox> fishScrollBox;
+	std::unique_ptr<UscrollBox> currencyScrollBox;
 };

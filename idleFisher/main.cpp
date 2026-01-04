@@ -310,7 +310,8 @@ void Main::setupWidgets() {
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
-	settingsWidget = std::make_unique<Usettings>(nullptr);
+	if (!settingsWidget)
+		settingsWidget = std::make_unique<Usettings>(nullptr);
 }
 
 void Main::draw3D(Shader* shaderProgram) {
@@ -341,11 +342,11 @@ void Main::checkInputs() {
 	if (Scene::isLoading())
 		return;
 
-	if (Input::getKeyDown(GLFW_KEY_ESCAPE) && Scene::getCurrWorldName() != "titleScreen") {
+	if (Input::getKeyDown(GLFW_KEY_ESCAPE)) {
 		//glfwSetWindowShouldClose(window, true);
 		if (widget::getCurrWidget())
 			widget::getCurrWidget()->removeFromViewport();
-		else
+		else if (Scene::getCurrWorldName() != "titleScreen")
 			pauseMenu->addToViewport(nullptr);
 	}
 
