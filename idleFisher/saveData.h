@@ -606,4 +606,6 @@ private:
     static inline float autoSaveInterval = 60.f; // in seconds
 
     static inline DeferredPtr<Timer> autoSaveTimer;
+
+    static inline bool hasLoaded = false;
 };

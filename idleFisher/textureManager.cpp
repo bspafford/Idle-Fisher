@@ -193,6 +193,7 @@ void textureManager::Deconstructor() {
 }
 
 textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	auto it = textureMap.find(path);
 	if (it != textureMap.end()) // already in map don't add again
 		return it->second.get();
@@ -205,6 +206,7 @@ textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
 }
 
 textureStruct* textureManager::getTexture(std::string name) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	if (name == "")
 		return nullptr;
 

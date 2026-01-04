@@ -41,12 +41,8 @@ public:
 	static void bindTextureToShader(Shader* shaderProgram, const char* path, const char* uniform);
 	static void bindTextureToShader(std::vector<Shader*> shaderPrograms, const char* path, const char* uniform);
 	static void deleteCache();
-	// loops through each instances, resizing them when the screen size changes, if they fill the screen
-	static void ResizeAllTextures();
 
 private:
-	static inline std::vector<Texture*> instances;
-
 	GLuint ID = 0;
 	GLuint unit = 0;
 	GLuint64 handle = 0;

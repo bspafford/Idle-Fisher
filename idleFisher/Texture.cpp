@@ -6,8 +6,6 @@
 #include "debugger.h"
 
 Texture::Texture(const char* imgPath) {
-	instances.push_back(this);
-
 	if (imgPath == "")
 		return;
 
@@ -22,22 +20,25 @@ Texture::Texture(const char* imgPath) {
 }
 
 Texture::Texture(vector size) {
-	instances.push_back(this);
-
-	if (size == vector{ 0.f, 0.f })
-		size = stuff::screenSize;
-	else
-		this->size = size;
+	this->size = size;
 
 	functionIdx = 1;
 	GPULoadCollector::add(this);
 }
 
 Texture::Texture(const char* imgPath, bool binding) {
-	instances.push_back(this);
-
 	functionIdx = 2;
 	this->imgPath = imgPath;
+
+	if (imgPath == "")
+		return;
+
+	bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
+	if (!bytes)
+		return;
+
+	size = { static_cast<float>(widthImg), static_cast<float>(heightImg) };
+
 	GPULoadCollector::add(this);
 }
 
@@ -60,16 +61,9 @@ void Texture::LoadGPU() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	} else if (functionIdx == 1) {
 		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-		glBindTexture(GL_TEXTURE_2D, ID);
-
-		vector tempSize = size;
-		if (size == vector{ 0.f, 0.f })
-			tempSize = stuff::screenSize;
-
-		glTextureStorage2D(ID, 1, GL_RGBA8, tempSize.x, tempSize.y);
+		glTextureStorage2D(ID, 1, GL_RGBA8, size.x, size.y);
 		handle = glGetTextureSamplerHandleARB(ID, textureManager::GetSamplerID());
 		glMakeTextureHandleResidentARB(handle);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	} else if (functionIdx == 2) {
 		if (usedSlots.size() == 0) {
 			GLint maxCombined;
@@ -77,15 +71,6 @@ void Texture::LoadGPU() {
 			usedSlots.resize(maxCombined, false);
 			usedSlots[0] = true;
 		}
-
-		if (imgPath == "")
-			return;
-
-		unsigned char* bytes = stbi_load(imgPath, &widthImg, &heightImg, &numColCh, 0);
-		if (!bytes)
-			return;
-
-		size = { static_cast<float>(widthImg), static_cast<float>(heightImg) };
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &ID);
 		GLuint slot = takeOpenSlot();
@@ -118,10 +103,6 @@ void Texture::LoadGPU() {
 }
 
 Texture::~Texture() {
-	auto it = std::find(instances.begin(), instances.end(), this);
-	if (it != instances.end())
-		instances.erase(it);
-
 	Unbind();
 	Delete();
 
@@ -129,6 +110,9 @@ Texture::~Texture() {
 }
 
 void Texture::Resize(vector size) {
+	if (this->size == size) // if same size, return
+		return;
+
 	this->size = size;
 
 	Delete();
@@ -198,13 +182,6 @@ void Texture::deleteCache() {
 	for (std::unique_ptr<Texture>& texture : textureCache)
 		texture->Delete();
 	textureCache.clear();
-}
-
-void Texture::ResizeAllTextures() {
-	for (Texture* texture : instances) {
-		if (texture->size == vector{ 0.f, 0.f })
-			texture->Resize(stuff::screenSize);
-	}
 }
 
 GLuint Texture::takeOpenSlot() {

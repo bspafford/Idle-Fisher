@@ -697,5 +697,5 @@ double Acharacter::GetCombo() {
 }
 
 void Acharacter::IncreaseCombo(double comboChange) {
-	comboNum = math::clamp(comboNum + comboChange, 0.0, upgrades::calcComboMax());
+	comboNum = math::clamp(comboNum + comboChange, 1.0, upgrades::calcComboMax());
 }

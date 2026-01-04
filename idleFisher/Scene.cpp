@@ -197,8 +197,6 @@ void Scene::deferredChangeWorld() {
 	hasFinishedLoading = false;
 	loadingDone = false;
 
-	//DeferredPtr<Timer>::FlushDeferred();
-
 	std::thread loader(&Scene::openLevelThread, worldName, worldChangeLoc, overrideIfInWorld);
 	loader.detach();
 }

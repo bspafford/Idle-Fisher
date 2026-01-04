@@ -1159,5 +1159,3 @@
 ./fonts/straightbolddark/straightbolddark.png
 ./fonts/straightdark/straightdark.png
 ./fonts/tall/tall.png
-
-none

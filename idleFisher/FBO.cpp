@@ -10,16 +10,15 @@ FBO::FBO(vector size, bool useWorldPos) {
 
 	// Create FBO
 	glCreateFramebuffers(1, &ID);
-	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
 	texture = std::make_unique<Texture>(size * stuff::pixelSize);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
+	glNamedFramebufferTexture(ID, GL_COLOR_ATTACHMENT0, texture->GetID(), 0);
+	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+	glNamedFramebufferDrawBuffers(ID, 1, drawBuffers);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (glCheckNamedFramebufferStatus(ID, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "FBO is incomplete!" << std::endl;
-
-	glBindFramebuffer(GL_FRAMEBUFFER, GetCurrFBO().ID);
 }
 
 FBO::~FBO() {

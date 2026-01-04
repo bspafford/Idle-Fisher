@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 #include <unordered_map>
 #include <memory>
-#include <stack>
+#include <mutex>
 
 #include "VAO.h"
 #include "VBO.h"
@@ -115,4 +115,6 @@ private:
 	static inline GLuint samplerID = -1;
 
 	static inline bool areTexturesLoaded = false;
+
+	static inline std::recursive_mutex mutex;
 };

@@ -9,6 +9,11 @@
 #include "debugger.h"
 
 void SaveData::save() {
+	// make sure the program has loaded data before saving
+	// otherwise it can cause a new save to overwrite the load
+	if (!hasLoaded)
+		return;
+
 	const auto filename = GetSaveDataPath();
 
 	long long currEpochMS = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -38,6 +43,7 @@ void SaveData::load() {
 
 	// if save file doesn't exist, make one and setup default values
 	if (!std::filesystem::exists(filename)) {
+		hasLoaded = true;
 		save();
 		return;
 	}
@@ -62,6 +68,8 @@ void SaveData::load() {
 	autoSaveTimer = CreateDeferred<Timer>();
 	autoSaveTimer->addCallback(SaveData::autoSave);
 	autoSaveTimer->start(autoSaveInterval);
+
+	hasLoaded = true;
 }
 
 void SaveData::autoSave() {

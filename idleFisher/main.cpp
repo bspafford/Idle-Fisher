@@ -246,6 +246,7 @@ int Main::createWindow() {
 #endif
 	}
 
+	// huge problem if player closes game before it loads the data
 	SaveData::save(); // when closing window
 
 	running = false;
@@ -335,7 +336,6 @@ void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 
 	widget::resizeScreen();
 	BlurBox::ResizeScreen();
-	Texture::ResizeAllTextures();
 }
 
 void Main::checkInputs() {

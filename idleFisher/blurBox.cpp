@@ -10,9 +10,9 @@ BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : wi
 
 	this->blurStrength = blurStrength;
 	
-	setLocAndSize(loc, size);
+	texture = std::make_unique<Texture>(size * stuff::pixelSize);
 
-	texture = std::make_unique<Texture>(vector{ 0, 0 });
+	setLocAndSize(loc, size);
 }
 
 BlurBox::~BlurBox() {
@@ -27,6 +27,9 @@ void BlurBox::setLoc(vector loc) {
 
 void BlurBox::setSize(vector size) {
 	__super::setSize(size);
+
+	if (texture)
+		texture->Resize(size * stuff::pixelSize);
 }
 
 void BlurBox::draw() {
@@ -38,13 +41,13 @@ void BlurBox::draw() {
 	textureManager::ForceGPUUpload();
 
 	GenerateSubTexture(texture.get());
-	textureManager::DrawImage(Scene::blurShader, loc, size, { 0, 0, 1, 1 }, useWorldPos, glm::vec4(1), texture->GetHandle());
+	textureManager::DrawImage(Scene::blurShader, loc, size, { 0.f, 0.f, 1.f, 1.f }, useWorldPos, glm::vec4(1), texture->GetHandle());
 }
 
 void BlurBox::GenerateSubTexture(Texture* texture) {
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	texture->Bind();
-	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, stuff::screenSize.x, stuff::screenSize.y);
+	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, size.x * stuff::pixelSize, size.y * stuff::pixelSize);
 	texture->Unbind();
 }
 
