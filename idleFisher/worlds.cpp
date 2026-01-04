@@ -39,6 +39,8 @@
 #include "rock.h"
 #include "rain.h"
 
+#include "background.h"
+
 #include "debugger.h"
 
 // title screen
@@ -139,10 +141,10 @@ void titleScreen::draw(Shader* shaderProgram) {
 
 	if (fishermanDock)
 		fishermanDock->draw(shaderProgram);
-	if (title)
-		title->draw(shaderProgram);
 	if (trees)
 		trees->draw(shaderProgram);
+	if (title)
+		title->draw(shaderProgram);
 	if (startButton)
 		startButton->draw(shaderProgram);
 	if (settingsButton)
@@ -155,6 +157,12 @@ void titleScreen::draw(Shader* shaderProgram) {
 
 	if (transitionBox)
 		transitionBox->draw(shaderProgram);
+
+	Background background(nullptr, "widget/background", glm::vec4(224.f / 255.f, 188.f / 255.f, 145.f / 255.f, 1.f));
+	vector temp = stuff::screenSize / (stuff::pixelSize * 2.f);
+	background.setSize(temp);
+	background.setLoc(stuff::screenSize / (stuff::pixelSize * 2.f) - temp / 2.f);
+	background.draw(shaderProgram);
 }
 
 vaultWorld::vaultWorld() {

@@ -29,7 +29,7 @@ public:
 	bool isMouseOver(bool ignoreTransparent = false);
 
 	vector getSize();
-	void setSize(vector scale);
+	void setSize(vector size);
 	std::string getPath();
 	void setImage(std::string path);
 	void setUseAlpha(bool useAlpha);

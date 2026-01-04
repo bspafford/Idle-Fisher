@@ -455,6 +455,9 @@
     <ClCompile Include="vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="background.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -828,6 +831,9 @@
     </ClInclude>
     <ClInclude Include="deferredPtr.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="background.h">
+      <Filter>Header Files\widgets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

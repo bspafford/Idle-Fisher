@@ -203,6 +203,7 @@
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="atm.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
+    <ClCompile Include="background.cpp" />
     <ClCompile Include="baitBuffs.cpp" />
     <ClCompile Include="blurBox.cpp" />
     <ClCompile Include="building.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
     <ClInclude Include="Anchor.h" />
+    <ClInclude Include="background.h" />
     <ClInclude Include="blurBox.h" />
     <ClInclude Include="CircleLoad.h" />
     <ClInclude Include="confirmWidget.h" />
