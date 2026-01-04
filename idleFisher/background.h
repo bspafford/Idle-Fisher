@@ -1,9 +1,9 @@
 #pragma once
 
 #include "widget.h"
+#include "FBO.h"
 
 class URectangle;
-class FBO;
 
 class Background : public widget {
 public:

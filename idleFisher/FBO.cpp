@@ -4,6 +4,8 @@
 #include "ShaderClass.h"
 #include "Texture.h"
 #include "ScissorTest.h"
+#include "camera.h"
+#include "Scene.h"
 
 FBO::FBO(vector size, bool useWorldPos) {
 	this->size = size;
@@ -31,6 +33,9 @@ void FBO::Draw(Shader* shader, const vector& position, const Rect& source, const
 }
 
 void FBO::ResizeTexture(vector size) {
+	if (this->size == size)
+		return; // already that size
+
 	this->size = size;
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
@@ -64,6 +69,10 @@ void FBO::Bind(glm::vec4 clearColor) {
 
 	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	// set projection
+	Scene::twoDShader->Activate();
+	Scene::twoDShader->setMat4("projection", GetMainCamera()->getProjectionMat(size * stuff::pixelSize));
 }
 
 void FBO::Unbind() {
@@ -80,6 +89,10 @@ void FBO::Unbind() {
 
 	Rect scissorRect = ScissorTest::GetCurrRect();
 	glScissor(scissorRect.x * stuff::pixelSize, scissorRect.y * stuff::pixelSize, scissorRect.w * stuff::pixelSize, scissorRect.h * stuff::pixelSize);
+
+	// set back projection
+	Scene::twoDShader->Activate();
+	Scene::twoDShader->setMat4("projection", GetMainCamera()->getProjectionMat());
 }
 
 FBOData FBO::GetCurrFBO() {

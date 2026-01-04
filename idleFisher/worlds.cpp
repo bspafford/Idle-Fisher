@@ -159,9 +159,9 @@ void titleScreen::draw(Shader* shaderProgram) {
 		transitionBox->draw(shaderProgram);
 
 	Background background(nullptr, "widget/background", glm::vec4(224.f / 255.f, 188.f / 255.f, 145.f / 255.f, 1.f));
-	vector temp = stuff::screenSize / (stuff::pixelSize * 2.f);
-	background.setSize(temp);
-	background.setLoc(stuff::screenSize / (stuff::pixelSize * 2.f) - temp / 2.f);
+	vector halfScreen = stuff::screenSize / (stuff::pixelSize * 2.f);
+	background.setSize(halfScreen);
+	background.setLoc(halfScreen - halfScreen / 2.f);
 	background.draw(shaderProgram);
 }
 

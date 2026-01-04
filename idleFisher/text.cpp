@@ -281,9 +281,6 @@ void text::makeTextTexture() {
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
 	fbo->Bind();
 	
-	Scene::twoDShader->Activate();
-	Scene::twoDShader->setMat4("projection", Camera::getProjectionMat(fboSize * stuff::pixelSize));
-
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
@@ -293,11 +290,7 @@ void text::makeTextTexture() {
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight
 			letters[i]->draw(Scene::twoDShader);
 		}
-	// Unbind FBO
 	fbo->Unbind();
-
-	// restores projection
-	Scene::twoDShader->setMat4("projection", Camera::getProjectionMat());
 
 	setLoc(loc);
 	
