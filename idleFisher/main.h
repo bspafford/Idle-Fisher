@@ -31,8 +31,8 @@
 #include "fishUnlocked.h"
 #include "UIWidget.h"
 #include "idleProfitWidget.h"
-#include "comboOvertimeWidget.h"
 #include "newRecordWidget.h"
+#include "settings.h"
 
 class widget;
 class achievement;
@@ -68,6 +68,8 @@ public:
 	static inline std::unique_ptr<UUIWidget> UIWidget;
 	static inline std::unique_ptr<UidleProfitWidget> idleProfitWidget;
 	static inline std::unique_ptr<UnewRecordWidget> newRecordWidget;
+	static inline std::unique_ptr<Usettings> settingsWidget;
+
 
 	static void rebirth();
 	static double calcRebirthCurrency();

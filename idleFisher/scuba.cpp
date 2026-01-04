@@ -15,5 +15,5 @@ Ascuba::Ascuba(vector loc) : npc(loc) {
 void Ascuba::click() {
 	*discovered = true;
 
-	rebirthWidget->addToViewport(true);
+	rebirthWidget->addToViewport(nullptr);
 }

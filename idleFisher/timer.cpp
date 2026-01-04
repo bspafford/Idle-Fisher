@@ -7,11 +7,6 @@
 
 #include "debugger.h"
 
-Timer::Timer() {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
-
-}
-
 Timer::~Timer() {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -28,6 +23,7 @@ void Timer::callUpdate(float deltaTime) {
 }
 
 void Timer::setFps(float fps) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	maxTime = fps;
 }
 
@@ -51,26 +47,32 @@ void Timer::Update(float deltaTime) {
 }
 
 float Timer::getTime() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	return time;
 }
 
 float Timer::getMaxTime() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	return maxTime;
 }
 
 float Timer::getPercent() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	return time / maxTime;
 }
 
 bool Timer::IsFinished() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	return bFinished;
 }
 
 bool Timer::IsGoing() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	return bGoing;
 }
 
 void Timer::start(float maxTime) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	bGoing = true;
 	bFinished = false;
 
@@ -79,10 +81,12 @@ void Timer::start(float maxTime) {
 }
 
 void Timer::stop() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	bGoing = false;
 	time = 0;
 }
 
 void Timer::shouldntDelete(bool dontDelete) {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 	this->dontDelete = dontDelete;
 }

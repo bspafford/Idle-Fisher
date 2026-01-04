@@ -299,6 +299,7 @@ void Main::setupWidgets() {
 	pauseMenu = std::make_unique<UpauseMenu>(nullptr);
 	fishComboWidget = std::make_unique<UfishComboWidget>(nullptr);
 	heldFishWidget = std::make_unique<UheldFishWidget>(nullptr);
+	heldFishWidget->setLoc({ 5.f, 0.f });
 	heldFishWidget->updateList();
 	currencyWidget = std::make_unique<UcurrencyWidget>(nullptr);
 	currencyWidget->updateList();
@@ -309,6 +310,7 @@ void Main::setupWidgets() {
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
+	settingsWidget = std::make_unique<Usettings>(nullptr);
 }
 
 void Main::draw3D(Shader* shaderProgram) {
@@ -318,9 +320,6 @@ void Main::draw3D(Shader* shaderProgram) {
 void Main::draw(Shader* shaderProgram) {
 	shaderProgram->Activate();
 	Scene::draw(shaderProgram);
-
-	if (widget::getCurrWidget())
-		widget::getCurrWidget()->draw(shaderProgram);
 
 	if (fishUnlocked)
 		fishUnlocked->draw(shaderProgram);
@@ -344,20 +343,17 @@ void Main::checkInputs() {
 
 	if (Input::getKeyDown(GLFW_KEY_ESCAPE) && Scene::getCurrWorldName() != "titleScreen") {
 		//glfwSetWindowShouldClose(window, true);
-		if (widget::getCurrWidget()) {
-			if (widget::getCurrWidget()->getParent())
-				widget::getCurrWidget()->getParent()->addToViewport(true);
-			else
-				widget::getCurrWidget()->removeFromViewport();
-		} else
-			pauseMenu->addToViewport(true);
+		if (widget::getCurrWidget())
+			widget::getCurrWidget()->removeFromViewport();
+		else
+			pauseMenu->addToViewport(nullptr);
 	}
 
 	std::string currWorldName = Scene::getCurrWorldName();
 	if (Input::getKeyDown(GLFW_KEY_C) && currWorldName != "titleScreen")
-		achievementWidget->addToViewport(true);
+		achievementWidget->addToViewport(nullptr);
 	if (Input::getKeyDown(GLFW_KEY_V) && currWorldName != "titleScreen")
-		journal->addToViewport(true);
+		journal->addToViewport(nullptr);
 
 
 #ifdef _DEBUG // only for debug testing
@@ -560,7 +556,7 @@ int Main::GetFPSLimit() {
 
 void Main::monitorCallback(GLFWmonitor* monitor, int event) {
 	if (event == GLFW_CONNECTED || event == GLFW_DISCONNECTED)
-		pauseMenu->GetSettingsWidget()->getAllMonitors();
+		settingsWidget->getAllMonitors();
 }
 
 bool Main::IsRunning() {

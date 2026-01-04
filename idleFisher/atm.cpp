@@ -25,8 +25,7 @@ Aatm::~Aatm() {
 
 void Aatm::click() {
 	*discovered = true;
-
-	currencyConverterWidget->addToViewport(true);
+	currencyConverterWidget->addToViewport(nullptr);
 }
 
 void Aatm::draw(Shader* shaderProgram) {

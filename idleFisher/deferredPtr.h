@@ -78,11 +78,13 @@ private:
 
 public:
 	static std::vector<T*>& GetInstanceList() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> instances;
 		return instances;
 	}
 
 	static std::vector<T*>& GetDeferredList() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> deferred;
 		return deferred;
 	}
@@ -103,6 +105,7 @@ public:
 
 	// When program starts to close
 	static void BeginShutdown() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		shuttingDown = true;
 	}
 };

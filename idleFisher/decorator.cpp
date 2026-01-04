@@ -12,5 +12,5 @@ Adecorator::Adecorator(vector loc) : npc(loc) {
 }
 
 void Adecorator::click() {
-	decoratorWidget->addToViewport(true);
+	decoratorWidget->addToViewport(nullptr);
 }

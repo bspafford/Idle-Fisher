@@ -74,12 +74,12 @@ void AStar::drawBoard(Shader* shaderProgram) {
 				color = glm::vec4(0, 255, 255, 50);
 			else
 				color = glm::vec4(255, 0, 0, 50);
-			URectangle rect(loc, vector{ 1, 1 } * nodeSize * stuff::pixelSize, true, color);
+			URectangle rect(nullptr, loc, vector{ 1, 1 } * nodeSize * stuff::pixelSize, true, color);
 			rect.draw(shaderProgram);
 		}
 	}
 
-	URectangle rect(targetPos, vector{ 3, 3 }, true);
+	URectangle rect(nullptr, targetPos, vector{ 3, 3 }, true);
 	rect.draw(shaderProgram);
 }
 

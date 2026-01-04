@@ -30,7 +30,7 @@ Path::~Path() {
 void Path::draw(Shader* shaderProgram) {
 	for (vector p : lookPoints) {
 		vector loc = math::worldToScreen(p);
-		URectangle rect(loc, { 4, 4 }, true);
+		URectangle rect(nullptr, loc, { 4, 4 }, true);
 		rect.draw(shaderProgram);
 	}
 }

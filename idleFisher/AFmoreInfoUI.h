@@ -13,10 +13,7 @@ public:
 
 	void draw(Shader* shaderProgram) override;
 
-	void openUI();
-	void closeUI();
-
-	void addToViewport(bool override) override;
+	void addToViewport(widget* parent) override;
 
 	void updateUI();
 

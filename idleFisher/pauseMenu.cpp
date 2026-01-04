@@ -6,13 +6,13 @@
 #include "button.h"
 #include "text.h"
 #include "verticalBox.h"
-#include "settings.h"
 #include "blurBox.h"
+#include "Rectangle.h"
 
 #include "debugger.h"
 
 UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
-	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
+	rect = std::make_unique<URectangle>(this, vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.1f));
 	blurBox = std::make_unique<BlurBox>(this, vector{ 0, 0 }, stuff::screenSize / stuff::pixelSize, 4);
 	pauseText = std::make_unique<Image>("./images/widget/pauseMenu/pause.png", vector{ 3, -3 } * stuff::pixelSize, false);
 	pauseText->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
@@ -23,8 +23,6 @@ UpauseMenu::UpauseMenu(widget* parent) : widget(parent) {
 	exitToMenuButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitToMenu.png", 93, 20, 1, vector{ 0, 0 }, false, false);
 	exitToDesktopButton = std::make_unique<Ubutton>(this, "widget/pauseMenu/exitGame.png", 74, 20, 1, vector{ 0, 0 }, false, false);
 	
-	settingsWidget = std::make_unique<Usettings>(nullptr);
-
 	vertBox = std::make_unique<verticalBox>(this);
 	vertBox->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
 	vertBox->SetPivot({ 0, 1 });
@@ -84,7 +82,7 @@ void UpauseMenu::saveGame() {
 }
 
 void UpauseMenu::settings() {
-	settingsWidget->addToViewport(true);
+	Main::settingsWidget->addToViewport(this);
 }
 
 void UpauseMenu::exitToMenu() {
@@ -95,8 +93,4 @@ void UpauseMenu::exitToMenu() {
 void UpauseMenu::exitToDesktop() {
 	SaveData::save(); // save on quit
 	glfwSetWindowShouldClose(Main::GetWindow(), true);
-}
-
-Usettings* UpauseMenu::GetSettingsWidget() {
-	return settingsWidget.get();
 }

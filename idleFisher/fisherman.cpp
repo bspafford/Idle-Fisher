@@ -19,5 +19,5 @@ Afisherman::~Afisherman() {
 void Afisherman::click() {
 	// set save data discovered to true
 	*discovered = true;
-	fishermanWidget->addToViewport(true);
+	fishermanWidget->addToViewport(nullptr);
 }

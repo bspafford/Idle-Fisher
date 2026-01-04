@@ -4,6 +4,7 @@
 #include "Hoverable.h"
 
 class text;
+class URectangle;
 
 class Uslider : public widget, public IHoverable {
 public:

@@ -215,20 +215,10 @@ void Usettings::removeFromViewport() {
 	}
 
 	__super::removeFromViewport();
-
-	goBack();
 }
 
 void Usettings::goBack() {
-	if (checkIfSettingsChanged()) {
-		showingConfirmationBox = true;
-		return;
-	}
-
-	RevertSettings();
-
-	// go back to the pause screen
-	Main::pauseMenu->addToViewport(true);
+	removeFromViewport();
 }
 
 void Usettings::setupLocs() {

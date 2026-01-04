@@ -10,7 +10,7 @@
 
 class Timer {
 private:
-	Timer();
+	Timer() {}
 	friend class CreateDeferred<Timer>; // forces Timer to be created by deferredPtr cause Timer constructor is private
 
 public:

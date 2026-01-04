@@ -4,10 +4,6 @@
 
 #include "debugger.h"
 
-verticalBox::verticalBox(widget* parent) : widget(parent) {
-
-}
-
 void verticalBox::draw(Shader* shaderProgram) {
 	for (vertChildComp comp : childrenList) {
 		if (comp.child)
@@ -32,6 +28,12 @@ void verticalBox::removeChild(int index) {
 	overflowSizeY -= childrenList[index].widgetHeight;
 	childrenList.erase(childrenList.begin() + index);
 }
+
+void verticalBox::RemoveAllChildren() {
+	overflowSizeY = 0.f;
+	childrenList.clear();
+}
+
 
 float verticalBox::getOverflowSize() {
 	return std::abs(overflowSizeY);

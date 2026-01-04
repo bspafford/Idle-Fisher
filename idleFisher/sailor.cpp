@@ -18,5 +18,5 @@ Asailor::~Asailor() {
 void Asailor::click() {
 	*discovered = true;
 
-	sailorWidget->addToViewport(true);
+	sailorWidget->addToViewport(nullptr);
 }

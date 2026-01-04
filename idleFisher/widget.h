@@ -5,8 +5,6 @@
 #include "math.h"
 #include "shaderClass.h"
 #include "Image.h"
-#include "stuff.h"
-#include "Rectangle.h"
 
 class widget {
 protected:
@@ -37,7 +35,8 @@ protected:
 public:
 	virtual void draw(Shader* shaderProgram);
 
-	virtual void addToViewport(bool override = false);
+	// parent: which widget added the viewport to the screen
+	virtual void addToViewport(widget* parent);
 
 	bool isVisible();
 	void setVisibility(bool visible);
@@ -68,9 +67,12 @@ public:
 	// returns root parent variable
 	widget* getRootParent();
 	void updateAllChildrensRootParent(widget* curr, widget* newRootParent);
+
 private:
 	widget* parent = nullptr;
 	widget* rootParent = nullptr;
+	// which widget added me to the viewport
+	widget* viewportParent = nullptr;
 	// calculates the root parent from this objects position
 	widget* recalcRootParent();
 	void setRootParent(widget* rootParent);

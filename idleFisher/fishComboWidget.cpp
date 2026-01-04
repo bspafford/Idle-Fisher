@@ -1,12 +1,9 @@
 #include "fishComboWidget.h"
 
-#include "stuff.h"
 #include "main.h"
 #include "character.h"
 #include "upgrades.h"
-#include "petBuffs.h"
-#include "baitBuffs.h"
-
+#include "Rectangle.h"
 #include "shake.h"
 
 #include "debugger.h"
@@ -22,10 +19,10 @@ UfishComboWidget::UfishComboWidget(widget* parent) : widget(parent) {
 	fishImg->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishImg->SetPivot(vector{ 0.5f, 0.5f });
 
-	greenRect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.4510, 1.0, 0.0, 1.0));
+	greenRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.4510, 1.0, 0.0, 1.0));
 	greenRect->SetPivot({ 0.5f, 0.f });
-	yellowRect = std::make_unique<URectangle>(vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.8863, 1.0, 0.0, 1.0));
-	backgroundRect = std::make_unique<URectangle>(vector{ 0, 0 }, fishComboBorderImg->getSize() - 10.f, false, glm::vec4(0.3608, 0.4980, 0.6000, 1.0));
+	yellowRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.8863, 1.0, 0.0, 1.0));
+	backgroundRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, fishComboBorderImg->getSize() - 10.f, false, glm::vec4(0.3608, 0.4980, 0.6000, 1.0));
 
 	shake = std::make_unique<Eshake>(0);
 }

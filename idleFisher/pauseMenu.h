@@ -8,14 +8,13 @@ class text;
 class verticalBox;
 class Usettings;
 class BlurBox;
+class URectangle;
 
 class UpauseMenu : public widget {
 public:
 	UpauseMenu(widget* parent);
 	~UpauseMenu();
 	void draw(Shader* shaderProgram);
-
-	Usettings* GetSettingsWidget();
 
 private:
 	void setupLocs() override;
@@ -35,6 +34,4 @@ private:
 	std::unique_ptr<Ubutton> exitToMenuButton;
 	std::unique_ptr<Ubutton> exitToDesktopButton;
 	std::unique_ptr<verticalBox> vertBox;
-
-	std::unique_ptr<Usettings> settingsWidget;
 };

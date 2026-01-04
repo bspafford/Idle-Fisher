@@ -80,7 +80,7 @@ void npc::setLoc(vector loc) {
 }
 
 void npc::click() {
-	widget->addToViewport(true);
+	widget->addToViewport(nullptr);
 }
 
 bool npc::isDiscovered() {

@@ -14,5 +14,5 @@ AfishGod::AfishGod(vector loc) : npc(loc) {
 }
 
 void AfishGod::click() {
-	rebirthWidget->addToViewport(true);
+	rebirthWidget->addToViewport(nullptr);
 }

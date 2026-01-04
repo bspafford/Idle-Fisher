@@ -8,8 +8,8 @@ UprogressBar::UprogressBar(widget* parent, vector size, bool useWorldLoc, Progre
 	this->dir = dir;
 	this->reverse = reverse;
 
-	foregrounds.push_back(std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc, glm::vec4(1.f)));
-	background = std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc, glm::vec4(0.f, 0.f, 0.f, 1.f));
+	foregrounds.push_back(std::make_unique<URectangle>(this, absoluteLoc, size, useWorldLoc, glm::vec4(1.f)));
+	background = std::make_unique<URectangle>(this, absoluteLoc, size, useWorldLoc, glm::vec4(0.f, 0.f, 0.f, 1.f));
 }
 
 void UprogressBar::draw(Shader* shaderProgram) {
@@ -67,7 +67,7 @@ void UprogressBar::addProgressBar(float percent, float weight, glm::vec4 color) 
 	foregrounds.resize(this->percent.size());
 	for (auto &foreground : foregrounds)
 		if (!foreground)
-			foreground = std::make_unique<URectangle>(absoluteLoc, size, useWorldLoc);
+			foreground = std::make_unique<URectangle>(this, absoluteLoc, size, useWorldLoc);
 	foregrounds[foregrounds.size() - 1]->setColor(color);
 }
 

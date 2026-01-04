@@ -28,7 +28,7 @@ AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(par
 
 	closeButton = std::make_unique<Ubutton>(this, "autoFisher/moreUI/xButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
-	closeButton->addCallback(this, &AFmoreInfoUI::closeUI);
+	closeButton->addCallback(static_cast<widget*>(this), &widget::removeFromViewport);
 
 	fpsText = std::make_unique<text>(this, shortNumbers::convert2Short(autoFisher->calcFPS()), "afScreen", vector{ 0, 0 });
 
@@ -91,14 +91,7 @@ void AFmoreInfoUI::updateUI() {
 	fullnessBar->setImage("./images/autoFisher/moreUI/fullness/fullness" + std::to_string(fullnessPercent + 1) + ".png");
 }
 
-// kinda like a call back function
-void AFmoreInfoUI::addToViewport(bool override) {
-	__super::addToViewport(override);
-
+void AFmoreInfoUI::addToViewport(widget* parent) {
+	__super::addToViewport(parent);
 	updateUI();
-}
-
-void AFmoreInfoUI::closeUI() {
-	// because when the button disapears it doesn't remove hover num
-	removeFromViewport();
 }

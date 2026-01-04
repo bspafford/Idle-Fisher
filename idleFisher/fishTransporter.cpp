@@ -273,7 +273,7 @@ void AfishTransporter::finishCollectTimer() {
 }
 
 void AfishTransporter::collectTimerUpdate() {
-	progressBar->setPercent(collectTimer->getTime() / collectTimer->getMaxTime());
+	progressBar->setPercent(collectTimer->getPercent());
 }
 
 float AfishTransporter::calcCollectTimer(AautoFisher* autoFisher, bool getMaxTime) {

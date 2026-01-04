@@ -18,5 +18,5 @@ Amechanic::~Amechanic() {
 
 void Amechanic::click() {
 	*discovered = true;
-	mechanicWidget->addToViewport(true);
+	mechanicWidget->addToViewport(nullptr);
 }

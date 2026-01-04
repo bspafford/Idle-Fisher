@@ -1,4 +1,5 @@
 #include "confirmWidget.h"
+#include "Rectangle.h"
 
 ConfirmWidget::ConfirmWidget(widget* parent) : widget(parent) {
 	backgroundImage = std::make_unique<Image>("./images/widget/confirmBox.png", vector{ 0, 0 }, false);
@@ -15,7 +16,7 @@ ConfirmWidget::ConfirmWidget(widget* parent) : widget(parent) {
 	cancelButtonText = std::make_unique<text>(this, "Cancel", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	cancelButtonText->SetPivot({ 0.f, 0.5f });
 
-	rect = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.333f));
+	rect = std::make_unique<URectangle>(this, vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 0.333f));
 	rect->setBlockCursor(true);
 
 	setLoc(loc);

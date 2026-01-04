@@ -11,13 +11,14 @@ struct vertChildComp {
 
 class verticalBox : public widget {
 public:
-	verticalBox(widget* parent);
+	verticalBox(widget* parent) : widget(parent) {}
 
 	virtual void draw(Shader* shaderProgram) override;
 
 	void addChild(widget* child, float widgetHeight);
 	void removeChild(widget* child);
 	void removeChild(int index);
+	void RemoveAllChildren();
 	float getOverflowSize();
 	void changeChildHeight(widget* child, float newHeight);
 

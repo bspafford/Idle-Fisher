@@ -82,7 +82,7 @@ titleScreen::titleScreen() {
 	exitButton = std::make_unique<Ubutton>(nullptr, "widget/pauseMenu/exit.png", 37, 20, 1, vector{ 45.f, 120.f }, false, false);
 	exitButton->addCallback(this, &titleScreen::exit);
 
-	transitionBox = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));
+	transitionBox = std::make_unique<URectangle>(nullptr, vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0.f));
 
 	fadeTimer = CreateDeferred<Timer>();
 }
@@ -116,6 +116,7 @@ void titleScreen::startGame() {
 
 void titleScreen::showSettings() {
 	// show settings menu
+
 }
 
 void titleScreen::fadeToBlack() {
@@ -150,9 +151,11 @@ void titleScreen::draw(Shader* shaderProgram) {
 	if (exitButton)
 		exitButton->draw(shaderProgram);
 
+	if (widget::getCurrWidget())
+		widget::getCurrWidget()->draw(shaderProgram);
+
 	if (transitionBox)
 		transitionBox->draw(shaderProgram);
-	std::cout << "transitionbox alpha:" << alpha << "\n";
 }
 
 vaultWorld::vaultWorld() {
@@ -360,7 +363,7 @@ void world::start() {
 	// load idle profits
 	loadIdleProfits();
 	if (autoFisherList.size() > 0 && SaveData::saveData.mechanicStruct[0].unlocked) { // if has atleast 1 autofisher and has fish transporter
-		Main::idleProfitWidget->addToViewport(true);
+		Main::idleProfitWidget->addToViewport(nullptr);
 	}
 
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
@@ -465,6 +468,9 @@ void world::draw(Shader* shaderProgram) {
 	//}
 
 	Main::drawWidgets(shaderProgram);
+
+	if (widget::getCurrWidget())
+		widget::getCurrWidget()->draw(shaderProgram);
 
 	circleAnim->draw();
 }

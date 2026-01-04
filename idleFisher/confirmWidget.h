@@ -4,6 +4,8 @@
 #include "text.h"
 #include "button.h"
 
+class URectangle;
+
 class ConfirmWidget : public widget {
 public:
 	ConfirmWidget(widget* parent);

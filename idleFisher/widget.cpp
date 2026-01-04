@@ -29,32 +29,33 @@ widget::~widget() {
 	instances.erase(this);
 }
 
-void widget::addToViewport(bool override) {
-	if (override) {
-		if (currWidget && currWidget != this)
-			currWidget->removeFromViewport();
-		
-		addedToViewport();
+void widget::addToViewport(widget* parent) {
+	viewportParent = parent;
 
-		currWidget = this;
+	if (currWidget && currWidget != this)
+		currWidget->removeFromViewport();
 		
-		GetCharacter()->setCanMove(false);
-	}
+	addedToViewport();
+
+	currWidget = this;
+		
+	GetCharacter()->setCanMove(false);
 
 	visible = true;
 }
 
 void widget::removeFromViewport() {
-	if (currWidget == this) {
-		// keep widget in memory until change the world
-		// then once change the world load all the widgets of that world back into memory during the loading
-		//delete Main::currWidget; // removes widget from memory
+	if (currWidget == this)
 		currWidget = nullptr;
-	}
-
-	GetCharacter()->setCanMove(true);
 
 	visible = false;
+
+	// when closing widget, go back to previous one, if there is one
+	if (viewportParent) {
+		viewportParent->addToViewport(nullptr);
+		viewportParent = nullptr;
+	} else
+		GetCharacter()->setCanMove(true);
 }
 
 void widget::draw(Shader* shaderProgram) {

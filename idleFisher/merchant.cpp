@@ -18,5 +18,5 @@ Amerchant::~Amerchant() {
 
 void Amerchant::click() {
 	*discovered = true;
-	merchantWidget->addToViewport(true);
+	merchantWidget->addToViewport(nullptr);
 }

@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Cursor.h"
 #include "shaderClass.h"
+#include "Rectangle.h"
 #include "worlds.h"
 #include "AautoFisher.h"
 #include "sounds.h"
@@ -655,7 +656,7 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	vector max = vector::max(start, end);
 	vector size = max - min;
 
-	URectangle* rectangle = new URectangle(min, size, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
+	URectangle* rectangle = new URectangle(nullptr, min, size, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
 	Scene::fishingLineShader->Activate();
 
 	Scene::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));

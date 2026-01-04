@@ -144,7 +144,7 @@ void autoFisherUI::updateUI() {
 }
 
 void autoFisherUI::openMenu() {
-	autoFisher->afMoreInfoUI->addToViewport(true);
+	autoFisher->afMoreInfoUI->addToViewport(nullptr);
 }
 
 void autoFisherUI::openUI() {

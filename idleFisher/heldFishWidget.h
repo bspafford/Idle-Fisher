@@ -9,16 +9,18 @@
 
 class Shader;
 class URectangle;
+class verticalBox;
 
 class UheldFishWidget : public widget {
 public:
 	UheldFishWidget(widget* parent);
-	~UheldFishWidget();
 
 	// if fishList is empty it will use SaveData::data.fishData
 	void updateList(std::vector<FsaveFishData> saveFishList = std::vector<FsaveFishData>(0));
 
 	void draw(Shader* shaderProgram);
+
+private:
 	// removes all fish that there are 0 of
 	std::vector<FsaveFishData> removeUnneededFish();
 	void getCurrency();
@@ -33,4 +35,6 @@ public:
 	double numOwned = 0;
 
 	std::unique_ptr<URectangle> line;
+
+	std::unique_ptr<verticalBox> vertBox;
 };

@@ -55,7 +55,7 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 	}
 
 	// draw background
-	std::unique_ptr<URectangle> background = std::make_unique<URectangle>(vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 1));
+	std::unique_ptr<URectangle> background = std::make_unique<URectangle>(this, vector{ 0, 0 }, stuff::screenSize, false, glm::vec4(0, 0, 0, 1));
 	background->draw(shaderProgram);
 
 	int mouseOverRebirth = -1;
