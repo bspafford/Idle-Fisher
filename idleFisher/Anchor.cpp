@@ -1,7 +1,8 @@
 #include "Anchor.h"
 
 vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, Anchor xAnchor, Anchor yAnchor) {
-	 vector pivotLoc = size * pivot;
+	loc = loc.ToPixel();
+	 vector pivotLoc = (size * pivot).floor();
 	 if (useWorldPos) {
 		 return (loc - pivotLoc).ToPixel();
 	 } else {

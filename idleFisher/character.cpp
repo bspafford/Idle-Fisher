@@ -88,8 +88,6 @@ Acharacter::Acharacter() {
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
 	anim->start();
 
-	fishingTimer = CreateDeferred<Timer>();
-	fishingTimer->addCallback(this, &Acharacter::fishing);
 	bobberCatchTimer = CreateDeferred<Timer>();
 	bobberCatchTimer->addCallback(this, &Acharacter::bobberCatchAnim);
 	bobberCatchTimer->addUpdateCallback(this, &Acharacter::bobberCatchAnim);
@@ -266,53 +264,13 @@ void Acharacter::leftClick() {
 		return;
 
 	// puts bobber in water
-	if (Cursor::getMouseOverWater() && !IHoverable::getHoveredItem() && SaveData::saveData.fishingRod.powerLevel > 0 && !isFishing) {
-		fishingStop = true;
-
-		comboOvertimeWidget->Refill();
-
-		isFishing = true;
-		canMove = false;
-		bobberLoc = math::screenToWorld(Input::getMousePos());
-		tempBobberLoc = bobberLoc;
-
-		bobberBobTimer->start(bobTime);
-
-		// check if fishing rod is inside a fishSchool or not!
-		calcFishSchoolUpgrades();
-
-		// give upgrades
-			// decrease fish time
-			// increase catch num?
-
-		catchTimer = math::randRange(upgrades::calcMinFishingInterval(), upgrades::calcMaxFishingInterval());
-		// catchTimerGoing = true;
-		fishingTimer->start(catchTimer);
-
-		// face the character the correct direction
-		// start fishing animation
-		vector fishRodPoint = stuff::screenSize / (stuff::pixelSize * 2.f);
-		vector diff = math::normalize(bobberLoc - fishRodPoint);
-		float angle = atan2(diff.y, diff.x) * 180.f / M_PI;
-		int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3.5f);
-
-		// set fishing anim
-		//if (anim->animList != idleAnimWheel[y])
-		showFishingLine = false;
-
-		if (anim->GetCurrAnim().find("cast") == std::string::npos) { // if not cast animation, from any direction
-			anim->setAnimation("castSE", true);
-			anim->start();
-			fishingRod->setAnimation("castSE", true);
-			fishingRod->start();
-		}
-		//anim->setAnimation(idleAnimWheel[y], -1, true);
-
+	if (Cursor::getMouseOverWater() && SaveData::saveData.fishingRod.powerLevel > 0 && !isFishing) {
+		Input::setLeftClick(this, &Acharacter::StartFishing, false);
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->isVisible()) {
 		// catch fish
 		if (upgrades::IsComboUnlocked()) {
-			int combo = Main::fishComboWidget->click(Acharacter::isFishing);
+			int combo = Main::fishComboWidget->getCombo();
 			switch (combo) {
 			case 0:
 				if (!baitBuffs::chanceToKeepCombo()) // reset combo if false
@@ -325,10 +283,8 @@ void Acharacter::leftClick() {
 			}
 
 			Main::comboWidget->showComboText();
-			Main::comboWidget->spawnComboNumber(comboNum);
+			Main::comboWidget->spawnComboNumber();
 		}
-
-		Main::fishComboWidget->setVisibility(false);
 
 		// set animation
 		anim->setAnimation("pullSE", true);
@@ -375,9 +331,7 @@ void Acharacter::leftClick() {
 		calcFishSchoolUpgrades();
 
 		// start up fishing again
-		catchTimer = math::randRange(upgrades::calcMinFishingInterval(), upgrades::calcMaxFishingInterval());
-		// catchTimerGoing = true;
-		fishingTimer->start(catchTimer);
+		fishing();
 
 		// set fish image
 		fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, true);
@@ -398,14 +352,12 @@ void Acharacter::fishing() {
 	// Show bobber combo
 	currFish = calcFish(currFishQuality, currFishSize);
 
-	Main::fishComboWidget->Start(currFish, currFishQuality);
+	Main::fishComboWidget->SetFish(currFish, currFishQuality);
 
 	anim->setAnimation("transitionSE", true);
 	anim->start();
 	fishingRod->setAnimation("transitionSE", true);
 	fishingRod->start();
-	
-	fishingTimer->stop();
 }
 
 FfishData Acharacter::calcFish(int& quality, int& fishSize) {
@@ -477,14 +429,53 @@ std::vector<std::pair<int, double>> Acharacter::calcFishProbability(std::vector<
 	return probList;
 }
 
+void Acharacter::StartFishing() {
+	fishingStop = true;
+
+	comboOvertimeWidget->Refill();
+
+	isFishing = true;
+	canMove = false;
+	bobberLoc = math::screenToWorld(Input::getMousePos());
+	tempBobberLoc = bobberLoc;
+
+	bobberBobTimer->start(bobTime);
+
+	// check if fishing rod is inside a fishSchool or not!
+	calcFishSchoolUpgrades();
+
+	// give upgrades
+		// decrease fish time
+		// increase catch num?
+
+	Main::fishComboWidget->Start();
+
+	fishing();
+
+	// face the character the correct direction
+	// start fishing animation
+	vector fishRodPoint = stuff::screenSize / (stuff::pixelSize * 2.f);
+	vector diff = math::normalize(bobberLoc - fishRodPoint);
+	float angle = atan2(diff.y, diff.x) * 180.f / M_PI;
+	int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3.5f);
+
+	// set fishing anim
+	//if (anim->animList != idleAnimWheel[y])
+	showFishingLine = false;
+
+	if (anim->GetCurrAnim().find("cast") == std::string::npos) { // if not cast animation, from any direction
+		anim->setAnimation("castSE", true);
+		anim->start();
+		fishingRod->setAnimation("castSE", true);
+		fishingRod->start();
+	}
+	//anim->setAnimation(idleAnimWheel[y], -1, true);
+}
+
 void Acharacter::stopFishing() {
 	setCanMove(true);
 
-	fishingTimer->stop();
-
-	Main::fishComboWidget->fishLoc = 0;
-	Main::fishComboWidget->setVisibility(false);
-	Main::fishComboWidget->fishMoveBack = false;
+	Main::fishComboWidget->Stop();
 
 	isFishing = false;
 

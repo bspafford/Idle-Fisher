@@ -28,6 +28,7 @@ public:
 
 	void leftClick();
 	void fishing();
+	void StartFishing();
 	void stopFishing();
 
 	void setCanMove(bool move);
@@ -79,7 +80,6 @@ public:
 
 	float catchTimer = 0;
 
-	DeferredPtr<Timer> fishingTimer;
 	DeferredPtr<Timer> bobberCatchTimer;
 	DeferredPtr<Timer> bobberBobTimer;
 	float bobTime = 1.5;

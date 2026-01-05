@@ -1149,6 +1149,14 @@
 ./images/worlds/world8/map1.png
 ./images/worlds/world9/map1.png
 ./images/widget/idleprofitbackground.png
+./images/widget/background/edgetop.png
+./images/widget/background/cornertopleft.png
+./images/widget/background/edgeright.png
+./images/widget/background/cornertopright.png
+./images/widget/background/edgebottom.png
+./images/widget/background/cornerbottomright.png
+./images/widget/background/edgeleft.png
+./images/widget/background/cornerbottomleft.png
 ./fonts/afscreen/afscreen.png
 ./fonts/biggerstraight/biggerstraight.png
 ./fonts/biggerstraightdark/biggerstraightdark.png

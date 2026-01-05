@@ -41,8 +41,14 @@ public:
 	static int getMouseScrollDir();
 	static vector getMousePos();
 
-	template <class T> static void setLeftClick(T* const object, void (T::* const callback) ()) {
+	template <class T>
+	static void setLeftClick(T* const object, void (T::* const callback) ()) {
 		leftClickCallback = std::pair(dynamic_cast<IHoverable*>(object), std::bind_front(callback, object));
+	}
+
+	template <class T>
+	static void setLeftClick(T* const object, void (T::* const callback) (), bool isHoverableObject) {
+		leftClickCallback = std::pair(nullptr, std::bind_front(callback, object));
 	}
 
 	// returns true for the frame the key went down

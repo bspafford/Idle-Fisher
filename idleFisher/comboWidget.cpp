@@ -13,7 +13,7 @@ UcomboWidget::UcomboWidget(widget* parent) : widget(parent) {
 	comboText = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	comboText->SetPivot({ 0.f, 1.f });
 
-	spawnComboNumber(1);
+	spawnComboNumber();
 }
 
 UcomboWidget::~UcomboWidget() {
@@ -31,7 +31,8 @@ void UcomboWidget::update(float deltaTime) {
 
 }
 
-void UcomboWidget::spawnComboNumber(double comboNum) {
+void UcomboWidget::spawnComboNumber() {
+	double comboNum = GetCharacter()->GetCombo();
 	comboText->setText("x" + shortNumbers::convert2Short(comboNum));
 	setupLocs();
 
@@ -49,7 +50,7 @@ void UcomboWidget::setupLocs() {
 
 void UcomboWidget::showComboText() {
 	if (GetCharacter()->isFishing)
-		visible = true;
+		setVisibility(true);
 }
 
 void UcomboWidget::hideComboText() {

@@ -16,8 +16,6 @@ Background::Background(widget* parent, std::string path, glm::vec4 fillColor) : 
 
 	fillRect = std::make_unique<URectangle>(this, vector{ 0.f, 0.f }, vector{ 0.f, 0.f }, false, fillColor);
 
-	fbo = std::make_unique<FBO>(stuff::screenSize / (stuff::pixelSize * 2.f), false);
-
 	borderPadding = Padding(edges[0]->getSize().y, edges[1]->getSize().x, edges[2]->getSize().y, edges[3]->getSize().x);
 }
 
@@ -36,6 +34,9 @@ void Background::setSize(vector size) {
 		return; // already that size
 
 	widget::setSize(size);
+
+	if (!fbo)
+		fbo = std::make_unique<FBO>(stuff::screenSize / (stuff::pixelSize * 2.f), false);
 
 	fbo->ResizeTexture(size);
 	fbo->Bind();

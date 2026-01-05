@@ -15,7 +15,7 @@ public:
 	void tempSame();
 	void tempBreak();
 
-	void spawnComboNumber(double comboNum);
+	void spawnComboNumber();
 
 	double prevComboNum = 1;
 

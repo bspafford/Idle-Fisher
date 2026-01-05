@@ -289,7 +289,7 @@ void UfishermanWidget::upgradeCatchChance() {
 
 void UfishermanWidget::updateStats() {
 	powerStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodPower()));
-	speedStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcMinFishingInterval(), true) + "s - " + shortNumbers::convert2Short(upgrades::calcMaxFishingInterval(), true) + "s");
+	//speedStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcMinFishingInterval(), true) + "s - " + shortNumbers::convert2Short(upgrades::calcMaxFishingInterval(), true) + "s");
 	catchChanceStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodCatchChance()));
 
 	powerButtonPrice->setText(shortNumbers::convert2Short(upgrades::calcFishingRodPowerPrice()));

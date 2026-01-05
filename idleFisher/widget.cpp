@@ -97,6 +97,7 @@ vector widget::getOgLoc() {
 }
 
 vector widget::getAbsoluteLoc() {
+	absoluteLoc = GetAbsoluteLoc(loc, size, false, pivot, xAnchor, yAnchor);
 	return absoluteLoc;
 }
 

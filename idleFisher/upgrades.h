@@ -34,7 +34,6 @@ public:
 	static double getFishSellPrice(FfishData fish, int quality);
 
 	static double calcGreenFishingUpgrade();
-
 	static double calcYellowFishingUpgrade();
 
 	static bool IsComboUnlocked();
@@ -47,8 +46,6 @@ public:
 	static double calcComboDecreaseOnBounce();
 
 	// fishing rod
-	static float calcMaxFishingInterval();
-	static float calcMinFishingInterval();
 	static double calcFishingRodPower();
 	static double calcFishingRodCatchChance();
 

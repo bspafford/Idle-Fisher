@@ -31,9 +31,9 @@ void Input::pollEvents() {
 }
 
 void Input::fireHeldInputs() {
-	// make sure its the same item thats being hovered and clicked
-	// makes sure that hovered item is the same one thats being clicked
-	if (IHoverable::checkValidInteract() && leftClickCallback.second && leftClickCallback.first == IHoverable::getHoveredItem())
+	// if hoveredItem is null, there still might be a non IHoverable object clicking
+	IHoverable* hoveredItem = IHoverable::getHoveredItem();
+	if ((!hoveredItem || IHoverable::checkValidInteract()) && leftClickCallback.second && leftClickCallback.first == hoveredItem)
 		leftClickCallback.second();
 }
 
