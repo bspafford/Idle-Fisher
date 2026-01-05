@@ -1,20 +1,24 @@
 #include "hoverBox.h"
-
 #include "Input.h"
-#include "saveData.h"
-
 #include "text.h"
+#include "background.h"
 
 #include "debugger.h"
 
 UhoverBox::UhoverBox(widget* parent) : widget(parent) {
-	img = std::make_unique<Image>("./images/widget/hoverImg.png", Input::getMousePos(), false);
-	img->SetPivot({ 0.f, 1.f });
-	name = std::make_unique<text>(this, " ", "straight", vector{0, 0});
+	float lineLength = 125.f;
+
+	background = std::make_unique<Background>(this, "widget/background", glm::vec4(224.f / 255.f, 188.f / 255.f, 145.f / 255.f, 1.f));
+	background->SetPivot({ 0.f, 1.f });
+	name = std::make_unique<text>(this, " ", "biggerStraight", vector{0, 0});
+	name->setLineLength(lineLength);
+	name->SetPivot(vector(0.f, 1.f));
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 });
-	description->setLineLength(250);
+	description->setLineLength(lineLength);
+	description->SetPivot(vector(0.f, 1.f));
 	other = std::make_unique<text>(this, " ", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
-	size = img->getSize();
+	other->setLineLength(lineLength);
+	other->SetPivot(vector(0.f, 1.f));
 }
 
 UhoverBox::~UhoverBox() {
@@ -38,14 +42,15 @@ void UhoverBox::draw(Shader* shaderProgram) {
 	else
 		pivot.y = 1.f;
 
-	img->SetPivot(pivot);
-	img->setLoc(mousePos + vector{ 7.f, 7.f } * vector{ 1.f - pivot.x * 2.f, 1.f - pivot.y * 2.f });
+	background->SetPivot(pivot);
+	background->setLoc(mousePos + vector(7.f, 7.f) * vector(1.f - pivot.x * 2.f, 1.f - pivot.y * 2.f));
+	Padding padding = background->GetBorderPadding();
 
-	name->setLoc(img->getAbsoluteLoc() + 5.f);
-	description->setLoc(img->getAbsoluteLoc() + vector{ 5.f, 11.f });
-	other->setLoc(img->getAbsoluteLoc() + vector{ img->getSize().x - 5.f, 5.f });
+	name->setLoc(background->getAbsoluteLoc() + vector{ padding.left + 1.f, background->getSize().y - padding.top - 1.f });
+	description->setLoc(name->getAbsoluteLoc() - vector(0.f, textPadding));
+	other->setLoc(description->getAbsoluteLoc() - vector(0.f, textPadding));
 
-	img->draw(shaderProgram);
+	background->draw(shaderProgram);
 	name->draw(shaderProgram);
 	description->draw(shaderProgram);
 	other->draw(shaderProgram);
@@ -58,4 +63,9 @@ void UhoverBox::setInfo(std::string newName, std::string newDescription, std::st
 	name->setText(newName);
 	description->setText(newDescription);
 	other->setText(newOther);
+
+	float lineLength = name->getLineLength();
+	Padding padding = background->GetBorderPadding();
+	size = vector(lineLength + padding.left + padding.right, name->getSize().y + description->getSize().y + other->getSize().y + padding.top + padding.bottom + textPadding * 2.f);
+	background->setSize(size);
 }
