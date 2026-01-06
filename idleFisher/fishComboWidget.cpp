@@ -9,8 +9,8 @@
 #include "debugger.h"
 
 UfishComboWidget::UfishComboWidget(widget* parent) : widget(parent) {
-	std::string fishComboBorderPath = "./images/widget/fishComboBorder.png";
-	std::string fishPath = "./images/widget/fish.png";
+	std::string fishComboBorderPath = "images/widget/fishComboBorder.png";
+	std::string fishPath = "images/widget/fish.png";
 
 	fishComboBorderImg = std::make_unique<Image>(fishComboBorderPath, vector{ 0, 0 }, false);
 	fishComboBorderImg->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);

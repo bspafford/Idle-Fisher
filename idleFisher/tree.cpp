@@ -9,9 +9,9 @@ Atree::Atree(vector loc, bool isTree) {
 
 	if (isTree) {
 		if (!treeSpriteSheet)
-			treeSpriteSheet = std::make_shared<Image>("./images/landscape/tree.png", vector{ 0, 0 }, true);
+			treeSpriteSheet = std::make_shared<Image>("images/landscape/tree.png", vector{ 0, 0 }, true);
 		if (!leafSpriteSheet)
-			leafSpriteSheet = std::make_shared<Image>("./images/landscape/leafParticles.png", vector{ 0, 0 }, true);
+			leafSpriteSheet = std::make_shared<Image>("images/landscape/leafParticles.png", vector{ 0, 0 }, true);
 
 		std::unordered_map<std::string, animDataStruct> treeData;
 		treeData.insert({ "tree", animDataStruct({0, 0}, {29, 0}, true) });
@@ -30,7 +30,7 @@ Atree::Atree(vector loc, bool isTree) {
 		leafAnim->SetCurrFrameLoc({ round(math::randRange(0.f, 42.f)), -1 });
 	} else {
 		if (!bushSpriteSheet)
-			bushSpriteSheet = std::make_shared<Image>("./images/landscape/bush.png", vector{ 0, 0 }, true);
+			bushSpriteSheet = std::make_shared<Image>("images/landscape/bush.png", vector{ 0, 0 }, true);
 
 		std::unordered_map<std::string, animDataStruct> bushData;
 		bushData.insert({ "bush", animDataStruct({0, 0}, {29, 0}, true) });

@@ -6,15 +6,15 @@
 #include"shaderClass.h"
 #include "math.h"
 
+class textureStruct;
+
 class Texture {
 public:
-	// For textures with images with render queuing
-	Texture(const char* imgPath);
 	// For textures assigned to things like FBOs with render queuing
 	// { 0, 0 } will fill up the whole screen
 	Texture(vector size);
 	// Works for shaders that require multiple textures
-	Texture(const char* imgPath, bool binding);
+	Texture(const std::string& imgPath);
 
 	~Texture();
 
@@ -43,19 +43,17 @@ public:
 	static void deleteCache();
 
 private:
-	GLuint ID = 0;
-	GLuint unit = 0;
-	GLuint64 handle = 0;
-
 	// false means slot isn't used, true means slot is currently being used
 	static inline std::vector<bool> usedSlots;
 	static GLuint takeOpenSlot();
 	static void releaseSlot(GLuint slot);
 
+	GLuint id = 0;
+	GLuint unit = 0;
+	GLuint64 handle = 0;
+
 	// gpu load stuff
 	int functionIdx = -1;
-	const char* imgPath;
-	unsigned char* bytes;
-	int widthImg, heightImg, numColCh;
+	textureStruct* texData;
 	vector size;
 };

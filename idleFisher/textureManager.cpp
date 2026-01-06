@@ -1,24 +1,30 @@
 #include "textureManager.h"
 #include "main.h"
 #include "shaderClass.h"
-#include "FBO.h"
 #include "GPULoadCollector.h"
+#include "PakReader.h"
 
 #include <fstream>
 #include <sstream>
 
 #include "debugger.h"
 
-textureStruct::textureStruct(const std::string& path, GLuint keepData) {
-	this->useAlpha = useAlpha;
+textureStruct::textureStruct(std::vector<uint8_t>& _bytes, int w, int h, int nChannels, uint16_t keepData) : bytes(std::move(_bytes)) {
+	this->w = w;
+	this->h = h;
+	this->nChannels = nChannels;
 	keptData = keepData;
 
-	stbi_set_flip_vertically_on_load(true);
-	bytes = stbi_load(path.c_str(), &w, &h, &nChannels, NULL);
-	if (!bytes) {
-		std::cout << "Filepath NOT Found: " << path << std::endl;
-		return;
-	}
+	GPULoadCollector::add(this);
+}
+
+textureStruct::textureStruct(uint32_t hashedId) {
+	TextureEntry entry = PakReader::GetEntry(hashedId);
+	bytes = PakReader::LoadTexture(entry);
+	w = entry.width;
+	h = entry.height;
+	nChannels = entry.format;
+	keptData = entry.flags;
 
 	GPULoadCollector::add(this);
 }
@@ -29,9 +35,8 @@ textureStruct::~textureStruct() {
 
 void textureStruct::LoadGPU() {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
-	glBindTexture(GL_TEXTURE_2D, id);
 
-	if (bytes) {
+	if (!bytes.empty()) {
 		GLenum format = 0;
 		if (nChannels == 4)
 			format = GL_RGBA;
@@ -41,31 +46,29 @@ void textureStruct::LoadGPU() {
 			std::cerr << "Warning: the image is not truecolor; this may cause issues." << std::endl;
 
 		glTextureStorage2D(id, 1, GL_RGBA8, w, h); // allocate immutable storage
-		glTextureSubImage2D(id, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, bytes); // upload texture data
+		glTextureSubImage2D(id, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, bytes.data()); // upload texture data
 
-		handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
-		glMakeTextureHandleResidentARB(handle);
+		if (keptData != GL_TEXTURE_BINDING_2D) { // this texture needs to bind, used for water
+			handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());// glGetTextureHandleARB(ID);
+			glMakeTextureHandleResidentARB(handle);
+		}
 
-		if (keptData == 0) { // delete all pixel data
-			stbi_image_free(bytes);
-			bytes = NULL;
-		} else if (keptData == GL_R) { // only keep alpha
+		if (keptData == 0 || keptData == GL_TEXTURE_BINDING_2D) { // delete all pixel data
+			bytes.clear();
+		} else if (keptData == GL_ALPHA) { // only keep alpha
 			// make alpha data list
-			alphaBits.resize((w * h + 7) / 8, 0);
-			const int pixelCount = w * h;
-			if (nChannels == 4) {
-				for (int i = 0; i < pixelCount; ++i) {
-					uint8_t a = bytes[i * 4 + 3];
-					alphaBits[i >> 3] |= (a > 0) << (i & 7);
-				}
-			}
+			const size_t pixelCount = w * h;
+			const size_t packedSize = (pixelCount + 7) / 8;
 
-			stbi_image_free(bytes);
-			bytes = NULL;
+			std::vector<uint8_t> alphaBytes(packedSize, 0);
+			const uint8_t* src = bytes.data();
+
+			for (size_t i = 0; i < pixelCount; ++i, src += 4)
+				alphaBytes[i >> 3] |= (*src != 0) << (i & 7); // read alpha channel
+
+			bytes = std::move(alphaBytes); // replace old RGBA with packed alpha
 		} // else don't delete anything
 	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 bool textureStruct::GetAlphaAtPos(vector pos) {
@@ -74,39 +77,43 @@ bool textureStruct::GetAlphaAtPos(vector pos) {
 	if (pos.x < 0 || pos.y < 0 || pos.x >= w || pos.y >= h)
 		return false;
 
-	if (keptData == GL_R) { // alpha data kept
+	if (keptData == GL_ALPHA) { // alpha data kept
 		int index = pos.y * w + pos.x;
 		int byteIndex = index >> 3;
 		int bitIndex = index & 7;
-		return !alphaBits.empty() && (alphaBits[byteIndex] & (1 << bitIndex)) != 0;
+		return !bytes.empty() && (bytes[byteIndex] & (1 << bitIndex)) != 0;
 	} else if (keptData == GL_RGBA) { // all data kept
 		int index = pos.y * w + pos.x * 4;
-		unsigned char* pixels = bytes;
-		unsigned char a = pixels[index + 3];
+		unsigned char a = bytes[index + 3];
 		return a > 0;
 	}
 
 	return true; // no data kept, assume opaque
 }
 
-unsigned char* textureStruct::FlipBytesVertically() {
-	int size = w * h * nChannels;
-	unsigned char* newBytes = new unsigned char[size];
-	std::memcpy(newBytes, bytes, size);
-	int rowSize = w * nChannels;
-	std::vector<unsigned char> tempRow(rowSize);
-	for (int y = 0; y < h / 2; ++y) {
-		unsigned char* top = newBytes + y * rowSize;
-		unsigned char* bottom = newBytes + (h - 1 - y) * rowSize;
-		// swap top and bottom
-		std::memcpy(tempRow.data(), top, rowSize);
-		std::memcpy(top, bottom, rowSize);
-		std::memcpy(bottom, tempRow.data(), rowSize);
-	}
-	return newBytes;
+std::vector<uint8_t> textureStruct::FlipBytesVertically() {
+    const size_t rowSize = w * nChannels;
+    const size_t size = rowSize * h;
+
+    std::vector<uint8_t> flipped = bytes;
+
+    std::vector<uint8_t> tempRow(rowSize);
+
+    for (uint32_t y = 0; y < h / 2; ++y) {
+        uint8_t* top = flipped.data() + y * rowSize;
+        uint8_t* bottom = flipped.data() + (h - 1 - y) * rowSize;
+
+        std::memcpy(tempRow.data(), top, rowSize);
+        std::memcpy(top, bottom, rowSize);
+        std::memcpy(bottom, tempRow.data(), rowSize);
+    }
+
+    return flipped;
 }
 
 textureManager::textureManager() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
+
 	glCreateSamplers(1, &samplerID);
 	glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -137,88 +144,61 @@ textureManager::textureManager() {
 	glVertexAttribDivisor(0, 0);
 	glVertexAttribDivisor(1, 0);
 
-	ParseImageFile();
-}
-
-void textureManager::ParseImageFile() {
-	std::ifstream colFile("./data/png_files.txt");
-	if (colFile.is_open()) {
-		std::string line;
-		while (colFile.good()) {
-			// get the line
-			std::getline(colFile, line);
-			if (line == "")
-				continue;
-
-			line = math::toLower(line);
-
-			// delimiter it
-			std::vector<std::string> delimLine;
-			std::string subData;
-			std::istringstream stream(line);
-			while (std::getline(stream, subData, '|'))
-				delimLine.push_back(subData);
-
-
-			std::string path = delimLine[0];
-			GLuint keepData = 0;
-			if (delimLine.size() > 1) {
-				if (delimLine[1] == "a")
-					keepData = GL_R;
-				else if (delimLine[1] == "rgba")
-					keepData = GL_RGBA;
-			}
-
-			imageData.insert({ delimLine[0], keepData });
-		}
-	}
-	colFile.close();
+	PakReader::Parse("data/images.pak");
 }
 
 void textureManager::LoadTextures() {
-	for (auto& data : imageData)
-		loadTexture(data.first, data.second);
-	imageData.clear();
+	std::lock_guard<std::recursive_mutex> lock(mutex);
+	PakReader::LoadTextures(textureMap);
 	areTexturesLoaded = true;
 }
 
 void textureManager::Deconstructor() {
+	std::lock_guard<std::recursive_mutex> lock(mutex);
+
 	for (auto& texture : textureMap) {
 		glDeleteTextures(1, &texture.second->id);
-		if (texture.second->bytes)
-			stbi_image_free(texture.second->bytes);
+		texture.second->bytes.clear();
 	}
 
 	textureMap.clear();
 }
 
-textureStruct* textureManager::loadTexture(std::string path, GLuint keptData) {
+textureStruct* textureManager::loadTexture(std::string path) {
+	return loadTexture(Hash(path));
+}
+
+textureStruct* textureManager::loadTexture(uint32_t hashedId) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-	auto it = textureMap.find(path);
+
+	auto it = textureMap.find(hashedId);
 	if (it != textureMap.end()) // already in map don't add again
 		return it->second.get();
 
-	if (Main::IsRunning()) {
-		textureMap[path] = std::make_unique<textureStruct>(path, keptData);
-		return textureMap[path].get();
-	} else
-		return nullptr;
+	if (Main::IsRunning()) { // wasn't in map, need to add it
+		auto [it, inserted] = textureMap.emplace(hashedId, std::make_unique<textureStruct>(hashedId));
+		return it->second.get();
+	}
+	
+	return nullptr;
 }
 
-textureStruct* textureManager::getTexture(std::string name) {
+textureStruct* textureManager::getTexture(const std::string& name) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
+
 	if (name == "")
 		return nullptr;
 
 	// to lower
-	name = math::toLower(name);
+	std::string lower = math::toLower(name);
 
-	auto it = textureMap.find(name);
+	uint32_t hashedId = Hash(lower);
+	auto it = textureMap.find(hashedId);
 	if (it != textureMap.end())
 		return it->second.get();
 	else { // backup
-		std::cout << "Image path not in textureMap but loading anyways: " << name << "\n";
-		return loadTexture(name, imageData[name]);
+		std::cout << "Image path not in textureMap but loading anyways: \"" << lower << "\" (" << hashedId << ")\n";
+		return loadTexture(hashedId);
 	}
 }
 
@@ -326,4 +306,19 @@ void textureManager::SetInterpMethod(int method) {
 		if (texture.second->handle != 0)
 			glMakeTextureHandleResidentARB(texture.second->handle);
 	}
+}
+
+// Hash FNV1a
+uint32_t textureManager::Hash(const std::string& str) {
+	const char* c = str.c_str();
+
+	uint32_t hash = 2166136261u; // offset basis
+	while (*c)
+	{
+		hash ^= (uint8_t)(*c);
+		hash *= 16777619u;       // prime
+		++c;
+	}
+
+	return hash;
 }

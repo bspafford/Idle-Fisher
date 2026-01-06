@@ -23,11 +23,11 @@ void UfishNumWidget::setup(FfishData* fish, FsaveFishData* saveFish, int fishQua
 	thumbnail = std::make_unique<Image>(fish->thumbnail, vector{ 0, 0 }, false);
 	
 	if (fishQuality == 1)
-		star = std::make_unique<Image>("./images/widget/tinyBronzeStar.png", vector{ 0, 0 }, false);
+		star = std::make_unique<Image>("images/widget/tinyBronzeStar.png", vector{ 0, 0 }, false);
 	else if (fishQuality == 2)
-		star = std::make_unique<Image>("./images/widget/tinySilverStar.png", vector{ 0, 0 }, false);
+		star = std::make_unique<Image>("images/widget/tinySilverStar.png", vector{ 0, 0 }, false);
 	else if (fishQuality == 3)
-		star = std::make_unique<Image>("./images/widget/tinyGoldStar.png", vector{ 0, 0 }, false);
+		star = std::make_unique<Image>("images/widget/tinyGoldStar.png", vector{ 0, 0 }, false);
 
 	setupText();
 	setLoc(loc);

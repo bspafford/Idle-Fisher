@@ -95,9 +95,9 @@ Acharacter::Acharacter() {
 	bobberBobTimer->addCallback(this, &Acharacter::bobberBobAnim);
 	bobberBobTimer->addUpdateCallback(this, &Acharacter::bobberBobAnim);
 
-	bobberImg = std::make_unique<Image>("./images/bobber.png", vector{ 100, 100 }, true);
+	bobberImg = std::make_unique<Image>("images/bobber.png", vector{ 100, 100 }, true);
 	bobberImg->SetPivot({ 0.5f, 0.5f });
-	bobberWaterOverlay = std::make_unique<Image>("./images/bobberWaterOverlay.png", vector{ 0, 0 }, false);
+	bobberWaterOverlay = std::make_unique<Image>("images/bobberWaterOverlay.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> bobberData;
 	bobberData.insert({ "water", animDataStruct({0, 0}, {3, 0}, true, .3f) });

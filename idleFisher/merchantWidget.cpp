@@ -16,7 +16,7 @@ UmerchantWidget::UmerchantWidget(widget* parent, npc* NPCParent) : widget(parent
 	closeButton->SetPivot({ 0.5f, 0.5f });
 	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
 	
-	npcImg = std::make_unique<Image>("./images/widget/npcButtons/merchant.png", vector{ 100, 100 }, false);
+	npcImg = std::make_unique<Image>("images/widget/npcButtons/merchant.png", vector{ 100, 100 }, false);
 	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0,0 });
@@ -27,17 +27,17 @@ UmerchantWidget::UmerchantWidget(widget* parent, npc* NPCParent) : widget(parent
 		nameHolder->addChild(description.get(), 4 * stuff::pixelSize);
 	}
 
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground = std::make_unique<Image>("images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
 	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	upgradeBackground->SetPivot({ 0.f, 0.5f });
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground = std::make_unique<Image>("images/widget/infoBackground.png", vector{ 0, 0 }, false);
 	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	infoBackground->SetPivot({ 1.f, 1.f });
-	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	npcBackground->SetPivot({ 1.f, 0.f });
 
-	selectedWorldIcon = std::make_unique<Image>("./images/widget/selectedWorldIcon.png", vector{ 0, 0 }, false);
+	selectedWorldIcon = std::make_unique<Image>("images/widget/selectedWorldIcon.png", vector{ 0, 0 }, false);
 
 	setup();
 	//setupLocs();

@@ -11,11 +11,11 @@ UrebirthUnlock::UrebirthUnlock(widget* parent, int id) : widget(parent) {
 	rebirthInfo = &SaveData::data.rebirthData[id];
 	saveRebirthInfo = &SaveData::saveData.rebirthList[id];
 
-	background = std::make_unique<Image>("./images/widget/rebirthIcons/background.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/rebirthIcons/background.png", vector{ 0, 0 }, false);
 
-	// removes "./images/" from the string
+	// removes "images/" from the string
 	std::string thumbnailPath = rebirthInfo->thumbnailPath;
-	thumbnailPath.erase(0, 9);
+	thumbnailPath.erase(0, 7); // removes 'images/'
 
 	button = std::make_unique<Ubutton>(this, thumbnailPath, 16, 16, 1, vector{ 0, 0 }, false, false);
 	button->addCallback(this, &UrebirthUnlock::onClick);

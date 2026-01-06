@@ -29,17 +29,17 @@ UcurrencyConverterBox::~UcurrencyConverterBox() {
 }
 
 void UcurrencyConverterBox::setup() {
-	background = std::make_unique<Image>("./images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
 
-	//thumbnailBackground = std::make_unique<Image("./images/widget/thumbnailBackground.png");
+	//thumbnailBackground = std::make_unique<Image("images/widget/thumbnailBackground.png");
 	//name = std::make_unique<text(nameString, "straight", { 0, 0 });
 	currency1 = std::make_unique<Image>(currencyStruct->thumbnail, vector{ 0, 0 }, false);
 	currency1Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 	currency2 = std::make_unique<Image>(SaveData::data.currencyData[currencyStruct->id+1].thumbnail, vector{ 0, 0 }, false);
 	currency2Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
-	arrow = std::make_unique<Image>("./images/widget/arrow.png", vector{ 0, 0 }, false);
+	arrow = std::make_unique<Image>("images/widget/arrow.png", vector{ 0, 0 }, false);
 
-	buyButton = std::make_unique<Ubutton>(widgetParent, "./images/widget/upgradeButton.png", 35, 13, 2, vector{ 0, 0 }, false, false);
+	buyButton = std::make_unique<Ubutton>(widgetParent, "images/widget/upgradeButton.png", 35, 13, 2, vector{ 0, 0 }, false, false);
 	buyButton->addCallback(this, &UcurrencyConverterBox::buyUpgrade);
 
 	buttonPriceText = std::make_unique<text>(this, "Start", "straightDark", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
@@ -149,7 +149,7 @@ void UcurrencyConverterBox::update() {
 	// if going
 	/*
 	if () { // if max
-		buyButton->setImg("./images/widget/upgradeButton3.png");
+		buyButton->setImg("images/widget/upgradeButton3.png");
 		buttonPriceText->setText("Stop");
 	} */
 

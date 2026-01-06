@@ -36,14 +36,16 @@ void Cursor::setCursorIcon(CursorType cursorName) {
 
 	if (SaveData::settingsData.cursor) {
 		// should be getting texture from texture manager not loading them ever time i switch
-		textureStruct* mouseImg = textureManager::getTexture("./images/cursor" + std::to_string(currCursor) + ".png");
+		textureStruct* mouseImg = textureManager::getTexture("images/cursor" + std::to_string(currCursor) + ".png");
+		std::vector<uint8_t> flipped = mouseImg->FlipBytesVertically();
+
 		GLFWimage cursorImg;
 		cursorImg.width = mouseImg->w;
 		cursorImg.height = mouseImg->h;
-		cursorImg.pixels = mouseImg->FlipBytesVertically();
+		cursorImg.pixels = flipped.data();
 
 		cursor = glfwCreateCursor(&cursorImg, 0, 0);
-		delete[] cursorImg.pixels;
+
 		if (cursor)
 			glfwSetCursor(Main::GetWindow(), cursor);
 	} else {

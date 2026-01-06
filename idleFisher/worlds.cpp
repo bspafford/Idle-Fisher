@@ -43,7 +43,7 @@
 
 // title screen
 titleScreen::titleScreen() {
-	waterImg = std::make_unique<Image>("./images/worlds/titleScreen/depthMap.png", vector{ 0, 0 }, false);
+	waterImg = std::make_unique<Image>("images/worlds/titleScreen/depthMap.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> fishermanDockAnimData;
 	fishermanDockAnimData.insert({ "anim", animDataStruct({0, 0}, {48, 0}, true) });
@@ -52,7 +52,7 @@ titleScreen::titleScreen() {
 	fishermanDock->SetPivot({ 1.f, 0.f });
 	fishermanDock->setAnimation("anim");
 	fishermanDock->start();
-	title = std::make_unique<Image>("./images/worlds/titleScreen/title.png", vector{ 0.f, 0.f }, false);
+	title = std::make_unique<Image>("images/worlds/titleScreen/title.png", vector{ 0.f, 0.f }, false);
 	title->SetAnchor(ANCHOR_LEFT, ANCHOR_TOP);
 	title->SetPivot({ 0.f, 1.f });
 
@@ -93,11 +93,11 @@ titleScreen::~titleScreen() {
 
 void titleScreen::start() {
 	// setup water shader images
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/titleScreen/reflections.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/titleScreen/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/titleScreen/depthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/titleScreen/reflections.png", "reflectionTexture");
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "", "underwaterObjectTexture");
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "", "underwaterObjectDepthMap");
 	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f / 255.f, 107.f / 255.f, 138.f / 255.f));
@@ -158,7 +158,7 @@ void titleScreen::draw(Shader* shaderProgram) {
 }
 
 vaultWorld::vaultWorld() {
-	map = new Image("./images/vaultMap.png", { 20, -210 }, true);
+	map = new Image("images/vaultMap.png", { 20, -210 }, true);
 	houseDoor = new Ubutton(NULL, "houseDoor.png", 23, 62, 1, { 115, -13 }, true, true);
 	houseDoor->addCallback(vaultWorld::leaveHouse);
 
@@ -202,7 +202,7 @@ rebirthWorld::rebirthWorld() {
 	SaveData::saveData.playerLoc = { 0, 0 };
 	fishGod = new AfishGod({ 570, 700 });
 
-	rebirthWorldImg = new Image("./images/worlds/rebirth/rebirthWorld.png", vector{ 0, 0 }, true);
+	rebirthWorldImg = new Image("images/worlds/rebirth/rebirthWorld.png", vector{ 0, 0 }, true);
 
 	waterTimer = CreateDeferred<Timer>();
 	waterTimer->addCallback(rebirthWorld::addAnim);
@@ -210,9 +210,9 @@ rebirthWorld::rebirthWorld() {
 
 	rebirthExit = new ArebirthExit({ 600, 375 });
 
-	doorGlow = new Image("./images/worlds/rebirth/doorGlow.png", { 750-99, 156 }, true);
+	doorGlow = new Image("images/worlds/rebirth/doorGlow.png", { 750-99, 156 }, true);
 
-	waterImg = new Image("./images/worlds/rebirth/depthMap.png", { 0, 0 }, true);
+	waterImg = new Image("images/worlds/rebirth/depthMap.png", { 0, 0 }, true);
 }
 
 void rebirthWorld::deconstructor() {
@@ -235,13 +235,13 @@ void rebirthWorld::deconstructor() {
 
 void rebirthWorld::start() {
 	// setup water shader images
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/depthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/reflectionTexture.png", "reflectionTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectTexture.png", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/worlds/rebirth/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/rebirth/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/rebirth/depthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/rebirth/reflectionTexture.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/rebirth/underwaterObjectTexture.png", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/rebirth/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
 	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(0, 64.f/255.f, 81.f/255.f));
 	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(0, 130.f/255.f, 121.f/255.f));
 	Scene::twoDWaterShader->setFloat("causticSize", 16.f);
@@ -346,13 +346,13 @@ void world::start() {
 	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
 
 	// bind texture stuff for water
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/water.png", "underwaterTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/waterDepthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/reflectionTexture.png", "reflectionTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "./images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/causticTexture.png", "causticTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDepthMap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/reflectionTexture.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
 	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
 	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Scene::twoDWaterShader->setFloat("causticSize", 16.f);
@@ -612,9 +612,9 @@ world1::world1(WorldLoc worldChangeLoc) {
 
 	setWorldChangeLoc(worldChangeLoc);
 
-	mapImg = std::make_unique<Image>("./images/map1.png", vector{ 0, 0 }, true);
+	mapImg = std::make_unique<Image>("images/map1.png", vector{ 0, 0 }, true);
 	for (int i = 0; i < 19; i++)
-		mapAnimList.push_back("./images/worlds/world1/map" + std::to_string(i + 1) + ".png");
+		mapAnimList.push_back("images/worlds/world1/map" + std::to_string(i + 1) + ".png");
 	ship = std::make_unique<Aship>(vector{ 336.f, 470.f });
 
 	sellFish = std::make_unique<dumpster>(vector{ 849.f, 722.f });
@@ -669,12 +669,12 @@ world1::world1(WorldLoc worldChangeLoc) {
 	beachAnim->addFinishedCallback(static_cast<world*>(this), &world::finishedBeachAnim);
 	beachAnim->start();
 
-	waterImg = std::make_unique<Image>("./images/water/water.png", vector{ 0, 0 }, true);
+	waterImg = std::make_unique<Image>("images/water/water.png", vector{ 0, 0 }, true);
 
 	// pole list
 	std::vector<vector> poleLocs = { { 580, 478 },{ 622, 499 },{ 664, 520 }, { 706, 541 }, { 748, 562 }, { 790, 583 } };
 	for (int i = 0; i < poleLocs.size(); i++) {
-		std::unique_ptr<Image> poleImg = std::make_unique<Image>("./images/worlds/world1/dockPole.png", poleLocs[i], true);
+		std::unique_ptr<Image> poleImg = std::make_unique<Image>("images/worlds/world1/dockPole.png", poleLocs[i], true);
 		poleList.push_back(std::move(poleImg));
 	}
 }

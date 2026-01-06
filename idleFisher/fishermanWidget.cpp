@@ -18,7 +18,7 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	closeButton->SetPivot({ 0.5f, 0.5f });
 	closeButton->addCallback<widget>(this, &NPCwidget::removeFromViewport);
 
-	npcImg = std::make_unique<Image>("./images/widget/npcbuttons/fisherman.png", vector{ 0, 0 }, false);
+	npcImg = std::make_unique<Image>("images/widget/npcbuttons/fisherman.png", vector{ 0, 0 }, false);
 	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, "---", "biggerStraight", vector{ 0, 0 });
@@ -31,20 +31,20 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	nameHolder->addChild(buffText.get(), 7);
 	nameHolder->addChild(debuffText.get(), 7);
 
-	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	npcBackground->SetPivot({ 1.f, 0.f });
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground = std::make_unique<Image>("images/widget/infoBackground.png", vector{ 0, 0 }, false);
 	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	infoBackground->SetPivot({ 1.f, 1.f });
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground = std::make_unique<Image>("images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
 	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
-	selectedIcon = std::make_unique<Image>("./images/widget/selectedFisherIcon.png", vector{ 0, 0 }, false);
+	selectedIcon = std::make_unique<Image>("images/widget/selectedFisherIcon.png", vector{ 0, 0 }, false);
 
 	// fishing rod page
-	fishingRodThumbnail = std::make_unique<Image>("./images/widget/thumbnails/fishingRodThumbnail1.png", vector{ 0, 0 }, false);
+	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRodThumbnail1.png", vector{ 0, 0 }, false);
 	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 4.f);
 	fishingRodThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishingRodThumbnail->SetPivot({ 1.f, 0.5f });

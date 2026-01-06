@@ -31,13 +31,13 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	multi10->addCallback(this, &autoFisherUI::setMulti10);
 	multiMax->addCallback(this, &autoFisherUI::setMultiMax);
 
-	pressTest = std::make_unique<Image>("./images/autoFisher/UI/multipliers/multi3.png", UILoc, true);
+	pressTest = std::make_unique<Image>("images/autoFisher/UI/multipliers/multi3.png", UILoc, true);
 
 	menuButton = std::make_unique<Ubutton>(this, "autoFisher/UI/menu.png", 5, 10, 1, UILoc + vector{ 0.f, 37.f }, true, false);
 	menuButton->addCallback(this, &autoFisherUI::openMenu);
 
 	// level
-	level = std::make_unique<Image>("./images/autoFisher/UI/level1.png", UILoc, true);
+	level = std::make_unique<Image>("images/autoFisher/UI/level1.png", UILoc, true);
 
 	levelText = std::make_unique<text>(this, std::to_string(*autoFisher->level), "tall", UILoc + vector{ 31.f, 67.f }, true, true, TEXT_ALIGN_RIGHT);
 	maxText = std::make_unique<text>(this, " ", "tall", UILoc + vector{ 31.f, 66.f }, true, true);
@@ -45,7 +45,7 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	buttonTextLoc = UILoc + vector{ 34.f, 23.f };
 	buttonText = std::make_unique<text>(this, shortNumbers::convert2Short(autoFisher->getUpgradeCost()[1]), "normal", buttonTextLoc, true, true, TEXT_ALIGN_RIGHT);
 
-	std::string levelBarPath = "./images/autoFisher/UI/level";
+	std::string levelBarPath = "images/autoFisher/UI/level";
 	for (int i = 0; i < 21; i++)
 		levelBarImgs.push_back(levelBarPath + std::to_string(i + 1) + ".png");
 
@@ -189,7 +189,7 @@ void autoFisherUI::closedUI() {
 void autoFisherUI::setMultiplier(int multiplier) {
 	autoFisher->multiplier = multiplier;
 
-	std::string path = "./images/autoFisher/UI/multipliers/multi";
+	std::string path = "images/autoFisher/UI/multipliers/multi";
 
 	std::string mult = "max";
 	if (autoFisher->multiplier == 1) {

@@ -16,12 +16,12 @@ UfishBox::UfishBox(Ujournal* parent, FfishData* fishData, FsaveFishData* saveFis
 	this->saveFishData = saveFishData;
 	
 	std::string fishThumbnail = fishData->thumbnail;
-	fishThumbnail.erase(0, 9);
+	fishThumbnail.erase(0, 7); // removes 'images/'
 	fishButton = std::make_unique<Ubutton>(this, fishThumbnail, 16, 16, 1, vector{ 0, 0 }, false, false);
 	fishButton->SetPivot({ 0.5f, 0.f });
 	fishButton->addCallback(this, &UfishBox::openFishPage);
 	name = std::make_unique<text>(this, fishData->name, "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	checkMark = std::make_unique<Image>("./images/widget/check.png", vector{ 0, 0 }, false);
+	checkMark = std::make_unique<Image>("images/widget/check.png", vector{ 0, 0 }, false);
 
 	if (name && fishButton && !saveFishData->unlocked) {
 		name->setText("???");

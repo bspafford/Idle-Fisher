@@ -12,7 +12,7 @@
 #include "debugger.h"
 
 UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
-	mapBackground = std::make_unique<Image>("./images/widget/map.png", vector{ 0, 0 }, false);
+	mapBackground = std::make_unique<Image>("images/widget/map.png", vector{ 0, 0 }, false);
 	mapBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	mapBackground->SetPivot({ 0.5f, 0.5f });
 
@@ -25,7 +25,7 @@ UsailorWidget::UsailorWidget(widget* parent) : widget(parent) {
 	xButton->SetPivot({ 0.5f, 0.5f });
 	xButton->addCallback(this, &UsailorWidget::closeWidget);
 
-	mapClosed = std::make_unique<Image>("./images/widget/mapClosed.png", vector{ 0, 0 }, false);
+	mapClosed = std::make_unique<Image>("images/widget/mapClosed.png", vector{ 0, 0 }, false);
 	mapClosed->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	mapClosed->SetPivot({ 0.5f, 0.5f });
 

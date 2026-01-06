@@ -69,7 +69,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruc
 
 	callback = std::bind(&UupgradeBox::spawnPet, this);
 
-	thumbnail = std::make_unique<Image>("./images/pets/" + std::to_string(petStruct->id) + ".png", vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/pets/" + std::to_string(petStruct->id) + ".png", vector{ 0, 0 }, false);
 
 	setup();
 }
@@ -111,9 +111,9 @@ UupgradeBox::~UupgradeBox() {
 }
 
 void UupgradeBox::setup() {
-	background = std::make_unique<Image>("./images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
 
-	thumbnailBackground = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	thumbnailBackground = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
 	thumbnailBackground->SetPivot({ 0.f, 0.5f });
 	name = std::make_unique<text>(this, nameString, "straightDark", vector{ 0, 0 });
 	name->SetPivot({ 0.f, 0.5f });
@@ -126,7 +126,7 @@ void UupgradeBox::setup() {
 	buttonPriceText->setTextColor(255, 0, 0);
 	buttonPriceText->SetPivot({ 0.f, 0.5f });
 
-	currencyImg = std::make_unique<Image>("./images/currency/coin" + std::to_string(*currencyId) + ".png", vector{ 0, 0 }, false);
+	currencyImg = std::make_unique<Image>("images/currency/coin" + std::to_string(*currencyId) + ".png", vector{ 0, 0 }, false);
 	currencyImg->SetPivot({ 1.f, 0.5f });
 
 	if (upgradeMax > 1) {

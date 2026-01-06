@@ -4,7 +4,7 @@
 #include "worlds.h"
 
 Ahouse::Ahouse(vector loc) : Abuilding(loc) {
-	buildingImg = std::make_unique<Image>("./images/house.png", loc, true);
+	buildingImg = std::make_unique<Image>("images/house.png", loc, true);
 	door = std::make_unique<Ubutton>(nullptr, "houseDoor.png", 23, 62, 1, loc + vector{ 34, 19 }, true, true);
 	door->addCallback(this, &Ahouse::enterVault);
 

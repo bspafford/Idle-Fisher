@@ -21,7 +21,7 @@ UpremiumBuffWidget::UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenF
 	progressBar->setBackgroundColor({ 0, 0, 0, 0 });
 	progressBar->setForegroundColor({ 0, 0, 0, 50 });
 
-	img = std::make_unique<Image>("./images/fish/premium.png", vector{ 0.f, 0.f }, false);
+	img = std::make_unique<Image>("images/fish/premium.png", vector{ 0.f, 0.f }, false);
 	hoverBox = std::make_unique<UhoverBox>(this);
 	hoverBox->setInfo(goldenFish.name, goldenFish.description);
 }

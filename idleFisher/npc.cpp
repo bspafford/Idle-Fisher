@@ -32,7 +32,7 @@ void npc::setup(std::string npcName) {
 	if (npcName != "fishTransporter") {
 		widget = std::make_unique<NPCwidget>(nullptr, this, npcName);
 
-		int fameNum = textureManager::getTexture("./images/npc/" + npcName + ".png")->w / npcCellSizes[npcName].x - 1;
+		int fameNum = textureManager::getTexture("images/npc/" + npcName + ".png")->w / npcCellSizes[npcName].x - 1;
 
 		std::unordered_map<std::string, animDataStruct> npcAnimData;
 		npcAnimData.insert({ "idle", animDataStruct({0, 0}, {float(fameNum), 0}, true) });

@@ -1,7 +1,7 @@
 #include "petShop.h"
 
 ApetShop::ApetShop(vector loc) : Abuilding(loc) {
-	buildingImg = std::make_unique<Image>("./images/petShop.png", loc, true);
+	buildingImg = std::make_unique<Image>("images/petShop.png", loc, true);
 }
 
 ApetShop::~ApetShop() {

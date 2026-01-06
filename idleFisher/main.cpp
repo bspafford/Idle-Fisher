@@ -134,11 +134,11 @@ int Main::createWindow() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Load in a model for shadows
-	house = std::make_unique<Model>("./images/models/idleFisher3D/idleFisher3DNoWater.gltf");
+	house = std::make_unique<Model>("images/models/idleFisher3D/idleFisher3DNoWater.gltf");
 	house->setPos(glm::vec3(-182.75f, 0.f, -504.5f));
 	house->setScale(glm::vec3(1.89f));
 	house->setColor(glm::vec3(255, 240, 240));
-	characterModel = std::make_unique<Model>("./images/models/character/character.gltf");
+	characterModel = std::make_unique<Model>("images/models/character/character.gltf");
 
 	characterModel->setScale(glm::vec3(3.f));
 
@@ -445,7 +445,7 @@ void Main::setTaskbarIcon(GLFWwindow* window) {
 	GLFWimage iconImgs[iconsNum];
 	std::vector<std::string> paths = { "icon24", "icon16" };
 	for (int i = 0; i < iconsNum; i++)
-		iconImgs[i].pixels = stbi_load(("./images/icons/" + paths[i] + ".png").c_str(), &iconImgs[i].width, &iconImgs[i].height, 0, 4);
+		iconImgs[i].pixels = stbi_load(("images/icons/" + paths[i] + ".png").c_str(), &iconImgs[i].width, &iconImgs[i].height, 0, 4);
 	glfwSetWindowIcon(window, iconsNum, iconImgs);
 	for (int i = 0; i < iconsNum; i++)
 		stbi_image_free(iconImgs[i].pixels);

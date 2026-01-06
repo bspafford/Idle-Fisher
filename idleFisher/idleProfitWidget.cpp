@@ -9,7 +9,7 @@
 #include "debugger.h"
 
 UidleProfitWidget::UidleProfitWidget(widget* parent) : widget(parent) {
-	background = std::make_unique<Image>("./images/widget/idleProfitBackground.png", vector{ 0.f, 0.f }, false);
+	background = std::make_unique<Image>("images/widget/idleProfitBackground.png", vector{ 0.f, 0.f }, false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 

@@ -58,9 +58,9 @@ void text::changeFont() {
 }
 
 void text::loadTextImg() {
-	textImg = std::make_shared<Image>("./fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
+	textImg = std::make_shared<Image>("fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
 
-	std::ifstream file("./fonts/" + font + "/" + font + ".txt");
+	std::ifstream file("fonts/" + font + "/" + font + ".txt");
 	if (!file) {
 		std::cout << "no font file\n";
 		return;

@@ -458,6 +458,9 @@
     <ClCompile Include="background.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="PakReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -834,6 +837,9 @@
     </ClInclude>
     <ClInclude Include="background.h">
       <Filter>Header Files\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="PakReader.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

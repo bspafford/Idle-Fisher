@@ -38,6 +38,7 @@ public:
 	static void deferredChangeWorld();
 
 	static void draw(Shader* shaderProgram);
+	// Async
 	static void openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld);
 
 	static bool isLoading();
@@ -61,6 +62,10 @@ private:
 	// this is called after the scene is loaded for the first time for that session
 	static void FinishSetup();
 
+	static void finishedLoading();
+	// runs Async
+	static void LoadTextures();
+
 	static inline std::atomic<bool> loadingDone = false;
 	static inline std::atomic<bool> hasFinishedLoading = false;
 
@@ -73,8 +78,6 @@ private:
 	static inline std::string currWorldName;
 
 	static inline std::unique_ptr<LoadingScreen> loadingScreen;
-
-	static void finishedLoading();
 
 	static inline std::string worldName;
 	static inline WorldLoc worldChangeLoc;
@@ -90,6 +93,7 @@ private:
 	// player stuff
 	static inline std::unique_ptr<Acharacter> character;
 	static inline std::unique_ptr<Camera> camera;
+
 public:
 	static inline std::unique_ptr<Apet> pet;
 

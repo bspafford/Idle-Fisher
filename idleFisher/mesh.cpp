@@ -2,10 +2,9 @@
 
 #include "debugger.h"
 
-Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures) {
+Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices) {
 	Mesh::vertices = vertices;
 	Mesh::indices = indices;
-	Mesh::textures = textures;
 
 	VAO.Bind();
 	// Generates Vertex Buffer Object and links it to vertices
@@ -40,18 +39,6 @@ void Mesh::Draw
 	// Keep track of how many of each type of textures we have
 	unsigned int numDiffuse = 0;
 	unsigned int numSpecular = 0;
-
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		std::string num;
-		std::string type = "diffuse"; //textures[i].type;
-		if (type == "diffuse") {
-			num = std::to_string(numDiffuse++);
-		} else if (type == "specular") {
-			num = std::to_string(numSpecular++);
-		}
-		textures[i].texUnit(shader, (type + num).c_str());
-		textures[i].Bind();
-	}
 
 	shader->setVec3("camPos", camera.GetPosition());
 

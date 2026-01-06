@@ -15,7 +15,7 @@ UcurrencyConverterWidget::UcurrencyConverterWidget(widget* parent, npc* NPCParen
 	upgradeHolder = std::make_unique<UscrollBox>(this);
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->addCallback<widget>(this, &UcurrencyConverterWidget::removeFromViewport);
-	npcImg = std::make_unique<Image>("./images/widget/npcButtons/atm.png", vector{ 0, 0 }, false);
+	npcImg = std::make_unique<Image>("images/widget/npcButtons/atm.png", vector{ 0, 0 }, false);
 
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0,0 });
 	description = std::make_unique<text>(this, " ", "straight", vector{ 0,0 });
@@ -23,9 +23,9 @@ UcurrencyConverterWidget::UcurrencyConverterWidget(widget* parent, npc* NPCParen
 	nameHolder->addChild(name.get(), 8 * stuff::pixelSize);
 	nameHolder->addChild(description.get(), 4 * stuff::pixelSize);
 
-	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	infoBackground = std::make_unique<Image>("images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground = std::make_unique<Image>("images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
 
 	setup();
 }

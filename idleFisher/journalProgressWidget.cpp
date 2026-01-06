@@ -9,7 +9,7 @@ UjournalProgressWidget::UjournalProgressWidget(widget* parent, int fishNumTotal,
 	this->starsNumTotal = starsNumTotal;
 	this->sizeNumTotal = sizeNumTotal;
 
-	background = std::make_unique<Image>("./images/widget/journalTiny.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/journalTiny.png", vector{ 0, 0 }, false);
 
 	fishNumText = std::make_unique<text>(this, "Unlocked", "straightDark", vector{ 0, 0 });
 	starsNumText = std::make_unique<text>(this, "Stars", "straightDark", vector{ 0, 0 });

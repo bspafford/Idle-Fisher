@@ -2,7 +2,7 @@
 #include "Rectangle.h"
 
 ConfirmWidget::ConfirmWidget(widget* parent) : widget(parent) {
-	backgroundImage = std::make_unique<Image>("./images/widget/confirmBox.png", vector{ 0, 0 }, false);
+	backgroundImage = std::make_unique<Image>("images/widget/confirmBox.png", vector{ 0, 0 }, false);
 	backgroundImage->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	backgroundImage->SetPivot({ 0.5f, 0.5f });
 	saveText = std::make_unique<text>(this, "Do you want to save settings?", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);

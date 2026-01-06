@@ -10,8 +10,8 @@ Background::Background(widget* parent, std::string path, glm::vec4 fillColor) : 
 	std::string edgeNames[] = { "Top", "Right", "Bottom", "Left" };
 	std::string cornerNames[] = { "TopLeft", "TopRight", "BottomRight", "BottomLeft" };
 	for (int i = 0; i < 4; i++) {
-		edges.push_back(std::make_unique<Image>("./images/" + path + "/edge" + edgeNames[i] + ".png", vector{0.f, 0.f}, false));
-		corners.push_back(std::make_unique<Image>("./images/" + path + "/corner" + cornerNames[i] + ".png", vector{0.f, 0.f}, false));
+		edges.push_back(std::make_unique<Image>("images/" + path + "/edge" + edgeNames[i] + ".png", vector{0.f, 0.f}, false));
+		corners.push_back(std::make_unique<Image>("images/" + path + "/corner" + cornerNames[i] + ".png", vector{0.f, 0.f}, false));
 	}
 
 	fillRect = std::make_unique<URectangle>(this, vector{ 0.f, 0.f }, vector{ 0.f, 0.f }, false, fillColor);

@@ -36,10 +36,6 @@ private:
 	std::vector<glm::vec3> scalesMeshes;
 	std::vector<glm::mat4> matricesMeshes;
 
-	// Prevents textures from being loaded twice
-	std::vector<std::string> loadedTexName;
-	std::vector<Texture> loadedTex;
-
 	// Loads a single mesh by its index
 	void loadMesh(unsigned int indMesh);
 
@@ -51,7 +47,6 @@ private:
 	// Interprets the binary data into floats, indices, and textures
 	std::vector<float> getFloats(json accessor);
 	std::vector<GLuint> getIndices(json accessor);
-	std::vector<Texture> getTextures();
 
 	// Assembles all the floats into vertices
 	std::vector<Vertex> assembleVertices

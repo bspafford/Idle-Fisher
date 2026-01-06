@@ -17,9 +17,9 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	// button click anim
 	std::vector<std::string> buttonClickAnim;
 	for (int i = 0; i < 2; i++)
-		buttonClickAnim.push_back("./images/widget/upgradeButton" + std::to_string(i + 1) + ".png");
+		buttonClickAnim.push_back("images/widget/upgradeButton" + std::to_string(i + 1) + ".png");
 
-	background = std::make_unique<Image>("./images/widget/achievementBackground.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/achievementBackground.png", vector{ 0, 0 }, false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 

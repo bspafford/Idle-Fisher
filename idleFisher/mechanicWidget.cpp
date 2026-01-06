@@ -26,7 +26,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	closeButton->SetPivot({ 0.5f, 0.5f });
 	closeButton->addCallback<widget>(this, &UmechanicWidget::removeFromViewport);
 
-	npcImg = std::make_unique<Image>("./images/widget/npcButtons/mechanic.png", vector{ 0, 0 }, false);
+	npcImg = std::make_unique<Image>("images/widget/npcButtons/mechanic.png", vector{ 0, 0 }, false);
 	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{ 0,0 });
@@ -35,13 +35,13 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	nameHolder->addChild(name.get(), 8.f);
 	nameHolder->addChild(description.get(), 4.f);
 
-	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	npcBackground->SetPivot({ 1.f, 0.f });
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground = std::make_unique<Image>("images/widget/infoBackground.png", vector{ 0, 0 }, false);
 	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	infoBackground->SetPivot({ 1.f, 1.f });
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground = std::make_unique<Image>("images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
 	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
@@ -55,7 +55,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 
 	// bought screen
 	fishTransporterName = std::make_unique<text>(this, "Fish Transporter", "biggerStraight", vector{ 0, 0 });
-	fishTransporterImg = std::make_unique<Image>("./images/npc/fishTransporter/idleSE.png", vector{ 0, 0 }, false);
+	fishTransporterImg = std::make_unique<Image>("images/npc/fishTransporter/idleSE.png", vector{ 0, 0 }, false);
 	
 	if (saveMechanicStruct->unlocked)
 		fishTransporterImg->setColorMod(glm::vec4(1));
@@ -81,7 +81,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 
 	upgradePriceText = std::make_unique<text>(this, "0.00k", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	upgradePriceText->SetPivot({ 0.f, 0.5f });
-	currencyIcon = std::make_unique<Image>("./images/currency/coin" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+	currencyIcon = std::make_unique<Image>("images/currency/coin" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
 	currencyIcon->SetPivot({ 1.f, 0.5f });
 
 	setup();

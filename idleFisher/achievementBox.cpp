@@ -21,9 +21,9 @@ UachievementBox::UachievementBox(widget* parent, int id) : widget(parent) {
 	saveAchievementStruct = &SaveData::saveData.achievementList[id];
 
 	if (saveAchievementStruct->unlocked) {
-		icon = std::make_unique<Image>("./images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
 	} else
-		icon = std::make_unique<Image>("./images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
+		icon = std::make_unique<Image>("images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
 
 	startSize = icon->getSize();
 }
@@ -44,9 +44,9 @@ void UachievementBox::finishRotateTimer() {
 
 void UachievementBox::updateAchievementImage() {
 	if (saveAchievementStruct->unlocked) {
-		icon = std::make_unique<Image>("./images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
 	} else
-		icon = std::make_unique<Image>("./images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
+		icon = std::make_unique<Image>("images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
 }
 
 void UachievementBox::draw(Shader* shaderProgram) {

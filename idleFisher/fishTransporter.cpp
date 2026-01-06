@@ -20,7 +20,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	std::cout << "i'm the fish transporter!" << std::endl;
 
 	// walk
-	std::string walkAnimPath = "./images/npc/fishTransporter/";
+	std::string walkAnimPath = "images/npc/fishTransporter/";
 	walkE = std::vector<std::string>{ walkAnimPath + "walkE1.png", walkAnimPath + "walkE2.png", walkAnimPath + "walkE3.png", walkAnimPath + "walkE4.png", walkAnimPath + "walkE5.png", walkAnimPath + "walkE6.png" };
 	walkNE = std::vector<std::string>{ walkAnimPath + "walkNE1.png", walkAnimPath + "walkNE2.png", walkAnimPath + "walkNE3.png", walkAnimPath + "walkNE4.png", walkAnimPath + "walkNE5.png", walkAnimPath + "walkNE6.png" };
 	walkN = std::vector<std::string>{ walkAnimPath + "walkN1.png", walkAnimPath + "walkN2.png", walkAnimPath + "walkN3.png", walkAnimPath + "walkN4.png", walkAnimPath + "walkN5.png", walkAnimPath + "walkN6.png" };
@@ -32,7 +32,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	walkAnimWheel = std::vector<std::vector<std::string>>{ walkNW, walkN, walkNE, walkE, walkSE, walkS, walkSW, walkW };
 
 	// idle
-	std::string idleAnimPath = "./images/character/animation/idle/";
+	std::string idleAnimPath = "images/character/animation/idle/";
 	idleE = std::vector<std::string>{ idleAnimPath + "idleE.png" };
 	idleNE = std::vector<std::string>{ idleAnimPath + "idleNE.png" };
 	idleN = std::vector<std::string>{ idleAnimPath + "idleN.png" };

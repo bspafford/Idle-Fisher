@@ -9,15 +9,15 @@
 #include "debugger.h"
 
 UequippedWidget::UequippedWidget(widget* parent) : widget(parent) {
-	charImg = std::make_unique<Image>("./images/character/idleSE1.png", vector{ 0, 0 }, false);
+	charImg = std::make_unique<Image>("images/character/idleSE1.png", vector{ 0, 0 }, false);
 
-	fishingRodEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
-	baitEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	fishingRodEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	baitEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
 
-	headEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
-	shirtEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
-	legsEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
-	shoesEquipSlot = std::make_unique<Image>("./images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	headEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	shirtEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	legsEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
+	shoesEquipSlot = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
 
 	update();
 }
@@ -43,7 +43,7 @@ void UequippedWidget::draw(Shader* shaderProgram) {
 }
 
 void UequippedWidget::update() {
-	fishingRodEquip = std::make_unique<Image>("./images/widget/thumbnails/fishingRodThumbnail1.png", vector{0, 0}, false);
+	fishingRodEquip = std::make_unique<Image>("images/widget/thumbnails/fishingRodThumbnail1.png", vector{0, 0}, false);
 	fishingRodEquip->setLoc(fishingRodEquipSlot->getLoc());
 
 	std::string thumbnail = "";

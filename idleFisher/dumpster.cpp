@@ -16,7 +16,7 @@
 
 dumpster::dumpster(vector loc) {
 	this->loc = loc;
-	img = std::make_unique<Image>("./images/dumpster.png", loc, true);
+	img = std::make_unique<Image>("images/dumpster.png", loc, true);
 	img->setUseAlpha(true);
 }
 
@@ -26,9 +26,9 @@ void dumpster::onHover() {
 	if (bMouseOver)
 		IHoverable::setHoveredItem(this);
 	if (!prevMouseOver && bMouseOver) {
-		img->setImage("./images/dumpsterHovered.png");
+		img->setImage("images/dumpsterHovered.png");
 	} else if (prevMouseOver && !bMouseOver) {
-		img->setImage("./images/dumpster.png");
+		img->setImage("images/dumpster.png");
 	}
 
 	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT) && !widget::getCurrWidget())

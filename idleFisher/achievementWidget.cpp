@@ -16,7 +16,7 @@
 #include "debugger.h"
 
 UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
-	background = std::make_unique<Image>("./images/widget/achievementBackground.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/achievementBackground.png", vector{ 0, 0 }, false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 

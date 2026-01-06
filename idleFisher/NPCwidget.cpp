@@ -21,7 +21,7 @@ NPCwidget::NPCwidget(widget* parent, npc* NPCParent, std::string npcName) : widg
 	closeButton->SetPivot({ 0.5f, 0.5f });
 	
 	if (npcName != "fishGod") {
-		npcImg = std::make_unique<Image>("./images/widget/npcButtons/" + npcName + ".png", vector{ 0, 0 }, false);
+		npcImg = std::make_unique<Image>("images/widget/npcButtons/" + npcName + ".png", vector{ 0, 0 }, false);
 		npcImg->SetPivot({ 0.5f, 0.f });
 	}
 
@@ -31,13 +31,13 @@ NPCwidget::NPCwidget(widget* parent, npc* NPCParent, std::string npcName) : widg
 	nameHolder->addChild(name.get(), 8.f);
 	nameHolder->addChild(description.get(), 4.f);
 
-	npcBackground = std::make_unique<Image>("./images/widget/npcBackground.png", vector{ 0, 0 }, false);
+	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	npcBackground->SetPivot({ 1.f, 0.f });
-	infoBackground = std::make_unique<Image>("./images/widget/infoBackground.png", vector{ 0, 0 }, false);
+	infoBackground = std::make_unique<Image>("images/widget/infoBackground.png", vector{ 0, 0 }, false);
 	infoBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	infoBackground->SetPivot({ 1.f, 1.f });
-	upgradeBackground = std::make_unique<Image>("./images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
+	upgradeBackground = std::make_unique<Image>("images/widget/upgradeBackground.png", vector{ 0, 0 }, false);
 	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	upgradeBackground->SetPivot({ 0.f, 0.5f });
 

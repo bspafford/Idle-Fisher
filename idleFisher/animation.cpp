@@ -14,7 +14,7 @@ animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight,
 	this->cellSize = { static_cast<float>(cellWidth), static_cast<float>(cellHeight) };
 	this->animData = animData;
 
-	spriteSheet = std::make_shared<Image>("./images/" + spriteSheetPath, loc, useWorldLoc);
+	spriteSheet = std::make_shared<Image>("images/" + spriteSheetPath, loc, useWorldLoc);
 	cellNum.x = round(spriteSheet->getSize().x / static_cast<float>(cellWidth));
 	cellNum.y = round(spriteSheet->getSize().y / static_cast<float>(cellHeight));
 

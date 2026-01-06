@@ -15,11 +15,11 @@
 #include "debugger.h"
 
 Ujournal::Ujournal(widget* parent) : widget(parent) {
-	background = std::make_unique<Image>("./images/widget/journal.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/journal.png", vector{ 0, 0 }, false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 
-	journalClosed = std::make_unique<Image>("./images/widget/journalClosed.png", vector{ 0, 0 }, false);
+	journalClosed = std::make_unique<Image>("images/widget/journalClosed.png", vector{ 0, 0 }, false);
 	journalClosed->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	journalClosed->SetPivot({ 0.5f, 0.5f });
 
@@ -72,9 +72,9 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	}
 
 	// selected fish page
-	fishThumbnail = std::make_unique<Image>("./images/fish/dirtFish.png", vector{ 0, 0 }, false);
+	fishThumbnail = std::make_unique<Image>("images/fish/dirtFish.png", vector{ 0, 0 }, false);
 	fishThumbnail->SetPivot({ 0.5f, 0.5f });
-	notesBackground = std::make_unique<Image>("./images/widget/journalNotes.png", vector{ 0, 0 }, false);
+	notesBackground = std::make_unique<Image>("images/widget/journalNotes.png", vector{ 0, 0 }, false);
 	notesBackground->SetPivot({ 0.5f, 0.f });
 	selectedFishName = std::make_unique<text>(this, " ", "biggerStraightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	selectedFishDescription = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 });
@@ -117,17 +117,17 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	fishSizeNum = std::make_unique<text>(this, " ", "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 	fishSizeNum->SetPivot({ 0, 1.f });
 
-	star1 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star1 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star1->SetPivot({ 0.5f, 0.f });
 	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star1Text->SetPivot({ 0.f, 0.5f });
 	star1Text->setTextColor(85, 177, 241);
-	star2 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star2 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star2->SetPivot({ 0.5f, 0.f });
 	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star2Text->SetPivot({ 0.f, 0.5f });
 	star2Text->setTextColor(85, 177, 241);
-	star3 = std::make_unique<Image>("./images/emptyStar.png", vector{ 0, 0 }, false);
+	star3 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star3->SetPivot({ 0.5f, 0.f });
 	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star3Text->SetPivot({ 0.f, 0.5f });
@@ -360,25 +360,25 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	fishSize->setText("Biggest (Max: " + std::to_string(fishData->maxSize) + "in)");
 
 	vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
-	map = std::make_unique<Image>("./images/widget/maps/" + fishData->levelName + ".png", vector{ 0, 0 }, false);
+	map = std::make_unique<Image>("images/widget/maps/" + fishData->levelName + ".png", vector{ 0, 0 }, false);
 	map->SetPivot({ 0.5f, 0.5f });
 	map->setLoc(center + vector{ 63.f, -35.f });
 
 	// update stars
 	if (saveFishData->totalNumOwned[1] != 0)
-		star1->setImage("./images/widget/bronzeStar.png");
+		star1->setImage("images/widget/bronzeStar.png");
 	else
-		star1->setImage("./images/emptyStar.png");
+		star1->setImage("images/emptyStar.png");
 
 	if (saveFishData->totalNumOwned[2] != 0)
-		star2->setImage("./images/widget/silverStar.png");
+		star2->setImage("images/widget/silverStar.png");
 	else
-		star2->setImage("./images/emptyStar.png");
+		star2->setImage("images/emptyStar.png");
 
 	if (saveFishData->totalNumOwned[3] != 0)
-		star3->setImage("./images/widget/goldStar.png");
+		star3->setImage("images/widget/goldStar.png");
 	else
-		star3->setImage("./images/emptyStar.png");
+		star3->setImage("images/emptyStar.png");
 
 	star1Text->setText(shortNumbers::convert2Short(saveFishData->totalNumOwned[1]));
 	star2Text->setText(shortNumbers::convert2Short(saveFishData->totalNumOwned[2]));

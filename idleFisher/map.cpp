@@ -16,7 +16,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	this->sailorWidgetParent = parent;
 	setSize(mapSize);
 
-	mapImg = std::make_unique<Image>("./images/sailorMap.png", vector{ 0.f, 0.f }, false);
+	mapImg = std::make_unique<Image>("images/sailorMap.png", vector{ 0.f, 0.f }, false);
 
 	std::unordered_map<std::string, animDataStruct> animData;
 	animData.insert({ "anim", animDataStruct({0, 0}, {9, 0}, true, 0.333f) });
@@ -41,7 +41,7 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	}
 
 	for (int i = 0; i < worldButtonLoc.size() - 1; i++) {
-		std::unique_ptr<Image> line = std::make_unique<Image>("./images/widget/maps/mapLine" + std::to_string(i + 1) + "-" + std::to_string(i + 2) + ".png", vector{ 0, 0 }, false);
+		std::unique_ptr<Image> line = std::make_unique<Image>("images/widget/maps/mapLine" + std::to_string(i + 1) + "-" + std::to_string(i + 2) + ".png", vector{ 0, 0 }, false);
 		worldLines.push_back(std::move(line));
 	}
 

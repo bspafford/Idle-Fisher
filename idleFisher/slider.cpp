@@ -18,7 +18,7 @@ Uslider::Uslider(widget* parent, bool useWorldPos, vector size, float minVal, fl
 
 	background = std::make_unique<URectangle>(this, vector{ 0, 0 }, this->size, useWorldPos, glm::vec4(0, 0, 0, 1));
 	foreground = std::make_unique<URectangle>(this, vector{ 0, 0 }, this->size, useWorldPos);
-	handle = std::make_unique<Image>("./images/widget/sliderHandle.png", vector{ 0, 0 }, false);
+	handle = std::make_unique<Image>("images/widget/sliderHandle.png", vector{ 0, 0 }, false);
 }
 
 Uslider::~Uslider() {

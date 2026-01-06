@@ -27,11 +27,11 @@
 
 AautoFisher::AautoFisher(int id) {
 	if (!autoFisherSpriteSheet)
-		autoFisherSpriteSheet = std::make_shared<Image>("./images/autoFisher/autoFisher.png", vector{ 0, 0 }, true);
+		autoFisherSpriteSheet = std::make_shared<Image>("images/autoFisher/autoFisher.png", vector{ 0, 0 }, true);
 	if (!fishingLineSpriteSheet)
-		fishingLineSpriteSheet = std::make_shared<Image>("./images/autoFisher/fishingLine.png", vector{ 0, 0 }, true);
+		fishingLineSpriteSheet = std::make_shared<Image>("images/autoFisher/fishingLine.png", vector{ 0, 0 }, true);
 	if (!outlineSpriteSheet)
-		outlineSpriteSheet = std::make_shared<Image>("./images/autoFisher/outline.png", vector{ 0, 0 }, true);
+		outlineSpriteSheet = std::make_shared<Image>("images/autoFisher/outline.png", vector{ 0, 0 }, true);
 
 	this->id = id;
 	SaveData::saveData.autoFisherList[id].unlocked = true;

@@ -7,11 +7,11 @@
 #include "debugger.h"
 
 Arain::Arain() {
-	rainDrop = std::make_unique<Image>("./images/rain.png", vector{ 0, 0 }, true);
+	rainDrop = std::make_unique<Image>("images/rain.png", vector{ 0, 0 }, true);
 	rainTimer = CreateDeferred<Timer>();
 	rainTimer->addCallback(this, &Arain::updateRain);
 
-	std::string path = "./images/misc/rainDropAnim/rainDropAnim";
+	std::string path = "images/misc/rainDropAnim/rainDropAnim";
 	for (int i = 0; i < 8; i++)
 		animImgList.push_back(path + std::to_string(i) + ".png");
 }

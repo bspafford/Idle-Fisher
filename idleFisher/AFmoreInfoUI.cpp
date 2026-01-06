@@ -16,7 +16,7 @@
 AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(parent) {
 	this->autoFisher = autoFisher;
 
-	background = std::make_unique<Image>("./images/autoFisher/moreUI/UI.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/autoFisher/moreUI/UI.png", vector{ 0, 0 }, false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 
@@ -34,8 +34,8 @@ AFmoreInfoUI::AFmoreInfoUI(widget* parent, AautoFisher* autoFisher) : widget(par
 
 	mpsText = std::make_unique<text>(this, "123mps", "afScreen", vector{0, 0});
 
-	levelBar = std::make_unique<Image>("./images/autoFisher/moreUI/level/level1.png", vector{ 0, 0 }, false);
-	fullnessBar = std::make_unique<Image>("./images/autoFisher/moreUI/fullness/fullness1.png", vector{ 0, 0 }, false);
+	levelBar = std::make_unique<Image>("images/autoFisher/moreUI/level/level1.png", vector{ 0, 0 }, false);
+	fullnessBar = std::make_unique<Image>("images/autoFisher/moreUI/fullness/fullness1.png", vector{ 0, 0 }, false);
 
 	setupLocs();
 }
@@ -82,13 +82,13 @@ void AFmoreInfoUI::updateUI() {
 	double maxLevel = autoFisher->maxLevel;
 	int levelPercent = int(round(level / maxLevel * 100));
 	levelText->setText(std::to_string(*autoFisher->level));
-	levelBar->setImage("./images/autoFisher/moreUI/level/level" + std::to_string(levelPercent + 1) + ".png");
+	levelBar->setImage("images/autoFisher/moreUI/level/level" + std::to_string(levelPercent + 1) + ".png");
 
 	double fullness = autoFisher->calcCurrencyHeld();
 	double maxFullness = autoFisher->maxCurrency;
 	int fullnessPercent = int(math::clamp(roundf(fullness / maxFullness * 100.f), 0.f, 100.f));
 	fullnessText->setText(shortNumbers::convert2Short(fullness) + "/" + shortNumbers::convert2Short(maxFullness));
-	fullnessBar->setImage("./images/autoFisher/moreUI/fullness/fullness" + std::to_string(fullnessPercent + 1) + ".png");
+	fullnessBar->setImage("images/autoFisher/moreUI/fullness/fullness" + std::to_string(fullnessPercent + 1) + ".png");
 }
 
 void AFmoreInfoUI::addToViewport(widget* parent) {

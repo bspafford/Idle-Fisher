@@ -144,14 +144,6 @@ void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool
 	AStar::init();
 
 	loadingDone = true;
-
-	if (!textureManager::GetTexturesLoaded()) {
-		textureManager::LoadTextures();
-		loadingTexturesDone = true;
-	}
-
-	if (currWorldName == "titleScreen")
-		std::cout << "initial load: loading textures finished!\n";
 }
 
 void Scene::finishedLoading() {
@@ -163,6 +155,18 @@ void Scene::finishedLoading() {
 
 	if (!Main::settingsWidget) // load settings widget for titleScreen
 		Main::settingsWidget = std::make_unique<Usettings>(nullptr);
+
+	if (!textureManager::GetTexturesLoaded()) {
+		std::thread loader(&Scene::LoadTextures);
+		loader.detach();
+	}
+}
+
+void Scene::LoadTextures() {
+	std::cout << "start loading textures!\n";
+	textureManager::LoadTextures();
+	loadingTexturesDone = true;
+	std::cout << "finished loading textures!\n";
 }
 
 int Scene::getWorldIndexFromName(std::string worldName) {
