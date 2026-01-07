@@ -76,15 +76,17 @@ private:
 
 	static inline std::string prevWorld;
 	static inline std::string currWorldName;
+	// world player is switching to that frame
+	// needed because of the deferred load world
+	static inline std::string worldName;
 
 	static inline std::unique_ptr<LoadingScreen> loadingScreen;
 
-	static inline std::string worldName;
 	static inline WorldLoc worldChangeLoc;
 	static inline bool overrideIfInWorld;
 	static inline bool loadWorld = false;
 
-	static inline bool isStartup;
+	static inline std::atomic<bool> isStartup = false;
 
 	// water stuff
 	static inline float waveSpeed = 0.03f;
@@ -98,6 +100,7 @@ public:
 	static inline std::unique_ptr<Apet> pet;
 
 private:
-	static inline std::mutex mtx;
+	static inline std::recursive_mutex mtx;
+	static inline std::mutex cvMtx;
 	static inline std::condition_variable cv;
 };

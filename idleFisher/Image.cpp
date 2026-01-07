@@ -100,6 +100,7 @@ bool Image::isMouseOver(bool ignoreTransparent) {
 
 	// checks to see if there is a scissor test and if the mouse is inside of it
 	bool insideScissor = math::IsPointInRect(mousePos, ScissorTest::GetCurrRect());
+
 	if (insideScissor && math::IsPointInRect(mousePos, min, max)) {
 		if (ignoreTransparent) {
 			vector relPos = mousePos - min;

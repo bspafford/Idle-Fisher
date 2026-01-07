@@ -69,6 +69,8 @@ void textureStruct::LoadGPU() {
 			bytes = std::move(alphaBytes); // replace old RGBA with packed alpha
 		} // else don't delete anything
 	}
+
+	bytes.shrink_to_fit(); // bytes aren't going to change past this point, so i don't need reserved space
 }
 
 bool textureStruct::GetAlphaAtPos(vector pos) {

@@ -33,6 +33,8 @@ void Scene::Destructor() {
 }
 
 void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _overrideIfInWorld, bool _isStartup) {
+	std::unique_lock lock(mtx);
+
 	isStartup = _isStartup;
 
 	worldName = _worldName;
@@ -48,8 +50,10 @@ void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _ov
 }
 
 void Scene::draw(Shader* shaderProgram) {
+	std::unique_lock lock(mtx);
+
 	if (loadingTexturesDone && !hasLoadedGPUData) {
-		std::unique_lock<std::mutex> lock(mtx);
+		std::unique_lock lock(mtx);
 		hasLoadedGPUData = true;
 		GPULoadCollector::LoadAllGPUData();
 		Main::setupWidgets();
@@ -81,11 +85,15 @@ void Scene::draw(Shader* shaderProgram) {
 }
 
 void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld) {
-	std::unique_lock<std::mutex> lock(mtx);
+	std::unique_lock lock(mtx);
+
+	std::cout << "starting to load world!\n";
 
 	// a wait to make sure the textures get created properly before loading the world
-	if (waitToUploadGPUdata && worldName != "titleScreen")
-		cv.wait(lock, [] {return waitToUploadGPUdata == false; });
+	if (waitToUploadGPUdata && worldName != "titleScreen") {
+		std::unique_lock lock(cvMtx);
+		cv.wait(lock, [] { return waitToUploadGPUdata == false; });
+	}
 
 	GPULoadCollector::open();
 
@@ -144,6 +152,8 @@ void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool
 	AStar::init();
 
 	loadingDone = true;
+
+	std::cout << "finished loading world!\n";
 }
 
 void Scene::finishedLoading() {
@@ -170,6 +180,8 @@ void Scene::LoadTextures() {
 }
 
 int Scene::getWorldIndexFromName(std::string worldName) {
+	std::unique_lock lock(mtx);
+
 	for (int i = 0; i < SaveData::data.worldData.size(); i++)
 		if (SaveData::data.worldData[i].worldName == worldName)
 			return i;
@@ -181,10 +193,12 @@ std::string Scene::getPrevWorldName() {
 }
 
 std::string Scene::getCurrWorldName() {
+	std::unique_lock lock(mtx);
 	return currWorldName;
 }
 
 bool Scene::isLoading() {
+	std::unique_lock lock(mtx);
 	return !loadingDone;
 }
 
@@ -206,9 +220,9 @@ void Scene::deferredChangeWorld() {
 }
 
 void Scene::LoadRequired() {
+	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
 	CreateShaders();
 	textureManager();
-	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
 }
 
 void Scene::CreateShaders() {
@@ -221,14 +235,14 @@ void Scene::CreateShaders() {
 	blurShader = new Shader("blurShader.vert", "blurShader.frag");
 	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
 	Shader::CleanUp();
+
+	updateShaders(0);
 }
 
 void Scene::StartSetup() {
 	Input::Init();
 	sounds();
 	csvReader();
-
-	updateShaders(0);
 
 	character = std::make_unique<Acharacter>();
 }
@@ -243,29 +257,33 @@ void Scene::FinishSetup() {
 }
 
 void Scene::updateShaders(float deltaTime) {
+	std::unique_lock lock(mtx);
 	// set water movement
 	waveFactor += waveSpeed * deltaTime;
 	if (waveFactor >= 1.f) // loop if hit 1
 		waveFactor -= 1.f;
 
+	glm::mat4 camProj = camera->getProjectionMat();
+	glm::vec3 camPos = camera->GetPosition();
+
 	twoDShader->Activate();
-	twoDShader->setMat4("projection", camera->getProjectionMat());
-	twoDShader->setVec2("playerPos", camera->GetPosition());
+	twoDShader->setMat4("projection", camProj);
+	twoDShader->setVec2("playerPos", camPos);
 	twoDShader->setFloat("pixelSize", stuff::pixelSize);
 
 	fishingLineShader->Activate();
-	fishingLineShader->setMat4("projection", camera->getProjectionMat());
-	fishingLineShader->setVec2("playerPos", camera->GetPosition());
+	fishingLineShader->setMat4("projection", camProj);
+	fishingLineShader->setVec2("playerPos", camPos);
 	fishingLineShader->setFloat("pixelSize", stuff::pixelSize);
 
 	twoDWaterShader->Activate();
 	twoDWaterShader->setFloat("moveFactor", waveFactor);
-	twoDWaterShader->setMat4("projection", camera->getProjectionMat());
-	twoDWaterShader->setVec2("playerPos", camera->GetPosition());
+	twoDWaterShader->setMat4("projection", camProj);
+	twoDWaterShader->setVec2("playerPos", camPos);
 	twoDWaterShader->setFloat("pixelSize", stuff::pixelSize);
 
 	blurShader->Activate();
 	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
-	blurShader->setVec2("playerPos", camera->GetPosition());
+	blurShader->setVec2("playerPos", camPos);
 	blurShader->setFloat("pixelSize", stuff::pixelSize);
 }

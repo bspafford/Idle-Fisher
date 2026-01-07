@@ -1,6 +1,8 @@
 #include "PakReader.h"
 #include "textureManager.h"
 
+#include "debugger.h"
+
 void PakReader::ParseImages(const std::string& _path) {
 	std::lock_guard lock(mutex);
 

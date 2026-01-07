@@ -1,18 +1,18 @@
 id,thumbnail,name,description,buffs,debuffs,currencyId,price,buffValues
-0,./images/widget/thumbnails/pepper.png,Pepper,Pepper,,Increase Fish Speed,1,1,1
-1,./images/widget/thumbnails/fishFood.png,fish food,,Chance To Not Reset Combo,,1,2,1
-2,./images/widget/thumbnails/cannedMeat.png,Canned Meat,,Increase Fish Caught,Increase Fish Intervals,1,3,"(1,1)"
-3,./images/widget/thumbnails/worm.png,Worm,,Decrease Fish Intervals,Decrease Fish Caught,1,4,"(1,1)"
-4,None,temp3,,Increase Golden Fish Chance,,1,5,1
-5,None,temp4,,Decrease Golden Fish Cooldown,,1,6,1
-6,None,temp5,,Increase Yellow / Green,,1,7,"(1,1)"
-7,None,temp6,,Decrease Fish Move Speed,,1,8,1
-8,None,temp7,,Increase Green,Decrease Yellow,1,9,"(1,1)"
-9,None,temp8,,Increase Yellow,Decrease Green,1,10,"(1,1)"
-10,None,temp9,,Increase Yellow / Green,Increase Fish Speed,1,11,"(1,1,1)"
-11,None,temp10,,Catch More Fish,Increase Fish Speed,1,12,"(1,1)"
-12,None,temp11,,Increase Fish Bounce Num,,1,13,1
-13,None,temp12,,Increase Combo Max,,1,14,1
-14,None,temp13,,Increase Combo Increase,,1,15,1
-15,None,temp14,,Start At Higher Combo,,1,16,1
-16,None,Master Bait,,Increase Fish Caught\nDecrease Fish Intervals\nIncrease Combo,,1,17,"(1,1,1)"
+0,images/widget/thumbnails/pepper.png,Pepper,Pepper,,Increase Fish Speed,1,1,1
+1,images/widget/thumbnails/fishFood.png,fish food,,Chance To Not Reset Combo,,1,2,1
+2,images/widget/thumbnails/cannedMeat.png,Canned Meat,,Increase Fish Caught,Increase Fish Intervals,1,3,"(1,1)"
+3,images/widget/thumbnails/worm.png,Worm,,Decrease Fish Intervals,Decrease Fish Caught,1,4,"(1,1)"
+4,,temp3,,Increase Golden Fish Chance,,1,5,1
+5,,temp4,,Decrease Golden Fish Cooldown,,1,6,1
+6,,temp5,,Increase Yellow / Green,,1,7,"(1,1)"
+7,,temp6,,Decrease Fish Move Speed,,1,8,1
+8,,temp7,,Increase Green,Decrease Yellow,1,9,"(1,1)"
+9,,temp8,,Increase Yellow,Decrease Green,1,10,"(1,1)"
+10,,temp9,,Increase Yellow / Green,Increase Fish Speed,1,11,"(1,1,1)"
+11,,temp10,,Catch More Fish,Increase Fish Speed,1,12,"(1,1)"
+12,,temp11,,Increase Fish Bounce Num,,1,13,1
+13,,temp12,,Increase Combo Max,,1,14,1
+14,,temp13,,Increase Combo Increase,,1,15,1
+15,,temp14,,Start At Higher Combo,,1,16,1
+16,,Master Bait,,Increase Fish Caught\nDecrease Fish Intervals\nIncrease Combo,,1,17,"(1,1,1)"

@@ -193,7 +193,7 @@ void animation::SetColorMod(glm::vec4 colorMod) {
 bool animation::IsMouseOver(bool useAlpha) {
 	if (!spriteSheet)
 		return false;
-	spriteSheet->isMouseOver(useAlpha);
+	return spriteSheet->isMouseOver(useAlpha);
 }
 
 void animation::SetUseAlpha(bool useAlpha) {

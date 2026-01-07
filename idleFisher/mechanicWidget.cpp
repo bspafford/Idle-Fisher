@@ -19,6 +19,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	this->NPCParent = NPCParent;
 
 	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
+
 	saveMechanicStruct = &SaveData::saveData.mechanicStruct[id];
 	mechanicStruct = &SaveData::data.mechanicStruct[id];
 
