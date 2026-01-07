@@ -9,6 +9,8 @@
 
 #include "textureManager.h"
 
+struct FfontInfo;
+
 struct PakHeader {
 	uint32_t version;
 	uint32_t dirOffset;
@@ -32,13 +34,13 @@ struct TextureEntry {
 		: hashId(_hashId), offset(_offset), size(_size), width(_width), height(_height), format(_format), flags(_flags) {}
 };
 
-struct ShaderEntry {
+struct Entry {
 	uint32_t hashId;
 	uint32_t offset;
 	uint32_t size;
 
-	ShaderEntry() {}
-	ShaderEntry(uint32_t _hashId, uint32_t _offset, uint32_t _size) : hashId(_hashId), offset(_offset), size(_size) {}
+	Entry() {}
+	Entry(uint32_t _hashId, uint32_t _offset, uint32_t _size) : hashId(_hashId), offset(_offset), size(_size) {}
 };
 
 class PakReader {
@@ -57,6 +59,10 @@ public:
 	static void ClearShaderData();
 	static std::string GetShader(const std::string& path);
 
+	// Text
+	static void ParseFonts(const std::string& path);
+	static FfontInfo* GetFontData(const std::string& path);
+
 	// Hash FNV1a
 	static uint32_t Hash(const std::string& str);
 
@@ -74,4 +80,7 @@ private:
 	static inline std::ifstream shaderInput;
 	static inline PakHeader* shaderHeader;
 	static inline std::unordered_map<uint32_t, std::string> shaderMap;
+
+	// Shaders
+	static inline std::unordered_map<uint32_t, FfontInfo*> fontMap;
 };

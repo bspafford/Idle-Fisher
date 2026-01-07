@@ -223,6 +223,7 @@ void Scene::LoadRequired() {
 	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
 	CreateShaders();
 	textureManager();
+	text::Init();
 }
 
 void Scene::CreateShaders() {

@@ -17,15 +17,17 @@ enum TextAlign {
 };
 
 struct FfontInfo {
-	int textHeight = 0;
+	uint16_t textHeight = 0;
 	// How many pixels chars like 'g', 'y', etc, should be dropped
-	int dropHeight = 0;
+	uint16_t dropHeight = 0;
 	std::vector<Rect> letterRect = std::vector<Rect>(126);
 };
 
 
 class text : public widget {
 public:
+	static void Init();
+
 	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, TextAlign alignment = TEXT_ALIGN_LEFT);
 	~text();
 	void LoadGPU();
@@ -35,7 +37,6 @@ public:
 	void makeText(int i, std::string text, vector &offset);
 	vector getSize();
 	std::string getString();
-	void loadTextImg();
 	void setTextColor(int r, int g, int b);
 	void setupLocs() override;
 
@@ -55,6 +56,8 @@ public:
 	void makeTextTexture();
 
 private:
+	void loadTextImg();
+
 	vector getFBOSize();
 
 	static inline std::vector<text*> instances;

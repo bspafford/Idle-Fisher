@@ -5,11 +5,15 @@
 #include <fstream>
 #include <iostream>
 
-#include "camera.h"
 #include "GPULoadCollector.h"
 #include "FBO.h"
+#include "PakReader.h"
 
 #include "debugger.h"
+
+void text::Init() {
+	PakReader::ParseFonts("data/fonts.pak");
+}
 
 text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, TextAlign alignment) : widget(parent) {
 	instances.push_back(this);
@@ -20,7 +24,10 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 	this->isometric = isometric;
 	this->useWorldPos = useWorldPos;
 
-	loadTextImg();
+	textImg = std::make_shared<Image>("fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
+	fontInfo = PakReader::GetFontData(font);
+	//std::cout << "font: " << font << ", height: " << fontInfo->textHeight << ", dropHeight: " << fontInfo->dropHeight << "\n";
+
 	setText(text);
 
 	GPULoadCollector::add(this);
