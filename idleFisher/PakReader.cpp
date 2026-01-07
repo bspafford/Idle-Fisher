@@ -75,7 +75,13 @@ void PakReader::LoadTextures(std::unordered_map<uint32_t, std::unique_ptr<textur
 
 TextureEntry PakReader::GetImgEntry(uint32_t hashedId) {
 	std::lock_guard lock(mutex);
-	return imgDirectory[hashedId];
+
+	auto it = imgDirectory.find(hashedId);
+	if (it != imgDirectory.end())
+		return imgDirectory[hashedId];
+
+	std::cout << "No Image with id '" << hashedId << "' was found in imgDirectory\n";
+	abort();
 }
 
 void PakReader::ParseShaders(const std::string& path) {
@@ -132,8 +138,8 @@ std::string PakReader::GetShader(const std::string& path) {
 }
 
 void PakReader::ParseFonts(const std::string& path) {
-	std::ifstream textInput(path, std::ios::binary);
-	if (!textInput.is_open()) {
+	std::ifstream fontInput(path, std::ios::binary);
+	if (!fontInput.is_open()) {
 		std::cout << "failed to open: " << path << "\n";
 		return;
 	}
@@ -141,32 +147,32 @@ void PakReader::ParseFonts(const std::string& path) {
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
 	std::vector<unsigned char*> headerBuffer(headerSize);
-	textInput.seekg(0);
-	textInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
+	fontInput.seekg(0);
+	fontInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
-	PakHeader* textHeader = new PakHeader();
-	memcpy(textHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
+	PakHeader* fontHeader = new PakHeader();
+	memcpy(fontHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
 
 	// load directory
-	uint32_t dirSize = textHeader->dirCount * sizeof(Entry);
+	uint32_t dirSize = fontHeader->dirCount * sizeof(Entry);
 	std::vector<unsigned char*> dirBuffer(dirSize);
-	textInput.seekg(sizeof(PakHeader));
-	textInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
+	fontInput.seekg(sizeof(PakHeader));
+	fontInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
-	std::vector<Entry> textEntries(textHeader->dirCount);
-	memcpy(textEntries.data(), dirBuffer.data(), dirBuffer.size());
+	std::vector<Entry> fontEntries(fontHeader->dirCount);
+	memcpy(fontEntries.data(), dirBuffer.data(), dirBuffer.size());
 
-	fontMap.reserve(textEntries.size());
-	for (Entry entry : textEntries) {
+	fontMap.reserve(fontEntries.size());
+	for (Entry entry : fontEntries) {
 		uint32_t size = entry.size;
 		std::vector<uint8_t> buffer(size);
-		textInput.seekg(entry.offset);
-		textInput.read(reinterpret_cast<char*>(buffer.data()), size);
+		fontInput.seekg(entry.offset);
+		fontInput.read(reinterpret_cast<char*>(buffer.data()), size);
 
 		FfontInfo* fontInfo = new FfontInfo();
 
-		// first 2 bytes are text height, second 2 are dropHeight
-		std::memcpy(&fontInfo->textHeight, buffer.data(), sizeof(uint16_t));
+		// first 2 bytes are font height, second 2 are drop height
+		std::memcpy(&fontInfo->height, buffer.data(), sizeof(uint16_t));
 		std::memcpy(&fontInfo->dropHeight, buffer.data() + 2, sizeof(uint16_t));
 
 		// then the list of rects
@@ -174,12 +180,17 @@ void PakReader::ParseFonts(const std::string& path) {
 		fontInfo->letterRect.resize(remainingSize);
 		std::memcpy(fontInfo->letterRect.data(), buffer.data() + sizeof(uint16_t) * 2, remainingSize * sizeof(Rect));
 
-		std::cout << "textHeight: " << fontInfo->textHeight << ", dropHeight: " << fontInfo->dropHeight << "\n";
-		//for (int i = 0; i < fontInfo->letterRect.size(); i++)
-			//std::cout << char(i) << ": " << fontInfo->letterRect[i] << "\n";
-
 		fontMap.insert({ entry.hashId, fontInfo });
 	}
+
+	fontInput.close();
+	delete fontHeader;
+}
+
+void PakReader::ClearTextData() {
+	for (auto& texture : fontMap)
+		delete texture.second;
+	fontMap.clear();
 }
 
 FfontInfo* PakReader::GetFontData(const std::string& path) {

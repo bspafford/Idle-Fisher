@@ -15,6 +15,10 @@ void text::Init() {
 	PakReader::ParseFonts("data/fonts.pak");
 }
 
+void text::Shutdown() {
+	PakReader::ClearTextData();
+}
+
 text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, TextAlign alignment) : widget(parent) {
 	instances.push_back(this);
 
@@ -26,7 +30,6 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 
 	textImg = std::make_shared<Image>("fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
 	fontInfo = PakReader::GetFontData(font);
-	//std::cout << "font: " << font << ", height: " << fontInfo->textHeight << ", dropHeight: " << fontInfo->dropHeight << "\n";
 
 	setText(text);
 
@@ -64,94 +67,6 @@ void text::changeFont() {
 	}
 }
 
-void text::loadTextImg() {
-	textImg = std::make_shared<Image>("fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
-
-	std::ifstream file("fonts/" + font + "/" + font + ".txt");
-	if (!file) {
-		std::cout << "no font file\n";
-		return;
-	}
-
-	auto it = fontInfoMap.find(font);
-	if (it != fontInfoMap.end()) { // already in map
-		fontInfo = &it->second;
-	} else { // need to load the data
-		auto [it, inserted] = fontInfoMap.try_emplace(font);
-		fontInfo = &it->second;
-
-		std::string line;
-		std::string delimiter = " ";
-		std::string delimiter1 = ":";
-
-		int lineNum = 0;
-		int xOffset = 0;
-
-		// parse header row
-		std::string headerLine;
-		std::getline(file, headerLine);
-		std::vector<std::string> delimLine;
-		std::istringstream stream(headerLine);
-		while (std::getline(stream, line, ' '))
-			delimLine.push_back(line);
-
-		if (delimLine.size() > 0)
-			fontInfo->textHeight = std::stoi(delimLine[0]);
-		if (delimLine.size() > 1)
-			fontInfo->dropHeight = std::stoi(delimLine[1]);
-
-		// parse body
-		while (std::getline(file, line)) {
-			// get each word in line
-			size_t pos = 0;
-			std::string token;
-			while ((pos = line.find(delimiter)) != std::string::npos || line != "") {
-				// includes the last item in list
-				if (line.find(delimiter) == std::string::npos)
-					pos = line.size();
-
-				char token1;
-				size_t pos1 = 0;
-				token = line.substr(0, pos);
-				if (token.find("32:") != std::string::npos) {
-					line.erase(0, pos + delimiter.length());
-					if ((pos1 = token.find(":")) != std::string::npos) {
-						token.erase(0, pos1 + delimiter1.length());
-						fontInfo->letterRect[32].x = float(xOffset);
-						fontInfo->letterRect[32].y = float(lineNum);
-					}
-
-					token1 = 32;
-				} else if (token.find("58:") != std::string::npos) {
-					line.erase(0, pos + delimiter.length());
-					if ((pos1 = token.find(":")) != std::string::npos) {
-						token.erase(0, pos1 + delimiter1.length());
-						fontInfo->letterRect[58].x = float(xOffset);
-						fontInfo->letterRect[58].y = float(lineNum);
-					}
-
-					token1 = 58;
-				} else {
-					line.erase(0, pos + delimiter.length());
-					while ((pos1 = token.find(":")) != std::string::npos) {
-						token1 = *token.substr(0, pos1).c_str();
-						token.erase(0, pos1 + delimiter1.length());
-						fontInfo->letterRect[token1].x = float(xOffset);
-						fontInfo->letterRect[token1].y = float(lineNum);
-					}
-				}
-
-				xOffset += std::stoi(token);
-				fontInfo->letterRect[token1].w = std::stof(token);
-				fontInfo->letterRect[token1].h = fontInfo->textHeight;
-			}
-
-			xOffset = 0;
-			lineNum += fontInfo->textHeight;
-		}
-	}
-}
-
 void text::setTextColor(int r, int g, int b) {
 	colorMod = glm::vec4(r / 255.f, g / 255.f, b / 255.f, 1.f);
 }
@@ -177,7 +92,7 @@ void text::makeText(int i, std::string text, vector &offset) {
 	// makes new line
 	if (text[i] == '\n') {
 		offset.x = 0;
-		offset.y += (fontInfo->textHeight + 1);
+		offset.y += (fontInfo->height + 1);
 	} else {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(letterRect);
 
@@ -291,7 +206,7 @@ void text::makeTextTexture() {
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++)
 		if (letters[i]) {
-			letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->textHeight + fboSize.y}.round()); // push to top of fbo
+			letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->height + fboSize.y}.round()); // push to top of fbo
 			std::string dropList("qypgj");
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight

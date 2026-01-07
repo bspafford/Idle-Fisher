@@ -71,8 +71,6 @@ public:
 	bool IsFinished();
 	bool IsStopped();
 
-	void shouldntDeleteTimer(bool dontDelete);
-
 	vector GetCellSize();
 	vector GetCellNum();
 

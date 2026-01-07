@@ -25,6 +25,7 @@ enum WorldLoc {
 
 class Scene {
 public:
+	static void Init();
 	static void Destructor();
 	
 	// isStartup is for when the application loads up for the first time and loads into a world for the first time
@@ -54,9 +55,6 @@ public:
 
 private:
 	static void CreateShaders();
-	// load required things to make the loading screen work
-	// this is called before the program moves to worker thread
-	static void LoadRequired();
 	// this is called when the scene starts loading for the first time for that session
 	static void StartSetup();
 	// this is called after the scene is loaded for the first time for that session

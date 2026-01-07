@@ -11,7 +11,9 @@
 class Timer {
 private:
 	Timer() {}
-	friend class CreateDeferred<Timer>; // forces Timer to be created by deferredPtr cause Timer constructor is private
+	void GoingToDelete();
+	friend class CreateDeferred<Timer>; // forces Timer to be created by deferredPtr because Timer constructor is private
+	friend class DeferredPtr<Timer>;
 
 public:
 	~Timer();
@@ -32,8 +34,6 @@ public:
 
 	bool IsFinished();
 	bool IsGoing();
-
-	void shouldntDelete(bool dontDelete);
 
 	// sets up callback and fps
 	template <typename T> void addCallback(T* const object, void(T::* const finish)()) {
@@ -64,7 +64,4 @@ private:
 
 	std::function<void()> callback_ = nullptr;
 	std::function<void()> updateCallback_ = nullptr;
-
-	// whether or not this object should be removed from instance list when changing worlds
-	bool dontDelete;
 };

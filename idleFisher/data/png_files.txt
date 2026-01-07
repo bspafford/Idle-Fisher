@@ -421,10 +421,11 @@ images/fish/waterfish.png
 images/fish/woodfish.png
 images/fish/zombie.png
 images/fishschool/fishschool.png
-images/icons/icon24.png
-images/icons/icon32.png
-images/icons/icon48.png
-images/icons/icon64.png
+images/icons/icon16.png|rgba
+images/icons/icon24.png|rgba
+images/icons/icon32.png|rgba
+images/icons/icon48.png|rgba
+images/icons/icon64.png|rgba
 images/landscape/bush.png
 images/landscape/leafparticles.png
 images/landscape/rock.png

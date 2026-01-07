@@ -63,12 +63,17 @@ private:
 	static void DeferredDelete(T* obj) {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!shuttingDown) {
+			if constexpr (requires(T* t) { t->GoingToDelete(); })
+				obj->GoingToDelete(); // only compiled if it exists
+
 			static std::vector<T*>& list = GetDeferredList();
 			list.push_back(obj);
 		} else { // otherwise delete now because program is closing
 			delete obj;
 		}
 	}
+
+
 
 	static void AddObject(T* obj) {
 		std::lock_guard<std::recursive_mutex> lock(mutex);

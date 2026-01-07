@@ -52,10 +52,11 @@ struct textureStruct {
 	void LoadGPU();
 
 	bool GetAlphaAtPos(vector pos);
+
 	// returns a copy of the flipped bytes
-	// so responsible for freeing memory
-	// and so it doesn't continue to flip back and forth
-	std::vector<uint8_t> FlipBytesVertically();
+	// so it doesn't continue to flip back and forth
+	// don't just flip once loadGPU is called because images can query before then
+	std::vector<uint8_t> GetFlippedBytes();
 };
 
 class textureManager {
@@ -88,7 +89,7 @@ public:
 
 private:
 	// loads in the texture from memory and adds it to a texture map
-	static textureStruct* loadTexture(std::string path);
+	// assumes caller has already checked if texture is in textureMap
 	static textureStruct* loadTexture(uint32_t hashedId);
 	// checks if the shader has changed
 	static void CheckShaders();

@@ -7,9 +7,11 @@
 
 #include "debugger.h"
 
-Timer::~Timer() {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
+void Timer::GoingToDelete() {
+	stop();
+}
 
+Timer::~Timer() {
 	stop();
 }
 
@@ -31,6 +33,7 @@ void Timer::setFps(float fps) {
 
 void Timer::Update(float deltaTime) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
+
 	if (!bGoing)
 		return;
 
@@ -86,9 +89,4 @@ void Timer::stop() {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
 	bGoing = false;
 	time = 0;
-}
-
-void Timer::shouldntDelete(bool dontDelete) {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
-	this->dontDelete = dontDelete;
 }

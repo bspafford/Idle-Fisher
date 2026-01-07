@@ -5,7 +5,6 @@
 #include "collision.h"
 #include "Texture.h"
 #include "AStar.h"
-#include "timer.h"
 #include "GPULoadCollector.h"
 
 #include "upgrades.h"
@@ -21,6 +20,11 @@
 #include "character.h"
 
 #include "debugger.h"
+
+void Scene::Init() {
+	Scene::camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
+	CreateShaders();
+}
 
 void Scene::Destructor() {
 	delete shaderProgram;
@@ -41,9 +45,6 @@ void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _ov
 	worldChangeLoc = _worldChangeLoc;
 	overrideIfInWorld = _overrideIfInWorld;
 	loadWorld = true;
-
-	if (isStartup)
-		LoadRequired();
 
 	if (!loadingScreen)
 		loadingScreen = std::make_unique<LoadingScreen>(nullptr);
@@ -217,13 +218,6 @@ void Scene::deferredChangeWorld() {
 
 	std::thread loader(&Scene::openLevelThread, worldName, worldChangeLoc, overrideIfInWorld);
 	loader.detach();
-}
-
-void Scene::LoadRequired() {
-	camera = std::make_unique<Camera>(glm::vec3(-55, 50, -350));
-	CreateShaders();
-	textureManager();
-	text::Init();
 }
 
 void Scene::CreateShaders() {

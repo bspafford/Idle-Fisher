@@ -54,6 +54,8 @@ Main::~Main() {
 	textureManager::Deconstructor();
 	DeferredPtr<Timer>::BeginShutdown();
 
+	text::Shutdown();
+
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
@@ -91,8 +93,6 @@ int Main::createWindow() {
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 
-	setTaskbarIcon(window);
-	
 	//Load GLAD so it configures OpenGL
 	if (!gladLoadGL())
 		return -1;
@@ -102,45 +102,11 @@ int Main::createWindow() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Start
 	Start();
-
-	// Framebuffer for Shadow Map
-	unsigned int shadowMapFBO;
-	glCreateFramebuffers(1, &shadowMapFBO);
-	// Texture for Shadow Map FBO
-	unsigned int shadowMapWidth = 2048, shadowMapHeight = 2048;
-	unsigned int shadowMap;
-	glCreateTextures(GL_TEXTURE_2D, 1, &shadowMap);
-	glBindTexture(GL_TEXTURE_2D, shadowMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	// Prevents darkness outside the frustrum
-	float clampColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampColor);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
-	// Needed since we don't touch the color buffer
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Load in a model for shadows
-	house = std::make_unique<Model>("images/models/idleFisher3D/idleFisher3DNoWater.gltf");
-	house->setPos(glm::vec3(-182.75f, 0.f, -504.5f));
-	house->setScale(glm::vec3(1.89f));
-	house->setColor(glm::vec3(255, 240, 240));
-	characterModel = std::make_unique<Model>("images/models/character/character.gltf");
-
-	characterModel->setScale(glm::vec3(3.f));
 
 	auto lastTime = std::chrono::steady_clock::now();
 
@@ -167,41 +133,7 @@ int Main::createWindow() {
 
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glEnable(GL_DEPTH_TEST);
-
-		// Compute full light-space matrix
-		float size = 300.f; // 100.f;// 35
-		glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + GetMainCamera()->GetPosition() - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
-		glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, -1.f, 300.0f);
-		glm::mat4 lightView = glm::lookAt(lightPos, lightPos - glm::vec3(-1, 1, 1), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView; // This is what you send to shaders
-
-		renderShadows = false;
-		// === SHADOW PASS (Render to Shadow Map) ===
-		if (renderShadows) {
-			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-			glClear(GL_DEPTH_BUFFER_BIT);
-			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
-
-			Scene::shadowMapProgram->Activate();
-			Scene::shadowMapProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-			// Render objects (WITHOUT camera)
-			draw3D(Scene::shadowMapProgram);
-			characterModel->Draw(Scene::shadowMapProgram, *GetMainCamera());
-
-			// Unbind FBO
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-
-		glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
 		
-		// === MAIN RENDER PASS (Render Scene with Shadows) ===
-
-		characterModel->setPos(GetMainCamera()->GetPosition() + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
-
-		glDisable(GL_DEPTH_TEST);
 		// ==== DRAW 2D STUFF ====
 		Scene::twoDShader->Activate();
 
@@ -213,17 +145,7 @@ int Main::createWindow() {
 
 		textureManager::EndFrame();
 
-		glEnable(GL_DEPTH_TEST);
-		// ==== DRAW SHADOW MESH ====
-		Scene::shaderProgram->Activate();
-		Scene::shaderProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-		if (renderShadows) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shadowMap);
-			Scene::shaderProgram->setInt("shadowMap", 1);
-			Scene::shaderProgram->setInt("shadowOnly", 1);
-			draw3D(Scene::shaderProgram);
-		}
+		DrawShadows();
 
 		Input::fireHeldInputs();
 		Scene::deferredChangeWorld();
@@ -256,12 +178,20 @@ void Main::Start() {
 	glfwSetCursorPosCallback(window, Input::cursorPosCallback);
 	glfwSetMonitorCallback(monitorCallback);
 
+	textureManager();
+	setTaskbarIcon();
+
+	text::Init();
+
+	Scene::Init();
 	Scene::openLevel("titleScreen", WORLD_SET_LOC_NONE, true, true);
 	Scene::deferredChangeWorld();
 	
 	fps::fps();
 
 	BlurBox::Init();
+
+	ShadowSetup();
 }
 
 void Main::Update(float deltaTime) {
@@ -305,6 +235,82 @@ void Main::setupWidgets() {
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
 	if (!settingsWidget)
 		settingsWidget = std::make_unique<Usettings>(nullptr);
+}
+
+void Main::ShadowSetup() {
+	return; // to do
+
+	// Framebuffer for Shadow Map
+	glCreateFramebuffers(1, &shadowMapFBO);
+	// Texture for Shadow Map FBO
+	glCreateTextures(GL_TEXTURE_2D, 1, &shadowMap);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	// Prevents darkness outside the frustrum
+	float clampColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampColor);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
+	// Needed since we don't touch the color buffer
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Load in a model for shadows
+	house = std::make_unique<Model>("models/idleFisher3D/idleFisher3DNoWater.gltf");
+	house->setPos(glm::vec3(-182.75f, 0.f, -504.5f));
+	house->setScale(glm::vec3(1.89f));
+	house->setColor(glm::vec3(255, 240, 240));
+	characterModel = std::make_unique<Model>("models/character/character.gltf");
+
+	characterModel->setScale(glm::vec3(3.f));
+}
+
+void Main::DrawShadows() {
+	return; // to do
+
+	glEnable(GL_DEPTH_TEST);
+
+	// Compute full light-space matrix
+	float size = 300.f; // 100.f;// 35
+	glm::vec3 lightPos = glm::vec3(-30.f, 100.f, 30.f) + GetMainCamera()->GetPosition() - glm::vec3(52.7046, 24.8073, 88.9249); // should follow camera pos
+	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, -1.f, 300.0f);
+	glm::mat4 lightView = glm::lookAt(lightPos, lightPos - glm::vec3(-1, 1, 1), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView; // This is what you send to shaders
+
+	// === SHADOW PASS (Render to Shadow Map) ===
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+
+	Scene::shadowMapProgram->Activate();
+	Scene::shadowMapProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+	// Render objects (WITHOUT camera)
+	draw3D(Scene::shadowMapProgram);
+	characterModel->Draw(Scene::shadowMapProgram, *GetMainCamera());
+
+	// Unbind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
+
+	characterModel->setPos(GetMainCamera()->GetPosition() + glm::vec3(-1.f, -.82f, -1.f) * glm::vec3(62.5f) + glm::vec3(9, 0, 9));
+
+
+	Scene::shaderProgram->Activate();
+	Scene::shaderProgram->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	Scene::shaderProgram->setInt("shadowMap", 1);
+	Scene::shaderProgram->setInt("shadowOnly", 1);
+	draw3D(Scene::shaderProgram);
+
+	glDisable(GL_DEPTH_TEST);
 }
 
 void Main::draw3D(Shader* shaderProgram) {
@@ -440,15 +446,19 @@ double Main::calcRebirthCurrency() {
 	return floor(tempRebirthCurrency - SaveData::saveData.totalRebirthCurrency);
 }
 
-void Main::setTaskbarIcon(GLFWwindow* window) {
+void Main::setTaskbarIcon() {
 	const int iconsNum = 2;
 	GLFWimage iconImgs[iconsNum];
 	std::vector<std::string> paths = { "icon24", "icon16" };
-	for (int i = 0; i < iconsNum; i++)
-		iconImgs[i].pixels = stbi_load(("images/icons/" + paths[i] + ".png").c_str(), &iconImgs[i].width, &iconImgs[i].height, 0, 4);
+	std::vector<std::vector<uint8_t>> flippedList(iconsNum); // so it doesn't leave memory before I finish looping
+	for (int i = 0; i < iconsNum; i++) {
+		textureStruct* texture = textureManager::getTexture("images/icons/" + paths[i] + ".png");
+		flippedList.push_back(texture->GetFlippedBytes());
+		iconImgs[i].width = texture->w;
+		iconImgs[i].height = texture->h;
+		iconImgs[i].pixels = flippedList.back().data();
+	}
 	glfwSetWindowIcon(window, iconsNum, iconImgs);
-	for (int i = 0; i < iconsNum; i++)
-		stbi_image_free(iconImgs[i].pixels);
 
 	// polls events to update the taskbar icon
 	// otherwise something like loading all the textures will cause too long of a hold

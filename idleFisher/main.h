@@ -84,17 +84,16 @@ public:
 	static void SetResolution();
 	static void SetFpsLimit();
 	static int GetFPSLimit();
+	static void setTaskbarIcon();
 
 private:
 	static inline GLFWwindow* window;
 
 	void Start();
 	void Update(float deltaTime);
-	void draw3D(Shader* shaderProgram);
 	void draw(Shader* shaderProgram);
 
-	// window stuff
-	void setTaskbarIcon(GLFWwindow* window);
+// window stuff
 	static GLFWmonitor* GetCurrentMonitor();
 	static Rect GetMonitorRect();
 	static void monitorCallback(GLFWmonitor* monitor, int event);
@@ -102,12 +101,20 @@ private:
 	static void windowSizeCallback(GLFWwindow* window, int width, int height);
 	static void checkInputs();
 
-	bool renderShadows = false;
-
 	static inline int fpsCap = 0; // 0 is uncapped
 	static inline bool running = true;
 
-	// 3d
+// 3d stuff
+	// sets up things like shadow fbo, and 3d models
+	void ShadowSetup();
+	// draws the meshes
+	void draw3D(Shader* shaderProgram);
+	// draws to the fbo and draws fbo
+	void DrawShadows();
+	unsigned int shadowMapFBO;
+	unsigned int shadowMapWidth = 2048, shadowMapHeight = 2048;
+	unsigned int shadowMap;
+	
 	std::unique_ptr<Model> house;
 	std::unique_ptr<Model> characterModel;
 };

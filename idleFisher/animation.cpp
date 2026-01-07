@@ -169,10 +169,6 @@ void animation::SetPivot(vector pivot) {
 	spriteSheet->SetPivot(pivot);
 }
 
-void animation::shouldntDeleteTimer(bool dontDelete) {
-	animTimer->shouldntDelete(dontDelete);
-}
-
 vector animation::GetCellSize() {
 	return cellSize;
 }

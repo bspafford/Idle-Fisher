@@ -42,8 +42,10 @@ void textureStruct::LoadGPU() {
 			format = GL_RGBA;
 		else if (nChannels == 3)
 			format = GL_RGB;
-		else
+		else {
 			std::cerr << "Warning: the image is not truecolor; this may cause issues." << std::endl;
+			abort();
+		}
 
 		glTextureStorage2D(id, 1, GL_RGBA8, w, h); // allocate immutable storage
 		glTextureSubImage2D(id, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, bytes.data()); // upload texture data
@@ -93,24 +95,23 @@ bool textureStruct::GetAlphaAtPos(vector pos) {
 	return true; // no data kept, assume opaque
 }
 
-std::vector<uint8_t> textureStruct::FlipBytesVertically() {
-    const size_t rowSize = w * nChannels;
-    const size_t size = rowSize * h;
+std::vector<uint8_t> textureStruct::GetFlippedBytes() {
+	const uint32_t rowSize = w * nChannels;
 
-    std::vector<uint8_t> flipped = bytes;
+	std::vector<uint8_t> cpyBytes = bytes;
 
-    std::vector<uint8_t> tempRow(rowSize);
+	// Basic safety check
+	if (cpyBytes.size() < static_cast<size_t>(rowSize) * h)
+		return {};
 
-    for (uint32_t y = 0; y < h / 2; ++y) {
-        uint8_t* top = flipped.data() + y * rowSize;
-        uint8_t* bottom = flipped.data() + (h - 1 - y) * rowSize;
+	for (uint32_t y = 0; y < h / 2; ++y) {
+		uint8_t* topRow = cpyBytes.data() + y * rowSize;
+		uint8_t* bottomRow = cpyBytes.data() + (h - 1 - y) * rowSize;
 
-        std::memcpy(tempRow.data(), top, rowSize);
-        std::memcpy(top, bottom, rowSize);
-        std::memcpy(bottom, tempRow.data(), rowSize);
-    }
+		std::swap_ranges(topRow, topRow + rowSize, bottomRow);
+	}
 
-    return flipped;
+	return cpyBytes;
 }
 
 textureManager::textureManager() {
@@ -166,16 +167,8 @@ void textureManager::Deconstructor() {
 	textureMap.clear();
 }
 
-textureStruct* textureManager::loadTexture(std::string path) {
-	return loadTexture(PakReader::Hash(path));
-}
-
 textureStruct* textureManager::loadTexture(uint32_t hashedId) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-
-	auto it = textureMap.find(hashedId);
-	if (it != textureMap.end()) // already in map don't add again
-		return it->second.get();
 
 	if (Main::IsRunning()) { // wasn't in map, need to add it
 		auto [it, inserted] = textureMap.emplace(hashedId, std::make_unique<textureStruct>(hashedId));
@@ -198,9 +191,11 @@ textureStruct* textureManager::getTexture(const std::string& name) {
 	auto it = textureMap.find(hashedId);
 	if (it != textureMap.end())
 		return it->second.get();
-	else { // backup
-		std::cout << "Image path not in textureMap but loading anyways: \"" << lower << "\" (" << hashedId << ")\n";
+	else if (!areTexturesLoaded) {
 		return loadTexture(hashedId);
+	} else {
+		std::cout << "Image is not inside of textureMap\n";
+		abort();
 	}
 }
 

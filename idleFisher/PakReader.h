@@ -16,7 +16,7 @@ struct PakHeader {
 	uint32_t dirOffset;
 	uint32_t dirCount;
 
-	PakHeader() {}
+	PakHeader() : version(0), dirOffset(0), dirCount(0) {}
 	PakHeader(uint32_t _version, uint32_t _dirOffset, uint32_t _dirCount) : version(_version), dirOffset(_dirOffset), dirCount(_dirCount) {}
 };
 
@@ -29,7 +29,7 @@ struct TextureEntry {
 	uint16_t format; // RGBA8, indexed, etc
 	uint16_t flags; // keep CPU copy, alpha mask, etc
 
-	TextureEntry() {}
+	TextureEntry() : hashId(0), offset(0), size(0), width(0), height(0), format(0), flags(0) {}
 	TextureEntry(uint32_t _hashId, uint32_t _offset, uint32_t _size, uint32_t _width, uint32_t _height, uint16_t _format, uint16_t _flags)
 		: hashId(_hashId), offset(_offset), size(_size), width(_width), height(_height), format(_format), flags(_flags) {}
 };
@@ -39,7 +39,7 @@ struct Entry {
 	uint32_t offset;
 	uint32_t size;
 
-	Entry() {}
+	Entry() : hashId(0), offset(0), size(0) {}
 	Entry(uint32_t _hashId, uint32_t _offset, uint32_t _size) : hashId(_hashId), offset(_offset), size(_size) {}
 };
 
@@ -61,6 +61,7 @@ public:
 
 	// Text
 	static void ParseFonts(const std::string& path);
+	static void ClearTextData();
 	static FfontInfo* GetFontData(const std::string& path);
 
 	// Hash FNV1a
