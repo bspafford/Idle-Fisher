@@ -19,7 +19,7 @@ textureStruct::textureStruct(std::vector<uint8_t>& _bytes, int w, int h, int nCh
 }
 
 textureStruct::textureStruct(uint32_t hashedId) {
-	TextureEntry entry = PakReader::GetEntry(hashedId);
+	TextureEntry entry = PakReader::GetImgEntry(hashedId);
 	bytes = PakReader::LoadTexture(entry);
 	w = entry.width;
 	h = entry.height;
@@ -144,7 +144,7 @@ textureManager::textureManager() {
 	glVertexAttribDivisor(0, 0);
 	glVertexAttribDivisor(1, 0);
 
-	PakReader::Parse("data/images.pak");
+	PakReader::ParseImages("data/images.pak");
 }
 
 void textureManager::LoadTextures() {
@@ -165,7 +165,7 @@ void textureManager::Deconstructor() {
 }
 
 textureStruct* textureManager::loadTexture(std::string path) {
-	return loadTexture(Hash(path));
+	return loadTexture(PakReader::Hash(path));
 }
 
 textureStruct* textureManager::loadTexture(uint32_t hashedId) {
@@ -192,7 +192,7 @@ textureStruct* textureManager::getTexture(const std::string& name) {
 	// to lower
 	std::string lower = math::toLower(name);
 
-	uint32_t hashedId = Hash(lower);
+	uint32_t hashedId = PakReader::Hash(lower);
 	auto it = textureMap.find(hashedId);
 	if (it != textureMap.end())
 		return it->second.get();
@@ -306,19 +306,4 @@ void textureManager::SetInterpMethod(int method) {
 		if (texture.second->handle != 0)
 			glMakeTextureHandleResidentARB(texture.second->handle);
 	}
-}
-
-// Hash FNV1a
-uint32_t textureManager::Hash(const std::string& str) {
-	const char* c = str.c_str();
-
-	uint32_t hash = 2166136261u; // offset basis
-	while (*c)
-	{
-		hash ^= (uint8_t)(*c);
-		hash *= 16777619u;       // prime
-		++c;
-	}
-
-	return hash;
 }

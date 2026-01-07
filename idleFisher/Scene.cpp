@@ -212,6 +212,7 @@ void Scene::LoadRequired() {
 }
 
 void Scene::CreateShaders() {
+	Shader::Init();
 	shaderProgram = new Shader("default.vert", "default.frag");
 	shadowMapProgram = new Shader("shadowMap.vert", "shadowMap.frag");
 	twoDShader = new Shader("2dShader.vert", "2dShader.frag");
@@ -219,6 +220,7 @@ void Scene::CreateShaders() {
 	circleShader = new Shader("2dShader.vert", "circleShader.frag");
 	blurShader = new Shader("blurShader.vert", "blurShader.frag");
 	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
+	Shader::CleanUp();
 }
 
 void Scene::StartSetup() {

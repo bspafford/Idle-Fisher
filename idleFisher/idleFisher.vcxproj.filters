@@ -51,12 +51,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="waterShader.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="waterShader.frag">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="shadowMap.vert">
       <Filter>Resource Files</Filter>
     </None>
@@ -79,12 +73,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="2dShader.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test.vert">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="blurShader.vert">

@@ -9,7 +9,7 @@
 #include<cerrno>
 #include <glm/glm.hpp>
 
-std::string get_file_contents(const char* filename);
+#include "PakReader.h"
 
 template <typename T>
 struct UniformData {
@@ -37,6 +37,11 @@ public:
 	void setVec2(std::string key, glm::vec2 value);
 	void setInt(std::string key, int value);
 	void setFloat(std::string key, float value);
+
+	static void Init();
+	// Call after finishing create all the shaders for the program
+	static void CleanUp();
+
 private:
 	// Checks if the different Shaders have compiled properly
 	void compileErrors(unsigned int shader, const char* type);

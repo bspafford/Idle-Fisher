@@ -186,10 +186,6 @@
     <None Include="fishingLineShader.frag" />
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
-    <None Include="test.frag" />
-    <None Include="test.vert" />
-    <None Include="waterShader.frag" />
-    <None Include="waterShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AautoFisher.cpp" />

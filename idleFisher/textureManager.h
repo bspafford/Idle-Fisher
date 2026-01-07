@@ -96,10 +96,6 @@ private:
 	// bypass: uploads GPU data even if the shader hasn't changed
 	static void UploadGPUData();
 
-	// Hash FNV1a
-	static uint32_t Hash(const std::string& str);
-
-
 	static inline Shader* currShader = NULL;
 	static inline Shader* prevShader = NULL;
 
