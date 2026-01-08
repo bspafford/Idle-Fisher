@@ -64,6 +64,12 @@ public:
 	static void ClearTextData();
 	static FfontInfo* GetFontData(const std::string& path);
 
+	// Audio
+	static void ParseAudio(const std::string& path);
+	static void LoadAllAudio(std::unordered_map<uint32_t, std::unique_ptr<std::vector<uint8_t>>>& audioMap);
+	// assumes that audioMap has already been checked and there is no instances of Hash(path) already
+	static std::vector<uint8_t> LoadAudio(const std::string& path);
+
 	// Hash FNV1a
 	static uint32_t Hash(const std::string& str);
 
@@ -71,17 +77,17 @@ private:
 	static inline std::mutex mutex;
 	
 	// Images
-	static inline std::string imgPath;
 	static inline std::ifstream imgInput;
-	static inline PakHeader* imgHeader;
 	static inline std::unordered_map<uint32_t, TextureEntry> imgDirectory;
 
 	// Shaders
-	static inline std::string shaderPath;
 	static inline std::ifstream shaderInput;
-	static inline PakHeader* shaderHeader;
 	static inline std::unordered_map<uint32_t, std::string> shaderMap;
 
-	// Shaders
+	// Font
 	static inline std::unordered_map<uint32_t, FfontInfo*> fontMap;
+
+	// Audio
+	static inline std::ifstream audioInput;
+	static inline std::unordered_map<uint32_t, Entry> audioDirectory;
 };

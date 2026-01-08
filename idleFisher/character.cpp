@@ -9,7 +9,6 @@
 #include "Rectangle.h"
 #include "worlds.h"
 #include "AautoFisher.h"
-#include "sounds.h"
 #include "collision.h"
 #include "timer.h"
 #include "fishSchool.h"
@@ -113,6 +112,9 @@ Acharacter::Acharacter() {
 
 	comboOvertimeWidget = std::make_unique<UcomboOvertimeWidget>(nullptr);
 	comboOvertimeWidget->addFinishedCallback(this, &Acharacter::comboOvertimeFinished);
+
+	// Audio
+	catchFishAudio = std::make_unique<Audio>("pop.wav");
 }
 
 void Acharacter::animFinished() {
@@ -281,6 +283,8 @@ void Acharacter::leftClick() {
 			Main::comboWidget->showComboText();
 			Main::comboWidget->spawnComboNumber();
 		}
+
+		catchFishAudio->Play();
 
 		// set animation
 		anim->setAnimation("pullSE", true);

@@ -138,7 +138,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLM_ENABLE_EXPERIMENTAL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\CPPLibraries\glm;C:\CPPLibraries\glfw-3.4.bin.WIN64\include;C:\CPPLibraries\glad\include;C:\CPPLibraries\stb\include;C:\CPPLibraries\json\include;C:\CPPLibraries\alpaca-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\CPPLibraries\glm;C:\CPPLibraries\glfw-3.4.bin.WIN64\include;C:\CPPLibraries\glad\include;C:\CPPLibraries\stb\include;C:\CPPLibraries\json\include;C:\CPPLibraries\alpaca-master\include;C:\CPPLibraries\miniaudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -159,7 +159,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLM_ENABLE_EXPERIMENTAL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\CPPLibraries\glm;C:\CPPLibraries\glfw-3.4.bin.WIN64\include;C:\CPPLibraries\glad\include;C:\CPPLibraries\stb\include;C:\CPPLibraries\json\include;C:\CPPLibraries\alpaca-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\CPPLibraries\glm;C:\CPPLibraries\glfw-3.4.bin.WIN64\include;C:\CPPLibraries\glad\include;C:\CPPLibraries\stb\include;C:\CPPLibraries\json\include;C:\CPPLibraries\alpaca-master\include;C:\CPPLibraries\miniaudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -198,6 +198,7 @@
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="atm.cpp" />
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
     <ClCompile Include="background.cpp" />
     <ClCompile Include="baitBuffs.cpp" />
@@ -422,7 +423,7 @@
     <ClInclude Include="ship.h" />
     <ClInclude Include="shortNumbers.h" />
     <ClInclude Include="slider.h" />
-    <ClInclude Include="sounds.h" />
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="stuff.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="Texture.h" />

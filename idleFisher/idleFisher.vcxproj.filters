@@ -449,6 +449,9 @@
     <ClCompile Include="PakReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -757,7 +760,7 @@
     <ClInclude Include="shortNumbers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sounds.h">
+    <ClInclude Include="Audio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fishSchool.h">

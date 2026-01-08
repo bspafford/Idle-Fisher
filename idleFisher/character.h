@@ -7,6 +7,7 @@
 #include "animation.h"
 #include "Image.h"
 #include "comboOvertimeWidget.h"
+#include "Audio.h"
 
 class saveData;
 class collision;
@@ -136,6 +137,8 @@ private:
 	std::vector<vector> catchAnim = std::vector<vector>{ { 97, 44 }, { 97, 52 }, { 60, 96 }, { 29, 79 }, { 32, 80 }, { 32, 80 }, { 32, 80 }, { 29, 81 }, { 51, 83 }, { 88, 73 }, { 95, 36 }, { 31, 81 } };
 
 	std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWidget;
+
+	std::unique_ptr<Audio> catchFishAudio;
 };
 
 Acharacter* GetCharacter();

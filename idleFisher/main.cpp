@@ -4,7 +4,6 @@
 #include "stuff.h"
 #include "timer.h"
 #include "fps.h"
-#include "Texture.h"
 #include "textureManager.h"
 #include "character.h"
 #include "camera.h"
@@ -36,6 +35,7 @@
 
 #include "debugger.h"
 
+
 int main(int argc, char* argv[]) {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
@@ -55,6 +55,7 @@ Main::~Main() {
 	DeferredPtr<Timer>::BeginShutdown();
 
 	text::Shutdown();
+	Audio::Shutdown();
 
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
@@ -182,6 +183,7 @@ void Main::Start() {
 	setTaskbarIcon();
 
 	text::Init();
+	Audio::Init();
 
 	Scene::Init();
 	Scene::openLevel("titleScreen", WORLD_SET_LOC_NONE, true, true);

@@ -1,23 +1,23 @@
 #include "Scene.h"
+#include "main.h"
 #include "worlds.h"
 #include "saveData.h"
-#include "widget.h"
 #include "collision.h"
 #include "Texture.h"
 #include "AStar.h"
 #include "GPULoadCollector.h"
+#include "Audio.h"
+#include "Input.h"
 
+#include "camera.h"
+#include "character.h"
+#include "widget.h"
 #include "upgrades.h"
 #include "achievementBuffs.h"
 #include "achievement.h"
-#include "main.h"
 #include "pet.h"
-#include "Input.h"
 #include "textureManager.h"
-#include "sounds.h"
 #include "csvReader.h"
-#include "camera.h"
-#include "character.h"
 
 #include "debugger.h"
 
@@ -175,6 +175,7 @@ void Scene::finishedLoading() {
 
 void Scene::LoadTextures() {
 	std::cout << "start loading textures!\n";
+	Audio::LoadData();
 	textureManager::LoadTextures();
 	loadingTexturesDone = true;
 	std::cout << "finished loading textures!\n";
@@ -236,7 +237,6 @@ void Scene::CreateShaders() {
 
 void Scene::StartSetup() {
 	Input::Init();
-	sounds();
 	csvReader();
 
 	character = std::make_unique<Acharacter>();

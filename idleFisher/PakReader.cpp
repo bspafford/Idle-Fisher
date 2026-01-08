@@ -4,14 +4,12 @@
 
 #include "debugger.h"
 
-void PakReader::ParseImages(const std::string& _path) {
+void PakReader::ParseImages(const std::string& path) {
 	std::lock_guard lock(mutex);
 
-	imgPath = _path;
-
-	imgInput = std::ifstream(imgPath, std::ios::binary);
+	imgInput = std::ifstream(path, std::ios::binary);
 	if (!imgInput.is_open()) {
-		std::cout << "failed to open: " << imgPath << "\n";
+		std::cout << "failed to open: " << path << "\n";
 		return;
 	}
 
@@ -21,7 +19,7 @@ void PakReader::ParseImages(const std::string& _path) {
 	imgInput.seekg(0);
 	imgInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
-	imgHeader = new PakHeader();
+	PakHeader* imgHeader = new PakHeader();
 	memcpy(imgHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
 
 	// load directory
@@ -36,6 +34,8 @@ void PakReader::ParseImages(const std::string& _path) {
 	imgDirectory.reserve(textureEntries.size());
 	for (TextureEntry entry : textureEntries)
 		imgDirectory.insert({ entry.hashId, std::move(entry) });
+
+	delete imgHeader;
 }
 
 std::vector<uint8_t> PakReader::LoadTexture(const TextureEntry& entry) {
@@ -67,8 +67,6 @@ void PakReader::LoadTextures(std::unordered_map<uint32_t, std::unique_ptr<textur
 	}
 
 	// clean up
-	imgPath.clear();
-	delete imgHeader;
 	imgDirectory.clear();
 	imgInput.close();
 }
@@ -97,7 +95,7 @@ void PakReader::ParseShaders(const std::string& path) {
 	shaderInput.seekg(0);
 	shaderInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
-	shaderHeader = new PakHeader();
+	PakHeader* shaderHeader = new PakHeader();
 	memcpy(shaderHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
 
 	// load directory
@@ -119,12 +117,12 @@ void PakReader::ParseShaders(const std::string& path) {
 		std::string shaderData(buffer.begin(), buffer.end());
 		shaderMap.insert({ entry.hashId, shaderData });
 	}
+
+	delete shaderHeader;
 }
 
 void PakReader::ClearShaderData() {
-	shaderPath.clear();
 	shaderInput.close();
-	delete shaderHeader;
 	shaderMap.clear();
 }
 
@@ -200,6 +198,72 @@ FfontInfo* PakReader::GetFontData(const std::string& path) {
 
 	std::cout << "\"" << path << "\" was not in fontMap!\n";
 	return nullptr;
+}
+
+void PakReader::ParseAudio(const std::string& path) {
+	audioInput = std::ifstream(path, std::ios::binary);
+	if (!audioInput.is_open()) {
+		std::cout << "failed to open: " << path << "\n";
+		return;
+	}
+
+	// load header
+	uint32_t headerSize = sizeof(PakHeader);
+	std::vector<unsigned char*> headerBuffer(headerSize);
+	audioInput.seekg(0);
+	audioInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
+
+	PakHeader* audioHeader = new PakHeader();
+	memcpy(audioHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
+
+	// load directory
+	uint32_t dirSize = audioHeader->dirCount * sizeof(Entry);
+	std::vector<unsigned char*> dirBuffer(dirSize);
+	audioInput.seekg(sizeof(PakHeader));
+	audioInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
+
+	std::vector<Entry> audioEntries(audioHeader->dirCount);
+	memcpy(audioEntries.data(), dirBuffer.data(), dirBuffer.size());
+
+	audioDirectory.reserve(audioEntries.size());
+	for (Entry entry : audioEntries)
+		audioDirectory.insert({ entry.hashId, std::move(entry) });
+
+	delete audioHeader;
+}
+
+void PakReader::LoadAllAudio(std::unordered_map<uint32_t, std::unique_ptr<std::vector<uint8_t>>>& audioMap) {
+	for (auto& entry : audioDirectory) {
+		auto it = audioMap.find(entry.second.hashId);
+		if (it != audioMap.end())
+			continue; // already in map
+
+		uint32_t size = entry.second.size;
+		std::unique_ptr<std::vector<uint8_t>> buffer = std::make_unique<std::vector<uint8_t>>(size);
+		audioInput.seekg(entry.second.offset);
+		audioInput.read(reinterpret_cast<char*>(buffer->data()), size);
+
+		audioMap.insert({ entry.second.hashId, std::move(buffer) });
+	}
+
+	// clean up
+	audioDirectory.clear();
+	audioInput.close();
+}
+
+std::vector<uint8_t> PakReader::LoadAudio(const std::string& path) {
+	auto it = audioDirectory.find(Hash(path));
+	if (it == audioDirectory.end()) {
+		std::cerr << "Audio file not in audioDirectory: \"" << path << "\"\n";
+		abort();
+	}
+
+	uint32_t size = it->second.size;
+	std::vector<uint8_t> buffer(size);
+	audioInput.seekg(it->second.offset);
+	audioInput.read(reinterpret_cast<char*>(buffer.data()), size);
+
+	return buffer;
 }
 
 uint32_t PakReader::Hash(const std::string& str) {
