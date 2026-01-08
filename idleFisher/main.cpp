@@ -194,6 +194,8 @@ void Main::Start() {
 	BlurBox::Init();
 
 	ShadowSetup();
+
+	collision::Init();
 }
 
 void Main::Update(float deltaTime) {

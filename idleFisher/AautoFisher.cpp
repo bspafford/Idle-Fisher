@@ -261,7 +261,7 @@ void AautoFisher::setupCollision() {
 	for (int i = 0; i < 4; i++)
 		points[i] = { collisionPoints[i].x + loc.x, collisionPoints[i].y + loc.y };
 
-	col = std::make_unique<Fcollision>(points, " ");
+	col = std::make_unique<Fcollision>(points, ' ');
 	collision::addCollisionObject(col.get());
 }
 

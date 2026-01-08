@@ -198,7 +198,7 @@ void Acharacter::setPlayerColPoints() {
 	float radius = 5;
 	vector loc = getCharLoc();
 
-	col = std::make_unique<Fcollision>(loc, radius, " ");
+	col = std::make_unique<Fcollision>(loc, radius, ' ');
 }
 
 void Acharacter::draw(Shader* shaderProgram) {

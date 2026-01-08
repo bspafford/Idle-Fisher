@@ -8,18 +8,15 @@
 #include "saveData.h"
 #include "character.h"
 #include "shaderClass.h"
-#include "camera.h"
 #include "Cursor.h"
+#include "PakReader.h"
 
 #include "debugger.h"
 
-collision::collision() {
-
-}
-
-Fcollision::Fcollision(std::vector<vector> worldPoints, std::string identifier) {
+Fcollision::Fcollision(std::vector<vector> worldPoints, char identifier) {
 	isCircle = false;
-	this->points = worldPoints;
+	for (int i = 0; i < math::min(worldPoints.size(), 4.f); i++)
+		points[i] = worldPoints[i];
 	this->identifier = identifier;
 
 	minX = INFINITY, maxX = -INFINITY, minY = INFINITY, maxY = -INFINITY;
@@ -38,12 +35,12 @@ Fcollision::Fcollision(std::vector<vector> worldPoints, std::string identifier) 
 	}
 }
 
-Fcollision::Fcollision(vector center, float radius, std::string identifier) {
+Fcollision::Fcollision(vector center, float radius, char identifier) {
 	isCircle = true;
 	this->radius = radius;
 	this->identifier = identifier;
 
-	points.push_back(center);
+	points[0] = center;
 
 	minX = center.x - radius;
 	maxX = center.x + radius;
@@ -51,74 +48,20 @@ Fcollision::Fcollision(vector center, float radius, std::string identifier) {
 	maxY = center.y + radius;
 }
 
-void collision::getCollisionObjects() {
-	std::lock_guard<std::mutex> lock(mutex);
+void collision::Init() {
+	PakReader::ParseCollision("data/col.pak", colMap);
+}
 
-	// clears all collision
-	collisionStorage.clear();
+void collision::LoadWorldsCollision(const std::string& worldName) {
+	auto it = colMap.find(PakReader::Hash(worldName));
+	// it titleScreen, then there is no collision to load
+	if (it == colMap.end())
+		return;
+
 	allCollision.clear();
-
-	std::vector<std::vector<vector>> coords;
-
-	std::ifstream colFile("./data/collision.col");
-
-	int lineNum = 0;
-	std::string currWorldName = "";
-	if (colFile.is_open()) {
-		while (colFile.good()) {
-			std::string line;
-			std::getline(colFile, line);
-
-			removeSpaces(line);
-
-			if (line[0] == '!') {
-				if (currWorldName != "") // returns if passed the world
-					return;
-
-				// then set the world name parameter
-				line.erase(line.begin());
-				if (line == Scene::getCurrWorldName())
-					currWorldName = line;
-
-				// only puts collision in the list if its part of that world
-			} else if (line[0] != '/' && line != "" && currWorldName != "") {
-
-				std::string identifier = getIdentifier(line);
-
-				line.erase(0, identifier.size());
-
-				std::vector<std::string> stringList;
-				for (int i = 0; i < line.size(); i++) {
-					// if char == "(" then break into a string
-					if (line[i] == '(') {
-						std::string stringChar(1, line[i]);
-						stringList.push_back(stringChar);
-					} else {
-						std::string stringChar(1, line[i]);
-						stringList[stringList.size() - 1].append(stringChar);
-					}
-				}
-
-				if ((int)coords.size() - 1 < lineNum) {
-					std::vector<vector> charString(stringList.size());
-					coords.push_back(charString);
-				}
-
-				for (int i = 0; i < stringList.size(); i++) {
-					sscanf_s(stringList[i].c_str(), "(%f, %f)", &coords[lineNum][i].x, &coords[lineNum][i].y);
-				}
-
-				vector multiplier = vector{ 1, -1 };
-				vector offset = { 500, 500 };// { 1500, 1500 };
-				for (int i = 0; i < coords[lineNum].size(); i++)
-					coords[lineNum][i] = coords[lineNum][i] * multiplier + offset;
-
-				std::unique_ptr<Fcollision>& col = collisionStorage.emplace_back(std::make_unique<Fcollision>(coords[lineNum], identifier));
-				allCollision.push_back(col.get());
-
-				lineNum++;
-			}
-		}
+	allCollision.reserve(it->second->size());
+	for (int i = 0; i < it->second->size(); ++i) {
+		allCollision.push_back(&it->second->at(i));
 	}
 }
 
@@ -132,14 +75,6 @@ void collision::removeCollisionObject(Fcollision* collision) {
 	if (it != allCollision.end()) {
 		allCollision.erase(it);
 	}
-
-	// remove it from collisionStorage too
-	collisionStorage.erase(
-		std::remove_if(collisionStorage.begin(), collisionStorage.end(),
-			[collision](auto& col) { return col.get() == collision; }
-		),
-		collisionStorage.end()
-	);
 }
 
 bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, std::vector<vector> vertices, vector& normal, float& depth) {
@@ -375,9 +310,9 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 
 	for (int i = 0; i < allCollision.size(); i++) {
 		if (!allCollision[i]->isCircle) {
-			for (int j = 0; j < allCollision[i]->points.size(); j++) {
+			for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
 				int point1 = j;
-				int point2 = (j + 1) % allCollision[i]->points.size();
+				int point2 = (j + 1) % allCollision[i]->GetNumPoints();
 				vector temp1 = allCollision[i]->points[point1];
 				vector temp2 = allCollision[i]->points[point2];
 
@@ -398,7 +333,7 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 				glEnableVertexAttribArray(0);
 
 				// Draw line
-				if (allCollision[i]->identifier == "w") // if water make blue
+				if (allCollision[i]->identifier == 'w') // if water make blue
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
 				else // if else make blue
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
@@ -623,11 +558,11 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					}
 				}
 			} else {
-				for (int j = 0; j < allCollision[i]->points.size(); j++) {
+				for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
 					float toi;
 					vector normal;
 
-					float pointsSize = static_cast<float>(allCollision[i]->points.size());
+					float pointsSize = static_cast<float>(allCollision[i]->GetNumPoints());
 					vector edgeEnd = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
 					vector edgeStart = { allCollision[i]->points[(j + 1) % int(pointsSize)].x, allCollision[i]->points[(j + 1) % int(pointsSize)].y };
 
@@ -641,7 +576,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					}
 				}
 
-				for (int j = 0; j < allCollision[i]->points.size(); j++) {
+				for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
 					float toi;
 					vector normal;
 
@@ -724,7 +659,7 @@ bool collision::testMouse(vector mousePos) {
 
 	for (int i = 0; i < allCollision.size(); i++) {
 		vector normal;
-		if (allCollision[i]->identifier == "w") {
+		if (allCollision[i]->identifier == 'w') {
 			if (pointInQuad(worldPos, allCollision[i])) {
 				Cursor::setMouseOverWater(true);
 				return true;
@@ -778,12 +713,4 @@ void collision::replaceCollisionObject(Fcollision* oldCol, Fcollision* newCol) {
 		int index = static_cast<int>(it - allCollision.begin());
 		allCollision[index] = newCol;
 	}
-
-	// also remove from collision storage
-	collisionStorage.erase(
-		std::remove_if(collisionStorage.begin(), collisionStorage.end(),
-			[oldCol](auto& col) { return col.get() == oldCol; }
-		),
-		collisionStorage.end()
-	);
 }

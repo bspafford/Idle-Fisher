@@ -279,3 +279,41 @@ uint32_t PakReader::Hash(const std::string& str) {
 
 	return hash;
 }
+
+void PakReader::ParseCollision(const std::string& path, std::unordered_map<uint32_t, std::unique_ptr<std::vector<Fcollision>>>& colMap) {
+	std::ifstream colInput(path, std::ios::binary);
+	if (!colInput.is_open()) {
+		std::cout << "failed to open: " << path << "\n";
+		return;
+	}
+
+	// load header
+	uint32_t headerSize = sizeof(PakHeader);
+	std::vector<unsigned char*> headerBuffer(headerSize);
+	colInput.seekg(0);
+	colInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
+
+	PakHeader* colHeader = new PakHeader();
+	memcpy(colHeader, reinterpret_cast<PakHeader*>(headerBuffer.data()), sizeof(PakHeader));
+
+	// load directory
+	uint32_t dirSize = colHeader->dirCount * sizeof(Entry);
+	std::vector<unsigned char*> dirBuffer(dirSize);
+	colInput.seekg(sizeof(PakHeader));
+	colInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
+
+	std::vector<Entry> colEntries(colHeader->dirCount);
+	memcpy(colEntries.data(), dirBuffer.data(), dirBuffer.size());
+
+	for (Entry entry : colEntries) {
+		uint32_t size = entry.size;
+		std::vector<uint8_t> buffer(size);
+		colInput.seekg(entry.offset);
+		colInput.read(reinterpret_cast<char*>(buffer.data()), size);
+
+		std::vector<Fcollision> colList(entry.size / sizeof(Fcollision));
+		std::memcpy(colList.data(), buffer.data(), entry.size);
+
+		colMap.insert({ entry.hashId, std::make_unique<std::vector<Fcollision>>(colList) });
+	}
+}

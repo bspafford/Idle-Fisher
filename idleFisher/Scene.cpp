@@ -108,7 +108,7 @@ void Scene::openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool
 	if (widget::getCurrWidget())
 		widget::getCurrWidget()->removeFromViewport();
 
-	collision::getCollisionObjects();
+	collision::LoadWorldsCollision(worldName);
 	// deconstruct worlds
 	Texture::deleteCache();
 	AStar::Deconstructor();

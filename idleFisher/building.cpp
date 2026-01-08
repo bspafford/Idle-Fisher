@@ -22,14 +22,14 @@ void Abuilding::setLoc(vector loc) {
 }
 
 void Abuilding::setupCollision(std::vector<vector> pointsList) {
-	cols.push_back(std::make_unique<Fcollision>(pointsList, ""));
+	cols.push_back(std::make_unique<Fcollision>(pointsList, ' '));
 	Fcollision* col = cols[cols.size() - 1].get();
 
 	collision::addCollisionObject(col);
 
-	float minIndex = -1, minVal = INFINITY;
-	float maxIndex = -1, maxVal = -INFINITY;
-	for (int i = 0; i < col->points.size(); i++) {
+	int minIndex = -1, minVal = INFINITY;
+	int maxIndex = -1, maxVal = -INFINITY;
+	for (int i = 0; i < col->GetNumPoints(); i++) {
 		if (col->points[i].x < minVal) {
 			minVal = col->points[i].x;
 			minIndex = i;

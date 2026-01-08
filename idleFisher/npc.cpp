@@ -54,7 +54,7 @@ void npc::setupCollision() {
 	vector offset = getOffset();
 	float radius = 7;
 
-	col = std::make_unique<Fcollision>(offset, radius, "");
+	col = std::make_unique<Fcollision>(offset, radius, ' ');
 	collision::addCollisionObject(col.get());
 }
 

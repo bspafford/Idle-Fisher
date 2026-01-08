@@ -8,32 +8,41 @@
 class Shader;
 
 struct Fcollision {
-	std::vector<vector> points;
-	std::string identifier;
-	bool isCircle;
-	float radius;
+	vector points[4];
+	char identifier = ' ';
+	bool isCircle = false;
+	float radius = 0.f;
 
-	float minX;
-	float maxX;
-	float minY;
-	float maxY;
+	float minX = 0.f;
+	float maxX = 0.f;
+	float minY = 0.f;
+	float maxY = 0.f;
 
-	int pointNum = 4;
+	Fcollision() {}
 
 	// for polygon collision
-	Fcollision(std::vector<vector> worldPoints, std::string identifier);
+	Fcollision(std::vector<vector> worldPoints, char identifier);
 
 	// for circle collision
-	Fcollision(vector center, float radius, std::string identifier);
+	Fcollision(vector center, float radius, char identifier);
+
+	std::vector<vector> GetPoints() {
+		return std::vector<vector>(points, points + GetNumPoints());
+	}
+
+	// here incase i decide to ever change it
+	int GetNumPoints() {
+		return 4;
+	}
 
 };
 
 class collision {
 public:
-	collision();
+	static void Init();
 
 	// calculates all the collision.col file information into a list
-	static void getCollisionObjects();
+	static void LoadWorldsCollision(const std::string& worldName);
 	static void removeCollisionObject(Fcollision* collision);
 	static std::string getIdentifier(std::string str);
 
@@ -75,5 +84,6 @@ private:
 
 	static inline std::vector<Fcollision*> allCollision;
 	// holds unique_ptr for allCollision
-	static inline std::vector<std::unique_ptr<Fcollision>> collisionStorage;
+	//static inline std::vector<std::unique_ptr<Fcollision>> collisionStorage;
+	static inline std::unordered_map<uint32_t, std::unique_ptr<std::vector<Fcollision>>> colMap;
 };

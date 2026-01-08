@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "textureManager.h"
+#include "collision.h"
 
 struct FfontInfo;
 
@@ -69,6 +70,10 @@ public:
 	static void LoadAllAudio(std::unordered_map<uint32_t, std::unique_ptr<std::vector<uint8_t>>>& audioMap);
 	// assumes that audioMap has already been checked and there is no instances of Hash(path) already
 	static std::vector<uint8_t> LoadAudio(const std::string& path);
+
+	// Collision
+	static void ParseCollision(const std::string& path, std::unordered_map<uint32_t, std::unique_ptr<std::vector<Fcollision>>>& colMap);
+
 
 	// Hash FNV1a
 	static uint32_t Hash(const std::string& str);
