@@ -11,12 +11,12 @@
 class Timer {
 private:
 	Timer() {}
-	void GoingToDelete();
+	void GoingToDelete() { stop(); }
 	friend class CreateDeferred<Timer>; // forces Timer to be created by deferredPtr because Timer constructor is private
 	friend class DeferredPtr<Timer>;
 
 public:
-	~Timer();
+	~Timer() { stop(); }
 
 	static void callUpdate(float deltaTime);
 
@@ -26,7 +26,11 @@ public:
 
 	// this starts the timer
 	void start(float maxTime);
-	void stop();
+	void stop() {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		bGoing = false;
+		time = 0;
+	}
 
 	float getTime();
 	float getMaxTime();

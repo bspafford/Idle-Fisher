@@ -213,7 +213,6 @@
     <ClCompile Include="comboOvertimeWidget.cpp" />
     <ClCompile Include="comboWidget.cpp" />
     <ClCompile Include="confirmWidget.cpp" />
-    <ClCompile Include="csvReader.cpp" />
     <ClCompile Include="currencyConverterBox.cpp" />
     <ClCompile Include="currencyConverterWidget.cpp" />
     <ClCompile Include="currencyWidget.cpp" />
@@ -341,7 +340,6 @@
     <ClInclude Include="collision.h" />
     <ClInclude Include="comboOvertimeWidget.h" />
     <ClInclude Include="comboWidget.h" />
-    <ClInclude Include="csvReader.h" />
     <ClInclude Include="currencyConverterBox.h" />
     <ClInclude Include="currencyConverterWidget.h" />
     <ClInclude Include="currencyWidget.h" />

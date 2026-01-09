@@ -17,7 +17,6 @@
 #include "achievement.h"
 #include "pet.h"
 #include "textureManager.h"
-#include "csvReader.h"
 
 #include "debugger.h"
 
@@ -237,7 +236,7 @@ void Scene::CreateShaders() {
 
 void Scene::StartSetup() {
 	Input::Init();
-	csvReader();
+	SaveData::LoadData();
 
 	character = std::make_unique<Acharacter>();
 }

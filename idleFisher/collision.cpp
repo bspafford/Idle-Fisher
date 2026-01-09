@@ -1,7 +1,6 @@
 #include "collision.h"
 
 #include <string>
-#include <fstream>
 
 #include "main.h"
 #include "Input.h"

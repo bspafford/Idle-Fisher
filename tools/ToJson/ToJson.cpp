@@ -1,30 +1,49 @@
-#include "csvReader.h"
-#include "main.h"
 #include "saveData.h"
 
-#include "debugger.h"
+#include <fstream>
 
 template <typename T> void readData(std::vector<T>& a, std::string csvName);
+void ReadCSV(Fdata& data);
+void OutputToJson(Fdata& data);
 
-csvReader::csvReader() {
-    readData(SaveData::data.fishData, "fishDataTable");
-    readData(SaveData::data.currencyData, "currencyDataTable");
-    readData(SaveData::data.autoFisherData, "autoFisherDataTable");
-    readData(SaveData::data.worldData, "worldDataTable");
-    readData(SaveData::data.fishingRodData, "fishingRodDataTable");
-    readData(SaveData::data.achievementData, "achievementDataTable");
-    readData(SaveData::data.baitData, "baitDataTable");
-    readData(SaveData::data.buffData, "buffDataTable");
-    readData(SaveData::data.goldenFishData, "goldenFishDataTable");
-    readData(SaveData::data.mechanicStruct, "mechanicDataTable");
-    readData(SaveData::data.petData, "petDataTable");
-    readData(SaveData::data.rebirthData, "rebirthDataTable");
-    readData(SaveData::data.upgradeData, "upgradeDataTable");
-    readData(SaveData::data.vaultUnlockData, "vaultUnlocksDataTable");
+int main() {
+    Fdata saveData;
+    ReadCSV(saveData);
+    OutputToJson(saveData);
+}
+
+void ReadCSV(Fdata& data) {
+    readData(data.fishData, "fishDataTable");
+    readData(data.currencyData, "currencyDataTable");
+    readData(data.autoFisherData, "autoFisherDataTable");
+    readData(data.worldData, "worldDataTable");
+    readData(data.fishingRodData, "fishingRodDataTable");
+    readData(data.achievementData, "achievementDataTable");
+    readData(data.baitData, "baitDataTable");
+    readData(data.buffData, "buffDataTable");
+    readData(data.goldenFishData, "goldenFishDataTable");
+    readData(data.mechanicStruct, "mechanicDataTable");
+    readData(data.petData, "petDataTable");
+    readData(data.rebirthData, "rebirthDataTable");
+    readData(data.upgradeData, "upgradeDataTable");
+    readData(data.vaultUnlockData, "vaultUnlocksDataTable");
+}
+
+void OutputToJson(Fdata& data) {
+    std::filesystem::path path("../../idleFisher/data/data.bson");
+
+    nlohmann::json json = data;
+    std::cout << json << "\n";
+    std::vector<uint8_t> bytes = nlohmann::json::to_bson(json);
+    std::ofstream output(path, std::ios::binary);
+    if (output.is_open()) {
+        output.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+        output.close();
+    }
 }
 
 template <typename T> void readData(std::vector<T>& a, std::string csvName) {
-    std::ifstream colFile("./data/dataBase/" + csvName + ".csv");
+    std::ifstream colFile("../../idleFisher/data/debug/dataBases/" + csvName + ".csv");
     if (colFile.is_open()) {
         std::string line, word;
         std::getline(colFile, line); // removes first line because its a descriptor

@@ -6,6 +6,11 @@
 #include "main.h"
 #include "timer.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shlobj.h>
+#endif
+
 #include "debugger.h"
 
 void SaveData::save() {
@@ -136,7 +141,7 @@ void SaveData::saveSettings() {
 }
 
 void SaveData::loadSettings() {
-	const std::string filename = GetSettingsDataPath();
+	const auto filename = GetSettingsDataPath();
 
 	if (!std::filesystem::exists(filename)) {
 		saveSettings(); // makes save file if there isn't one
@@ -157,10 +162,52 @@ void SaveData::loadSettings() {
 	}
 }
 
-std::string SaveData::GetSaveDataPath() {
-	return "./data/saves/save.save";
+void SaveData::LoadData() {
+	std::ifstream input(GetJsonDataPath(), std::ios::binary | std::ios::ate);
+	if (!input.is_open()) {
+		std::cout << "couldn't find file: " << GetJsonDataPath();
+		return;
+	}
+
+	std::streamsize size = input.tellg();
+	input.seekg(0, std::ios::beg);
+	std::vector<uint8_t> buffer(static_cast<size_t>(size));
+	input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
+
+	nlohmann::json j_from_bytes = nlohmann::json::from_bson(buffer.begin(), buffer.end());
+	SaveData::data = j_from_bytes.get<Fdata>();
 }
 
-std::string SaveData::GetSettingsDataPath() {
-	return "./data/saves/settings.save";
+std::filesystem::path SaveData::GetSaveFolder() {
+#ifdef _WIN32
+	PWSTR path = nullptr;
+	if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &path))) {
+		std::filesystem::path base(path);
+		CoTaskMemFree(path);
+
+		std::filesystem::path dir = base / stuff::studio / stuff::name;
+		std::filesystem::create_directories(dir);
+		return dir;
+	}
+#endif
+	
+	std::filesystem::path dir = std::filesystem::path("data") / "saves";
+	std::filesystem::create_directories(dir); // create dir if not already created
+	return dir; // default: store with game if cant find or not on windows
+}
+
+std::filesystem::path SaveData::GetSaveDataPath() {
+	return GetSaveFolder() / "save.save";
+}
+
+std::filesystem::path SaveData::GetSettingsDataPath() {
+	return GetSaveFolder() / "settings.save";
+}
+
+std::filesystem::path SaveData::GetDataPath() {
+	return std::filesystem::path("data");
+}
+
+std::filesystem::path SaveData::GetJsonDataPath() {
+	return GetDataPath() / "data.bson";
 }

@@ -1,19 +1,9 @@
 #include "timer.h"
+#include "math.h"
 
 #include <iostream>
 
-#include "main.h"
-#include "math.h"
-
 #include "debugger.h"
-
-void Timer::GoingToDelete() {
-	stop();
-}
-
-Timer::~Timer() {
-	stop();
-}
 
 // calls update function to all instances of object
 void Timer::callUpdate(float deltaTime) {
@@ -83,10 +73,4 @@ void Timer::start(float maxTime) {
 
 	time = 0;
 	this->maxTime = maxTime;
-}
-
-void Timer::stop() {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
-	bGoing = false;
-	time = 0;
 }

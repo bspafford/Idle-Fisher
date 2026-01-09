@@ -316,4 +316,6 @@ void PakReader::ParseCollision(const std::string& path, std::unordered_map<uint3
 
 		colMap.insert({ entry.hashId, std::make_unique<std::vector<Fcollision>>(colList) });
 	}
+
+	delete colHeader;
 }

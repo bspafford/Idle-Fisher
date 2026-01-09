@@ -101,9 +101,6 @@
     <ClCompile Include="collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="csvReader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -464,9 +461,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="collision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="csvReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EBO.h">
