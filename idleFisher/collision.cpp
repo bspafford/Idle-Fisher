@@ -396,8 +396,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 
 	// draw player collision
 	std::vector<std::vector<float>> stuff;
-	float radius = Acharacter::col->radius;
-	vector point = Acharacter::col->points[0];
+	float radius = GetCharacter()->GetCollision()->radius;
+	vector point = GetCharacter()->GetCollision()->points[0];
 	stuff.push_back({ point.x + radius, point.y + radius, point.x + radius, point.y - radius });
 	stuff.push_back({ point.x + radius, point.y - radius, point.x - radius, point.y - radius });
 	stuff.push_back({ point.x - radius, point.y - radius, point.x - radius, point.y + radius });
@@ -538,7 +538,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	const int maxIterations = 2;
 
 	float timeRemaining = 1.0f;
-	vector v = math::normalize(move) * GetCharacter()->speed * deltaTime;
+	vector v = math::normalize(move) * GetCharacter()->GetSpeed() * deltaTime;
 
 	for (int iteration = 0; iteration < maxIterations && timeRemaining > 0.0f; ++iteration) {
 		float minTOI = timeRemaining;
@@ -566,7 +566,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					vector edgeStart = { allCollision[i]->points[(j + 1) % int(pointsSize)].x, allCollision[i]->points[(j + 1) % int(pointsSize)].y };
 
 					// treat edge as line segment inflated by radius
-					if (sweepPointVsEdge(Acharacter::getCharLoc(), v, edgeStart, edgeEnd, playerCol->radius, &toi, &normal)) {
+					if (sweepPointVsEdge(GetCharacter()->getCharLoc(), v, edgeStart, edgeEnd, playerCol->radius, &toi, &normal)) {
 						if (toi < minTOI) {
 							minTOI = toi;
 							hitNormal = normal;
@@ -582,7 +582,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					vector vertex = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
 
 					// treat vertex as a circle of radius R
-					if (sweepPointVsCircle(Acharacter::getCharLoc(), v, vertex, playerCol->radius, &toi, &normal)) {
+					if (sweepPointVsCircle(GetCharacter()->getCharLoc(), v, vertex, playerCol->radius, &toi, &normal)) {
 						if (toi < minTOI) {
 							minTOI = toi;
 							hitNormal = normal;

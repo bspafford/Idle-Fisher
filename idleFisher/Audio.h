@@ -21,6 +21,9 @@ public:
 	void Play();
 	void Stop();
 
+	// 1 is default
+	void SetPitch(float pitch);
+
 private:
 	static inline std::recursive_mutex mutex;
 	static inline ma_engine engine;

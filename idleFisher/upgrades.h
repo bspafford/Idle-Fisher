@@ -38,8 +38,12 @@ public:
 
 	static bool IsComboUnlocked();
 	static double calcComboMax();
+	static double calcComboMin(double comboMax);
+
 	static double calcComboIncrease(double comboMax);
-	static double calcComboStart(double comboMax);
+	// when the player clicks on the blue zone
+	static double calcComboReset(double currCombo, double comboMax);
+	
 
 	// how many times the combo fish can go hit the walls until it goes away
 	static double calcFishComboSpeed(FfishData currFish, int quality);

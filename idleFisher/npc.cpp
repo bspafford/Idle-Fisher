@@ -91,7 +91,7 @@ bool npc::isDiscovered() {
 
 bool npc::calcIfPlayerInfront() {
 	if (npcAnim) {
-		vector charLoc = Acharacter::getCharLoc();
+		vector charLoc = GetCharacter()->getCharLoc();
 		vector npcLoc = loc - vector{ 0, npcAnim->GetCellSize().y * 1.f };
 		return (charLoc.y < npcLoc.y);
 	}

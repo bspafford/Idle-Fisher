@@ -143,6 +143,8 @@ void UfishermanWidget::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
+	CheckTextColor();
+
 	vector selectedPos = buttonList[selectedPageIndex]->getAbsoluteLoc();
 	selectedIcon->setLoc(selectedPos - vector{ 0.f, 3.f });
 	selectedIcon->draw(shaderProgram);
@@ -308,11 +310,35 @@ void UfishermanWidget::updateStats() {
 	//speedStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcMinFishingInterval(), true) + "s - " + shortNumbers::convert2Short(upgrades::calcMaxFishingInterval(), true) + "s");
 	catchChanceStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodCatchChance()));
 
-	powerButtonPrice->setText(shortNumbers::convert2Short(upgrades::calcFishingRodPowerPrice()));
-	speedButtonPrice->setText(shortNumbers::convert2Short(upgrades::calcFishingRodSpeedPrice()));
-	catchChanceButtonPrice->setText(shortNumbers::convert2Short(upgrades::calcFishingRodCatchChancePrice()));
+	powerCost = upgrades::calcFishingRodPowerPrice();
+	speedCost = upgrades::calcFishingRodSpeedPrice();
+	chanceCost = upgrades::calcFishingRodCatchChancePrice();
+	powerButtonPrice->setText(shortNumbers::convert2Short(powerCost));
+	speedButtonPrice->setText(shortNumbers::convert2Short(speedCost));
+	catchChanceButtonPrice->setText(shortNumbers::convert2Short(chanceCost));
 
 	powerLevelText->setText(std::to_string(SaveData::saveData.fishingRod.powerLevel));
 	speedLevelText->setText(std::to_string(SaveData::saveData.fishingRod.speedLevel));
 	catchChanceLevelText->setText(std::to_string(SaveData::saveData.fishingRod.catchChanceLevel));
+
+}
+
+void UfishermanWidget::CheckTextColor() {
+	// power
+	if (SaveData::saveData.currencyList[1].numOwned >= powerCost)
+		powerButtonPrice->setTextColor(255, 255, 255);
+	else
+		powerButtonPrice->setTextColor(255, 0, 0);
+
+	// speed
+	if (SaveData::saveData.currencyList[1].numOwned >= speedCost)
+		speedButtonPrice->setTextColor(255, 255, 255);
+	else
+		speedButtonPrice->setTextColor(255, 0, 0);
+
+	// catch chance
+	if (SaveData::saveData.currencyList[1].numOwned >= chanceCost)
+		catchChanceButtonPrice->setTextColor(255, 255, 255);
+	else
+		catchChanceButtonPrice->setTextColor(255, 0, 0);
 }

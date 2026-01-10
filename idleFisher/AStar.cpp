@@ -70,12 +70,13 @@ void AStar::drawBoard(Shader* shaderProgram) {
 			glm::vec4 color;
 			//if (grid[getIndex(x, y)].parent)
 				//color = glm::vec4(255, 0, 255, 50);
-			if (grid[getIndex(x, y)].walkable)
+			if (grid[getIndex(x, y)].walkable) {
 				color = glm::vec4(0, 255, 255, 50);
-			else
+			} else {
 				color = glm::vec4(255, 0, 0, 50);
-			URectangle rect(nullptr, loc, vector{ 1, 1 } * nodeSize * stuff::pixelSize, true, color);
-			rect.draw(shaderProgram);
+				URectangle rect(nullptr, loc, vector{ 1, 1 } * nodeSize, true, color);
+				rect.draw(shaderProgram);
+			}
 		}
 	}
 
@@ -84,8 +85,8 @@ void AStar::drawBoard(Shader* shaderProgram) {
 }
 
 node* AStar::nodeFromWorldPoint(vector worldPos) {
-	float percentX = (worldPos.x - gridOffset.x) / gridWorldSize.x / stuff::pixelSize;
-	float percentY = (worldPos.y - gridOffset.y) / gridWorldSize.y / stuff::pixelSize;
+	float percentX = (worldPos.x - gridOffset.x) / gridWorldSize.x;
+	float percentY = (worldPos.y - gridOffset.y) / gridWorldSize.y;
 	percentX = math::clamp(percentX, 0, 1);
 	percentY = math::clamp(percentY, 0, 1);
 

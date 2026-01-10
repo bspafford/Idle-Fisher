@@ -253,7 +253,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 
 	shaderProgram->Activate();
 	
-	charMoveDir = GetCharacter()->moveDir;
+	charMoveDir = GetCharacter()->GetMoveDir();
 
 	//rebirthWorldImg->draw(shaderProgram);
 
@@ -272,7 +272,7 @@ void rebirthWorld::draw(Shader* shaderProgram) {
 		waterTimer->start(.13f * 3.f);
 	}
 
-	charPrevMoveDir = GetCharacter()->moveDir;
+	charPrevMoveDir = GetCharacter()->GetMoveDir();
 }
 
 void rebirthWorld::addAnim() {
@@ -282,7 +282,7 @@ void rebirthWorld::addAnim() {
 	waterRipples->setAnimation("anim");
 	waterRipples->start();
 	waterRippleList.push_back(waterRipples);
-	if (math::length(GetCharacter()->moveDir) != 0)
+	if (math::length(GetCharacter()->GetMoveDir()) != 0)
 		waterTimer->start(.13f * 3.f);
 	else
 		waterTimer->start(.13f * 6.f);
@@ -529,7 +529,7 @@ void world::sortDraw(Shader* shaderProgram) {
 			buildingBehind.push_back(building);
 	}
 
-	vector characterPos = Acharacter::getCharLoc();
+	vector characterPos = GetCharacter()->getCharLoc();
 	for (std::unique_ptr<Image>& dockPole : poleList) {
 		// if pole is further down on screen than character && if x is within range, so I don't have problem with autoFisher string overlap
 		vector poleLoc = dockPole->getLoc();
@@ -544,18 +544,15 @@ void world::sortDraw(Shader* shaderProgram) {
 		buildingBehind[i]->draw(shaderProgram);
 
 	// draw npcs behind
-	for (int i = 0; i < npcBehind.size(); i++) {
+	for (int i = 0; i < npcBehind.size(); i++)
 		npcBehind[i]->draw(shaderProgram);
-	}
 
-	for (Image* dockPole : dockPoleBehind) {
+	for (Image* dockPole : dockPoleBehind)
 		dockPole->draw(shaderProgram);
-	}
 
 	// draw autofishers behind
-	for (int i = 0; i < autoFishersBehind.size(); i++) {
+	for (int i = 0; i < autoFishersBehind.size(); i++)
 		autoFishersBehind[i]->draw(shaderProgram);
-	}
 
 	if (buyer && !buyer->inFrontPlayer)
 		buyer->draw(shaderProgram);
@@ -569,18 +566,15 @@ void world::sortDraw(Shader* shaderProgram) {
 		buildingInFront[i]->draw(shaderProgram);
 
 	// draw npcs infront
-	for (int i = 0; i < npcInFront.size(); i++) {
+	for (int i = 0; i < npcInFront.size(); i++)
 		npcInFront[i]->draw(shaderProgram);
-	}
 
-	for (Image* dockPole : dockPoleInFront) {
+	for (Image* dockPole : dockPoleInFront)
 		dockPole->draw(shaderProgram);
-	}
 
 	// draw autofishers infront
-	for (int i = 0; i < autoFishersInFront.size(); i++) {
+	for (int i = 0; i < autoFishersInFront.size(); i++)
 		autoFishersInFront[i]->draw(shaderProgram);
-	}
 }
 
 void world::setupAutoFishers() {

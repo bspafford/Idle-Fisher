@@ -499,7 +499,7 @@ void AfishTransporter::upgrade(FsaveMechanicStruct* mechanicStruct) {
 
 bool AfishTransporter::calcIfPlayerInfront() {
 	if (npcAnim) {
-		vector charLoc = Acharacter::getCharLoc();
+		vector charLoc = GetCharacter()->getCharLoc();
 		vector npcLoc = loc;
 		return (charLoc.y < npcLoc.y);
 	}

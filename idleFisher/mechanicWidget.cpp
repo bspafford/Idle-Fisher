@@ -102,6 +102,8 @@ void UmechanicWidget::draw(Shader* shaderProgram) {
 	if (!visible)
 		return;
 
+	CheckTextColor();
+
 	upgradeBackground->draw(shaderProgram);
 	npcBackground->draw(shaderProgram);
 	if (infoBackground)
@@ -218,7 +220,8 @@ void UmechanicWidget::update() {
 	level->setText(std::to_string(saveMechanicStruct->level) + "/100");
 	levelProgress->setPercent(saveMechanicStruct->level / 100.f);
 
-	upgradePriceText->setText(shortNumbers::convert2Short(calcUpgradeCost()));
+	upgradeCost = calcUpgradeCost();
+	upgradePriceText->setText(shortNumbers::convert2Short(upgradeCost));
 
 	Main::currencyWidget->updateList();
 
@@ -242,4 +245,18 @@ void UmechanicWidget::upgradeFishTransporter() {
 
 double UmechanicWidget::calcUpgradeCost() {
 	return saveMechanicStruct->level * 100;
+}
+
+void UmechanicWidget::CheckTextColor() {
+	// power
+	if (SaveData::saveData.currencyList[1].numOwned >= mechanicStruct->currencyNum)
+		buyFishTransporterPriceText->setTextColor(255, 255, 255);
+	else
+		buyFishTransporterPriceText->setTextColor(255, 0, 0);
+
+	// speed
+	if (SaveData::saveData.currencyList[1].numOwned >= upgradeCost)
+		upgradePriceText->setTextColor(255, 255, 255);
+	else
+		upgradePriceText->setTextColor(255, 0, 0);
 }

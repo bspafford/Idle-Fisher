@@ -38,7 +38,7 @@ void UcomboWidget::spawnComboNumber() {
 
 	if (comboNum == 1.0)
 		hideComboText();
-	else if (GetCharacter()->isFishing)
+	else if (GetCharacter()->GetIsFishing())
 		showComboText();
 
 	prevComboNum = comboNum;
@@ -49,7 +49,7 @@ void UcomboWidget::setupLocs() {
 }
 
 void UcomboWidget::showComboText() {
-	if (GetCharacter()->isFishing)
+	if (GetCharacter()->GetIsFishing())
 		setVisibility(true);
 }
 

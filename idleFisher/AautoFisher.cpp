@@ -266,7 +266,7 @@ void AautoFisher::setupCollision() {
 }
 
 void AautoFisher::calcIfPlayerInfront() {
-	inFrontPlayer = Acharacter::getCharLoc().y >= loc.y + 6.f;
+	inFrontPlayer = GetCharacter()->getCharLoc().y >= loc.y + 6.f;
 }
 
 void AautoFisher::setStats() {

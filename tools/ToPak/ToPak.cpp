@@ -147,11 +147,11 @@ int main() {
 	std::string audioPak = base + "audio.pak";
 	std::string colPak = base + "col.pak";
 
-	bool outputImagePak = true;
+	bool outputImagePak = false;
 	bool outputShaderPak = false;
 	bool outputTextPak = false;
 	bool outputAudioPak = false;
-	bool outputColPak = false;
+	bool outputColPak = true;
 
 	if (outputImagePak) {
 		ParseImageFile((base + "debug/png_files.txt").c_str());
@@ -179,7 +179,7 @@ int main() {
 	}
 
 	if (outputColPak) {
-		OutputCol(colPak, "collision/collision.col");
+		OutputCol(colPak, "../../idleFisher/data/debug/collision.col");
 		InputCol(colPak);
 	}
 

@@ -27,6 +27,26 @@ public:
 	void upgradeSpeed();
 	void upgradeCatchChance();
 
+	std::unique_ptr<UscrollBox> baitHolderList;
+	std::unique_ptr<text> name;
+
+private:
+	void setPage1() {
+		showUpgradePage(0);
+	}
+	void setPage2() {
+		showUpgradePage(1);
+	}
+
+	// checks if the player doesn't have enough money for the upgrades, and will make text red
+	void CheckTextColor();
+
+	int selectedPageIndex = 0;
+
+	double powerCost = 0;
+	double speedCost = 0;
+	double chanceCost = 0;
+
 	class npc* NPCParent;
 
 	// fishing rod page
@@ -56,13 +76,11 @@ public:
 	std::unique_ptr<text> catchChanceStatsTextNum;
 
 	// upgrades
-	std::unique_ptr<UscrollBox> baitHolderList;
 	std::vector<std::unique_ptr<Ubutton>> buttonList;
 	std::unique_ptr<Image> upgradeBackground;
 
 	// stats
 	std::unique_ptr<verticalBox> nameHolder;
-	std::unique_ptr<text> name;
 	std::unique_ptr<text> buffText;
 	std::unique_ptr<text> debuffText;
 	std::unique_ptr<Image> infoBackground;
@@ -76,14 +94,4 @@ public:
 	std::unique_ptr<Ubutton> closeButton;
 
 	std::vector<std::unique_ptr<UupgradeBox>> upgradeBoxList;
-
-private:
-	int selectedPageIndex = 0;
-
-	void setPage1() {
-		showUpgradePage(0);
-	}
-	void setPage2() {
-		showUpgradePage(1);
-	}
 };

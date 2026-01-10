@@ -55,6 +55,10 @@ void Audio::Stop() {
     ma_sound_stop(&sound);
 }
 
+void Audio::SetPitch(float pitch) {
+    ma_sound_set_pitch(&sound, pitch);
+}
+
 std::vector<uint8_t>* Audio::GetAudioData(const std::string& path) {
     std::lock_guard lock(mutex);
 

@@ -27,8 +27,8 @@ void Abuilding::setupCollision(std::vector<vector> pointsList) {
 
 	collision::addCollisionObject(col);
 
-	int minIndex = -1, minVal = INFINITY;
-	int maxIndex = -1, maxVal = -INFINITY;
+	int minIndex = 0, minVal = INT_MAX;
+	int maxIndex = 0, maxVal = -INT_MAX;
 	for (int i = 0; i < col->GetNumPoints(); i++) {
 		if (col->points[i].x < minVal) {
 			minVal = col->points[i].x;
@@ -41,12 +41,13 @@ void Abuilding::setupCollision(std::vector<vector> pointsList) {
 		}
 	}
 
+	//if (minIndex >= 0 && minIndex <= )
 	leftPoint = col->points[minIndex];
 	rightPoint = col->points[maxIndex];
 }
 
 bool Abuilding::calcInFront() {
-	vector charLoc = Acharacter::getCharLoc();
+	vector charLoc = GetCharacter()->getCharLoc();
 	vector p1 = leftPoint;
 	vector p2 = rightPoint;
 

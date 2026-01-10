@@ -21,30 +21,60 @@ public:
 
 	void draw(Shader* shaderProgram);
 	void DrawWidgets(Shader* shaderProgram);
-	void drawFishingLine(Shader* shaderProgram);
 	void Update(float deltaTime);
 
-	// get the world location at the players feet
-	static vector getCharLoc();
+	void setCanMove(bool move);
+	bool getCanMove();
 
+	// get the world location at the players feet
+	vector getCharLoc();
+	float GetSpeed();
+	Fcollision* GetCollision();
+	vector GetMoveDir();
+	bool GetIsFishing();
+	float getFishSchoolMultiplier();
+
+	double GetCombo();
+	// Can be a negative value
+	void IncreaseCombo(double comboChange);
+
+	void equipFishingRod(FfishingRodStruct* fishingRod);
+	void equipBait(FbaitStruct* bait);
+
+private:
+	void drawFishingLine(Shader* shaderProgram);
 	void leftClick();
 	void fishing();
 	void StartFishing();
 	void stopFishing();
 
-	void setCanMove(bool move);
-	bool getCanMove();
+	void move(float deltaTime);
 
 	void bobberCatchAnim();
 	void bobberBobAnim();
+
+	void animFinished();
+	void setFishingTipLoc(int frame);
+
+	void comboOvertimeFinished();
+
+	void setPlayerColPoints();
+
+	// returns false if the player doesn't have a strong enough fishing rod for the world
+	// so if world 2 requires 60 power for first fish but you only have a 50 power fishing rod, then it will return false
+	bool canCatchWorldFish();
+
+	void premiumFishBuff();
+
+	void setCatchPremium();
+
+	friend Acharacter* GetCharacter(); // get a reference to the character
 
 	void calcFishSchoolUpgrades();
 	AfishSchool* bobberInFishSchool();
 	static inline float fishSchoolMultiplier = 1.f; // increases the fish caught
 	static inline float fishTimeMultiplier = 1.f; // reduces the catch time
 	AfishSchool* currFishSchool; // if cast in a fishSchool
-
-	vector getCharScreenLoc();
 
 	// fish stuff
 	FfishData calcFish(int& quality, int& fishSize);
@@ -68,8 +98,6 @@ public:
 
 	float speed = 85.f;
 
-	void move(float deltaTime);
-
 	vector moveDir;
 
 	inline static bool isFishing = false;
@@ -85,44 +113,20 @@ public:
 	DeferredPtr<Timer> bobberBobTimer;
 	float bobTime = 1.5;
 
-	void animFinished();
 	std::vector<vector> fishLineTipLocs;
-	void setFishingTipLoc(int frame);
-
 	// stops player from moving if they start fishing
 	bool fishingStop = false;
 
-	void comboOvertimeFinished();
-
 	static inline std::unique_ptr<Fcollision> col;
-	static void setPlayerColPoints();
 
 	// fishing line stuff
 	static inline vector fishingTipLoc = { 69, 60 };
 	static inline bool showFishingLine = false;
 
-	// returns false if the player doesn't have a strong enough fishing rod for the world
-	// so if world 2 requires 60 power for first fish but you only have a 50 power fishing rod, then it will return false
-	bool canCatchWorldFish();
-
-	void premiumFishBuff();
-
 	// if going can't catch golden fihs
 	DeferredPtr<Timer> premiumCatchTimer;
 	bool canCatchPremium = true;
-	void setCatchPremium();
 
-	void equipFishingRod(FfishingRodStruct* fishingRod);
-	void equipBait(FbaitStruct* bait);
-
-
-	double GetCombo();
-	// Can be a negative value
-	void IncreaseCombo(double comboChange);
-
-	friend Acharacter* GetCharacter(); // get a reference to the character
-
-private:
 	static inline Acharacter* characterPtr;
 
 	bool canMove = true;

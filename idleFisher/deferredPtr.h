@@ -73,8 +73,6 @@ private:
 		}
 	}
 
-
-
 	static void AddObject(T* obj) {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*>& instances = GetInstanceList();

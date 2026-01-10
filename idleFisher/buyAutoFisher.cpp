@@ -135,7 +135,7 @@ void buyAutoFisher::updateLoc() {
 
 void buyAutoFisher::calcIfPlayerInFront() {
 	vector loc = plusAnim->getLoc();
-	inFrontPlayer = Acharacter::getCharLoc().y >= loc.y + 6.f;
+	inFrontPlayer = GetCharacter()->getCharLoc().y >= loc.y + 6.f;
 }
 
 void buyAutoFisher::setupCollision() {

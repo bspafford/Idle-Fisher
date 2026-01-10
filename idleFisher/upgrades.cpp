@@ -135,13 +135,16 @@ double upgrades::calcComboMax() {
 	return upgradeEquation(&SaveData::data.upgradeData[upgrade->id], upgrade) * (petBuffs::increaseMaxCombo() + 1) * (baitBuffs::increaseComboMax() + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[2] + 1);
 }
 
+double upgrades::calcComboMin(double comboMax) {
+	return math::clamp(comboMax * baitBuffs::startAtHigherCombo(), 1.0, comboMax);
+}
+
 double upgrades::calcComboIncrease(double comboMax) {
 	return math::clamp(comboMax * (petBuffs::increaseComboIncrease() + baitBuffs::increaseComboIncrease()), 1.0, comboMax);
 }
 
-double upgrades::calcComboStart(double comboMax) {
-	return math::clamp(comboMax * (baitBuffs::startAtHigherCombo()), 1.0, comboMax);
-	//return math::clamp(comboMax * (baitBuffs::startAtHigherCombo()+1), 0, comboMax);
+double upgrades::calcComboReset(double currCombo, double comboMax) {
+	return math::max(currCombo / 2.f, calcComboMin(comboMax));
 }
 
 double upgrades::calcFishComboSpeed(FfishData currFish, int quality) {
@@ -173,7 +176,7 @@ double upgrades::calcFishCatchNum() {
 		goldenFishVal *= premium->getGoldenFish().multiplier * (petBuffs::increaseGoldenFishBuff() + 1);
 
 	double debuffVal = (1 - baitBuffs::decreaseFishIntervalDecraseFishCaught()[1]);
-	double buffVal = GetCharacter()->GetCombo() * Acharacter::fishSchoolMultiplier * goldenFishVal * petBuffs::chanceToDoubleCatch() * (baitBuffs::increaseFishCaughtIncraseFishInterval()[0] + 1) * (baitBuffs::increaseFishSpeedCatchMoreFish()[1] + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[0] + 1);
+	double buffVal = GetCharacter()->GetCombo() * GetCharacter()->getFishSchoolMultiplier() * goldenFishVal * petBuffs::chanceToDoubleCatch() * (baitBuffs::increaseFishCaughtIncraseFishInterval()[0] + 1) * (baitBuffs::increaseFishSpeedCatchMoreFish()[1] + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[0] + 1);
 	return round(debuffVal * buffVal);
 }
 

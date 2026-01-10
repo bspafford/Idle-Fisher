@@ -204,7 +204,7 @@ void Acharacter::setPlayerColPoints() {
 void Acharacter::draw(Shader* shaderProgram) {
 	// if bobber above player, render behind
 	bool bobberBehind = false;
-	if (tempBobberLoc.y > getCharScreenLoc().y) {
+	if (tempBobberLoc.y > math::worldToScreen(anim->getLoc()).y) {
 		bobberBehind = true;
 		drawFishingLine(shaderProgram);
 	}
@@ -272,11 +272,12 @@ void Acharacter::leftClick() {
 			switch (combo) {
 			case 0:
 				if (!baitBuffs::chanceToKeepCombo()) // reset combo if false
-					comboNum = upgrades::calcComboStart(upgrades::calcComboMax());
+					comboNum = upgrades::calcComboReset(comboNum, upgrades::calcComboMax());
 				break;
+			// case 1: // stays the same
 			case 2:
 				double comboMax = upgrades::calcComboMax();
-				comboNum = math::clamp(comboNum + upgrades::calcComboIncrease(comboMax), 1, comboMax);
+				comboNum = math::clamp(comboNum + upgrades::calcComboIncrease(comboMax), upgrades::calcComboMin(comboMax), comboMax);
 				break;
 			}
 
@@ -340,8 +341,6 @@ void Acharacter::leftClick() {
 
 		bobberBobTimer->stop();
 		bobberCatchTimer->start(stuff::animSpeed * 4.f);
-	} else if (isFishing) { // stop fishing
-		stopFishing();
 	}
 }
 
@@ -490,7 +489,7 @@ void Acharacter::stopFishing() {
 void Acharacter::comboOvertimeFinished() {
 	// remove widget
 	comboOvertimeWidget->setVisibility(false);
-	comboNum = upgrades::calcComboStart(upgrades::calcComboMax());
+	comboNum = upgrades::calcComboMin(upgrades::calcComboMax());
 	Main::comboWidget->hideComboText();
 }
 
@@ -545,6 +544,22 @@ void Acharacter::setCanMove(bool move) {
 
 bool Acharacter::getCanMove() {
 	return canMove;
+}
+
+float Acharacter::GetSpeed() {
+	return speed;
+}
+
+Fcollision* Acharacter::GetCollision() {
+	return col.get();
+}
+
+vector Acharacter::GetMoveDir() {
+	return moveDir;
+}
+
+bool Acharacter::GetIsFishing() {
+	return isFishing;
 }
 
 // straight line to character
@@ -630,11 +645,6 @@ bool Acharacter::canCatchWorldFish() {
 	return false;
 }
 
-vector Acharacter::getCharScreenLoc() {
-	float yOffset = 22.f;
-	return stuff::screenSize / stuff::pixelSize + vector{ 0.f, yOffset };
-}
-
 void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	if (!isFishing || !showFishingLine)
 		return;
@@ -686,6 +696,11 @@ double Acharacter::GetCombo() {
 	return comboNum;
 }
 
+float Acharacter::getFishSchoolMultiplier() {
+	return fishSchoolMultiplier;
+}
+
 void Acharacter::IncreaseCombo(double comboChange) {
-	comboNum = math::clamp(comboNum + comboChange, 1.0, upgrades::calcComboMax());
+	double comboMax = upgrades::calcComboMax();
+	comboNum = math::clamp(comboNum + comboChange, upgrades::calcComboMin(comboMax), comboMax);
 }
