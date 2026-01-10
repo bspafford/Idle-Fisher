@@ -62,23 +62,10 @@ public:
 	static float calcMaxRainSpawnInterval();
 	static float calcMinRainSpawnInterval();
 
-	
-
-	// decrease fishing interval
-	// fish transporter
-	// Vault
-	// unlock currency converter
-	// less input currency converter
-	// more output currency converter
-	// more input more output
-	// increase yellow
-	// increase green
-	// make combo go up more per fish
-	// catch more fish per cast for idle fishers
-	// 
-
-
-	// should prolly be mechanic or something else
-	// increase idle fisher speed
-	// increase fish carrier capacity
+	// returns the index of what current fishing rod the player is on
+	static int calcFishingRodIndex();
+	// returns the index of what current fishing line the player is on
+	static int calcFishingLineIndex();
+	// returns the index of what current bobber the player is on
+	static int calcBobberIndex();
 };

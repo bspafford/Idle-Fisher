@@ -43,7 +43,7 @@ void UequippedWidget::draw(Shader* shaderProgram) {
 }
 
 void UequippedWidget::update() {
-	fishingRodEquip = std::make_unique<Image>("images/widget/thumbnails/fishingRodThumbnail1.png", vector{0, 0}, false);
+	fishingRodEquip = std::make_unique<Image>("images/widget/thumbnails/fishingRodThumbnail.png", vector{0, 0}, false);
 	fishingRodEquip->setLoc(fishingRodEquipSlot->getLoc());
 
 	std::string thumbnail = "";

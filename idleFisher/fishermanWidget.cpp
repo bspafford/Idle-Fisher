@@ -44,10 +44,15 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	selectedIcon = std::make_unique<Image>("images/widget/selectedFisherIcon.png", vector{ 0, 0 }, false);
 
 	// fishing rod page
-	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRodThumbnail1.png", vector{ 0, 0 }, false);
-	fishingRodThumbnail->setSize(fishingRodThumbnail->getSize() * 4.f);
+	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png", vector{0, 0}, false);
 	fishingRodThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishingRodThumbnail->SetPivot({ 1.f, 0.5f });
+	fishingLineThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingLine" + std::to_string(upgrades::calcFishingLineIndex() + 1) + ".png", vector{ 0, 0 }, false);
+	fishingLineThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	fishingLineThumbnail->SetPivot({ 1.f, 0.5f });
+	bobberThumbnail = std::make_unique<Image>("images/widget/thumbnails/bobber" + std::to_string(upgrades::calcBobberIndex() + 1) + ".png", vector{ 0, 0 }, false);
+	bobberThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	bobberThumbnail->SetPivot({ 1.f, 0.5f });
 
 	powerText = std::make_unique<text>(this, "Power", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	powerText->SetPivot({ 0.f, 0.5f });
@@ -115,7 +120,7 @@ void UfishermanWidget::setup() {
 	}
 
 	// set view box images
-	std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/thumbnails/fishingRodThumbnail1.png", 16, 16, 1, vector{ 0, 0 }, false, false);
+	std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/thumbnails/fishingRodThumbnail.png", 16, 16, 1, vector{ 0, 0 }, false, false);
 	buttonList.push_back(std::move(button));
 	std::unique_ptr<Ubutton> button2 = std::make_unique<Ubutton>(this, "widget/thumbnails/worm.png", 16, 16, 1, vector{ 0, 0 }, false, false);
 	buttonList.push_back(std::move(button2));
@@ -150,6 +155,9 @@ void UfishermanWidget::draw(Shader* shaderProgram) {
 
 	if (selectedPageIndex == 0) {
 		fishingRodThumbnail->draw(shaderProgram);
+		fishingLineThumbnail->draw(shaderProgram);
+		bobberThumbnail->draw(shaderProgram);
+
 		powerText->draw(shaderProgram);
 		powerUpgradeButton->draw(shaderProgram);
 		speedText->draw(shaderProgram);
@@ -223,7 +231,9 @@ void UfishermanWidget::setupLocs() {
 
 	closeButton->setLoc(upgradeBackground->getAbsoluteLoc() + upgradeBackground->getSize());
 
-	fishingRodThumbnail->setLoc(vector{ 30.f, 0 });
+	fishingRodThumbnail->setLoc(vector{ 38.f, 0 });
+	fishingLineThumbnail->setLoc(vector{ 38.f, 0 });
+	bobberThumbnail->setLoc(vector{ 38.f, 0 });
 
 	// price buttons, name, and levels
 	vector offset = { -45.f, 30.f };
@@ -264,6 +274,8 @@ void UfishermanWidget::upgradePower() {
 		SaveData::saveData.fishingRod.powerLevel++;
 		Main::currencyWidget->updateList();
 		updateStats();
+
+		fishingRodThumbnail->setImage("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png");
 	}
 }
 
@@ -274,6 +286,8 @@ void UfishermanWidget::upgradeSpeed() {
 		SaveData::saveData.fishingRod.speedLevel++;
 		Main::currencyWidget->updateList();
 		updateStats();
+
+		fishingLineThumbnail->setImage("images/widget/thumbnails/fishingLine" + std::to_string(upgrades::calcFishingLineIndex() + 1) + ".png");
 	}
 }
 
@@ -284,6 +298,8 @@ void UfishermanWidget::upgradeCatchChance() {
 		SaveData::saveData.fishingRod.catchChanceLevel++;
 		Main::currencyWidget->updateList();
 		updateStats();
+	
+		bobberThumbnail->setImage("images/widget/thumbnails/bobber" + std::to_string(upgrades::calcBobberIndex() + 1) + ".png");
 	}
 }
 

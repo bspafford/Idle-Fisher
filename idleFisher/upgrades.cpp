@@ -209,3 +209,15 @@ float upgrades::calcMinRainSpawnInterval() {
 	float baseVal = 30 * 60; // 30 min
 	return baseVal - (baseVal * petBuffs::decreaseRainIntervals());
 }
+
+int upgrades::calcFishingRodIndex() {
+	return SaveData::saveData.fishingRod.powerLevel / 10;
+}
+
+int upgrades::calcFishingLineIndex() {
+	return SaveData::saveData.fishingRod.speedLevel / 10;
+}
+
+int upgrades::calcBobberIndex() {
+	return SaveData::saveData.fishingRod.catchChanceLevel / 10;
+}

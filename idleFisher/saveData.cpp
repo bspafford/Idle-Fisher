@@ -1,10 +1,8 @@
 #include "saveData.h"
-
-#include <iostream>
-#include <alpaca/alpaca.h>
-
 #include "main.h"
 #include "timer.h"
+
+#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>

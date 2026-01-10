@@ -194,7 +194,7 @@ textureStruct* textureManager::getTexture(const std::string& name) {
 	else if (!areTexturesLoaded) {
 		return loadTexture(hashedId);
 	} else {
-		std::cout << "Image is not inside of textureMap\n";
+		std::cout << "\"" << name << "\" is not inside of textureMap\n";
 		abort();
 	}
 }

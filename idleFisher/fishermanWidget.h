@@ -31,6 +31,8 @@ public:
 
 	// fishing rod page
 	std::unique_ptr<Image> fishingRodThumbnail;
+	std::unique_ptr<Image> fishingLineThumbnail;
+	std::unique_ptr<Image> bobberThumbnail;
 	std::unique_ptr<text> powerText;
 	std::unique_ptr<Ubutton> powerUpgradeButton;
 	std::unique_ptr<text> speedText;

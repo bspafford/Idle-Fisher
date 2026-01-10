@@ -15,7 +15,7 @@
 #include "debugger.h"
 
 Ujournal::Ujournal(widget* parent) : widget(parent) {
-	background = std::make_unique<Image>("images/widget/journal.png", vector{ 0, 0 }, false);
+	background = std::make_unique<Image>("images/widget/journal.png", vector(0.f, 0.f), false);
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 
@@ -26,7 +26,7 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	std::unordered_map < std::string, animDataStruct> anim;
 	anim.insert({ "open", animDataStruct({0, 0}, {5, 0}, false) });
 	anim.insert({ "close", animDataStruct({0, 1}, {5, 1}, false) });
-	journalAnim = std::make_unique<animation>("widget/journalOpen.png", 282, 240, anim, false, vector{ 0, 0 });
+	journalAnim = std::make_unique<animation>("widget/journalOpen.png", 282, 244, anim, false, vector{ 0, 0 });
 	journalAnim->addFinishedCallback(this, &Ujournal::journalAnimFinish);
 	journalAnim->setAnimation("open");
 
@@ -463,7 +463,7 @@ void Ujournal::removeFromViewport() {
 void Ujournal::setupLocs() {
 	__super::setupLocs();
 
-	journalAnim->setLoc(background->getAbsoluteLoc());
+	journalAnim->setLoc(background->getAbsoluteLoc() - vector(0.f, 3.f));
 
 	vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
 	worldName1->setLoc(center + vector{ -63.f, 80.f });

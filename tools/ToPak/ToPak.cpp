@@ -139,7 +139,7 @@ std::unordered_map<uint32_t, std::string> hashMap; // see if there are duplicate
 std::unordered_map<std::string, unsigned int> imageData;
 
 int main() {
-	std::string rootDir("Q:/Documents/VisualStudios/idleFisher/idleFisher/");
+	std::string rootDir("../../idlefisher/");
 	std::string base = "../../idleFisher/data/";
 	std::string imagePak = base + "images.pak";
 	std::string shaderPak = base + "shaders.pak";
@@ -147,14 +147,14 @@ int main() {
 	std::string audioPak = base + "audio.pak";
 	std::string colPak = base + "col.pak";
 
-	bool outputImagePak = false;
+	bool outputImagePak = true;
 	bool outputShaderPak = false;
 	bool outputTextPak = false;
 	bool outputAudioPak = false;
-	bool outputColPak = true;
+	bool outputColPak = false;
 
 	if (outputImagePak) {
-		ParseImageFile((base + "png_files.txt").c_str());
+		ParseImageFile((base + "debug/png_files.txt").c_str());
 		Output(imagePak.c_str(), rootDir.c_str(), imageData);
 		//Input(pakPath.c_str());
 	}
