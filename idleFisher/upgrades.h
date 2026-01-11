@@ -31,7 +31,7 @@ public:
 	static double calcFishingRodCatchChancePrice();
 
 	// calculates how much the all the upgrades combine should equal
-	static double getFishSellPrice(FfishData fish, int quality);
+	static double getFishSellPrice(const FfishData& fish, int quality);
 
 	static double calcGreenFishingUpgrade();
 	static double calcYellowFishingUpgrade();

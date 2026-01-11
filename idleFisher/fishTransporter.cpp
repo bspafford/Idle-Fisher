@@ -203,6 +203,7 @@ void AfishTransporter::draw(Shader* shaderProgram) {
 
 void AfishTransporter::update(float deltaTime) {
 	if (canMove) {
+		moveDir = vector(0, 0);
 		if (Astar->followingPath) {
 			vector diff = Astar->followPath(loc, deltaTime, speed);
 			//std::cout << ", diff: " << math::length(diff) << std::endl;
@@ -229,7 +230,7 @@ void AfishTransporter::setAnimation() {
 	if (moveDir.x != 0 || moveDir.y != 0) {
 		prevMove = moveDir;
 		float angle = atan2(moveDir.y, moveDir.x) * 180 / M_PI;
-		int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
+		int y = round(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
 		if (y == -1)
 			y = 7;
 
@@ -239,7 +240,7 @@ void AfishTransporter::setAnimation() {
 		}
 	} else {
 		float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
-		int y = floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
+		int y = round(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
 		if (npcAnim->GetCurrAnim() != idleAnimList[y]) {
 			npcAnim->setAnimation(idleAnimList[y], true);
 			fishPileAnim->setAnimation(fullnessString + idleAnimList[y], true);
@@ -254,11 +255,10 @@ vector AfishTransporter::calcGoTo(int autoFisherIndex) {
 }
 
 void AfishTransporter::finishCollectTimer() {
-
 	// take fish from autofisher
 	if (autoFisherIndex != -1)
 		collectFish(world::currWorld->autoFisherList[autoFisherIndex].get());
-	else
+	else // sell fish
 		collectFish(NULL);
 
 	canMove = true;
@@ -267,6 +267,10 @@ void AfishTransporter::finishCollectTimer() {
 	if (autoFisherIndex >= world::currWorld->autoFisherList.size() || calcCurrencyHeld() >= maxHoldNum) {
 		autoFisherIndex = -1;
 	}
+
+	// check if fish transporter has enough space for even the smallest fish
+	if (maxHoldNum - calcCurrencyHeld() < upgrades::getFishSellPrice(SaveData::data.fishData[1], 0))
+		autoFisherIndex = -1;
 
 	vector goTo = calcGoTo(autoFisherIndex);
 	Astar->startPathFinding(loc, goTo); // move to next spot
@@ -278,8 +282,8 @@ void AfishTransporter::collectTimerUpdate() {
 
 float AfishTransporter::calcCollectTimer(AautoFisher* autoFisher, bool getMaxTime) {
 	double val = 1;
-	if (!getMaxTime)
-		val = math::clamp(autoFisher ? (autoFisher->calcCurrencyHeld() / maxHoldNum) : (calcCurrencyHeld() / maxHoldNum), 0, 1);
+	if (!getMaxTime)					// go with the shorter amount, either its remaining space or the idle fisher space
+		val = math::clamp(autoFisher ? (std::min(maxHoldNum - calcCurrencyHeld(), autoFisher->calcCurrencyHeld()) / maxHoldNum) : (calcCurrencyHeld() / maxHoldNum), 0, 1);
 
 	// max, takes 5s, 0 takes 0s
 	return collectionSpeed * val;
@@ -293,7 +297,7 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 			FfishData* currFish = &SaveData::data.fishData[saveCurrFish->id];
 
 			// max amount of fish the transporter can carry before full
-			int fishMax = (maxHoldNum - calcCurrencyHeld()) / currFish->currencyNum;
+			int fishMax = (maxHoldNum - calcCurrencyHeld()) / upgrades::getFishSellPrice(*currFish, 0);
 			if (saveCurrFish->numOwned[0] <= fishMax) { // if can hold all fish
 				addFishtoHeld(saveCurrFish, saveCurrFish->numOwned[0]);
 				saveCurrFish->numOwned[0] = 0;
@@ -335,18 +339,15 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 }
 
 void AfishTransporter::addFishtoHeld(FsaveFishData* fish, double addNum) {
-	bool added = false;
-	for (int i = 0; i < holding.size(); i++) {
-		if (holding[i].id == fish->id) {
-			added = true;
-			holding[i].numOwned[0] += addNum;
-		}
-	}
-	if (!added) {
+	auto it = holding.find(fish->id);
+	if (it != holding.end()) {
+		it->second.numOwned[0] += addNum;
+	} else {
 		FsaveFishData temp;
 		temp.id = fish->id;
-		temp.numOwned.push_back(addNum);
-		holding.push_back(temp);
+		temp.numOwned.resize(4);
+		temp.numOwned[0] = addNum;
+		holding.insert({ temp.id, temp });
 	}
 }
 
@@ -374,12 +375,10 @@ void AfishTransporter::sortFishList(std::vector<FsaveFishData> &list) {
 
 double AfishTransporter::calcCurrencyHeld() {
 	double currency = 0;
-	for (int i = 0; i < holding.size(); i++) {
-		FsaveFishData saveFish = holding[i];
-		FfishData fish = SaveData::data.fishData[saveFish.id];
-		currency += upgrades::getFishSellPrice(fish, 0) * saveFish.numOwned[0];
+	for (auto saveFishData : holding) {
+		FfishData fish = SaveData::data.fishData[saveFishData.second.id];
+		currency += upgrades::getFishSellPrice(fish, 0) * saveFishData.second.numOwned[0];
 	}
-
 	return currency;
 }
 

@@ -58,7 +58,7 @@ private:
 	DeferredPtr<Timer> collectTimer;
 	std::unique_ptr<text> fullnessText;
 
-	std::vector<FsaveFishData> holding;
+	std::unordered_map<int, FsaveFishData> holding;
 	double maxHoldNum = 100;
 
 	// animations

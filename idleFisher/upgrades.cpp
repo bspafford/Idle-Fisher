@@ -93,8 +93,7 @@ double upgrades::calcFishingRodCatchChancePrice() {
 }
 
 // calculates how much the all the upgrades combine should equal
-double upgrades::getFishSellPrice(FfishData fish, int quality) {
-
+double upgrades::getFishSellPrice(const FfishData& fish, int quality) {
 	// upgrades
 	double value = 0;
 	value += getUpgrade("fishSellPriceWorld1")->value;

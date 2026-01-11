@@ -623,7 +623,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 	mechanic = std::make_unique<Amechanic>(vector{ 1120.f, 701.f });
 
 	if (SaveData::saveData.mechanicStruct[0].unlocked)
-		fishTransporter = std::make_unique<AfishTransporter>(vector{ 777.f, 711.f });
+		fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
 
 	// npc buildings
 	house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });

@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToJson", "tools\ToJson\ToJs
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToPak", "tools\ToPak\ToPak.vcxproj", "{E82729BF-2CD5-4EC2-AA7A-8E42ED45FCBF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "collisionMaker", "tools\collisionMaker\collisionMaker.vcxproj", "{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{E82729BF-2CD5-4EC2-AA7A-8E42ED45FCBF}.Release|x64.Build.0 = Release|x64
 		{E82729BF-2CD5-4EC2-AA7A-8E42ED45FCBF}.Release|x86.ActiveCfg = Release|Win32
 		{E82729BF-2CD5-4EC2-AA7A-8E42ED45FCBF}.Release|x86.Build.0 = Release|Win32
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Debug|x64.ActiveCfg = Debug|x64
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Debug|x64.Build.0 = Debug|x64
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Debug|x86.ActiveCfg = Debug|Win32
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Debug|x86.Build.0 = Debug|Win32
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Release|x64.ActiveCfg = Release|x64
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Release|x64.Build.0 = Release|x64
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Release|x86.ActiveCfg = Release|Win32
+		{CF529B5E-E4D6-47EF-9A2A-EB72B5F96A16}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

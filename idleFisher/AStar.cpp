@@ -85,8 +85,8 @@ void AStar::drawBoard(Shader* shaderProgram) {
 }
 
 node* AStar::nodeFromWorldPoint(vector worldPos) {
-	float percentX = (worldPos.x - gridOffset.x) / gridWorldSize.x;
-	float percentY = (worldPos.y - gridOffset.y) / gridWorldSize.y;
+	float percentX = (worldPos.x - gridOffset.x) / gridWorldSize.x / stuff::pixelSize;
+	float percentY = (worldPos.y - gridOffset.y) / gridWorldSize.y / stuff::pixelSize;
 	percentX = math::clamp(percentX, 0, 1);
 	percentY = math::clamp(percentY, 0, 1);
 
