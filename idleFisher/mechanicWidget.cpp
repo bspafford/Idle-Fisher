@@ -86,6 +86,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	currencyIcon->SetPivot({ 1.f, 0.5f });
 
 	setup();
+	update();
 }
 
 void UmechanicWidget::setup() {
@@ -221,14 +222,20 @@ void UmechanicWidget::update() {
 	levelProgress->setPercent(saveMechanicStruct->level / 100.f);
 
 	upgradeCost = calcUpgradeCost();
-	upgradePriceText->setText(shortNumbers::convert2Short(upgradeCost));
+	if (saveMechanicStruct->level < 100)
+		upgradePriceText->setText(shortNumbers::convert2Short(upgradeCost));
+	else {
+		upgradePriceText->setText("Max");
+		buyButton->enable(false);
+	}
 
 	Main::currencyWidget->updateList();
 
-	if (world::currWorld->fishTransporter) {
-		maxHoldValue->setText(shortNumbers::convert2Short(world::currWorld->fishTransporter->getMaxHoldNum()));
-		speedValue->setText(shortNumbers::convert2Short(world::currWorld->fishTransporter->getSpeed()));
-		collectSpeedValue->setText(shortNumbers::convert2Short(world::currWorld->fishTransporter->getCollectionSpeed(), true));
+	AfishTransporter* fishTransporter = world::GetFishTransporter();
+	if (fishTransporter) {
+		maxHoldValue->setText(shortNumbers::convert2Short(fishTransporter->getMaxHoldNum()));
+		speedValue->setText(shortNumbers::convert2Short(fishTransporter->getSpeed()));
+		collectSpeedValue->setText(shortNumbers::convert2Short(fishTransporter->getCollectionSpeed(), true));
 	}
 }
 
@@ -255,7 +262,7 @@ void UmechanicWidget::CheckTextColor() {
 		buyFishTransporterPriceText->setTextColor(255, 0, 0);
 
 	// speed
-	if (SaveData::saveData.currencyList[1].numOwned >= upgradeCost)
+	if (SaveData::saveData.currencyList[1].numOwned >= upgradeCost || saveMechanicStruct->level >= 100)
 		upgradePriceText->setTextColor(255, 255, 255);
 	else
 		upgradePriceText->setTextColor(255, 0, 0);

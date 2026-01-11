@@ -24,7 +24,9 @@ public:
 	float getSpeed();
 	float getCollectionSpeed();
 	void upgrade(FsaveMechanicStruct* saveMechanicStruct);
+
 private:
+	void SetStats();
 	void setupCollision() override;
 	void setAnimation();
 	// if getMaxTime is true it will return the maximum amount of time it will take for the fish transporter to collect its max fish

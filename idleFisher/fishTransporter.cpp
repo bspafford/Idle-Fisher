@@ -166,6 +166,8 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	Astar = std::make_unique<AStar>();
 
 	discovered = &discoveredFallback;
+
+	SetStats();
 }
 
 AfishTransporter::~AfishTransporter() {
@@ -481,19 +483,20 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 
 void AfishTransporter::upgrade(FsaveMechanicStruct* mechanicStruct) {
 	mechanicStruct->level++;
+	SetStats();
+}
+
+void AfishTransporter::SetStats() {
+	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
+	FsaveMechanicStruct* mechanicStruct = &SaveData::saveData.mechanicStruct[id];
 
 	maxHoldNum = mechanicStruct->level * 100;
-	//speed = 2.0202 * mechanicStruct->level + 47.9798;
-	//collectionSpeed = -0.040404 * mechanicStruct->level + 5.0404; // level 1 = 5 sec, level 100 = 1 sec
 
-	// every 10 levels, upgrade speed
-	if (mechanicStruct->level % 10 == 0) {
-		speed = 2.0202f * mechanicStruct->level + 47.9798f;
-		collectionSpeed = -0.040404f * mechanicStruct->level + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
-	}
+	int roundedLevel = (mechanicStruct->level / 10) * 10; // only upgrade speed every 10 levels
+	speed = 2.0202f * roundedLevel + 47.9798f;
+	collectionSpeed = -0.040404f * roundedLevel + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
 
 	fullnessText->setText(shortNumbers::convert2Short(calcCurrencyHeld()) + "/" + shortNumbers::convert2Short(maxHoldNum));
-
 }
 
 bool AfishTransporter::calcIfPlayerInfront() {

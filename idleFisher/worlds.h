@@ -11,6 +11,7 @@
 #include "Image.h"
 
 #include "tree.h"
+#include "fishTransporter.h"
 
 class animation;
 class Timer;
@@ -36,7 +37,6 @@ class ApetSeller;
 class Amerchant;
 class Amechanic;
 class Adecorator;
-class AfishTransporter;
 class Arain;
 class AfishGod;
 
@@ -141,6 +141,7 @@ public:
 	void setupAutoFishers();
 
 	void spawnFishTransporter();
+	static AfishTransporter* GetFishTransporter();
 
 	void loadIdleProfits();
 
@@ -161,7 +162,7 @@ public:
 	std::unique_ptr<ApetSeller> petSeller;
 	std::unique_ptr<Amerchant> merchant;
 	std::unique_ptr<Amechanic> mechanic;
-	std::unique_ptr<AfishTransporter> fishTransporter;
+	static inline std::unique_ptr<AfishTransporter> fishTransporter;
 
 	// npc buildings
 	std::vector<Abuilding*> buildingList; // list of all npcs in the world

@@ -406,9 +406,14 @@ void world::removeFishSchool(AfishSchool* fishSchool) {
 }
 
 void world::spawnFishTransporter() {
-	fishTransporter = std::make_unique<AfishTransporter>(vector{ 1000.f, 650.f });
+	fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
 	makeDrawLists();
 }
+
+AfishTransporter* world::GetFishTransporter() {
+	return fishTransporter.get();
+}
+
 void world::makeDrawLists() {
 	npcList.clear();
 	buildingList.clear();
@@ -614,6 +619,9 @@ world1::world1(WorldLoc worldChangeLoc) {
 	sellFish = std::make_unique<dumpster>(vector{ 849.f, 722.f });
 
 	// npcs
+	if (SaveData::saveData.mechanicStruct[0].unlocked)
+		fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
+
 	sailor = std::make_unique<Asailor>(vector{ 510, 544 });
 	fisherman = std::make_unique<Afisherman>(vector{ 651.f, 731.f });
 	atm = std::make_unique<Aatm>(vector{ 775.f, 736.f });
@@ -621,9 +629,6 @@ world1::world1(WorldLoc worldChangeLoc) {
 	petSeller = std::make_unique<ApetSeller>(vector{ 965.f, 800.f });
 	merchant = std::make_unique<Amerchant>(vector{ 1053.f, 815.f });
 	mechanic = std::make_unique<Amechanic>(vector{ 1120.f, 701.f });
-
-	if (SaveData::saveData.mechanicStruct[0].unlocked)
-		fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
 
 	// npc buildings
 	house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });
