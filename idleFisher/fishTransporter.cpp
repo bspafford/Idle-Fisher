@@ -168,6 +168,8 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	discovered = &discoveredFallback;
 
 	SetStats();
+
+	startPathFinding();
 }
 
 AfishTransporter::~AfishTransporter() {
@@ -181,8 +183,9 @@ void AfishTransporter::setupCollision() {
 }
 
 void AfishTransporter::startPathFinding() {
-	if (world::currWorld->autoFisherList.size() != 0 && autoFisherIndex != -1 && (Astar->stopped || Astar->finished)) {
-		Astar->startPathFinding(loc, world::currWorld->autoFisherList[autoFisherIndex]->loc + vector{ 6, 21 });
+	std::vector<std::unique_ptr<AautoFisher>>& autoFisherList = world::GetAutoFisherList();
+	if (autoFisherList.size() != 0 && autoFisherIndex != -1 && (Astar->stopped || Astar->finished)) {
+		Astar->startPathFinding(loc, autoFisherList[autoFisherIndex]->loc + vector{ 6, 21 });
 	}
 }
 
@@ -490,7 +493,7 @@ void AfishTransporter::SetStats() {
 	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
 	FsaveMechanicStruct* mechanicStruct = &SaveData::saveData.mechanicStruct[id];
 
-	maxHoldNum = mechanicStruct->level * 100;
+	maxHoldNum = mechanicStruct->level * 100 + 100;
 
 	int roundedLevel = (mechanicStruct->level / 10) * 10; // only upgrade speed every 10 levels
 	speed = 2.0202f * roundedLevel + 47.9798f;

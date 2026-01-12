@@ -372,6 +372,12 @@ void Main::checkInputs() {
 		}
 		currencyWidget->updateList();
 	}
+	if (Input::getKeyDown(GLFW_KEY_L)) {
+		SaveData::saveData.currencyList[1].numOwned = 0;
+		SaveData::saveData.currencyList[1].totalNumOwned += 0;
+		currencyWidget->updateList();
+	}
+
 	if (Input::getKeyDown(GLFW_KEY_O))
 		Scene::openLevel("rebirth", WORLD_SET_LOC_SAILOR, false);
 #endif

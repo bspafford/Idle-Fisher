@@ -101,11 +101,6 @@ template <typename T1, typename T2> static void recalcList(std::vector<T1>& data
 
 void SaveData::recalcLists() {
 	recalcList(data.fishData, saveData.fishData);
-	for (int i = 0; i < saveData.fishData.size(); i++) {
-		saveData.fishData[i].numOwned = std::vector<double>(4);
-		saveData.fishData[i].totalNumOwned = std::vector<double>(4);
-	}
-
 	recalcList(data.currencyData, saveData.currencyList);
 	recalcList(data.upgradeData, saveData.upgradeList);
 	recalcList(data.worldData, saveData.worldList);
@@ -113,6 +108,7 @@ void SaveData::recalcLists() {
 	recalcList(data.autoFisherData, saveData.autoFisherList);
 	recalcList(data.petData, saveData.petList);
 	recalcList(data.vaultUnlockData, saveData.vaultUnlockList);
+	recalcList(data.baitData, saveData.baitList);
 	recalcList(data.buffData, saveData.buffList);
 	recalcList(data.rebirthData, saveData.rebirthList);
 	recalcList(data.achievementData, saveData.achievementList);

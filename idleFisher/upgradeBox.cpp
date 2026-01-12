@@ -134,21 +134,7 @@ void UupgradeBox::setup() {
 		upgradeText->SetPivot({ 0.f, 0.5f });
 	}
 
-	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked && *unlocked)) {
-		if (petStruct) {// compare to see what save pet
-			if (SaveData::saveData.equippedPet.id == petStruct->id)
-				buttonPriceText->setText("remove");
-			else
-				buttonPriceText->setText("equip");
-		} else if (baitStruct) {
-			if (SaveData::saveData.equippedBait.id == baitStruct->id) {
-				buttonPriceText->setText("remove");
-			} else if (saveBaitStruct->unlocked)
-				buttonPriceText->setText("equip");
-		} else {
-			buyButton->enable(false);
-		}
-	}
+	update();
 }
 
 void UupgradeBox::draw(Shader* shaderProgram) {
@@ -163,12 +149,12 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 	buyButton->draw(shaderProgram);
 
 	if (upgradeStruct) {
-		if (*price <= SaveData::saveData.currencyList[*currencyId].numOwned) // can afford
+		if (*price <= SaveData::saveData.currencyList[*currencyId].numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) // can afford, or max level
 			buttonPriceText->setTextColor(255, 255, 255); // set to og color
 		else // cant afford
 			buttonPriceText->setTextColor(255, 0, 0); // set red
 	} else if (price) {
-		if ((unlocked && *unlocked) || *price <= SaveData::saveData.currencyList[*currencyId].numOwned) { // can afford
+		if ((unlocked && *unlocked) || *price <= SaveData::saveData.currencyList[*currencyId].numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) { // can afford, or max level
 			buttonPriceText->setTextColor(255, 255, 255); // set to og color
 		} else // cant afford
 			buttonPriceText->setTextColor(255, 0, 0); // set red
@@ -327,17 +313,24 @@ void UupgradeBox::update() {
 	if (upgradeText)
 		upgradeText->setText(std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax));
 
-	if (upgradeStruct) // set the price text
-		buttonPriceText->setText(shortNumbers::convert2Short(saveUpgradeStruct->price));
-	else
+	// show remove or equipped if unlocked
+	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked && *unlocked)) {
+		if (petStruct) { // if unlocked
+			if (SaveData::saveData.equippedPet.id == petStruct->id)
+				buttonPriceText->setText("remove");
+			else
+				buttonPriceText->setText("equip");
+		} else if (baitStruct) { // if unlocked
+			if (SaveData::saveData.equippedBait.id == baitStruct->id) {
+				buttonPriceText->setText("remove");
+			} else if (saveBaitStruct->unlocked)
+				buttonPriceText->setText("equip");
+		} else { // if maxed
+			buyButton->enable(false);
+			buttonPriceText->setText("Max");
+		}
+	} else
 		buttonPriceText->setText(shortNumbers::convert2Short(*price));
-
-
-	if (upgradeNum && *upgradeNum >= upgradeMax) { // if max
-		buyButton->enable(false);
-		buttonPriceText->setText("Max");
-	}
-
 }
 
 void UupgradeBox::openWorld() {

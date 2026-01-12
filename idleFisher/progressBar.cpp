@@ -57,6 +57,11 @@ float UprogressBar::getPercent(int id) {
 }
 
 void UprogressBar::setPercent(float percent, int id) {
+	if (std::isnan(percent)) {
+		std::cerr << "Value was nan\n";
+		abort();
+	}
+
 	this->percent[id] = math::clamp(percent, 0, 1);
 }
 

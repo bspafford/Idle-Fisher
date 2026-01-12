@@ -110,7 +110,7 @@ void UfishermanWidget::setup() {
 	baitHolderList->setVisibility(false);
 	for (int i = 0; i < SaveData::data.baitData.size(); i++) {
 		FbaitStruct* currData = &SaveData::data.baitData[i];
-		FsaveBaitStruct* currSaveData = &SaveData::saveData.equippedBait;
+		FsaveBaitStruct* currSaveData = &SaveData::saveData.baitList[i];
 
 		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(baitHolderList.get(), this, currData, currSaveData);
 		if (upgradeBox->buyButton)

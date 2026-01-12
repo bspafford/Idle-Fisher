@@ -40,11 +40,13 @@ void UcomboOvertimeWidget::Start(float duration) {
 
 	setVisibility(true);
 
-	float timeRemaining = progressBar->getPercent() * duration;
-	comboTimer->start(timeRemaining);
-	refillAmount = progressBar->getPercent();
+	if (progressBar->getPercent() == 0.f) // combo has reset, so reset back to full
+		progressBar->setPercent(1.f);
 
+	float timeRemaining = progressBar->getPercent() * duration;
 	refillTimer->stop();
+	refillAmount = progressBar->getPercent();
+	comboTimer->start(timeRemaining);
 }
 
 void UcomboOvertimeWidget::Refill() {
@@ -52,11 +54,9 @@ void UcomboOvertimeWidget::Refill() {
 		refilling = true;
 		
 		float timeRemaining = (1.f - progressBar->getPercent()) * comboTimer->getMaxTime();
-		refillTimer->start(timeRemaining);
-
-		refillAmount = progressBar->getPercent();
-
 		comboTimer->stop();
+		refillAmount = progressBar->getPercent();
+		refillTimer->start(timeRemaining);
 	}
 }
 

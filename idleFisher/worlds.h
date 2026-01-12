@@ -12,6 +12,7 @@
 
 #include "tree.h"
 #include "fishTransporter.h"
+#include "AautoFisher.h"
 
 class animation;
 class Timer;
@@ -21,7 +22,6 @@ class URectangle;
 class text;
 class CircleLoad;
 
-class AautoFisher;
 class buyAutoFisher;
 class dumpster;
 class AfishSchool;
@@ -142,6 +142,7 @@ public:
 
 	void spawnFishTransporter();
 	static AfishTransporter* GetFishTransporter();
+	static std::vector<std::unique_ptr<AautoFisher>>& GetAutoFisherList();
 
 	void loadIdleProfits();
 
@@ -180,7 +181,7 @@ public:
 
 	std::unique_ptr<CircleLoad> circleAnim;
 
-	std::vector<std::unique_ptr<AautoFisher>> autoFisherList;
+	static inline std::vector<std::unique_ptr<AautoFisher>> autoFisherList;
 	std::unique_ptr<buyAutoFisher> buyer;
 	std::unique_ptr<dumpster> sellFish;
 

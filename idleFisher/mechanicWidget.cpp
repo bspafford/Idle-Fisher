@@ -251,7 +251,7 @@ void UmechanicWidget::upgradeFishTransporter() {
 }
 
 double UmechanicWidget::calcUpgradeCost() {
-	return saveMechanicStruct->level * 100;
+	return saveMechanicStruct->level * 100 + 100;
 }
 
 void UmechanicWidget::CheckTextColor() {

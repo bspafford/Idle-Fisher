@@ -97,6 +97,8 @@ public:
 	std::unique_ptr<Fcollision> col;
 
 private:
+	void OutlineUpdate(int frame);
+
 	static inline std::shared_ptr<Image> autoFisherSpriteSheet;
 	static inline std::shared_ptr<Image> fishingLineSpriteSheet;
 	static inline std::shared_ptr<Image> outlineSpriteSheet;

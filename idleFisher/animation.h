@@ -88,6 +88,7 @@ public:
 
 	// can put -1 to keep current value on that axis
 	void SetCurrFrameLoc(vector loc);
+	vector GetCurrFrameLoc();
 
 	// calculates what frame the animation is on
 	// if getFrameNum = true, then function finds distance from start to frame

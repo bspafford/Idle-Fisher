@@ -58,6 +58,7 @@ AautoFisher::AautoFisher(int id) {
 	autoFisherData.insert({ "11", animDataStruct({0, 10}, {39, 10}, true) });
 
 	anim = std::make_unique<animation>(autoFisherSpriteSheet, 42, 58, autoFisherData, true, loc);
+	anim->addFrameCallback(this, &AautoFisher::OutlineUpdate);
 	anim->addAnimEvent(40, this, &AautoFisher::catchFish);
 	anim->setAnimation("1");
 	anim->start();
@@ -67,7 +68,6 @@ AautoFisher::AautoFisher(int id) {
 	outlineData.insert({ "outline", animDataStruct({0, 0}, {39, 0}, true) });
 	outline = std::make_unique<animation>(outlineSpriteSheet, 42, 58, outlineData, true, loc);
 	outline->setAnimation("outline");
-	outline->start();
 
 	// fishing rod animation
 	std::unordered_map<std::string, animDataStruct> fishingLineData;
@@ -156,10 +156,8 @@ void AautoFisher::collectFish() {
 	Main::heldFishWidget->updateList();
 
 	// only start if full
-	if (anim && anim->IsStopped()) {
+	if (anim && anim->IsStopped())
 		anim->start();
-		//outlineAnim->start();
-	}
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
 		afMoreInfoUI->updateUI();
@@ -182,10 +180,6 @@ void AautoFisher::catchFish() {
 		} else {
 			FsaveFishData saveFish;
 			saveFish.id = currFish.id;
-			saveFish.numOwned.push_back(0);
-			saveFish.numOwned.push_back(0);
-			saveFish.numOwned.push_back(0);
-			saveFish.numOwned.push_back(0);
 			saveFish.numOwned[0] = catchNum;
 			heldFish.push_back(saveFish);
 		}
@@ -379,7 +373,7 @@ double AautoFisher::price(int level) {
 float AautoFisher::getCatchTime() {
 	if (anim)
 		return anim->GetCellNum().x * anim->GetCurrAnimDuration();
-	return 40;
+	return 4;
 }
 
 double AautoFisher::calcIdleProfits(double afkTime) {
@@ -473,4 +467,9 @@ double AautoFisher::calcMPS() {
 	}
 
 	return totalPrice * calcFPS();
+}
+
+void AautoFisher::OutlineUpdate(int frame) {
+	if (outline)
+		outline->SetCurrFrameLoc(vector(frame, 0));
 }

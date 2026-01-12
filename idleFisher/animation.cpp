@@ -218,4 +218,11 @@ void animation::SetCurrFrameLoc(vector loc) {
 		currFrameLoc.x = math::clamp(loc.x, 0, cellNum.x);
 	if (loc.y != -1)
 		currFrameLoc.y = math::clamp(loc.y, 0, cellNum.y);
+
+	// update the source rect
+	spriteSheet->setSourceRect(std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y));
+}
+
+vector animation::GetCurrFrameLoc() {
+	return currFrameLoc;
 }

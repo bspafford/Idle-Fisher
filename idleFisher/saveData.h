@@ -55,9 +55,9 @@ struct FsaveFishData {
     int id = -1;
     bool unlocked = false;
     // 0 = normal, 1 = bronze, 2 = silver, 3 = gold
-    std::vector<double> numOwned = std::vector<double>(0);
+    std::vector<double> numOwned = std::vector<double>(4);
     // 0 = normal, 1 = bronze, 2 = silver, 3 = gold
-    std::vector<double> totalNumOwned = std::vector<double>(0);
+    std::vector<double> totalNumOwned = std::vector<double>(4);
     int biggestSizeCaught = 0;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishData, id, unlocked, numOwned, totalNumOwned, biggestSizeCaught);

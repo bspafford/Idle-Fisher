@@ -407,11 +407,16 @@ void world::removeFishSchool(AfishSchool* fishSchool) {
 
 void world::spawnFishTransporter() {
 	fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
+	fishTransporter->startPathFinding();
 	makeDrawLists();
 }
 
 AfishTransporter* world::GetFishTransporter() {
 	return fishTransporter.get();
+}
+
+std::vector<std::unique_ptr<AautoFisher>>& world::GetAutoFisherList() {
+	return autoFisherList;
 }
 
 void world::makeDrawLists() {
