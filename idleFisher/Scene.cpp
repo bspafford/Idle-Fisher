@@ -33,6 +33,7 @@ void Scene::Destructor() {
 	delete circleShader;
 	delete blurShader;
 	delete fishingLineShader;
+	delete lineShader;
 }
 
 void Scene::openLevel(std::string _worldName, WorldLoc _worldChangeLoc, bool _overrideIfInWorld, bool _isStartup) {
@@ -229,6 +230,8 @@ void Scene::CreateShaders() {
 	circleShader = new Shader("2dShader.vert", "circleShader.frag");
 	blurShader = new Shader("blurShader.vert", "blurShader.frag");
 	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
+	lineShader = new Shader("lineShader.vert", "lineShader.frag");
+
 	Shader::CleanUp();
 
 	updateShaders(0);

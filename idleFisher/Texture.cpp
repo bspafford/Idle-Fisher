@@ -19,6 +19,10 @@ Texture::Texture(const std::string& imgPath) {
 	texData = textureManager::getTexture(imgPath);
 	if (!texData)
 		return;
+	if (texData->handle) {
+		std::cerr << "Trying to make bindable texture that has a bindless handle: \"" << imgPath << "\"\n";
+		abort();
+	}
 
 	size = vector(texData->w, texData->h);
 

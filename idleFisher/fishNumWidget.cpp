@@ -66,7 +66,7 @@ void UfishNumWidget::setLoc(vector loc) {
 	
 	if (numText && thumbnail) {
 		numText->setLoc((absoluteLoc + vector{ 18.f, (thumbnail->getSize().y - numText->getSize().y) / 2.f }));
-		setSize((numText->getAbsoluteLoc() + vector{ numText->getSize().x, thumbnail->getSize().y }) - thumbnail->getAbsoluteLoc());
+		setSize(thumbnail->getSize() + vector(numText->getSize().x, 0.f));
 	}
 
 	if (fishQuality != 0 && star)

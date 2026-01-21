@@ -281,7 +281,7 @@ void Acharacter::leftClick() {
 				break;
 			}
 
-			Main::comboWidget->showComboText();
+			comboNum = round(comboNum);
 			Main::comboWidget->spawnComboNumber();
 		}
 
@@ -499,7 +499,11 @@ void Acharacter::premiumFishBuff() {
 
 	float rand = math::randRange(0.f, 1.f);
 
-	if (rand <= .45) { // instant cash
+	float cashPercent = 0.45f;
+	float lowLongBuffPercent = 0.45f + cashPercent;
+	// float highShortBuffPercent = 0.10f + lowLongBuffPercent;
+
+	if (rand <= cashPercent) { // instant cash
 		// % from bank, or a certian amount of time, which ever is less
 		int worldIndex = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
 
@@ -523,13 +527,11 @@ void Acharacter::premiumFishBuff() {
 		SaveData::saveData.currencyList[worldIndex + 1].totalNumOwned += currency;
 
 		Main::currencyWidget->updateList();
-	} else if (rand <= .9) { // low long buff
-		UpremiumBuffWidget* buff = new UpremiumBuffWidget(nullptr, SaveData::data.goldenFishData[2]);
-		Main::premiumBuffList.push_back(buff);
+	} else if (rand <= lowLongBuffPercent) { // low long buff
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData[2]));
 		Main::UIWidget->setupLocs();
 	} else { // high short buff
-		UpremiumBuffWidget* buff = new UpremiumBuffWidget(nullptr, SaveData::data.goldenFishData[3]);
-		Main::premiumBuffList.push_back(buff);
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData[3]));
 		Main::UIWidget->setupLocs();
 	}
 }

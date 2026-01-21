@@ -75,7 +75,7 @@ int Main::createWindow() {
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	Rect monitorRect = GetMonitorRect();
+	SetResolution();
 
 	window = glfwCreateWindow(static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y), "Idle Fisher", NULL, NULL);
 	// Error check if the window fails to create
@@ -87,7 +87,9 @@ int Main::createWindow() {
 
 	SetVsync();
 	SetFpsLimit();
-	SetResolution();
+
+	// set window pos based on saved monitor
+	Rect monitorRect = GetMonitorRect();
 	glfwSetWindowPos(window, monitorRect.x, monitorRect.y);
 
 	// Introduce the window into the current context
@@ -139,6 +141,7 @@ int Main::createWindow() {
 
 		BlurBox::BindFramebuffer();
 		draw(Scene::twoDShader);
+
 		BlurBox::UnbindFramebuffer();
 
 		BlurBox::DrawFinal(Scene::twoDShader);
@@ -225,7 +228,7 @@ void Main::setupWidgets() {
 	pauseMenu = std::make_unique<UpauseMenu>(nullptr);
 	fishComboWidget = std::make_unique<UfishComboWidget>(nullptr);
 	heldFishWidget = std::make_unique<UheldFishWidget>(nullptr);
-	heldFishWidget->setLoc({ 5.f, 0.f });
+	heldFishWidget->setLoc({ 6.f, -6.f });
 	heldFishWidget->updateList();
 	currencyWidget = std::make_unique<UcurrencyWidget>(nullptr);
 	currencyWidget->updateList();
@@ -328,7 +331,7 @@ void Main::draw(Shader* shaderProgram) {
 		fishUnlocked->draw(shaderProgram);
 
 	// draw collision
-	//collision::showCollisionBoxes(shaderProgram);
+	//collision::showCollisionBoxes(Scene::lineShader);
 }
 
 void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
@@ -344,7 +347,6 @@ void Main::checkInputs() {
 		return;
 
 	if (Input::getKeyDown(GLFW_KEY_ESCAPE)) {
-		//glfwSetWindowShouldClose(window, true);
 		if (widget::getCurrWidget())
 			widget::getCurrWidget()->removeFromViewport();
 		else if (Scene::getCurrWorldName() != "titleScreen")
@@ -532,7 +534,8 @@ void Main::SetResolution() {
 			break;
 	}
 
-	glfwSetWindowSize(window, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
+	if (window)
+		glfwSetWindowSize(window, static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y));
 }
 
 void Main::SetFpsLimit() {

@@ -4,8 +4,9 @@
 
 // world 1
 world1::world1() {
-	mapImg.init("Q:/Documents/VisualStudios/SDL2/images/worlds/world1/map1.png", { -500, -775 });
-	inFront.init("./images/dockInfront.png", { -500, -775 });
+	mapImg.init("../../idleFisher/images/worlds/demo/collisionHelper.png", { 0, 0 });
+	mapImg.loc.y = -mapImg.h;
+	inFront.init("./images/dockInfront.png", { 0, 0 });
 }
 
 void world1::start() {

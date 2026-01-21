@@ -34,7 +34,6 @@ void UfishComboWidget::SetFish(FfishData fish, int quality) {
 
 	updateComboSize();
 	fishSpeed = upgrades::calcFishComboSpeed(currFish, quality);
-	std::cout << "fish speed: " << fishSpeed << "\n";
 
 	setupRandomCombo();
 }
@@ -95,8 +94,14 @@ void UfishComboWidget::Update(float deltaTime) {
 
 	if (hitWall) {
 		if (!clickedThisBounce) {
+			// decrease the combo
 			GetCharacter()->IncreaseCombo(-upgrades::calcComboDecreaseOnBounce());
+
+			// update combo number
 			Main::comboWidget->spawnComboNumber();
+
+			// recalc the yellow and green size without changing locations
+			updateComboSize();
 		} else
 			clickedThisBounce = false;
 	}

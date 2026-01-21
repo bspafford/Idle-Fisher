@@ -34,7 +34,7 @@ void UprogressBar::draw(Shader* shaderProgram) {
 		} else if (dir == PROGRESSBAR_DIR_DOWN) {
 			float scaledSize = round(size.y * percentVal);
 			foregrounds[0]->setLoc({ offset.x, offset.y + size.y - scaledSize });
-			foregrounds[0]->setLoc({ size.x, scaledSize });
+			foregrounds[0]->setSize({ size.x, scaledSize });
 		} else if (dir == PROGRESSBAR_DIR_UP) {
 			foregrounds[0]->setLoc(offset);
 			foregrounds[0]->setSize({ size.x, size.y * percentVal });

@@ -1,4 +1,4 @@
-#include "dumpster.h"
+#include "FishBin.h"
 
 #include "main.h"
 #include "Input.h"
@@ -14,33 +14,16 @@
 
 #include "debugger.h"
 
-dumpster::dumpster(vector loc) {
-	this->loc = loc;
-	img = std::make_unique<Image>("images/dumpster.png", loc, true);
-	img->setUseAlpha(true);
+FishBin::FishBin(vector loc) {
+	bin = std::make_unique<Ubutton>(nullptr, "fishBin.png", 54, 66, 1, loc, true, true);
+	bin->addCallback(this, &FishBin::sellFish);
 }
 
-void dumpster::onHover() {
-	bool prevMouseOver = bMouseOver;
-	bMouseOver = img->isMouseOver(true);
-	if (bMouseOver)
-		IHoverable::setHoveredItem(this);
-	if (!prevMouseOver && bMouseOver) {
-		img->setImage("images/dumpsterHovered.png");
-	} else if (prevMouseOver && !bMouseOver) {
-		img->setImage("images/dumpster.png");
-	}
-
-	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT) && !widget::getCurrWidget())
-		Input::setLeftClick(this, &dumpster::sellFish);
+void FishBin::draw(Shader* shaderProgram) {
+	bin->draw(shaderProgram);
 }
 
-void dumpster::draw(Shader* shaderProgram) {
-	onHover();
-	img->draw(shaderProgram);
-}
-
-void dumpster::sellFish() {
+void FishBin::sellFish() {
 	for (int i = 0; i < SaveData::saveData.fishData.size(); i++) {
 		FsaveFishData* currSaveFish = &SaveData::saveData.fishData[i];
 		FfishData* currFish = &SaveData::data.fishData[currSaveFish->id];

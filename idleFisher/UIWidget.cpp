@@ -142,9 +142,9 @@ void UUIWidget::setupLocs() {
 			atmButton->setLoc(NPCshowButton->getLoc());
 	}
 
-	float offset = stuff::screenSize.x;
+	float offset = stuff::screenSize.x / stuff::pixelSize;
 	for (int i = 0; i < Main::premiumBuffList.size(); i++) {
-		Main::premiumBuffList[i]->setLoc(vector{ offset, float(stuff::screenSize.y) } - Main::premiumBuffList[i]->getSize());
+		Main::premiumBuffList[i]->setLoc(vector(offset - Main::premiumBuffList[i]->getSize().x, 3.f));
 		offset -= Main::premiumBuffList[i]->getSize().x;
 	}
 }

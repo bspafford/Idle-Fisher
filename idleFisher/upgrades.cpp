@@ -171,7 +171,7 @@ double upgrades::calcFishingRodCatchChance() {
 double upgrades::calcFishCatchNum() {
 	// calc golden fish buff
 	double goldenFishVal = 1;
-	for (UpremiumBuffWidget* premium : Main::premiumBuffList)
+	for (auto& premium : Main::premiumBuffList)
 		goldenFishVal *= premium->getGoldenFish().multiplier * (petBuffs::increaseGoldenFishBuff() + 1);
 
 	double debuffVal = (1 - baitBuffs::decreaseFishIntervalDecraseFishCaught()[1]);

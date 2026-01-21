@@ -23,7 +23,7 @@ class text;
 class CircleLoad;
 
 class buyAutoFisher;
-class dumpster;
+class FishBin;
 class AfishSchool;
 class Aship;
 class ArebirthExit;
@@ -183,7 +183,7 @@ public:
 
 	static inline std::vector<std::unique_ptr<AautoFisher>> autoFisherList;
 	std::unique_ptr<buyAutoFisher> buyer;
-	std::unique_ptr<dumpster> sellFish;
+	std::unique_ptr<FishBin> fishBin;
 
 	vector spawnLoc;
 	vector houseLoc;
@@ -214,6 +214,9 @@ public:
 
 	// pole list
 	std::vector<std::unique_ptr<Image>> poleList;
+
+	// an image that will always be infront of the player no matter what
+	std::unique_ptr<Image> inFront;
 
 	vector bankSellLoc;
 

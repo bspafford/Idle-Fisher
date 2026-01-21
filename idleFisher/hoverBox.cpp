@@ -30,17 +30,10 @@ void UhoverBox::draw(Shader* shaderProgram) {
 		return;
 
 	vector mousePos = Input::getMousePos();
-	vector screenSize = stuff::screenSize / (stuff::pixelSize / 2.f);
+	vector screenSize = stuff::screenSize / stuff::pixelSize;
 	vector pivot = { 0.f, 0.f };
-	if (mousePos.x + size.x + 7.f >= screenSize.x) // out of range on right
-		pivot.x = 1.f;
-	else
-		pivot.x = 0.f;
-	
-	if (mousePos.y + size.y + 7.f >= screenSize.y) // out of range on bottom
-		pivot.y = 0.f;
-	else
-		pivot.y = 1.f;
+	pivot.x = mousePos.x + size.x + 7.f >= screenSize.x ? 1.f : 0.f; // out of range on right
+	pivot.y = mousePos.y + size.y + 7.f <= screenSize.y ? 0.f : 1.f; // out of range on bottom
 
 	background->SetPivot(pivot);
 	background->setLoc(mousePos + vector(7.f, 7.f) * vector(1.f - pivot.x * 2.f, 1.f - pivot.y * 2.f));

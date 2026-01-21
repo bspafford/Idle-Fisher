@@ -194,6 +194,7 @@ void text::makeTextTexture() {
 		return;
 
 	vector fboSize = getFBOSize();
+	fboSize += vector(1, int(fboSize.y) % 2); // seems to fix text subpixel problems
 
 	if (fboSize.x == 0 || fboSize.y == 0)
 		return;

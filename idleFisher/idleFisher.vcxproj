@@ -184,6 +184,8 @@
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="fishingLineShader.frag" />
+    <None Include="lineShader.frag" />
+    <None Include="lineShader.vert" />
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
   </ItemGroup>
@@ -220,7 +222,7 @@
     <ClCompile Include="decorationBox.cpp" />
     <ClCompile Include="decorator.cpp" />
     <ClCompile Include="decoratorWidget.cpp" />
-    <ClCompile Include="dumpster.cpp" />
+    <ClCompile Include="FishBin.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="equippedWidget.cpp" />
     <ClCompile Include="FBO.cpp" />
@@ -347,7 +349,7 @@
     <ClInclude Include="decorationBox.h" />
     <ClInclude Include="decorator.h" />
     <ClInclude Include="decoratorWidget.h" />
-    <ClInclude Include="dumpster.h" />
+    <ClInclude Include="FishBin.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="equippedWidget.h" />
     <ClInclude Include="exprtk.hpp" />

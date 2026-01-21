@@ -6,6 +6,11 @@
 class shortNumbers {
 public:
 	static std::string convert2Short(double num, bool showDecimals = false) {
+		if (std::isinf(num)) {
+			std::cerr << "convert2Short: val is inf\n";
+			abort();
+		}
+
 		if (SaveData::settingsData.shortNumbers) {
 			if (num < 1000) {
 				if (!showDecimals)

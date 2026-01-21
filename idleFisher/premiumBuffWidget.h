@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widget.h"
+#include "Hoverable.h"
 #include "saveData.h"
 
 class Timer;
@@ -8,7 +9,7 @@ class UprogressBar;
 class UhoverBox;
 class Image;
 
-class UpremiumBuffWidget : public widget {
+class UpremiumBuffWidget : public widget, public IHoverable {
 public:
 	UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenFish);
 	void draw(Shader* shaderProgram);

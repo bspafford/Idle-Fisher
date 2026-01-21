@@ -530,7 +530,7 @@ struct FsaveData {
     long long lastPlayed;
 
     // player loc
-    vector playerLoc = { 500, 500 };
+    vector playerLoc = { 730, 490 };
 
     std::string currWorld = "world1";
     std::string prevWorld = "world1"; // incase the player is in the vault when they exit / save

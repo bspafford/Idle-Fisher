@@ -123,6 +123,7 @@ void treeMaker::save() {
 		}
 	}
 	colFile << "}";
+	std::cout << "trees saved successfully\n";
 }
 
 void treeMaker::load() {

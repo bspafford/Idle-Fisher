@@ -17,9 +17,9 @@ UpremiumBuffWidget::UpremiumBuffWidget(widget* parent, FgoldenFishStruct goldenF
 	lifeTimer->addUpdateCallback(this, &UpremiumBuffWidget::timerUpdate);
 	lifeTimer->start(goldenFish.time);
 
-	progressBar = std::make_unique<UprogressBar>(this, vector{ 15.f, 15.f }, false, PROGRESSBAR_DIR_DOWN, true);
-	progressBar->setBackgroundColor({ 0, 0, 0, 0 });
-	progressBar->setForegroundColor({ 0, 0, 0, 50 });
+	progressBar = std::make_unique<UprogressBar>(this, vector{ 15.f, 15.f }, false, PROGRESSBAR_DIR_UP, true);
+	progressBar->setBackgroundColor(glm::vec4(0));
+	progressBar->setForegroundColor(glm::vec4(0, 0, 0, 0.2));
 
 	img = std::make_unique<Image>("images/fish/premium.png", vector{ 0.f, 0.f }, false);
 	hoverBox = std::make_unique<UhoverBox>(this);
@@ -30,18 +30,17 @@ void UpremiumBuffWidget::draw(Shader* shaderProgram) {
 	progressBar->draw(shaderProgram);
 	img->draw(shaderProgram);
 
-	if (mouseOver())
+	if (mouseOver()) {
 		hoverBox->draw(shaderProgram);
+		setHoveredItem(this);
+	}
 }
 
 void UpremiumBuffWidget::timerFinished() {
-	// kill
 	// remove buff
 	for (int i = 0; i < Main::premiumBuffList.size(); i++) {
-		if (this == Main::premiumBuffList[i]) {
-			delete Main::premiumBuffList[i];
+		if (this == Main::premiumBuffList[i].get()) {
 			Main::premiumBuffList.erase(Main::premiumBuffList.begin() + i);
-			//delete this;
 		}
 	}
 	Main::UIWidget->setupLocs();
@@ -52,7 +51,8 @@ void UpremiumBuffWidget::timerUpdate() {
 }
 
 void UpremiumBuffWidget::setLoc(vector loc) {
-	__super::setLoc(loc);
+	widget::setLoc(loc);
+
 	progressBar->setLoc(loc);
 	vector progressBarSize = progressBar->getSize();
 	vector imgLoc = loc + progressBarSize / 2.f - img->getSize() / 2.f;
@@ -64,5 +64,5 @@ FgoldenFishStruct UpremiumBuffWidget::getGoldenFish() {
 }
 
 vector UpremiumBuffWidget::getSize() {
-	return vector{ 17, 17 } * stuff::pixelSize;
+	return vector(17.f, 17.f);
 }

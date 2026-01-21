@@ -36,9 +36,10 @@ void Background::setSize(vector size) {
 	widget::setSize(size);
 
 	if (!fbo)
-		fbo = std::make_unique<FBO>(stuff::screenSize / (stuff::pixelSize * 2.f), false);
+		fbo = std::make_unique<FBO>(size, false);
+	else
+		fbo->ResizeTexture(size);
 
-	fbo->ResizeTexture(size);
 	fbo->Bind();
 
 	// set locs
@@ -72,7 +73,7 @@ void Background::setSize(vector size) {
 		// scissor test to stop drawing past bounds
 		ScissorTest::Enable(rectList[i]);
 		vector num = (vector{ rectList[i].w, rectList[i].h } / edges[i]->getSize()).ceil();
-		int drawNum = math::max(num.x, num.y); // loop the great number of times
+		int drawNum = math::max(num.x, num.y); // loop the greater number of times
 		for (int n = 0; n < drawNum; n++) {
 			vector axis = n == 0 ? vector{ 0.f, 0.f} : vector{ static_cast<float>((i + 1) % 2), static_cast<float>(i % 2) }; // don't add anything to loc if on first iteration
 			edges[i]->setLoc(edges[i]->getLoc() + edges[i]->getSize() * axis);

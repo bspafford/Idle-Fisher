@@ -33,6 +33,7 @@
 #include "idleProfitWidget.h"
 #include "newRecordWidget.h"
 #include "settings.h"
+#include "premiumBuffWidget.h"
 
 class widget;
 class achievement;
@@ -74,7 +75,7 @@ public:
 	static void rebirth();
 	static double calcRebirthCurrency();
 
-	static inline std::vector<UpremiumBuffWidget*> premiumBuffList;
+	static inline std::vector<std::unique_ptr<UpremiumBuffWidget>> premiumBuffList;
 
 	static void drawWidgets(Shader* shaderProgram);
 

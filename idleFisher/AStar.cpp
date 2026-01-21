@@ -15,7 +15,7 @@ AStar::AStar() {
 }
 
 void AStar::init() {
-	gridWorldSize = { 350, 175 };
+	gridWorldSize = { 400, 175 };
 	nodeSize = 7;
 
 	gridSize.x = round(gridWorldSize.x / nodeSize * stuff::pixelSize);
@@ -23,7 +23,7 @@ void AStar::init() {
 
 	grid.reserve(gridSize.x * gridSize.y);
 
-	gridOffset = { 400, 350 };
+	gridOffset = { 250, 150 };
 	// create grid
 	for (int y = 0; y < gridSize.y; y++) {
 		for (int x = 0; x < gridSize.x; x++) {
@@ -67,20 +67,14 @@ void AStar::drawBoard(Shader* shaderProgram) {
 	for (int y = 0; y < gridSize.y; y++) {
 		for (int x = 0; x < gridSize.x; x++) {
 			vector loc = grid[getIndex(x, y)].loc;
-			glm::vec4 color;
-			//if (grid[getIndex(x, y)].parent)
-				//color = glm::vec4(255, 0, 255, 50);
-			if (grid[getIndex(x, y)].walkable) {
-				color = glm::vec4(0, 255, 255, 50);
-			} else {
-				color = glm::vec4(255, 0, 0, 50);
-				URectangle rect(nullptr, loc, vector{ 1, 1 } * nodeSize, true, color);
+			if (!grid[getIndex(x, y)].walkable) {
+				URectangle rect(nullptr, loc, vector(nodeSize, nodeSize), true, glm::vec4(255, 0, 0, 50));
 				rect.draw(shaderProgram);
 			}
 		}
 	}
 
-	URectangle rect(nullptr, targetPos, vector{ 3, 3 }, true);
+	URectangle rect(nullptr, targetPos, vector(nodeSize, nodeSize), true, glm::vec4(1, 1, 0, 1));
 	rect.draw(shaderProgram);
 }
 

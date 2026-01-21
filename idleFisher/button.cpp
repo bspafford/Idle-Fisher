@@ -51,9 +51,9 @@ void Ubutton::onHover(Shader* shaderProgram) {
 	prevMouseOver = mouseOver;
 	mouseOver = isMouseOver();
 
-	if (mouseOver && isEnabled) {
+	if (mouseOver) {
 		IHoverable::setHoveredItem(this);
-		if (!prevMouseOver && hasHover && buttonAnim)
+		if (isEnabled && !prevMouseOver && hasHover && buttonAnim)
 			buttonAnim->setAnimation("hover");
 		if (Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 			Input::setLeftClick(this, &Ubutton::onClick);
@@ -92,9 +92,13 @@ void Ubutton::onClick() {
 void Ubutton::enable(bool enabled) {
 	isEnabled = enabled;
 
-	// sets it to normal animation if the button is hovered
-	if (hasHover && !isEnabled) {
-		buttonAnim->setAnimation("hover");
+	if (isEnabled) {
+		IHoverable::setCursorHoverIcon(CURSOR_POINT);
+		if (isMouseOver())
+			buttonAnim->setAnimation("hover");
+	} else {
+		IHoverable::setCursorHoverIcon(CURSOR_DEFAULT);
+		buttonAnim->setAnimation("click");
 	}
 }
 

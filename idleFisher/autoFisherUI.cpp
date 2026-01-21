@@ -191,23 +191,23 @@ void autoFisherUI::setMultiplier(int multiplier) {
 
 	std::string path = "images/autoFisher/UI/multipliers/multi";
 
-	std::string mult = "max";
+	std::string mult;
 	if (autoFisher->multiplier == 1) {
 		mult = "1";
 		pressTest->setImage(path + "3.png");
 	} else if (autoFisher->multiplier == 10) {
 		mult = "10";
 		pressTest->setImage(path + "12.png");
-	} else
+	} else {
+		mult = "max";
 		pressTest->setImage(path + "Max3.png");
-
+	}
 
 	updateUI();
 }
 
 void autoFisherUI::setMulti1() {
 	setMultiplier(1);
-	multi1->buttonAnim->setAnimation("click");
 }
 void autoFisherUI::setMulti10() {
 	setMultiplier(10);

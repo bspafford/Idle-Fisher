@@ -67,10 +67,10 @@ public:
 	static vector findArithmeticMean(std::vector<vector> vertices);
 
 	// CCD
-	static bool sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float* toiOut, vector* normalOut);
-	static bool sweepPointVsCircle(vector p0, vector v, vector center, float radius, float* toiOut, vector* normalOut);
+	static bool sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float& toiOut, vector& normalOut);
+	static bool sweepPointVsCircle(vector p0, vector v, vector center, float radius, float& toiOut, vector& normalOut);
 	static bool testCCD(Fcollision* playerCol, vector move, float deltaTime);
-	static bool circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float* toiOut, vector* normalOut);
+	static bool circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float& toiOut, vector& normalOut);
 
 	static bool testMouse(vector mousePos);
 	static bool pointInQuad(vector mousePos, Fcollision* col);
@@ -83,6 +83,7 @@ private:
 	static inline std::mutex mutex;
 
 	static inline std::vector<Fcollision*> allCollision;
+	static inline std::vector<Fcollision*> stairCollision;
 	// holds unique_ptr for allCollision
 	//static inline std::vector<std::unique_ptr<Fcollision>> collisionStorage;
 	static inline std::unordered_map<uint32_t, std::unique_ptr<std::vector<Fcollision>>> colMap;

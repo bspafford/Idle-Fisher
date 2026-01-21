@@ -56,7 +56,7 @@ private:
 	std::unique_ptr<animation> fishPileAnim;
 	bool canMove = true;
 	vector moveDir;
-	vector prevMove;
+	vector prevMove = { 1, -1 };
 	DeferredPtr<Timer> collectTimer;
 	std::unique_ptr<text> fullnessText;
 

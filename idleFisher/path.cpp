@@ -29,8 +29,7 @@ Path::~Path() {
 
 void Path::draw(Shader* shaderProgram) {
 	for (vector p : lookPoints) {
-		vector loc = math::worldToScreen(p);
-		URectangle rect(nullptr, loc, { 4, 4 }, true);
+		URectangle rect(nullptr, p, vector(stuff::pixelSize, stuff::pixelSize), true);
 		rect.draw(shaderProgram);
 	}
 }

@@ -3,7 +3,7 @@
 #include "character.h"
 #include "AautoFisher.h"
 #include "buyAutoFisher.h"
-#include "dumpster.h"
+#include "FishBin.h"
 #include "vaultPlacedItems.h"
 #include "fishSchool.h"
 #include "ship.h"
@@ -347,12 +347,12 @@ void world::start() {
 
 	// bind texture stuff for water
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/water.png", "underwaterTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/seaFloor.png", "underwaterTexture");
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/causticTexture.png", "causticTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDepthMap.png", "waterDepthTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/reflectionTexture.png", "reflectionTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/underwaterObjectTexture.png", "underwaterObjectTexture");
-	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/underwaterObjectDepthMap.png", "underwaterObjectDepthMap");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/depthmap.png", "waterDepthTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/reflections.png", "reflectionTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/underwater.png", "underwaterObjectTexture");
+	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/objectDepthMap.png", "underwaterObjectDepthMap");
 	Scene::twoDWaterShader->setVec3("deepWaterColor", glm::vec3(54.f/255.f, 107.f/255.f, 138.f/255.f));
 	Scene::twoDWaterShader->setVec3("shallowWaterColor", glm::vec3(206.f / 255.f, 210.f / 255.f, 158.f / 255.f));
 	Scene::twoDWaterShader->setFloat("causticSize", 16.f);
@@ -406,7 +406,7 @@ void world::removeFishSchool(AfishSchool* fishSchool) {
 }
 
 void world::spawnFishTransporter() {
-	fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
+	fishTransporter = std::make_unique<AfishTransporter>(vector(1320.f, 630.f));
 	fishTransporter->startPathFinding();
 	makeDrawLists();
 }
@@ -424,26 +424,26 @@ void world::makeDrawLists() {
 	buildingList.clear();
 
 	// npcs
-	npcList.push_back(sailor.get());
+	//npcList.push_back(sailor.get());
+	//npcList.push_back(atm.get());
+	//npcList.push_back(scuba.get());
 	npcList.push_back(fisherman.get());
-	npcList.push_back(atm.get());
-	npcList.push_back(scuba.get());
 	npcList.push_back(petSeller.get());
 	npcList.push_back(merchant.get());
 	npcList.push_back(mechanic.get());
 	npcList.push_back(fishTransporter.get());
 
 	// buildings
-	if (house)
-		buildingList.push_back(house.get());
-	if (merchantShop)
-		buildingList.push_back(merchantShop.get());
-	if (mechanicHouse)
-		buildingList.push_back(mechanicHouse.get());
-	if (petShop)
-		buildingList.push_back(petShop.get());
+	//if (house)
+		//buildingList.push_back(house.get());
+	//if (merchantShop)
+		//buildingList.push_back(merchantShop.get());
+	//if (mechanicHouse)
+		//buildingList.push_back(mechanicHouse.get());
+	//if (petShop)
+		//buildingList.push_back(petShop.get());
 
-	std::vector<vector> rockLocs = { { 1068, 699 }, { 1379, 689 } };
+	std::vector<vector> rockLocs = {};// { { 1068, 699 }, { 1379, 689 } };
 	for (int i = 0; i < rockLocs.size(); i++) {
 		std::unique_ptr<Arock> rock = std::make_unique<Arock>(rockLocs[i]);
 		buildingList.push_back(rock.get());
@@ -460,13 +460,15 @@ void world::draw(Shader* shaderProgram) {
 	for (int i = 0; i < trees.size(); i++)
 		trees[i]->draw(shaderProgram);
 
-	if (sellFish)
-		sellFish->draw(shaderProgram);
+	if (fishBin)
+		fishBin->draw(shaderProgram);
 	
 	if (Scene::pet)
 		Scene::pet->draw(shaderProgram);
 	
 	sortDraw(shaderProgram);
+
+	inFront->draw(shaderProgram);
 
 	//if (rain) {
 	//	rain->draw(shaderProgram);
@@ -494,11 +496,11 @@ void world::renderWater() {
 	Scene::twoDShader->Activate();
 
 	// draws ship inbetween water and dock
-	if (ship)
-		ship->draw(Scene::twoDShader);
+	//if (ship)
+		//ship->draw(Scene::twoDShader);
 	
-	if (beachAnim)
-		beachAnim->draw(Scene::twoDShader);
+	//if (beachAnim)
+		//beachAnim->draw(Scene::twoDShader);
 	if (mapImg)
 		mapImg->draw(Scene::twoDShader);
 }
@@ -610,37 +612,39 @@ void world::setWorldChangeLoc(WorldLoc worldChangeLoc) {
 
 // world 1
 world1::world1(WorldLoc worldChangeLoc) {
-	spawnLoc = { 517, 506 };
+	spawnLoc = { 557, 506 };
 	houseLoc = { 1670, -870 };
 	bankSellLoc = { 1000, 650 };
 
 	setWorldChangeLoc(worldChangeLoc);
 
-	mapImg = std::make_unique<Image>("images/map1.png", vector{ 0, 0 }, true);
+	mapImg = std::make_unique<Image>("images/worlds/demo/map.png", vector{ 0, 0 }, true);
 	for (int i = 0; i < 19; i++)
 		mapAnimList.push_back("images/worlds/world1/map" + std::to_string(i + 1) + ".png");
-	ship = std::make_unique<Aship>(vector{ 336.f, 470.f });
+	//ship = std::make_unique<Aship>(vector{ 336.f, 470.f });
 
-	sellFish = std::make_unique<dumpster>(vector{ 849.f, 722.f });
+	fishBin = std::make_unique<FishBin>(vector(662.f, 472.f));
 
 	// npcs
 	if (SaveData::saveData.mechanicStruct[0].unlocked)
-		fishTransporter = std::make_unique<AfishTransporter>(vector{ 950.f, 650.f });
+		fishTransporter = std::make_unique<AfishTransporter>(vector(1320.f, 630.f));
 
-	sailor = std::make_unique<Asailor>(vector{ 510, 544 });
-	fisherman = std::make_unique<Afisherman>(vector{ 651.f, 731.f });
-	atm = std::make_unique<Aatm>(vector{ 775.f, 736.f });
-	scuba = std::make_unique<Ascuba>(vector{ 749.f, 412.f });
-	petSeller = std::make_unique<ApetSeller>(vector{ 965.f, 800.f });
-	merchant = std::make_unique<Amerchant>(vector{ 1053.f, 815.f });
-	mechanic = std::make_unique<Amechanic>(vector{ 1120.f, 701.f });
+	fisherman = std::make_unique<Afisherman>(vector(792, 533.f));
+	merchant = std::make_unique<Amerchant>(vector(905.f, 300.f));
+	mechanic = std::make_unique<Amechanic>(vector(1285.f, 578.f));
+	petSeller = std::make_unique<ApetSeller>(vector(1010.f, 772.f));
+	
+	//sailor = std::make_unique<Asailor>(vector{ 510, 544 });
+	//atm = std::make_unique<Aatm>(vector{ 775.f, 736.f });
+	//scuba = std::make_unique<Ascuba>(vector{ 749.f, 412.f });
 
 	// npc buildings
-	house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });
-	merchantShop = std::make_unique<AmerchantShop>(vector{ 998.f, 773.f });
-	mechanicHouse = std::make_unique<AmechanicHouse>(vector{ 1130.f, 614.f });
-	petShop = std::make_unique<ApetShop>(vector{ 930.f, 761.f });
+	//house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });
+	//merchantShop = std::make_unique<AmerchantShop>(vector{ 998.f, 773.f });
+	//mechanicHouse = std::make_unique<AmechanicHouse>(vector{ 1130.f, 614.f });
+	//petShop = std::make_unique<ApetShop>(vector{ 930.f, 761.f });
 
+	/*
 	// make trees
 	std::vector<vector> treeLocs = { 
 		{ 1124.f, 1146.f }, { 1239.f, 1136.f }, { 1342.f, 1124.f }, { 1444.f, 1107.f }, { 729.f, 1102.f }, { 915.f, 1099.f },
@@ -663,6 +667,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 		trees.push_back(std::make_unique<Atree>(bushLocs[i], false));
 
 	sortTreeList();
+	*/
 	makeDrawLists();
 
 	std::unordered_map<std::string, animDataStruct> beachData;
@@ -673,14 +678,16 @@ world1::world1(WorldLoc worldChangeLoc) {
 	beachAnim->addFinishedCallback(static_cast<world*>(this), &world::finishedBeachAnim);
 	beachAnim->start();
 
-	waterImg = std::make_unique<Image>("images/water/water.png", vector{ 0, 0 }, true);
+	waterImg = std::make_unique<Image>("images/worlds/demo/underwater.png", vector{ 0, 0 }, true);
 
 	// pole list
-	std::vector<vector> poleLocs = { { 580, 478 },{ 622, 499 },{ 664, 520 }, { 706, 541 }, { 748, 562 }, { 790, 583 } };
+	std::vector<vector> poleLocs = {};// { { 580, 478 }, { 622, 499 }, { 664, 520 }, { 706, 541 }, { 748, 562 }, { 790, 583 } };
 	for (int i = 0; i < poleLocs.size(); i++) {
 		std::unique_ptr<Image> poleImg = std::make_unique<Image>("images/worlds/world1/dockPole.png", poleLocs[i], true);
 		poleList.push_back(std::move(poleImg));
 	}
+
+	inFront = std::make_unique<Image>("images/worlds/demo/inFront.png", vector(929.f, 448.f), true);
 }
 
 void world::finishedBeachAnim() {

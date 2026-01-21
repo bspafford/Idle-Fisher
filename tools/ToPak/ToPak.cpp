@@ -129,7 +129,7 @@ void InputText(const std::string& pakPath);
 void OutputCol(const std::string& pakPath, const std::string& colPath);
 void InputCol(const std::string& pakPath);
 std::string ReadFile(const std::string& path);
-std::vector<std::string> getAllFileNamesInFolder(const std::string& folderPath);
+std::vector<std::string> getFilesInPath(const std::string& folderPath, std::vector<std::string> extensions, bool recursive, bool removeInputFolderPath);
 uint32_t Hash(const std::string& str);
 std::string toLower(std::string str);
 std::pair<uint16_t, uint16_t> parseTextFile(std::string path, std::vector<Rect>& rects);
@@ -148,9 +148,9 @@ int main() {
 	std::string colPak = base + "col.pak";
 
 	bool outputImagePak = false;
-	bool outputShaderPak = false;
-	bool outputTextPak = false;
-	bool outputAudioPak = false;
+	bool outputShaderPak = true;
+	bool outputTextPak = true;
+	bool outputAudioPak = true;
 	bool outputColPak = true;
 
 	if (outputImagePak) {
@@ -160,27 +160,30 @@ int main() {
 	}
 
 	if (outputShaderPak) {
-		std::vector<std::string> shaderPaths = getAllFileNamesInFolder("shaders");
-		OutputShaders(shaderPak, "shaders", shaderPaths);
+		std::string shaderFolder = "../../idleFisher";
+		std::vector<std::string> shaderPaths = getFilesInPath(shaderFolder, { ".vert", ".frag" }, false, true);
+		OutputShaders(shaderPak, shaderFolder, shaderPaths);
 		InputShaders(shaderPak);
 	}
 
 	if (outputTextPak) {
-		std::vector<std::string> textPaths = getAllFileNamesInFolder("text");
+		std::string textFolder = "../../idleFisher/fonts";
+		std::vector<std::string> textPaths = getFilesInPath(textFolder, { ".txt" }, true, true);
 		OutputText(textPak, textPaths);
-		InputText(textPak);
+		//InputText(textPak);
 	}
 
 	if (outputAudioPak) {
-		std::vector<std::string> audioPaths = getAllFileNamesInFolder("audio");
+		std::string audioFolder = "../../idleFisher/audio";
+		std::vector<std::string> audioPaths = getFilesInPath(audioFolder, {}, true, true);
 		// same things, loading in the header, directory, and loading in files
-		OutputShaders(audioPak, "audio", audioPaths);
-		InputShaders(audioPak);
+		OutputShaders(audioPak, audioFolder, audioPaths);
+		//InputShaders(audioPak);
 	}
 
 	if (outputColPak) {
 		OutputCol(colPak, "../../idleFisher/data/debug/collision.col");
-		InputCol(colPak);
+		//InputCol(colPak);
 	}
 
 	return 0;
@@ -285,7 +288,7 @@ void OutputText(const std::string& pakPath, std::vector<std::string>& textPaths)
 
 		// need to convert all text letters into Rects, then add that list to directory
 		std::vector<Rect> rectsList;
-		std::filesystem::path p("text/" + textPath);
+		std::filesystem::path p("../../idleFisher/fonts/" + textPath);
 		std::pair<uint16_t, uint16_t> textData = parseTextFile(p.string(), rectsList);
 
 		// add to directory
@@ -580,8 +583,8 @@ void Output(const char* pakPath, const char* rootDir, const std::unordered_map<s
 		stbi_set_flip_vertically_on_load(true);
 		unsigned char* bytes = stbi_load((rootDir + data.first).c_str(), &w, &h, &nChannels, NULL);
 		if (!bytes) {
-			std::cout << "Bytes null\n";
-			continue;
+			std::cout << "Bytes null for \"" << data.first << "\"\n";
+			abort();
 		}
 
 		size_t bytesSize = w * h * nChannels;
@@ -636,6 +639,8 @@ void Output(const char* pakPath, const char* rootDir, const std::unordered_map<s
 
 	output.close();
 
+	return;
+
 	// debug
 	std::cout << "output header: " << header << "\n";
 	//for (int i = 0; i < directory.size(); i++) {
@@ -649,21 +654,50 @@ void Output(const char* pakPath, const char* rootDir, const std::unordered_map<s
 	}
 }
 
-std::vector<std::string> getAllFileNamesInFolder(const std::string& folderPath) {
-	std::vector<std::string> fileNames;
-	try {
-		// Use directory_iterator to go through each entry in the directory
-		for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
-			// Check if the entry is a regular file (not a directory)
-			if (std::filesystem::is_regular_file(entry.status())) {
-				// Get only the filename part and convert to string
-				fileNames.push_back(entry.path().filename().string());
-			}
+void processEntry(const std::string& folderPath, const std::filesystem::directory_entry& entry, std::vector<std::string>& paths, std::vector<std::string> extensions, bool recursive, bool removeInputFolderPath) {
+	if (!entry.is_regular_file())
+		return;
+
+	const std::filesystem::path& filePath = entry.path();
+	std::string ext = filePath.extension().string();
+
+	bool hasExtension = false;
+	for (std::string& extension : extensions) {
+		if (ext == extension) {
+			hasExtension = true;
+			break;
 		}
-	} catch (const std::filesystem::filesystem_error& e) {
-		std::cerr << "Filesystem error: " << e.what() << std::endl;
 	}
-	return fileNames;
+
+	if (hasExtension || extensions.empty()) {
+		if (removeInputFolderPath) {
+			std::string newPath(filePath.string());
+			newPath.erase(0, folderPath.size() + 1); // folderPath + '\\'
+			paths.push_back(newPath);
+		} else
+			paths.push_back(filePath.string());
+	}
+}
+
+std::vector<std::string> getFilesInPath(const std::string& folderPath, std::vector<std::string> extensions, bool recursive, bool removeInputFolderPath) {
+	if (!std::filesystem::exists(folderPath) || !std::filesystem::is_directory(folderPath)) {
+		std::cerr << "Invalid directory\n";
+		return {};
+	}
+
+	std::vector<std::string> paths;
+
+	if (recursive) {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(folderPath)) {
+			processEntry(folderPath, entry, paths, extensions, recursive, removeInputFolderPath);
+		}
+	} else {
+		for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
+			processEntry(folderPath, entry, paths, extensions, recursive, removeInputFolderPath);
+		}
+	}
+
+	return paths;
 }
 
 uint32_t Hash(const std::string& str) {
@@ -856,9 +890,9 @@ std::unordered_map<uint32_t, std::vector<Fcollision>> getCollisionObjects(const 
 				}
 
 				vector multiplier = vector{ 1, -1 };
-				vector offset = { 500, 500 };
+				//vector offset = { 500, 500 };
 				for (int i = 0; i < coords[lineNum].size(); i++)
-					coords[lineNum][i] = coords[lineNum][i] * multiplier + offset;
+					coords[lineNum][i] = coords[lineNum][i] * multiplier;// +offset;
 
 				collisionStorage[Hash(currWorldName)].push_back(Fcollision(coords[lineNum], identifier[0]));
 

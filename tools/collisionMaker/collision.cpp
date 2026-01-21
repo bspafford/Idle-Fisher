@@ -91,6 +91,7 @@ void collision::saveCollision(std::vector<SDL_Point*>& allCollision, std::vector
 			}
 			colFile << line << std::endl;
 	}
+	std::cout << "collision saved successfully\n";
 }
 
 std::string collision::getIdentifier(std::string str) {
@@ -140,7 +141,7 @@ void collision::showCollisionBoxes(SDL_Renderer* renderer, std::vector<SDL_Point
 					SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 				else if (collisionIdentifier[i] == "w")
 					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-				else if (collisionIdentifier[i] == "l")
+				else if (collisionIdentifier[i] == "s")
 					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 
 
@@ -421,7 +422,8 @@ void collision::changeIdentifier() {
 		return;
 
 	// list
-	std::vector<std::string> identifiers = { "", "w", "l" };
+	// "" default, "w" water, "s" stairs
+	std::vector<std::string> identifiers = { "", "w", "s" };
 
 	// get current index of current identifier
 	auto it = std::find(identifiers.begin(), identifiers.end(), Main::collisionIdentifier[mouseOver]);

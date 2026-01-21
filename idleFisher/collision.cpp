@@ -58,9 +58,13 @@ void collision::LoadWorldsCollision(const std::string& worldName) {
 		return;
 
 	allCollision.clear();
+	stairCollision.clear();
 	allCollision.reserve(it->second->size());
 	for (int i = 0; i < it->second->size(); ++i) {
-		allCollision.push_back(&it->second->at(i));
+		if (it->second->at(i).identifier == 's') // stairs
+			stairCollision.push_back(&it->second->at(i));
+		else
+			allCollision.push_back(&it->second->at(i));
 	}
 }
 
@@ -302,8 +306,15 @@ std::string collision::getIdentifier(std::string str) {
 }
 
 void collision::showCollisionBoxes(Shader* shaderProgram) {
+#ifdef _DEBUG // just really quickly made, temp code for testing
+	shaderProgram->Activate();
+	shaderProgram->setMat4("projection", GetMainCamera()->getProjectionMat());
+	glm::vec3 camPos = GetMainCamera()->GetPosition();
+	shaderProgram->setVec2("playerPos", camPos);
+
 	std::lock_guard<std::mutex> lock(mutex);
 
+	shaderProgram->Activate();
 	shaderProgram->setInt("useWorldPos", true);
 	shaderProgram->setInt("isRectangle", true);
 
@@ -457,6 +468,7 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 
 	shaderProgram->setInt("isRectangle", false);
 	shaderProgram->setVec4("color", glm::vec4(1.f));
+#endif
 }
 
 // test if the player is close enough for the collision to even be tested
@@ -469,7 +481,7 @@ bool collision::isCloseEnough(const Fcollision* a, const Fcollision* col) {
 }
 
 // Circle vs Polygon CCD
-bool collision::sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float* toiOut, vector* normalOut) {
+bool collision::sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float& toiOut, vector& normalOut) {
 	vector a = edgeStart;
 	vector b = edgeEnd;
 	vector edgeDir = b - a;
@@ -493,15 +505,13 @@ bool collision::sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector e
 	float tOnEdge = math::dot(hitPoint - a, edgeDir) / math::dot(edgeDir, edgeDir);
 	if (tOnEdge < 0 || tOnEdge > 1) return false;
 
-	toi /= stuff::pixelSize;
-
-	*toiOut = toi;
-	*normalOut = edgeNormal;
+	toiOut = toi;
+	normalOut = edgeNormal;
 
 	return toi >= 0 && toi <= 1;
 }
 
-bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float radius, float* toiOut, vector* normalOut) {
+bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float radius, float& toiOut, vector& normalOut) {
 	vector m = p0 - center;
 	float r = radius;
 
@@ -516,8 +526,6 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
-	t0 /= stuff::pixelSize;
-	t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;
@@ -526,14 +534,29 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 
 	// Output
 	vector hitPoint = p0 + v * toi;
-	*toiOut = toi;
-	*normalOut = math::normalize(hitPoint - center);
+	toiOut = toi;
+	normalOut = math::normalize(hitPoint - center);
 
 	return toi <= 1.0f;
 }
 
 bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	std::lock_guard<std::mutex> lock(mutex);
+
+	if (move.x != 0) { // dont need to change if there is no movement on the x axis
+		for (int i = 0; i < stairCollision.size(); i++) {
+			vector normal;
+			float depth;
+			Fcollision* charCol = GetCharacter()->GetCollision();
+			if (intersectCirclePolygon(charCol->GetPoints()[0], charCol->radius, stairCollision[i]->GetPoints(), normal, depth)) {
+
+				// assume [0] is always top left and [3] is always bottom left
+				// if top is left of bottom, then stairs are moving up and to the left
+				float stairDir = stairCollision[i]->GetPoints()[0].x < stairCollision[i]->GetPoints()[3].x ? 1.f : -1.f;
+				move.y += (move.x > 0 ? -1 : 1) * stairDir;
+			}
+		}
+	}
 
 	const int maxIterations = 2;
 
@@ -549,7 +572,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 			if (allCollision[i]->isCircle) {
 				float toi;
 				vector normal;
-				if (circleVsCircle(playerCol, v, allCollision[i], &toi, &normal)) {
+				if (circleVsCircle(playerCol, v, allCollision[i], toi, normal)) {
 					if (toi < minTOI) {
 						minTOI = toi;
 						hitNormal = normal;
@@ -566,7 +589,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					vector edgeStart = { allCollision[i]->points[(j + 1) % int(pointsSize)].x, allCollision[i]->points[(j + 1) % int(pointsSize)].y };
 
 					// treat edge as line segment inflated by radius
-					if (sweepPointVsEdge(GetCharacter()->getCharLoc(), v, edgeStart, edgeEnd, playerCol->radius, &toi, &normal)) {
+					if (sweepPointVsEdge(GetCharacter()->getCharLoc(), v, edgeStart, edgeEnd, playerCol->radius, toi, normal)) {
 						if (toi < minTOI) {
 							minTOI = toi;
 							hitNormal = normal;
@@ -582,7 +605,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 					vector vertex = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
 
 					// treat vertex as a circle of radius R
-					if (sweepPointVsCircle(GetCharacter()->getCharLoc(), v, vertex, playerCol->radius, &toi, &normal)) {
+					if (sweepPointVsCircle(GetCharacter()->getCharLoc(), v, vertex, playerCol->radius, toi, normal)) {
 						if (toi < minTOI) {
 							minTOI = toi;
 							hitNormal = normal;
@@ -615,7 +638,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	return true;
 }
 
-bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float* toiOut, vector* normalOut) {
+bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float& toiOut, vector& normalOut) {
 	vector p0 = playerCol->points[0];
 	vector center = circleCol->points[0];
 	float radius = circleCol->radius + playerCol->radius;
@@ -635,8 +658,6 @@ bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circ
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
-	t0 /= stuff::pixelSize;
-	t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;
@@ -645,8 +666,8 @@ bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circ
 
 	// Output
 	vector hitPoint = p0 + v * toi;
-	*toiOut = toi;
-	*normalOut = math::normalize(hitPoint - center);
+	toiOut = toi;
+	normalOut = math::normalize(hitPoint - center);
 
 	return toi <= 1.0f;
 }

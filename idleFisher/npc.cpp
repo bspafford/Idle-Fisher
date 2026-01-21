@@ -76,7 +76,7 @@ void npc::setLoc(vector loc) {
 	this->loc = loc;
 
 	npcAnim->setLoc(loc - npcAnim->GetCellSize() / vector{ 2.f, 1.f });
-	exclamationPointAnim->setLoc(npcAnim->getLoc() + vector{npcAnim->GetCellSize().x / 2.f - exclamationPointAnim->GetCellSize().x / 2, float(npcAnim->GetCellSize().y + 1 * stuff::pixelSize)});
+	exclamationPointAnim->setLoc(npcAnim->getLoc() + vector{npcAnim->GetCellSize().x / 2.f - exclamationPointAnim->GetCellSize().x / 2, float(npcAnim->GetCellSize().y + 1)});
 }
 
 void npc::click() {
@@ -85,7 +85,7 @@ void npc::click() {
 
 bool npc::isDiscovered() {
 	if (discovered)
-		return discovered;
+		return *discovered;
 	return false;
 }
 
