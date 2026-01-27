@@ -45,8 +45,8 @@ UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 		scrollBox->addChild(achievementHolder.get(), 5.f);
 	}
 
-	for (int i = 0; i < SaveData::data.achievementData.size(); i++) {
-		std::unique_ptr<UachievementBox> achievementBox = std::make_unique<UachievementBox>(achievementHolder.get(), i);
+	for (auto& [id, data] : SaveData::data.achievementData) {
+		std::unique_ptr<UachievementBox> achievementBox = std::make_unique<UachievementBox>(achievementHolder.get(), id);
 		achievementHolder->addChild(achievementBox.get());
 		achievementBoxList.push_back(std::move(achievementBox));
 	}
@@ -63,15 +63,18 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 
 	scrollBox->draw(shaderProgram);
 
-	for (int i = 0; i < SaveData::data.achievementData.size(); i++) {
-		widget* child = achievementHolder->getChildAt(i);
+	int index = 0;
+	for (auto& [achievementId, achievementData] : SaveData::data.achievementData) {
+		widget* child = achievementHolder->getChildAt(index);
 		if (child->mouseOver()) {
-			if (SaveData::saveData.achievementList[i].unlocked) {
-				hoverBox->setInfo(SaveData::data.achievementData[i].name, SaveData::data.achievementData[i].description);
+			if (SaveData::saveData.achievementList.at(achievementId).level) {
+				hoverBox->setInfo(achievementData.name, achievementData.description);
 				hoverBox->draw(shaderProgram);
 			}
 			break;
 		}
+
+		index++;
 	}
 
 	std::string name, description;
@@ -85,8 +88,8 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 
 void UachievementWidget::addedToViewport() {
 	float achievementsUnlocked = 0.f;
-	for (FsaveAchievementStruct achievement : SaveData::saveData.achievementList) {
-		if (achievement.unlocked)
+	for (auto& [id, achievement] : SaveData::saveData.achievementList) {
+		if (achievement.level)
 			achievementsUnlocked++;
 	}
 
@@ -155,9 +158,16 @@ void UachievementWidget::updateEquipmentWidget() {
 	
 }
 
-void UachievementWidget::updateAchievementIcon(int id) {
-	widget* child = achievementHolder->getChildAt(id);
-	UachievementBox* box = dynamic_cast<UachievementBox*>(child);
-	if (box)
-		box->updateAchievementImage();
+void UachievementWidget::updateAchievementIcon(uint32_t id) {
+	int index = 0;
+	for (auto& [achievementId, achievementData] : SaveData::data.achievementData) {
+		widget* child = achievementHolder->getChildAt(index);
+		UachievementBox* box = dynamic_cast<UachievementBox*>(child);
+		if (box && box->GetId() == id) {
+			box->updateAchievementImage();
+			break;
+		}
+
+		index++;
+	}
 }

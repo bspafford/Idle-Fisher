@@ -33,7 +33,7 @@ private:
 
 	void removeFromViewport() override;
 
-	void calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, int worldId);
+	void calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, uint32_t worldId);
 
 	std::unique_ptr<Image> background;
 	std::unique_ptr<animation> journalAnim;

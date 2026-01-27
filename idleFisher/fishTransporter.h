@@ -23,7 +23,7 @@ public:
 	double getMaxHoldNum();
 	float getSpeed();
 	float getCollectionSpeed();
-	void upgrade(FsaveMechanicStruct* saveMechanicStruct);
+	void upgrade(SaveEntry* saveMechanicStruct);
 
 private:
 	void SetStats();
@@ -60,7 +60,7 @@ private:
 	DeferredPtr<Timer> collectTimer;
 	std::unique_ptr<text> fullnessText;
 
-	std::unordered_map<int, FsaveFishData> holding;
+	std::unordered_map<uint32_t, FsaveFishData> holding;
 	double maxHoldNum = 100;
 
 	// animations

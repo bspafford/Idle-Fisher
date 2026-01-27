@@ -5,27 +5,78 @@
 #include "baitBuffs.h"
 #include "achievementBuffs.h"
 
-void upgrades::init() {
-	// converts list to unordered map
-	for (int i = 0; i < SaveData::data.upgradeData.size(); i++) {
-		saveUpgradeMap[SaveData::data.upgradeData[i].upgradeFunctionName] = &SaveData::saveData.upgradeList[i];
-	}
+double Stats::Get(Stat s) {
+	return cachedValues.at(s);
 }
 
-// a fucntion that finds the upgrade using a string
-FsaveUpgradeStruct* upgrades::getUpgrade(std::string upgradeFuncName) {
+void Stats::AddModifier(Upgrade upgrade) {
+	// what do i want to pass add modifier?
+	// maybe just the upgradeId and a reference to the SaveData value?
+
+	// then add it to allModifiers if it isn't already
+	// maybe the modifier could be a reference to the SaveData level?
+
+	// the finally mark dirty
+
+
+	// so then in the list i will have the upgradeId and the level that will auto update? 
+	// but i need to make sure everytime the level updates the mark that stat dirty
+	// 
+
+	auto [it, inserted] = allModifiers.emplace(upgrade.id, upgrade);
+	if (inserted) // only add modifier if it wasn't already in allModifiers list
+		modifiersPerStat[upgrade.stat].push_back(&it->second);
+
+	MarkDirty(upgrade.stat);
+}
+
+void Stats::RemoveModifier(Upgrade upgrade) {
+
+}
+
+void Stats::MarkDirty(Stat s) {
+	dirty.insert(s);
+}
+
+void Stats::Update(double dt) {
+
+}
+
+void Stats::UpdateDirty() {
+	for (auto& stat : dirty) { // loop through dirty stats
+		double& cachedValue = cachedValues[stat];
+		for (Upgrade* mod : modifiersPerStat[stat]) { // recalculate all modifiers of stat
+			SaveEntry& saveMod = saveModifiers.at(mod->id);
+			cachedValue += std::pow((mod->base + mod->add * saveMod.level) * std::pow(mod->mul, saveMod.level), mod->exp);
+		}
+	}
+
+	dirty.clear();
+}
+
+
+
+
+
+
+
+
+
+
+SaveEntry* upgrades::getUpgrade(std::string upgradeFuncName) {
 	return saveUpgradeMap[upgradeFuncName];
 }
 
 bool upgrades::upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double* price) {
-	if (upgradeStruct.id == -1)
+	return false;
+	/*
+	if (upgradeStruct.id == "")
 		return false;
 
-	FsaveUpgradeStruct* saveUpgradeStruct = &SaveData::saveData.upgradeList[upgradeStruct.id];
-	int worldId = worldNameToId(upgradeStruct.levelName);
+	SaveEntry* saveUpgradeStruct = &SaveData::saveData.upgradeList[upgradeStruct.id];
 	double upgradePrice = calcPrice(&upgradeStruct, saveUpgradeStruct);
-	if (saveUpgradeStruct->upgradeLevel < upgradeStruct.upgradeNumMax && upgradePrice <= SaveData::saveData.currencyList[worldId + 1].numOwned) {
-		SaveData::saveData.currencyList[worldId + 1].numOwned -= upgradePrice;
+	if (saveUpgradeStruct->level < upgradeStruct.upgradeNumMax && upgradePrice <= SaveData::saveData.currencyList.at(upgradeStruct.levelName).numOwned) {
+		SaveData::saveData.currencyList.at(upgradeStruct.levelName).numOwned -= upgradePrice;
 		saveUpgradeStruct->upgradeLevel++;
 		saveUpgradeStruct->value = upgradeEquation(&upgradeStruct, saveUpgradeStruct);
 		saveUpgradeStruct->price = calcPrice(&upgradeStruct, saveUpgradeStruct); // calc new price
@@ -37,63 +88,28 @@ bool upgrades::upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double
 		return true;
 	}
 	return false;
-}
-
-int upgrades::worldNameToId(std::string worldName) {
-	for (FworldStruct worldData : SaveData::data.worldData) {
-		if (worldData.worldName == worldName)
-			return worldData.id;
-	}
-	return -1;
-}
-
-// calculates the price of the upgrade
-double upgrades::calcPrice(FupgradeStruct* upgradeStruct, FsaveUpgradeStruct* saveUpgradeStruct) { // per upgrade
-	std::string expression_string = upgradeStruct->priceEquation;
-	double level = saveUpgradeStruct->upgradeLevel;
-	exprtk::symbol_table<double> symbol_table;
-	symbol_table.add_variable("level", level);
-	exprtk::expression<double> expression;
-	expression.register_symbol_table(symbol_table);
-	exprtk::parser<double> parser;
-	if (!parser.compile(expression_string, expression))
-		std::cout << "parser error\n";
-	double result = expression.value();
-	return result;
-}
-
-// calculates what the value of the upgrade should be
-double upgrades::upgradeEquation(FupgradeStruct* upgradeStruct, FsaveUpgradeStruct* saveUpgradeStruct) { // per upgrade
-	std::string expression_string = upgradeStruct->upgradeNumEquation;
-	double level = saveUpgradeStruct->upgradeLevel;
-	exprtk::symbol_table<double> symbol_table;
-	symbol_table.add_variable("level", level);
-	exprtk::expression<double> expression;
-	expression.register_symbol_table(symbol_table);
-	exprtk::parser<double> parser;
-	if (!parser.compile(expression_string, expression))
-		std::cout << "parser error\n";
-	double result = expression.value();
-	return result;
+	*/
 }
 
 double upgrades::calcFishingRodPowerPrice() {
-	int level = SaveData::saveData.fishingRod.powerLevel;
+	int level = SaveData::saveData.fishingRod.power.level;
 	return 30 * pow(3, level);
 }
 
 double upgrades::calcFishingRodSpeedPrice() {
-	int level = SaveData::saveData.fishingRod.speedLevel;
+	int level = SaveData::saveData.fishingRod.speed.level;
 	return 10 * pow(2, level);
 }
 
 double upgrades::calcFishingRodCatchChancePrice() {
-	int level = SaveData::saveData.fishingRod.catchChanceLevel;
+	int level = SaveData::saveData.fishingRod.catchChance.level;
 	return 20 * pow(1.75, level);
 }
 
 // calculates how much the all the upgrades combine should equal
 double upgrades::getFishSellPrice(const FfishData& fish, int quality) {
+	return 1;
+	/*
 	// upgrades
 	double value = 0;
 	value += getUpgrade("fishSellPriceWorld1")->value;
@@ -111,27 +127,38 @@ double upgrades::getFishSellPrice(const FfishData& fish, int quality) {
 	double petBuff = petBuffs::increaseFishPrice();
 
 	return fish.currencyNum * (value + 1) * (petBuff + 1) * achievementBuffs::getFishPercentIncrease(fish.id) * (1.f + (quality * .1f));
+	*/
 }
 
 double upgrades::calcGreenFishingUpgrade() {
-	FsaveUpgradeStruct* saveUpgrade = getUpgrade("increaseGreenComboSizeWorld6");
+	return 1;
+	/*
+	SaveEntry* saveUpgrade = getUpgrade("increaseGreenComboSizeWorld6");
 	double debuffVal = (1 - baitBuffs::increaseYellowDecreaseGreen()[1]);
-	return debuffVal * (saveUpgrade->upgradeLevel + 1) * (baitBuffs::increaseYellowGreen()[1] + 1) * (baitBuffs::increaseGreenDecreaseYellow()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[2] + 1);
+	return debuffVal * (saveUpgrade->level + 1) * (baitBuffs::increaseYellowGreen()[1] + 1) * (baitBuffs::increaseGreenDecreaseYellow()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[2] + 1);
+	*/
 }
 
 double upgrades::calcYellowFishingUpgrade() {
-	FsaveUpgradeStruct* saveUpgrade = getUpgrade("increaseYellowComboSizeWorld6");
+	return 1;
+	/*
+	SaveEntry* saveUpgrade = getUpgrade("increaseYellowComboSizeWorld6");
 	double debuffVal = (1 - baitBuffs::increaseGreenDecreaseYellow()[1]);
-	return debuffVal * (saveUpgrade->upgradeLevel + 1) * (baitBuffs::increaseYellowGreen()[0] + 1) * (baitBuffs::increaseYellowDecreaseGreen()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[1] + 1);
+	return debuffVal * (saveUpgrade->level + 1) * (baitBuffs::increaseYellowGreen()[0] + 1) * (baitBuffs::increaseYellowDecreaseGreen()[0] + 1) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[1] + 1);
+	*/
 }
 
 bool upgrades::IsComboUnlocked() {
-	return getUpgrade("unlockComboWorld2")->upgradeLevel != 0;
+	return false;
+	//return getUpgrade("unlockComboWorld2")->upgradeLevel != 0;
 }
 
 double upgrades::calcComboMax() {
-	FsaveUpgradeStruct* upgrade = getUpgrade("increaseComboMaxWorld2");
+	return 1;
+	/*
+	SaveEntry* upgrade = getUpgrade("increaseComboMaxWorld2");
 	return upgradeEquation(&SaveData::data.upgradeData[upgrade->id], upgrade) * (petBuffs::increaseMaxCombo() + 1) * (baitBuffs::increaseComboMax() + 1) * (baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo()[2] + 1);
+	*/
 }
 
 double upgrades::calcComboMin(double comboMax) {
@@ -161,11 +188,11 @@ double upgrades::calcComboDecreaseOnBounce() {
 }
 
 double upgrades::calcFishingRodPower() {
-	return SaveData::saveData.fishingRod.powerLevel * 10;
+	return SaveData::saveData.fishingRod.power.level * 10;
 }
 
 double upgrades::calcFishingRodCatchChance() {
-	return SaveData::saveData.fishingRod.catchChanceLevel;
+	return SaveData::saveData.fishingRod.catchChance.level;
 }
 
 double upgrades::calcFishCatchNum() {
@@ -213,13 +240,13 @@ float upgrades::calcMinRainSpawnInterval() {
 }
 
 int upgrades::calcFishingRodIndex() {
-	return SaveData::saveData.fishingRod.powerLevel / 10;
+	return SaveData::saveData.fishingRod.power.level / 10;
 }
 
 int upgrades::calcFishingLineIndex() {
-	return SaveData::saveData.fishingRod.speedLevel / 10;
+	return SaveData::saveData.fishingRod.speed.level / 10;
 }
 
 int upgrades::calcBobberIndex() {
-	return SaveData::saveData.fishingRod.catchChanceLevel / 10;
+	return SaveData::saveData.fishingRod.catchChance.level / 10;
 }

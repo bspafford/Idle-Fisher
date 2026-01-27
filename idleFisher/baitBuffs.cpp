@@ -2,105 +2,122 @@
 #include "saveData.h"
 
 double baitBuffs::increaseFishSpeed() {
-	if (SaveData::saveData.equippedBait.id != 0)
+	uint32_t id = 1u; // pepper
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[0].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 bool baitBuffs::chanceToKeepCombo() {
-	if (SaveData::saveData.equippedBait.id != 1)
+	uint32_t id = 2u; // fishFood
+	if (SaveData::saveData.equippedBaitId != id)
 		return false;
 
-	double rand = math::randRange(0.0, 1/ SaveData::data.baitData[1].buffValues[0]);
+	double rand = math::randRange(0.0, 1.0 / SaveData::data.baitData.at(id).buffValues[0]);
 	return rand <= 1.0;
 }
 
 std::vector<double> baitBuffs::increaseFishCaughtIncraseFishInterval() {
-	if (SaveData::saveData.equippedBait.id != 2)
+	uint32_t id = 3u; // cannedMeat
+	if (SaveData::saveData.equippedBaitId != id)
 		return std::vector<double>{0, 0};
-	return SaveData::data.baitData[2].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 std::vector<double> baitBuffs::decreaseFishIntervalDecraseFishCaught() {
-	if (SaveData::saveData.equippedBait.id != 3)
+	uint32_t id = 4u; // worm
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0 };
-	return SaveData::data.baitData[3].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 double baitBuffs::increaseGoldenFishChance() {
-	if (SaveData::saveData.equippedBait.id != 4)
+	uint32_t id = 5u; // temp3
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[4].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 double baitBuffs::decreaseGoldenFishCooldown() {
-	if (SaveData::saveData.equippedBait.id != 5)
+	uint32_t id = 6u; // temp4
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[5].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 std::vector<double> baitBuffs::increaseYellowGreen() {
-	if (SaveData::saveData.equippedBait.id != 6)
+	uint32_t id = 7u; // temp5
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0 };
-	return SaveData::data.baitData[6].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 double baitBuffs::decreaseFishMoveSpeed() {
-	if (SaveData::saveData.equippedBait.id != 7)
+	uint32_t id = 8u; // temp6
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[7].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 std::vector<double> baitBuffs::increaseGreenDecreaseYellow() {
-	if (SaveData::saveData.equippedBait.id != 8)
+	uint32_t id = 9u; // temp7
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0 };
-	return SaveData::data.baitData[8].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 std::vector<double> baitBuffs::increaseYellowDecreaseGreen() {
-	if (SaveData::saveData.equippedBait.id != 9)
+	uint32_t id = 10u; // temp8
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0 };
-	return SaveData::data.baitData[9].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 std::vector<double> baitBuffs::increaseFishSpeedIncreaseYellowGreen() {
-	if (SaveData::saveData.equippedBait.id != 10)
+	uint32_t id = 11u; // temp9
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0, 0 };
-	return SaveData::data.baitData[10].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 std::vector<double> baitBuffs::increaseFishSpeedCatchMoreFish() {
-	if (SaveData::saveData.equippedBait.id != 11)
+	uint32_t id = 12u; // temp10
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0 };
-	return SaveData::data.baitData[11].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }
 
 double baitBuffs::increaseFishComboBounce() {
-	if (SaveData::saveData.equippedBait.id != 12)
+	uint32_t id = 13u; // temp11
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[12].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 double baitBuffs::increaseComboMax() {
-	if (SaveData::saveData.equippedBait.id != 13)
+	uint32_t id = 14u; // temp12
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[13].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 double baitBuffs::increaseComboIncrease() {
-	if (SaveData::saveData.equippedBait.id != 14)
+	uint32_t id = 15u; // temp13
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[14].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 double baitBuffs::startAtHigherCombo() {
-	if (SaveData::saveData.equippedBait.id != 15)
+	uint32_t id = 16u; // temp14
+	if (SaveData::saveData.equippedBaitId != id)
 		return 0;
-	return SaveData::data.baitData[15].buffValues[0];
+	return SaveData::data.baitData.at(id).buffValues[0];
 }
 
 std::vector<double> baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCombo() {
-	if (SaveData::saveData.equippedBait.id != 16)
+	uint32_t id = 17u; // masterBait
+	if (SaveData::saveData.equippedBaitId != id)
 		return { 0, 0, 0 };
-	return SaveData::data.baitData[16].buffValues;
+	return SaveData::data.baitData.at(id).buffValues;
 }

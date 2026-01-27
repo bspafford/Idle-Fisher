@@ -15,19 +15,17 @@
 class achievement {
 private:
     FachievementStruct* achievementData;
-    FsaveAchievementStruct* saveAchievementData;
+    SaveEntry* saveAchievementData;
     std::function<bool()> condition; // Condition as a lambda function
     static inline std::vector<std::unique_ptr<achievement>> achievements;
 
 public:
-    achievement(int id,
-        std::function<bool()> cond)
-        : achievementData(&SaveData::data.achievementData[id]), saveAchievementData(&SaveData::saveData.achievementList[id]), condition(cond) {
-    }
+    achievement(uint32_t id, std::function<bool()> cond)
+        : achievementData(&SaveData::data.achievementData.at(id)), saveAchievementData(&SaveData::saveData.achievementList.at(id)), condition(cond) {}
 
     void checkUnlock() {
-        if (!saveAchievementData->unlocked && condition()) {
-            saveAchievementData->unlocked = true;
+        if (!saveAchievementData->level && condition()) {
+            saveAchievementData->level = true;
 
             // updates the achievement widget icon for specific achievement
             Main::achievementWidget->updateAchievementIcon(saveAchievementData->id);
@@ -40,7 +38,7 @@ public:
         Main::fishUnlocked->start(achievementData);
     }
 
-    bool isUnlocked() const { return saveAchievementData->unlocked; }
+    bool isUnlocked() const { return saveAchievementData->level; }
 
     FachievementStruct* getAchievementData() const { return achievementData; }
 

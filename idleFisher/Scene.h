@@ -29,10 +29,16 @@ public:
 	static void Destructor();
 	
 	// isStartup is for when the application loads up for the first time and loads into a world for the first time
-	static void openLevel(std::string worldName, WorldLoc worldChangeLoc = WORLD_SET_LOC_SAILOR, bool overrideIfInWorld = false, bool isStartup = false);
-	static int getWorldIndexFromName(std::string worldName);
-	static std::string getPrevWorldName();
-	static std::string getCurrWorldName();
+	static void openLevel(uint32_t worldId, WorldLoc worldChangeLoc = WORLD_SET_LOC_SAILOR, bool overrideIfInWorld = false, bool isStartup = false);
+	// only works with world levels. Not titleScreen, vault, or rebirth
+	// world1 returns 0, world2 returns 1, etc. worldId == 0 is currWorld
+	static int GetWorldIndex(uint32_t worldId = 0);
+	static uint32_t GetPrevWorldId();
+	static uint32_t GetCurrWorldId();
+	// index 0 == world1, index 1 == world2, etc.
+	static uint32_t GetWorldId(int index);
+	// "" == currWorld
+	//static uint32_t GetWorldId(std::string worldName = "");
 
 	static void updateShaders(float deltaTime);
 
@@ -40,9 +46,12 @@ public:
 
 	static void draw(Shader* shaderProgram);
 	// Async
-	static void openLevelThread(std::string worldName, WorldLoc worldChangeLoc, bool overrideIfInWorld);
+	static void openLevelThread(uint32_t worldId, WorldLoc worldChangeLoc, bool overrideIfInWorld);
 
 	static bool isLoading();
+
+	// returns an ordered list of worlds excluding titleScreen, vault, rebirth
+	static std::vector<uint32_t> GetWorldsList();
 
 	// shaders
 	static inline Shader* shaderProgram;
@@ -73,11 +82,11 @@ private:
 	static inline std::atomic<bool> hasLoadedGPUData = false;
 	static inline std::atomic<bool> waitToUploadGPUdata = true;
 
-	static inline std::string prevWorld;
-	static inline std::string currWorldName;
+	static inline uint32_t prevWorld;
+	static inline uint32_t currWorld;
 	// world player is switching to that frame
 	// needed because of the deferred load world
-	static inline std::string worldName;
+	static inline uint32_t queuedWorldId;
 
 	static inline std::unique_ptr<LoadingScreen> loadingScreen;
 
@@ -102,4 +111,8 @@ private:
 	static inline std::recursive_mutex mtx;
 	static inline std::mutex cvMtx;
 	static inline std::condition_variable cv;
+
+	// how many world levels to offset the world id by
+	// titleSceen, vault, and rebirth are not counted as world levels
+	static inline int worldOffset = 3;
 };

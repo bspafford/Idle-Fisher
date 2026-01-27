@@ -13,8 +13,15 @@ enum Resolution {
     RES_2560x1440
 };
 
+struct SaveEntry {
+    uint32_t id;
+    int level = 0;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(SaveEntry, id, level);
+};
+
 struct FfishData {
-    int id;
+    uint32_t id;
     std::string name;
     std::string description;
     std::string thumbnail;
@@ -23,17 +30,17 @@ struct FfishData {
     float fishSpeed;
     float greenDifficulty;
     float yellowDifficulty;
-    int currencyId;
+    uint32_t currencyId;
     int currencyNum;
-    std::string levelName;
+    uint32_t worldId;
     int minSize = 1;
     int maxSize = 1;
     bool isRareFish = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, currencyId, currencyNum, levelName, minSize, maxSize, isRareFish);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, currencyId, currencyNum, worldId, minSize, maxSize, isRareFish);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         thumbnail = row[3];
@@ -42,17 +49,19 @@ struct FfishData {
         fishSpeed = std::stof(row[6]);
         greenDifficulty = std::stof(row[7]);
         yellowDifficulty = std::stof(row[8]);
-        currencyId = std::stoi(row[9]);
+        currencyId = std::stoul(row[9]);
         currencyNum = std::stoi(row[10]);
-        levelName = row[11];
+        worldId = std::stoul(row[11]);
         minSize = std::stoi(row[12]);
         maxSize = std::stoi(row[13]);
         isRareFish = std::stoi(row[14]);
     }
+
+    static FfishData GetCheapestFishInWorld(uint32_t worldId = 0);
 };
 
 struct FsaveFishData {
-    int id = -1;
+    uint32_t id;
     bool unlocked = false;
     // 0 = normal, 1 = bronze, 2 = silver, 3 = gold
     std::vector<double> numOwned = std::vector<double>(4);
@@ -78,12 +87,13 @@ struct FsaveFishData {
 };
 
 struct FcurrencyStruct {
-    int id = -1;
+    // world id
+    uint32_t id;
     std::string thumbnail;
     std::string name;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         thumbnail = row[1];
         name = row[2];
     }
@@ -92,7 +102,8 @@ struct FcurrencyStruct {
 };
 
 struct FsaveCurrencyStruct {
-    int id = -1;
+    // world id
+    uint32_t id;
     double numOwned = 0;
     double totalNumOwned = 0;
     bool unlocked = false;
@@ -101,64 +112,53 @@ struct FsaveCurrencyStruct {
 };
 
 struct FautoFisherStruct {
-    int id = -1;
-    std::string worldName;
+    uint32_t id;
+    uint32_t worldId;
     float xLoc;
     float yLoc;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
-        worldName = row[1];
+        id = std::stoul(row[0]);
+        worldId = std::stoul(row[1]);
         xLoc = std::stof(row[2]);
         yLoc = std::stof(row[3]);
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FautoFisherStruct, id, worldName, xLoc, yLoc);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FautoFisherStruct, id, worldId, xLoc, yLoc);
 };
 
 struct FsaveAutoFisherStruct {
-    int id = -1;
-    bool unlocked = false;
-    int level = 1;
+    uint32_t id;
     double fullness = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAutoFisherStruct, id, unlocked, level, fullness);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAutoFisherStruct, id, fullness);
 };
 
 struct FworldStruct {
-    int id = -1;
-    std::string worldName;
+    uint32_t id;
     std::string name;
     std::string description;
-    int currencyId;
+    uint32_t currencyId;
     double currencyNum;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
-        worldName = row[1];
-        name = row[2];
-        description = row[3];
-        currencyId = std::stoi(row[4]);
-        currencyNum = std::stod(row[5]);
+        id = std::stoul(row[0]);
+        name = row[1];
+        description = row[2];
+        currencyId = std::stoul(row[3]);
+        currencyNum = std::stod(row[4]);
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FworldStruct, id, worldName, name, description, currencyId, currencyNum);
-};
-
-struct FsaveWorldStruct {
-    int id = -1;
-    bool unlocked = false;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveWorldStruct, id, unlocked);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FworldStruct, id, name, description, currencyId, currencyNum);
 };
 
 struct FfishingRodStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string imgPath;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         imgPath = row[2];
     }
@@ -167,36 +167,34 @@ struct FfishingRodStruct {
 };
 
 struct FsaveFishingRodStruct {
-    int id = -1;
-    bool unlocked = false;
-    int powerLevel = 1;
-    int speedLevel = 1;
-    int catchChanceLevel = 1;
+    SaveEntry power;
+	SaveEntry speed;
+	SaveEntry catchChance;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishingRodStruct, id, unlocked, powerLevel, speedLevel, catchChanceLevel);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishingRodStruct, power, speed, catchChance);
 };
 
 struct FbaitStruct {
-    int id = -1;
+    uint32_t id;
     std::string thumbnail;
     std::string name;
     std::string description;
     std::string buffs;
     std::string debuffs;
-    int currencyId;
+    uint32_t currencyId;
     double currencyNum;
     std::vector<double> buffValues;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FbaitStruct, id, thumbnail, name, description, buffs, debuffs, currencyId, currencyNum, buffValues);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         thumbnail = row[1];
         name = row[2];
         description = row[3];
         buffs = row[4];
         debuffs = row[5];
-        currencyId = std::stoi(row[6]);
+        currencyId = std::stoul(row[6]);
         currencyNum = std::stod(row[7]);
 
         // parse the list
@@ -222,21 +220,14 @@ struct FbaitStruct {
     }
 };
 
-struct FsaveBaitStruct {
-    int id = -1;
-    bool unlocked = false;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveBaitStruct, id, unlocked);
-};
-
 struct FachievementStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string description;
     std::string thumbnailPath;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         thumbnailPath = row[3];
@@ -245,67 +236,49 @@ struct FachievementStruct {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FachievementStruct, id, name, description, thumbnailPath);
 };
 
-struct FsaveAchievementStruct {
-    int id = -1;
-    bool unlocked = false;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAchievementStruct, id, unlocked);
-};
-
 struct FupgradeStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string description;
     std::string thumbnailPath;
-    int currencyId;
+    uint32_t worldId;
     double baseValue;
     int upgradeNumMax;
     std::string upgradeFunctionName;
     std::string upgradeNumEquation;
     std::string priceEquation;
-    std::string levelName;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FupgradeStruct, id, name, description, thumbnailPath, currencyId, baseValue, upgradeNumMax, upgradeFunctionName, upgradeNumEquation, priceEquation, levelName);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FupgradeStruct, id, name, description, thumbnailPath, worldId, baseValue, upgradeNumMax, upgradeFunctionName, upgradeNumEquation, priceEquation);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         thumbnailPath = row[3];
-        currencyId = std::stoi(row[4]);
+        worldId = std::stoul(row[4]);
         baseValue = std::stod(row[5]);
         upgradeNumMax = std::stoi(row[6]);
         upgradeFunctionName = row[7];
         upgradeNumEquation = row[8];
         priceEquation = row[9];
-        levelName = row[10];
     }
 };
 
-struct FsaveUpgradeStruct {
-    int id = -1;
-    int upgradeLevel = 0;
-    double value = 0;
-    double price = 0;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveUpgradeStruct, id, upgradeLevel, value, price);
-};
-
 struct FrebirthStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string description;
     std::string thumbnailPath;
     std::string functionName;
     double rebirthValue;
-    std::vector<int> prerequisites;
+    std::vector<uint32_t> prerequisites;
     double currencyNum;
     vector loc;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FrebirthStruct, id, name, description, thumbnailPath, functionName, rebirthValue, prerequisites, currencyNum, loc);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         thumbnailPath = row[3];
@@ -318,7 +291,7 @@ struct FrebirthStruct {
             string.erase(0, 1);
             string.erase(string.size() - 1, 1);
 
-            std::string num;
+            uint32_t num;
             std::string delimiter = ",";
             size_t pos;
             while (string != "") {
@@ -326,79 +299,55 @@ struct FrebirthStruct {
                 if (pos == std::string::npos)
                     pos = string.size();
 
-                num = string.substr(0, pos);
+                num = std::stoul(string.substr(0, pos));
                 string.erase(0, pos + delimiter.length());
-                prerequisites.push_back(std::stoi(num));
+                prerequisites.push_back(num);
             }
         } else if (row[6] != "")
-            prerequisites.push_back(std::stoi(row[6]));
+            prerequisites.push_back(std::stoul(row[6]));
 
         currencyNum = std::stod(row[7]);
         loc = { std::stof(row[8]), std::stof(row[9]) };
     }
 };
 
-struct FsaveRebirthStruct {
-    int id = -1;
-    bool unlocked = false;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveRebirthStruct, id, unlocked);
-};
-
 struct FpetStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string description;
     std::string thumbnailPath;
-    int currencyId;
+    uint32_t currencyId;
     double currencyNum;
     float buffValue;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FpetStruct, id, name, description, thumbnailPath, currencyId, currencyNum, buffValue);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         thumbnailPath = row[3];
-        currencyId = std::stoi(row[4]);
+        currencyId = std::stoul(row[4]);
         currencyNum = std::stod(row[5]);
         buffValue = std::stof(row[6]);
     }
 };
 
-struct FsavePetStruct {
-    int id = -1;
-    bool unlocked = false;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsavePetStruct, id, unlocked);
-};
-
 struct FmechanicStruct {
-    int id = -1;
+    // world id
+    uint32_t id;
     double currencyNum;
-    std::string levelName;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FmechanicStruct, id, currencyNum, levelName);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FmechanicStruct, id, currencyNum);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         currencyNum = std::stod(row[1]);
-        levelName = row[2];
     }
-
-};
-
-struct FsaveMechanicStruct {
-    int id = -1;
-    bool unlocked = false;
-    int level = 0;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveMechanicStruct, id, unlocked, level);
 };
 
 struct FgoldenFishStruct {
-    int id = -1;
+    uint32_t id;
     std::string name;
     std::string description;
     double multiplier;
@@ -407,7 +356,7 @@ struct FgoldenFishStruct {
     double catchChance;
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
+        id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
         multiplier = std::stod(row[3]);
@@ -419,30 +368,9 @@ struct FgoldenFishStruct {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FgoldenFishStruct, id, name, description, multiplier, comboMultiplier, time, catchChance);
 };
 
-struct FbuffStruct {
-    int id = -1;
-    std::string name;
-    double buffAmount;
-
-    void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
-        name = row[1];
-        buffAmount = std::stod(row[2]);
-    }
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FbuffStruct, id, name, buffAmount);
-};
-
-struct FsaveBuffStruct {
-    int id = -1;
-    int buffNum = 0;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveBuffStruct, id, buffNum);
-};
-
 struct FvaultUnlocksStruct {
-    int id = -1;
-    int currencyId;
+    uint32_t id;
+    uint32_t currencyId;
     double currencyNum;
     std::string name;
     std::string description;
@@ -453,8 +381,8 @@ struct FvaultUnlocksStruct {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FvaultUnlocksStruct, id, currencyId, currencyNum, name, description, buffFunction, thumbnailPath, buffValue);
 
     void parseData(std::vector<std::string> row) {
-        id = std::stoi(row[0]);
-        currencyId = std::stoi(row[1]);
+        id = std::stoul(row[0]);
+        currencyId = std::stoul(row[1]);
         currencyNum = std::stod(row[2]);
         name = row[3];
         description = row[4];
@@ -465,16 +393,15 @@ struct FvaultUnlocksStruct {
 };
 
 struct FsaveVaultUnlocksStruct {
-    int id = -1;
-    bool unlocked = false;
+    uint32_t id;
     bool placed = false;
     vector loc;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveVaultUnlocksStruct, id, unlocked, placed, loc);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveVaultUnlocksStruct, id, placed, loc);
 };
 
 struct FsaveNPCStruct {
-    int id = -1;
+    uint32_t id;
     bool merchantDiscovered = false;
     bool sailorDiscovered = false;
     bool fishermanDiscovered = false;
@@ -487,7 +414,7 @@ struct FsaveNPCStruct {
 };
 
 struct FcurrencyConversionStruct {
-    int id;                 // id of currency
+    uint32_t id;                 // id of currency
     float timerMax = 1;     // base conversion time
     bool converting = false;// is converting
     double price = 100;     // base input
@@ -498,30 +425,47 @@ struct FcurrencyConversionStruct {
 
 struct Fdata {
     // fish stuff
-    std::vector<FfishData> fishData;
-    std::vector<FgoldenFishStruct> goldenFishData;
+    std::unordered_map<uint32_t, FfishData> fishData;
+    std::unordered_map<uint32_t, FgoldenFishStruct> goldenFishData;
 
     // currencies
-    std::vector<FcurrencyStruct> currencyData;
+    std::unordered_map<uint32_t, FcurrencyStruct> currencyData;
 
     // npc upgrades
-    std::vector<FupgradeStruct> upgradeData;
-    std::vector<FworldStruct> worldData;
-    std::vector<FmechanicStruct> mechanicStruct;
-    std::vector<FautoFisherStruct> autoFisherData;
-    std::vector<FpetStruct> petData;
-    std::vector<FvaultUnlocksStruct> vaultUnlockData;
+    std::unordered_map<uint32_t, FupgradeStruct> upgradeData;
+    std::unordered_map<uint32_t, FworldStruct> worldData;
+    std::unordered_map<uint32_t, FmechanicStruct> mechanicStruct;
+    std::unordered_map<uint32_t, FautoFisherStruct> autoFisherData;
+    std::unordered_map<uint32_t, FpetStruct> petData;
+    std::unordered_map<uint32_t, FvaultUnlocksStruct> vaultUnlockData;
 
     // upgrades
-    std::vector<FfishingRodStruct> fishingRodData;
-    std::vector<FbaitStruct> baitData;
-    std::vector<FbuffStruct> buffData;
+    std::unordered_map<uint32_t, FfishingRodStruct> fishingRodData;
+    std::unordered_map<uint32_t, FbaitStruct> baitData;
 
     // big stuff
-    std::vector<FachievementStruct> achievementData;
-    std::vector<FrebirthStruct> rebirthData;
+    std::unordered_map<uint32_t, FachievementStruct> achievementData;
+    std::unordered_map<uint32_t, FrebirthStruct> rebirthData;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, buffData, achievementData, rebirthData);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
+};
+
+struct ForderedData {
+    std::vector<uint32_t> fishData;
+    std::vector<uint32_t> goldenFishData;
+    std::vector<uint32_t> currencyData;
+    std::vector<uint32_t> upgradeData;
+    std::vector<uint32_t> worldData;
+    std::vector<uint32_t> mechanicStruct;
+    std::vector<uint32_t> autoFisherData;
+    std::vector<uint32_t> petData;
+    std::vector<uint32_t> vaultUnlockData;
+    std::vector<uint32_t> fishingRodData;
+    std::vector<uint32_t> baitData;
+    std::vector<uint32_t> achievementData;
+    std::vector<uint32_t> rebirthData;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ForderedData, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
 };
 
 struct FsaveData {
@@ -532,42 +476,41 @@ struct FsaveData {
     // player loc
     vector playerLoc = { 730, 490 };
 
-    std::string currWorld = "world1";
-    std::string prevWorld = "world1"; // incase the player is in the vault when they exit / save
+    uint32_t currWorld = 4u; // world1
+    uint32_t prevWorld = 4u; // world1 // incase the player is in the vault when they exit / save
 
     // fish stuff
-    std::vector<FsaveFishData> fishData;
+    std::unordered_map<uint32_t, FsaveFishData> fishData;
 
     // currencies
-    std::vector<FsaveCurrencyStruct> currencyList;
-    std::vector<FcurrencyConversionStruct> currencyConversionList;
+    std::unordered_map<uint32_t, FsaveCurrencyStruct> currencyList;
+    std::unordered_map<uint32_t, FcurrencyConversionStruct> currencyConversionList;
 
     // npc upgrades
-    std::vector<FsaveNPCStruct> npcSave;
-    std::vector<FsaveUpgradeStruct> upgradeList;
-    std::vector<FsaveWorldStruct> worldList;
-    std::vector<FsaveMechanicStruct> mechanicStruct;
-    std::vector<FsaveAutoFisherStruct> autoFisherList;
-    std::vector<FsavePetStruct> petList;
-    FsavePetStruct equippedPet;
-    std::vector<FsaveVaultUnlocksStruct> vaultUnlockList;
+    std::unordered_map<uint32_t, FsaveNPCStruct> npcSave;
+    std::unordered_map<uint32_t, SaveEntry> upgradeList;
+    std::unordered_map<uint32_t, SaveEntry> worldList;
+    std::unordered_map<uint32_t, SaveEntry> mechanicStruct;
+    std::unordered_map<uint32_t, std::pair<SaveEntry, FsaveAutoFisherStruct>> autoFisherList;
+    std::unordered_map<uint32_t, SaveEntry> petList;
+    uint32_t equippedPetId;
+    std::unordered_map<uint32_t, FsaveVaultUnlocksStruct> vaultUnlockList;
 
     // upgrades
     FsaveFishingRodStruct fishingRod;
-    FsaveBaitStruct equippedBait;
-    std::vector<FsaveBaitStruct> baitList;
-    std::vector<FsaveBuffStruct> buffList;
+    uint32_t equippedBaitId;
+    std::unordered_map<uint32_t, SaveEntry> baitList;
 
     // big stuff
-    std::vector<FsaveAchievementStruct> achievementList;
+    std::unordered_map<uint32_t, SaveEntry> achievementList;
 
     // rebirth stuff
-    std::vector<FsaveRebirthStruct> rebirthList;
+    std::unordered_map<uint32_t, SaveEntry> rebirthList;
     double rebirthCurrency = 0;
     double totalRebirthCurrency = 0;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, npcSave, upgradeList,
-        worldList, mechanicStruct, autoFisherList, petList, equippedPet, vaultUnlockList, fishingRod, equippedBait, baitList, buffList, achievementList,
+        worldList, mechanicStruct, autoFisherList, petList, equippedPetId, vaultUnlockList, fishingRod, equippedBaitId, baitList, achievementList,
         rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 
@@ -623,6 +566,8 @@ public:
     static void LoadData();
 
     static inline Fdata data;
+    // used to maintain the order of the data
+    static inline ForderedData orderedData;
     static inline FsaveData saveData;
     static inline FsettingsData settingsData;
 

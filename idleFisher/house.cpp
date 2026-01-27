@@ -27,5 +27,5 @@ void Ahouse::setLoc(vector loc) {
 }
 
 void Ahouse::enterVault() {
-	Scene::openLevel("vault");
+	Scene::openLevel(2u);
 }

@@ -6,7 +6,7 @@
 
 #include "debugger.h"
 
-UachievementBox::UachievementBox(widget* parent, int id) : widget(parent) {
+UachievementBox::UachievementBox(widget* parent, uint32_t id) : widget(parent) {
 	this->id = id;
 
 	if (!rotateTimer) {
@@ -20,8 +20,8 @@ UachievementBox::UachievementBox(widget* parent, int id) : widget(parent) {
 	achievementStruct = &SaveData::data.achievementData[id];
 	saveAchievementStruct = &SaveData::saveData.achievementList[id];
 
-	if (saveAchievementStruct->unlocked) {
-		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+	if (saveAchievementStruct->level) {
+		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id) + ".png", vector{ 0, 0 }, false);
 	} else
 		icon = std::make_unique<Image>("images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
 
@@ -43,8 +43,8 @@ void UachievementBox::finishRotateTimer() {
 }
 
 void UachievementBox::updateAchievementImage() {
-	if (saveAchievementStruct->unlocked) {
-		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+	if (saveAchievementStruct->level) {
+		icon = std::make_unique<Image>("images/widget/achievementIcons/achievementIcon" + std::to_string(id) + ".png", vector{ 0, 0 }, false);
 	} else
 		icon = std::make_unique<Image>("images/widget/achievementIcons/locked.png", vector{ 0, 0 }, false);
 }
@@ -58,7 +58,7 @@ void UachievementBox::draw(Shader* shaderProgram) {
 			vector test = (icon->getSize() / stuff::pixelSize);
 			icon->setLoc(loc - (icon->getSize() - startSize) / 2);
 
-			if (saveAchievementStruct->unlocked)
+			if (saveAchievementStruct->level)
 				icon->setRotation(rot);
 		} else {
 			icon->setSize(startSize);

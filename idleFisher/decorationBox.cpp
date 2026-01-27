@@ -31,6 +31,7 @@ void UdecorationBox::draw(Shader* shaderProgram) {
 }
 
 void UdecorationBox::buyDecoration() {
+	/*
 	if (!saveVaultUnlock->unlocked) {
 		// buy
 		saveVaultUnlock->unlocked = true;
@@ -44,9 +45,11 @@ void UdecorationBox::buyDecoration() {
 	}
 
 	updateWidget();
+	*/
 }
 
 void UdecorationBox::updateWidget() {
+	/*
 	if (!saveVaultUnlock->unlocked) {
 		// buy
 		buttonText->setText(shortNumbers::convert2Short(vaultUnlock->currencyNum));
@@ -57,6 +60,7 @@ void UdecorationBox::updateWidget() {
 		// remove
 		buttonText->setText("Remove");
 	}
+	*/
 }
 
 void UdecorationBox::setLoc(vector loc) {

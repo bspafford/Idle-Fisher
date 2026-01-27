@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include "math.h"
 #include "widget.h"
@@ -17,7 +18,7 @@ public:
 	UheldFishWidget(widget* parent);
 
 	// if fishList is empty it will use SaveData::data.fishData
-	void updateList(std::vector<FsaveFishData> saveFishList = std::vector<FsaveFishData>(0));
+	void updateList(std::unordered_map<uint32_t, FsaveFishData> saveFishList = std::unordered_map<uint32_t, FsaveFishData>());
 
 	void draw(Shader* shaderProgram);
 
@@ -25,12 +26,13 @@ private:
 	void setupLocs() override;
 
 	// removes all fish that there are 0 of
-	std::vector<FsaveFishData> removeUnneededFish();
-	void getCurrency();
-	int currencyInList(int id, std::vector<vector> currencyList);
+	std::unordered_map<uint32_t, FsaveFishData> removeUnneededFish();
+	void UpdateCurrencyMap();
+	int currencyInList(uint32_t id, const std::vector<std::pair<uint32_t, double>>& currencyList);
 
-	std::vector<FsaveFishData> fishList;
-	std::vector<vector> currency;
+	std::unordered_map<uint32_t, FsaveFishData> fishList;
+	// id, price * numOwned
+	std::unordered_map<uint32_t, double> currency;
 
 	std::vector<std::unique_ptr<UfishNumWidget>> fishNumList;
 	std::vector< std::unique_ptr<UfishNumWidget>> currencyList;

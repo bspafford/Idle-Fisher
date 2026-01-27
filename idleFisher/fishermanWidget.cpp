@@ -41,7 +41,7 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	upgradeBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	upgradeBackground->SetPivot({ 0.f, 0.5f });
 
-	selectedIcon = std::make_unique<Image>("images/widget/selectedFisherIcon.png", vector{ 0, 0 }, false);
+	selectedIcon = std::make_unique<Image>("images/widget/selectedTabIcon.png", vector{ 0, 0 }, false);
 
 	// fishing rod page
 	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png", vector{0, 0}, false);
@@ -108,11 +108,10 @@ void UfishermanWidget::setup() {
 	// setup bait
 	baitHolderList = std::make_unique<UscrollBox>(this);
 	baitHolderList->setVisibility(false);
-	for (int i = 0; i < SaveData::data.baitData.size(); i++) {
-		FbaitStruct* currData = &SaveData::data.baitData[i];
-		FsaveBaitStruct* currSaveData = &SaveData::saveData.baitList[i];
+	for (auto& [id, baitData] : SaveData::data.baitData) {
+		SaveEntry* baitSaveData = &SaveData::saveData.baitList.at(baitData.id);
 
-		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(baitHolderList.get(), this, currData, currSaveData);
+		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(baitHolderList.get(), this, &baitData, baitSaveData);
 		if (upgradeBox->buyButton)
 			upgradeBox->buyButton->setParent(baitHolderList.get());
 		baitHolderList->addChild(upgradeBox.get(), upgradeBox->getSize().y);
@@ -271,9 +270,9 @@ void UfishermanWidget::setupLocs() {
 
 void UfishermanWidget::upgradePower() {
 	double cost = upgrades::calcFishingRodPowerPrice();
-	if (SaveData::saveData.currencyList[1].numOwned >= cost) {
-		SaveData::saveData.currencyList[1].numOwned -= cost;
-		SaveData::saveData.fishingRod.powerLevel++;
+	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+		SaveData::saveData.fishingRod.power.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
 
@@ -283,9 +282,9 @@ void UfishermanWidget::upgradePower() {
 
 void UfishermanWidget::upgradeSpeed() {
 	double cost = upgrades::calcFishingRodSpeedPrice();
-	if (SaveData::saveData.currencyList[1].numOwned >= cost) {
-		SaveData::saveData.currencyList[1].numOwned -= cost;
-		SaveData::saveData.fishingRod.speedLevel++;
+	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+		SaveData::saveData.fishingRod.speed.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
 
@@ -295,9 +294,9 @@ void UfishermanWidget::upgradeSpeed() {
 
 void UfishermanWidget::upgradeCatchChance() {
 	double cost = upgrades::calcFishingRodCatchChancePrice();
-	if (SaveData::saveData.currencyList[1].numOwned >= cost) {
-		SaveData::saveData.currencyList[1].numOwned -= cost;
-		SaveData::saveData.fishingRod.catchChanceLevel++;
+	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+		SaveData::saveData.fishingRod.catchChance.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
 	
@@ -317,27 +316,29 @@ void UfishermanWidget::updateStats() {
 	speedButtonPrice->setText(shortNumbers::convert2Short(speedCost));
 	catchChanceButtonPrice->setText(shortNumbers::convert2Short(chanceCost));
 
-	powerLevelText->setText(std::to_string(SaveData::saveData.fishingRod.powerLevel));
-	speedLevelText->setText(std::to_string(SaveData::saveData.fishingRod.speedLevel));
-	catchChanceLevelText->setText(std::to_string(SaveData::saveData.fishingRod.catchChanceLevel));
+	powerLevelText->setText(std::to_string(SaveData::saveData.fishingRod.power.level));
+	speedLevelText->setText(std::to_string(SaveData::saveData.fishingRod.speed.level));
+	catchChanceLevelText->setText(std::to_string(SaveData::saveData.fishingRod.catchChance.level));
 
 }
 
 void UfishermanWidget::CheckTextColor() {
+	FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(4u);
+
 	// power
-	if (SaveData::saveData.currencyList[1].numOwned >= powerCost)
+	if (currencyData.numOwned >= powerCost)
 		powerButtonPrice->setTextColor(255, 255, 255);
 	else
 		powerButtonPrice->setTextColor(255, 0, 0);
 
 	// speed
-	if (SaveData::saveData.currencyList[1].numOwned >= speedCost)
+	if (currencyData.numOwned >= speedCost)
 		speedButtonPrice->setTextColor(255, 255, 255);
 	else
 		speedButtonPrice->setTextColor(255, 0, 0);
 
 	// catch chance
-	if (SaveData::saveData.currencyList[1].numOwned >= chanceCost)
+	if (currencyData.numOwned >= chanceCost)
 		catchChanceButtonPrice->setTextColor(255, 255, 255);
 	else
 		catchChanceButtonPrice->setTextColor(255, 0, 0);

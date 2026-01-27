@@ -20,16 +20,14 @@ void UcurrencyWidget::updateList() {
 
 	// setup currency
 	currencyList.clear();
-	for (int i = 0; i < SaveData::saveData.currencyList.size(); i++) {
-		FsaveCurrencyStruct saveCurrency = SaveData::saveData.currencyList[i];
-
+	for (auto& [key, saveCurrency] : SaveData::saveData.currencyList) {
 		if (saveCurrency.numOwned != 0) {
 			yOffset -= stuff::pixelSize;
 
 			std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
 			widget->SetPivot(pivot);
 
-			FcurrencyStruct* currencyStruct = &SaveData::data.currencyData[saveCurrency.id];
+			FcurrencyStruct* currencyStruct = &SaveData::data.currencyData.at(saveCurrency.id);
 
 			widget->setLoc(vector{ widget->getLoc().x, yOffset }.floor());
 			widget->setup(currencyStruct, saveCurrency.numOwned);

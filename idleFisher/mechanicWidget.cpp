@@ -18,10 +18,8 @@
 UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent) {
 	this->NPCParent = NPCParent;
 
-	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-
-	saveMechanicStruct = &SaveData::saveData.mechanicStruct[id];
-	mechanicStruct = &SaveData::data.mechanicStruct[id];
+	saveMechanicStruct = &SaveData::saveData.mechanicStruct.at(Scene::GetCurrWorldId());
+	mechanicStruct = &SaveData::data.mechanicStruct.at(Scene::GetCurrWorldId());
 
 	closeButton = std::make_unique<Ubutton>(this, "widget/npcXButton.png", 11, 11, 1, vector{ 0, 0 }, false, false);
 	closeButton->SetPivot({ 0.5f, 0.5f });
@@ -58,7 +56,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	fishTransporterName = std::make_unique<text>(this, "Fish Transporter", "biggerStraight", vector{ 0, 0 });
 	fishTransporterImg = std::make_unique<Image>("images/npc/fishTransporter/idleSE.png", vector{ 0, 0 }, false);
 	
-	if (saveMechanicStruct->unlocked)
+	if (saveMechanicStruct->level)
 		fishTransporterImg->setColorMod(glm::vec4(1));
 	else
 		fishTransporterImg->setColorMod(glm::vec4(glm::vec3(0), 1.f));
@@ -82,7 +80,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 
 	upgradePriceText = std::make_unique<text>(this, "0.00k", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	upgradePriceText->SetPivot({ 0.f, 0.5f });
-	currencyIcon = std::make_unique<Image>("images/currency/coin" + std::to_string(id + 1) + ".png", vector{ 0, 0 }, false);
+	currencyIcon = std::make_unique<Image>("images/currency/coin" + std::to_string(Scene::GetCurrWorldId()) + ".png", vector{0, 0}, false);
 	currencyIcon->SetPivot({ 1.f, 0.5f });
 
 	setup();
@@ -116,7 +114,7 @@ void UmechanicWidget::draw(Shader* shaderProgram) {
 
 	// fish transporter
 	fishTransporterImg->draw(shaderProgram);
-	if (!saveMechanicStruct->unlocked) {
+	if (!saveMechanicStruct->level) {
 		buyFishTransporterButton->draw(shaderProgram);
 		buyFishTransporterText->draw(shaderProgram);
 		buyFishTransporterPriceText->draw(shaderProgram);
@@ -200,10 +198,10 @@ void UmechanicWidget::setupLocs() {
 }
 
 void UmechanicWidget::buyFishTransporter() {
-	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	if (SaveData::saveData.currencyList[id+1].numOwned >= mechanicStruct->currencyNum) {
-		SaveData::saveData.currencyList[id+1].numOwned -= mechanicStruct->currencyNum;
-		saveMechanicStruct->unlocked = true;
+	FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
+	if (currencyData.numOwned >= mechanicStruct->currencyNum) {
+		currencyData.numOwned -= mechanicStruct->currencyNum;
+		saveMechanicStruct->level = true;
 		Main::currencyWidget->updateList();
 
 		// spawn the fish transproter
@@ -240,7 +238,7 @@ void UmechanicWidget::update() {
 }
 
 void UmechanicWidget::upgradeFishTransporter() {
-	FsaveCurrencyStruct& currencyStruct = SaveData::saveData.currencyList[Scene::getWorldIndexFromName(Scene::getCurrWorldName())+1];
+	FsaveCurrencyStruct& currencyStruct = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
 	double cost = calcUpgradeCost();
 	if (saveMechanicStruct->level < 100 && currencyStruct.numOwned >= cost) {
 		currencyStruct.numOwned -= cost;
@@ -256,13 +254,13 @@ double UmechanicWidget::calcUpgradeCost() {
 
 void UmechanicWidget::CheckTextColor() {
 	// power
-	if (SaveData::saveData.currencyList[1].numOwned >= mechanicStruct->currencyNum)
+	if (SaveData::saveData.currencyList.at(4u).numOwned >= mechanicStruct->currencyNum)
 		buyFishTransporterPriceText->setTextColor(255, 255, 255);
 	else
 		buyFishTransporterPriceText->setTextColor(255, 0, 0);
 
 	// speed
-	if (SaveData::saveData.currencyList[1].numOwned >= upgradeCost || saveMechanicStruct->level >= 100)
+	if (SaveData::saveData.currencyList.at(4u).numOwned >= upgradeCost || saveMechanicStruct->level >= 100)
 		upgradePriceText->setTextColor(255, 255, 255);
 	else
 		upgradePriceText->setTextColor(255, 0, 0);

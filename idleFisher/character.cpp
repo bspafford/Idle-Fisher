@@ -213,7 +213,7 @@ void Acharacter::draw(Shader* shaderProgram) {
 	anim->setLoc(animLoc);
 	anim->draw(shaderProgram);
 	if (isFishing) {
-		fishingRod->setLoc(animLoc + vector{ -45.f, 0.f });
+		fishingRod->setLoc(animLoc + vector{ -44.f, 0.f });
 		fishingRod->draw(shaderProgram);
 	}
 
@@ -262,7 +262,7 @@ void Acharacter::leftClick() {
 		return;
 
 	// puts bobber in water
-	if (Cursor::getMouseOverWater() && SaveData::saveData.fishingRod.powerLevel > 0 && !isFishing) {
+	if (Cursor::getMouseOverWater() && SaveData::saveData.fishingRod.power.level > 0 && !isFishing) {
 		Input::setLeftClick(this, &Acharacter::StartFishing, false);
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->isVisible()) {
@@ -293,7 +293,7 @@ void Acharacter::leftClick() {
 		fishingRod->setAnimation("pullSE", true);
 		fishingRod->start();
 		// add fish
-		if (currFish.id != 0) { // if not premium
+		if (currFish.id != 538u) { // if not premium
 			if (!SaveData::saveData.fishData[currFish.id].unlocked)
 				Main::fishUnlocked->start(currFish);
 
@@ -361,7 +361,7 @@ void Acharacter::fishing() {
 
 FfishData Acharacter::calcFish(int& quality, int& fishSize) {
 	float rand = math::randRange(0.f, 1.f);
-	std::vector<std::pair<int, double>> probList = calcFishProbability(SaveData::data.fishData);
+	std::vector<std::pair<uint32_t, double>> probList = calcFishProbability(SaveData::data.fishData);
 
 	for (int i = 0; i < probList.size(); i++)
 		if (rand <= probList[i].second) {
@@ -382,7 +382,7 @@ FfishData Acharacter::calcFish(int& quality, int& fishSize) {
 		}
 
 	// shouldn't hit this
-	return SaveData::data.fishData[1];
+	return (*SaveData::data.fishData.begin()).second;
 }
 
 // calculates the chance of each fish
@@ -390,7 +390,7 @@ FfishData Acharacter::calcFish(int& quality, int& fishSize) {
 // if its chance is .05 its always .05 even if another fish is 45% chance
 // old method: premium = 1%, fish = 49%, actual premium chance = 2%, actual fish = 98%
 // this method: premium = 1%, fish = 49%, actual premium chance = 1% actual fish = 99%
-std::vector<std::pair<int, double>> Acharacter::calcFishProbability(std::vector<FfishData> fishData) {
+std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData) {
 	// get premium currency chance
 	// then do (100 - premium chance) / 100
 	// calc fish chance and multuply by that number
@@ -399,31 +399,37 @@ std::vector<std::pair<int, double>> Acharacter::calcFishProbability(std::vector<
 
 	double premiumChance = canCatchPremium ? upgrades::calcPremiumCatchChance() : 0.0;
 	float totalProb = 0; // premiumChance;
-	for (int i = 1; i < fishData.size(); i++) {
-		if (fishData[i].fishingPower <= upgrades::calcFishingRodPower() && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
-			float val = fishData[i].probability;
-			if (i < petBuff.size())
-				val *= petBuff[i];
+	int index = 0;
+	for (auto [key, value] : fishData) {
+		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.currencyId == 1u)) {
+			float val = value.probability;
+			if (index < petBuff.size())
+				val *= petBuff[index];
 			totalProb += val;
 		}
+
+		++index;
 	}
 
 	double multiplier = (1.0 - (premiumChance / 100.0));
 
-	std::vector<std::pair<int, double>> probList;
+	std::vector<std::pair<uint32_t, double>> probList;
 	double percent = 0.0;
-	for (int i = 1; i < fishData.size(); i++) {
-		if (fishData[i].fishingPower <= upgrades::calcFishingRodPower() && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
+	int index1 = 0;
+	for (auto [key, value] : fishData) {
+		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.currencyId == 1u)) {
 			double multi = 1.0;
-			if (i < petBuff.size())
-				multi = petBuff[i];
-			percent += fishData[i].probability / totalProb * multiplier * multi;
-			probList.push_back(std::pair<int, double>{fishData[i].id, percent});
+			if (index1 < petBuff.size())
+				multi = petBuff[index1];
+			percent += value.probability / totalProb * multiplier * multi;
+			probList.push_back(std::pair<uint32_t, double>{value.id, percent});
 		}
+
+		++index1;
 	}
 
 	if (canCatchPremium)
-		probList.push_back({ std::pair<int, double>{fishData[0].id, 1.0} });
+		probList.push_back({ std::pair<uint32_t, double>{fishData.at(538u).id, 1.0} });
 
 	return probList;
 }
@@ -505,33 +511,34 @@ void Acharacter::premiumFishBuff() {
 
 	if (rand <= cashPercent) { // instant cash
 		// % from bank, or a certian amount of time, which ever is less
-		int worldIndex = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
 
 		// calc mps
 		double mps = 0;
 		for (std::unique_ptr<AautoFisher>& autoFisher : world::currWorld->autoFisherList)
 			mps += autoFisher->calcMPS();
 
+		FsaveCurrencyStruct& currencyStruct = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
+
 		// calc 10% of currency + held fish
-		double heldCurrency = SaveData::saveData.currencyList[worldIndex + 1].numOwned;
-		for (FfishData fish : SaveData::data.fishData) {
-			if (fish.levelName == Scene::getCurrWorldName()) {
-				FsaveFishData* saveFish = &SaveData::saveData.fishData[fish.id];
-				heldCurrency += saveFish->numOwned[0] * upgrades::getFishSellPrice(fish, 0);
+		double heldCurrency = currencyStruct.numOwned;
+		for (auto& fishData : SaveData::data.fishData) {
+			if (fishData.second.worldId == Scene::GetCurrWorldId()) {
+				FsaveFishData* saveFish = &SaveData::saveData.fishData[fishData.second.id];
+				heldCurrency += saveFish->numOwned[0] * upgrades::getFishSellPrice(fishData.second, 0);
 			}
 		}
 
 		double min = math::min(mps * 900.0, heldCurrency * 0.15);
 		double currency = round(min + 10); // + 10 for base value incase you have no held currency or autofishers
-		SaveData::saveData.currencyList[worldIndex + 1].numOwned += currency;
-		SaveData::saveData.currencyList[worldIndex + 1].totalNumOwned += currency;
+		currencyStruct.numOwned += currency;
+		currencyStruct.totalNumOwned += currency;
 
 		Main::currencyWidget->updateList();
 	} else if (rand <= lowLongBuffPercent) { // low long buff
-		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData[2]));
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData.at(3u))); // low long
 		Main::UIWidget->setupLocs();
 	} else { // high short buff
-		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData[3]));
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData.at(4u))); // high short
 		Main::UIWidget->setupLocs();
 	}
 }
@@ -637,9 +644,9 @@ void Acharacter::calcFishSchoolUpgrades() {
 }
 
 bool Acharacter::canCatchWorldFish() {
-	for (FfishData fish : SaveData::data.fishData) {
-		if (Scene::getCurrWorldName() == fish.levelName) {
-			if (upgrades::calcFishingRodPower() < fish.fishingPower)
+	for (auto& fish : SaveData::data.fishData) {
+		if (Scene::GetCurrWorldId() == fish.second.worldId) {
+			if (upgrades::calcFishingRodPower() < fish.second.fishingPower)
 				return false;
 			return true;
 		}
@@ -690,7 +697,7 @@ void Acharacter::equipFishingRod(FfishingRodStruct* fishingRod) {
 }
 
 void Acharacter::equipBait(FbaitStruct* bait) {
-	SaveData::saveData.equippedBait.id = bait->id;
+	SaveData::saveData.equippedBaitId = bait->id;
 	Main::achievementWidget->updateEquipmentWidget();
 }
 

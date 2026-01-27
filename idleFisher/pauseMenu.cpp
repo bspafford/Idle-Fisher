@@ -87,7 +87,7 @@ void UpauseMenu::settings() {
 
 void UpauseMenu::exitToMenu() {
 	SaveData::save(); // save on quit
-	Scene::openLevel("titleScreen");
+	Scene::openLevel(1u);
 }
 
 void UpauseMenu::exitToDesktop() {

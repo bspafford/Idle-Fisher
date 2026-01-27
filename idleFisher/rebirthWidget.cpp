@@ -12,9 +12,8 @@
 #include "debugger.h"
 
 UrebirthWidget::UrebirthWidget(widget* parent) : widget(parent) {
-	for (int i = 0; i < SaveData::data.rebirthData.size(); i++) {
-		FrebirthStruct curr = SaveData::data.rebirthData[i];
-		std::unique_ptr<UrebirthUnlock> unlock = std::make_unique<UrebirthUnlock>(this, i);
+	for (auto& [id, data] : SaveData::data.rebirthData) {
+		std::unique_ptr<UrebirthUnlock> unlock = std::make_unique<UrebirthUnlock>(this, id);
 		rebirthButtonList.push_back(std::move(unlock));
 	}
 
@@ -62,7 +61,7 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 
 	// draw lines
 	for (int i = 0; i < SaveData::data.rebirthData.size(); i++) {
-		FrebirthStruct curr = SaveData::data.rebirthData[i];
+		//FrebirthStruct curr = SaveData::data.rebirthData[i];
 
 		bool mouseOverUnlock = rebirthButtonList[i]->isMouseOver();
 		if (mouseOverUnlock) {
@@ -72,12 +71,12 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 			//SDL_SetRenderDrawColor(shaderProgram, 242, 233, 211, 255); // white
 		}
 
+			/*
 		for (int j = 0; j < curr.prerequisites.size(); j++) {
 			if (mouseOverUnlock && SaveData::saveData.rebirthList[curr.prerequisites[j]].unlocked) {
 				//SDL_SetRenderDrawColor(shaderProgram, 124, 127, 85, 255); // green
 			}
 
-			/*
 			// line goes from current to prerequisite
 			vector loc1 = (rebirthButtonList[i]->getLoc() + rebirthButtonList[i]->getSize() / 2) / stuff::pixelSize;
 			vector loc2 = (rebirthButtonList[curr.prerequisites[j]]->getLoc() + rebirthButtonList[curr.prerequisites[j]]->getSize() / 2) / stuff::pixelSize;
@@ -85,12 +84,12 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 			SDL_RenderSetScale(shaderProgram, stuff::pixelSize, stuff::pixelSize);
 			SDL_RenderDrawLine(shaderProgram, loc1.x, loc1.y, loc2.x, loc2.y);
 			SDL_RenderSetScale(shaderProgram, 1, 1);
-			*/
 
 			vector loc1 = (rebirthButtonList[i]->getLoc() + rebirthButtonList[i]->getSize() / 2);
 			vector loc2 = (rebirthButtonList[curr.prerequisites[j]]->getLoc() + rebirthButtonList[curr.prerequisites[j]]->getSize() / 2);
 			drawLine(shaderProgram, loc1, loc2);
 		}
+			*/
 	}
 
 	for (int i = 0; i < rebirthButtonList.size(); i++) {
@@ -98,7 +97,7 @@ void UrebirthWidget::draw(Shader* shaderProgram) {
 	}
 
 	if (mouseOverRebirth != -1) {
-		hoverBox->setInfo(SaveData::data.rebirthData[mouseOverRebirth].name, SaveData::data.rebirthData[mouseOverRebirth].description, shortNumbers::convert2Short(SaveData::data.rebirthData[mouseOverRebirth].currencyNum));
+		//hoverBox->setInfo(SaveData::data.rebirthData[mouseOverRebirth].name, SaveData::data.rebirthData[mouseOverRebirth].description, shortNumbers::convert2Short(SaveData::data.rebirthData[mouseOverRebirth].currencyNum));
 		hoverBox->draw(shaderProgram);
 	}
 	
@@ -209,7 +208,7 @@ void UrebirthWidget::scrolling() {
 	
 	// need to set location of all the children
 	for (int i = 0; i < rebirthButtonList.size(); i++) {
-		rebirthButtonList[i]->setLoc(scrollLoc + SaveData::data.rebirthData[i].loc);
+		//rebirthButtonList[i]->setLoc(scrollLoc + SaveData::data.rebirthData[i].loc);
 	}
 }
 
@@ -244,5 +243,5 @@ bool UrebirthWidget::isMouseOverUnlock() {
 }
 
 void UrebirthWidget::openRebirthWorld() {
-	Scene::openLevel("rebirth", WORLD_SET_LOC_ZERO);
+	Scene::openLevel(3u, WORLD_SET_LOC_ZERO);
 }

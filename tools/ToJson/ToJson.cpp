@@ -2,37 +2,39 @@
 
 #include <fstream>
 
-template <typename T> void readData(std::vector<T>& a, std::string csvName);
-void ReadCSV(Fdata& data);
-void OutputToJson(Fdata& data);
+template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vector<uint32_t>& orderedData, std::string csvName);
+void ReadCSV(Fdata& data, ForderedData& orderedData);
+void OutputToJson(Fdata& data, ForderedData& orderedData);
 
 int main() {
     Fdata saveData;
-    ReadCSV(saveData);
-    OutputToJson(saveData);
+    ForderedData orderedData;
+    ReadCSV(saveData, orderedData);
+    OutputToJson(saveData, orderedData);
 }
 
-void ReadCSV(Fdata& data) {
-    readData(data.fishData, "fishDataTable");
-    readData(data.currencyData, "currencyDataTable");
-    readData(data.autoFisherData, "autoFisherDataTable");
-    readData(data.worldData, "worldDataTable");
-    readData(data.fishingRodData, "fishingRodDataTable");
-    readData(data.achievementData, "achievementDataTable");
-    readData(data.baitData, "baitDataTable");
-    readData(data.buffData, "buffDataTable");
-    readData(data.goldenFishData, "goldenFishDataTable");
-    readData(data.mechanicStruct, "mechanicDataTable");
-    readData(data.petData, "petDataTable");
-    readData(data.rebirthData, "rebirthDataTable");
-    readData(data.upgradeData, "upgradeDataTable");
-    readData(data.vaultUnlockData, "vaultUnlocksDataTable");
+void ReadCSV(Fdata& data, ForderedData& orderedData) {
+    readData(data.fishData, orderedData.fishData, "fishDataTable");
+    readData(data.currencyData, orderedData.currencyData, "currencyDataTable");
+    readData(data.autoFisherData, orderedData.autoFisherData, "autoFisherDataTable");
+    readData(data.worldData, orderedData.worldData, "worldDataTable");
+    readData(data.fishingRodData, orderedData.fishingRodData, "fishingRodDataTable");
+    readData(data.achievementData, orderedData.achievementData, "achievementDataTable");
+    readData(data.baitData, orderedData.baitData, "baitDataTable");
+    readData(data.goldenFishData, orderedData.goldenFishData, "goldenFishDataTable");
+    readData(data.mechanicStruct, orderedData.mechanicStruct, "mechanicDataTable");
+    readData(data.petData, orderedData.petData, "petDataTable");
+    readData(data.rebirthData, orderedData.rebirthData, "rebirthDataTable");
+    readData(data.upgradeData, orderedData.upgradeData, "upgradeDataTable");
+    readData(data.vaultUnlockData, orderedData.vaultUnlockData, "vaultUnlocksDataTable");
 }
 
-void OutputToJson(Fdata& data) {
+void OutputToJson(Fdata& data, ForderedData& orderedData) {
     std::filesystem::path path("../../idleFisher/data/data.bson");
 
-    nlohmann::json json = data;
+    nlohmann::json json;
+    json["data"] = data;
+    json["orderedData"] = orderedData;
     std::cout << json << "\n";
     std::vector<uint8_t> bytes = nlohmann::json::to_bson(json);
     std::ofstream output(path, std::ios::binary);
@@ -42,7 +44,12 @@ void OutputToJson(Fdata& data) {
     }
 }
 
-template <typename T> void readData(std::vector<T>& a, std::string csvName) {
+template <typename T>
+void parseData(T& data, std::vector<std::string> row) {
+    data.parseData(row);
+}
+
+template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vector<uint32_t>& orderedData, std::string csvName) {
     std::ifstream colFile("../../idleFisher/data/debug/dataBases/" + csvName + ".csv");
     if (colFile.is_open()) {
         std::string line, word;
@@ -79,8 +86,9 @@ template <typename T> void readData(std::vector<T>& a, std::string csvName) {
                 return;
 
             T data;
-            data.parseData(row);
-            a.push_back(data);
+            parseData(data, row);
+            a.insert({ data.id, data });
+            orderedData.push_back(data.id);
         }
     }
 }

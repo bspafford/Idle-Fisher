@@ -40,5 +40,5 @@ private:
 
 	std::unique_ptr<Fcollision> collision;
 
-	int calcAutoFisherId();
+	uint32_t calcAutoFisherId();
 };

@@ -274,7 +274,7 @@ void AfishTransporter::finishCollectTimer() {
 	}
 
 	// check if fish transporter has enough space for even the smallest fish
-	if (maxHoldNum - calcCurrencyHeld() < upgrades::getFishSellPrice(SaveData::data.fishData[1], 0))
+	if (maxHoldNum - calcCurrencyHeld() < upgrades::getFishSellPrice(FfishData::GetCheapestFishInWorld(), 0))
 		autoFisherIndex = -1;
 
 	vector goTo = calcGoTo(autoFisherIndex);
@@ -315,8 +315,8 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 		autoFisher->afMoreInfoUI->updateUI();
 	} else { // sell fish
 		// give player currency
-		SaveData::saveData.currencyList[1].numOwned += calcCurrencyHeld();
-		SaveData::saveData.currencyList[1].totalNumOwned += calcCurrencyHeld();
+		SaveData::saveData.currencyList.at(539u).numOwned += calcCurrencyHeld();
+		SaveData::saveData.currencyList.at(539u).totalNumOwned += calcCurrencyHeld();
 		holding.clear();
 		Main::currencyWidget->updateList();
 		// update the ui so the upgrade button enables if have enough money
@@ -359,14 +359,15 @@ void AfishTransporter::addFishtoHeld(FsaveFishData* fish, double addNum) {
 void AfishTransporter::sortFishList(std::vector<FsaveFishData> &list) {
 	std::vector<FsaveFishData> sortedList;
 	int index = 0;
-	int biggestId = -1;
+	double mostExpensive = 0;
 	int size = list.size();
 	for (int i = 0; i < size; i++) {
 		index = -1;
-		biggestId = -1;
+		mostExpensive = -1;
 		for (int j = 0; j < list.size(); j++) {
-			if (biggestId < list[j].id) {
-				biggestId = list[j].id;
+			double fishPrice = upgrades::getFishSellPrice(SaveData::data.fishData[list[j].id], 0);
+			if (mostExpensive < fishPrice) {
+				mostExpensive = fishPrice;
 				index = j;
 			}
 		}
@@ -431,14 +432,14 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 
 	double currencyMade = 0; // temp
 	if (currency > totalCurrency) { // then collect totalCurrency
-		SaveData::saveData.currencyList[1].numOwned += totalCurrency; // temp
-		SaveData::saveData.currencyList[1].totalNumOwned += totalCurrency; // temp
+		SaveData::saveData.currencyList.at(539u).numOwned += totalCurrency; // temp
+		SaveData::saveData.currencyList.at(539u).totalNumOwned += totalCurrency; // temp
 		currencyMade = totalCurrency; // temp
 
 
 	} else { // collect currency, and calc how much the autofishers should contain
-		SaveData::saveData.currencyList[1].numOwned += currency;
-		SaveData::saveData.currencyList[1].totalNumOwned += currency;
+		SaveData::saveData.currencyList.at(539u).numOwned += currency;
+		SaveData::saveData.currencyList.at(539u).totalNumOwned += currency;
 		currencyMade = currency; // temp
 
 		double remainingCurrency = totalCurrency - currency;
@@ -473,7 +474,7 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 	FsaveFishData fish;
 	fish.id = 1;
 	fish.numOwned = { currencyMade, 0, 0, 0 };
-	std::vector<FsaveFishData> temp = std::vector<FsaveFishData>{fish};
+	std::unordered_map<uint32_t, FsaveFishData> temp = std::unordered_map<uint32_t, FsaveFishData>{ {fish.id, fish} };
 
 	Main::idleProfitWidget->setup(temp);
 
@@ -484,14 +485,13 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 	std::cout << "currency: " << currency << std::endl;
 }
 
-void AfishTransporter::upgrade(FsaveMechanicStruct* mechanicStruct) {
+void AfishTransporter::upgrade(SaveEntry* mechanicStruct) {
 	mechanicStruct->level++;
 	SetStats();
 }
 
 void AfishTransporter::SetStats() {
-	int id = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	FsaveMechanicStruct* mechanicStruct = &SaveData::saveData.mechanicStruct[id];
+	SaveEntry* mechanicStruct = &SaveData::saveData.mechanicStruct.at(Scene::GetCurrWorldId());
 
 	maxHoldNum = mechanicStruct->level * 100 + 100;
 

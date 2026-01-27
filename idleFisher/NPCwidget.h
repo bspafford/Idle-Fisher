@@ -43,11 +43,10 @@ public:
 	std::vector<std::unique_ptr<UupgradeBox>> upgradeBoxList;
 
 	template <typename T1, typename T2>
-	void setup(std::vector<T1>& data, std::vector<T2>& saveData) {
-		for (int i = 0; i < data.size(); i++) {
-			T1* currData = &data[i];
-			T2* currSaveData = &saveData[currData->id];
-			std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolder.get(), this, currData, currSaveData);
+	void setup(std::unordered_map<uint32_t, T1>& data, std::unordered_map<uint32_t, T2>& saveData) {
+		for (auto& [id, currData] : data) {
+			T2* currSaveData = &saveData.at(currData.id);
+			std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolder.get(), this, &currData, currSaveData);
 			if (upgradeBox->buyButton)
 				upgradeBox->buyButton->setParent(upgradeHolder.get());
 			upgradeHolder->addChild(upgradeBox.get(), upgradeBox->getSize().y);

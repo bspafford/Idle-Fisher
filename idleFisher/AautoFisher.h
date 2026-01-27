@@ -19,7 +19,7 @@ struct Fcollision;
 
 class AautoFisher : public IHoverable {
 public:
-	AautoFisher(int id);
+	AautoFisher(uint32_t id);
 	~AautoFisher();
 
 	void Update(float deltaTime);
@@ -30,9 +30,10 @@ public:
 	void collectFish();
 	void catchFish();
 	FfishData calcFish();
-	std::vector<std::vector<float>> calcFishProbability(std::vector<FfishData> fishData, bool isCurrencyAFactor = true);
+	std::vector<std::pair<uint32_t, float>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>&, bool isCurrencyAFactor = true);
 	int calcCurrencyInList(FfishData fish, std::vector<FsaveFishData> heldFish);
-	std::vector<double> getUpgradeCost();
+	// returns id, level, price
+	std::tuple<uint32_t, int, double> getUpgradeCost();
 	double price(int level);
 	double calcCurrencyHeld(std::vector<FsaveFishData> fishList = std::vector<FsaveFishData>(0));
 	// gets the autofisher to start fishing again once it is no longer full
@@ -45,8 +46,9 @@ public:
 	float getCatchTime();
 
 	double calcIdleProfits(double afkTime);
-	std::vector<vector> calcAutoFishList(int fishNum);
-	std::vector<float> calcIdleFishChance(std::vector<FfishData> fishList);
+	// fishId, fishNum
+	std::vector<std::pair<uint32_t, double>> calcAutoFishList(int fishNum);
+	std::unordered_map<uint32_t, float> calcIdleFishChance(std::unordered_map<uint32_t, FfishData> fishList);
 
 	double calcFPS();
 	double calcMPS();
@@ -83,13 +85,12 @@ public:
 	// multiplier stuff
 	int multiplier = 1;
 
-	int currencyId = 1;
-
 	int autoFisherNum = 0;
 
 	std::unique_ptr<AFmoreInfoUI> afMoreInfoUI;
 
-	int id = -1;
+	uint32_t id = 0;
+	uint32_t worldId = 0;
 
 	// sets the stats (fullness, and speed) based on auto fisher level after load
 	void setStats();

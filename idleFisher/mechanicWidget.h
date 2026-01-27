@@ -11,7 +11,6 @@ class text;
 class verticalBox;
 class UprogressBar;
 struct FmechanicStruct;
-struct FsaveMechanicStruct;
 
 class UmechanicWidget : public widget {
 public:
@@ -37,7 +36,7 @@ public:
 	npc* NPCParent;
 
 	FmechanicStruct* mechanicStruct;
-	FsaveMechanicStruct* saveMechanicStruct;
+	SaveEntry* saveMechanicStruct;
 
 	// upgrades
 	std::unique_ptr<Image> upgradeBackground;

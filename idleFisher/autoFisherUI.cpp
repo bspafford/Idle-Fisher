@@ -43,7 +43,7 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	maxText = std::make_unique<text>(this, " ", "tall", UILoc + vector{ 31.f, 66.f }, true, true);
 	maxText->setTextColor(124, 127, 85);
 	buttonTextLoc = UILoc + vector{ 34.f, 23.f };
-	buttonText = std::make_unique<text>(this, shortNumbers::convert2Short(autoFisher->getUpgradeCost()[1]), "normal", buttonTextLoc, true, true, TEXT_ALIGN_RIGHT);
+	buttonText = std::make_unique<text>(this, shortNumbers::convert2Short(std::get<2>(autoFisher->getUpgradeCost())), "normal", buttonTextLoc, true, true, TEXT_ALIGN_RIGHT);
 
 	std::string levelBarPath = "images/autoFisher/UI/level";
 	for (int i = 0; i < 21; i++)
@@ -118,21 +118,21 @@ void autoFisherUI::updateUI() {
 	if (!visible)
 		return;
 
-	std::vector<double> upgradeCost = autoFisher->getUpgradeCost();
+	auto [upgradeCurrencyId, upgradeLevel, upgradeCost] = autoFisher->getUpgradeCost();
 
 	// if has enough currency to upgrade it
 	if (upgradeButton)
-		upgradeButton->enable(upgradeCost[1] <= SaveData::saveData.currencyList[autoFisher->currencyId].numOwned);
+		upgradeButton->enable(upgradeCost <= SaveData::saveData.currencyList[upgradeCurrencyId].numOwned);
 
 
 	// update level num
 	levelText->setText(std::to_string(*autoFisher->level));
-	maxText->setText("+" + std::to_string(int(upgradeCost[0])));
+	maxText->setText("+" + std::to_string(upgradeLevel));
 
 	maxText->setLoc(levelText->getLoc() - vector{ 0, maxText->getSize().y + 5.f });
 
 	if (*autoFisher->level < autoFisher->maxLevel)
-		buttonText->setText(shortNumbers::convert2Short(upgradeCost[1]));
+		buttonText->setText(shortNumbers::convert2Short(upgradeCost));
 	else {
 		buttonText->setText("max");
 		upgradeButton->enable(false);

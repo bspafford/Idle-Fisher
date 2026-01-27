@@ -19,7 +19,7 @@ public:
 	void draw(Shader* shaderProgram) override;
 
 	void updateEquipmentWidget();
-	void updateAchievementIcon(int id);
+	void updateAchievementIcon(uint32_t id);
 private:
 	void setupLocs() override;
 	void closeWidget();

@@ -42,7 +42,7 @@ public:
 	static void Init();
 
 	// calculates all the collision.col file information into a list
-	static void LoadWorldsCollision(const std::string& worldName);
+	static void LoadWorldsCollision(uint32_t worldId);
 	static void removeCollisionObject(Fcollision* collision);
 	static std::string getIdentifier(std::string str);
 

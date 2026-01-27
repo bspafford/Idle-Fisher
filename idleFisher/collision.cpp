@@ -51,8 +51,8 @@ void collision::Init() {
 	PakReader::ParseCollision("data/col.pak", colMap);
 }
 
-void collision::LoadWorldsCollision(const std::string& worldName) {
-	auto it = colMap.find(PakReader::Hash(worldName));
+void collision::LoadWorldsCollision(uint32_t worldId) {
+	auto it = colMap.find(worldId);
 	// it titleScreen, then there is no collision to load
 	if (it == colMap.end())
 		return;

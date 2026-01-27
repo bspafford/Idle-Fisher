@@ -25,19 +25,22 @@ Umap::Umap(UsailorWidget* parent, vector mapSize) : widget(parent) {
 	hereBoat->start();
 	hereText = std::make_unique<text>(this, "Here", "straight", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
 
-	for (int i = 0; i < worldButtonLoc.size(); i++) {
-		std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/maps/x.png", 21, 22, 1, worldButtonLoc[i], false, false);
+	for (auto& [worldId, worldSaveData] : SaveData::saveData.worldList) {
+		FworldStruct& worldData = SaveData::data.worldData.at(worldId);
+		int worldIndex = Scene::GetWorldIndex();
+
+		std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/maps/x.png", 21, 22, 1, worldButtonLoc[worldIndex], false, false);
 		button->setParent(this);
 		worldButtons.push_back(std::move(button));
 		
 
 		std::string textString = "";
-		if (SaveData::saveData.worldList[i].unlocked)
-			textString = SaveData::data.worldData[i].name;
+		if (worldSaveData.level)
+			textString = worldData.name;
 		else
-			textString = shortNumbers::convert2Short(SaveData::data.worldData[i].currencyNum);
-		if (worldButtons.size() > i)
-			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[i] + vector{ worldButtons[i]->getSize().x / 2, 25 }, false, false, TEXT_ALIGN_CENTER));
+			textString = shortNumbers::convert2Short(worldData.currencyNum);
+		if (worldButtons.size() > worldIndex)
+			worldNames.push_back(std::make_unique<text>(this, textString, "straight", worldButtonLoc[worldIndex] + vector{ worldButtons[worldIndex]->getSize().x / 2, 25 }, false, false, TEXT_ALIGN_CENTER));
 	}
 
 	for (int i = 0; i < worldButtonLoc.size() - 1; i++) {
@@ -93,29 +96,32 @@ void Umap::draw(Shader* shaderProgram) {
 	if (mapImg)
 		mapImg->draw(shaderProgram);
 
-	for (int i = 0; i < worldLines.size(); i++) {
-		if (!SaveData::saveData.worldList[i].unlocked)
+	int lineIndex = 0;
+	for (auto& [worldId, worldData] : SaveData::saveData.worldList) {
+		if (!worldData.level)
 			break;
 
-		worldLines[i]->draw(shaderProgram);
+		worldLines[lineIndex]->draw(shaderProgram);
+
+		lineIndex++;
 	}
 
-	std::string currWorldName = Scene::getCurrWorldName();
-	for (int i = 0; i < worldButtons.size(); i++) {
-		std::string currWorld = currWorldName;
+	int worldIndex = 0;
+	for (auto& [worldId, worldData] : SaveData::saveData.worldList) {
+		if (worldIndex != Scene::GetWorldIndex()) {
+			worldButtons[worldIndex]->draw(shaderProgram);
+			worldNames[worldIndex]->draw(shaderProgram);
 
-		if (i != Scene::getWorldIndexFromName(currWorldName)) {
-			worldButtons[i]->draw(shaderProgram);
-			worldNames[i]->draw(shaderProgram);
-
-			if (!SaveData::saveData.worldList[i].unlocked)
+			if (!worldData.level)
 				break;
 		} else { // draws boat at current world map loc
-			hereBoat->setLoc(worldButtons[i]->getLoc());
+			hereBoat->setLoc(worldButtons[worldIndex]->getLoc());
 			hereBoat->draw(shaderProgram);
-			hereText->setLoc(worldNames[i]->getLoc());
+			hereText->setLoc(worldNames[worldIndex]->getLoc());
 			hereText->draw(shaderProgram);
 		}
+
+		worldIndex++;
 	}
 
 	ScissorTest::Disable();
@@ -146,29 +152,28 @@ void Umap::setLocs(vector loc) {
 		worldLines[i]->setLoc(loc + worldLineLoc[i]);
 }
 
-void Umap::openLevel(std::string levelName) {
+void Umap::openLevel(uint32_t levelId) {
 	// world to id
-	FsaveWorldStruct* saveWorld = nullptr;
 	FworldStruct* world = nullptr;
-	for (int i = 0; i < SaveData::data.worldData.size(); i++) {
-		if (SaveData::data.worldData[i].worldName == levelName) {
-			world = &SaveData::data.worldData[i];
-			saveWorld = &SaveData::saveData.worldList[i];
+	for (auto& [worldId, worldData] : SaveData::data.worldData) {
+		if (worldData.id == levelId) {
+			world = &worldData;
 			break;
 		}
 	}
 
+	SaveEntry* saveWorld = &SaveData::saveData.worldList.at(world->id);
 	if (!world || !saveWorld)
 		return;
 
-	if (saveWorld->unlocked) { // already unlocked
-		Scene::openLevel(levelName);
+	if (saveWorld->level) { // already unlocked
+		Scene::openLevel(levelId);
 	} else if (world->currencyNum <= SaveData::saveData.currencyList[world->currencyId].numOwned) { // can afford
 		SaveData::saveData.currencyList[world->currencyId].numOwned -= world->currencyNum;
-		saveWorld->unlocked = true;
+		saveWorld->level = true;
 
 		// update the map
-		worldNames[world->id]->setText(world->name);
+		worldNames[Scene::GetWorldIndex(world->id)]->setText(world->name);
 		Main::currencyWidget->updateList();
 	}
 
@@ -184,8 +189,7 @@ vector Umap::getLoc() {
 }
 
 void Umap::SetCurrWorldToCenter() {
-	std::string currWorldName = Scene::getCurrWorldName();
-	int worldIndex = Scene::getWorldIndexFromName(currWorldName);
+	int worldIndex = Scene::GetWorldIndex();
 	if (worldIndex == -1)
 		return;
 	vector worldButtonLoc = this->worldButtonLoc[worldIndex];

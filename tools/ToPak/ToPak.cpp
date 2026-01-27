@@ -147,7 +147,7 @@ int main() {
 	std::string audioPak = base + "audio.pak";
 	std::string colPak = base + "col.pak";
 
-	bool outputImagePak = false;
+	bool outputImagePak = true;
 	bool outputShaderPak = true;
 	bool outputTextPak = true;
 	bool outputAudioPak = true;
@@ -845,7 +845,7 @@ std::unordered_map<uint32_t, std::vector<Fcollision>> getCollisionObjects(const 
 	std::ifstream colFile(colPath);
 
 	int lineNum = 0;
-	std::string currWorldName = "";
+	uint32_t currWorldId = 0;
 	if (colFile.is_open()) {
 		while (colFile.good()) {
 			std::string line;
@@ -854,15 +854,15 @@ std::unordered_map<uint32_t, std::vector<Fcollision>> getCollisionObjects(const 
 			removeSpaces(line);
 
 			if (line[0] == '!') {
-				if (currWorldName != "") // returns if passed the world
+				if (currWorldId != 0) // returns if passed the world
 					return {};
 
 				// then set the world name parameter
 				line.erase(line.begin());
-				currWorldName = line;
+				currWorldId = std::stoul(line);
 
 				// only puts collision in the list if its part of that world
-			} else if (line[0] != '/' && line != "" && currWorldName != "") {
+			} else if (line[0] != '/' && line != "" && currWorldId != 0) {
 
 				std::string identifier = getIdentifier(line);
 
@@ -894,7 +894,7 @@ std::unordered_map<uint32_t, std::vector<Fcollision>> getCollisionObjects(const 
 				for (int i = 0; i < coords[lineNum].size(); i++)
 					coords[lineNum][i] = coords[lineNum][i] * multiplier;// +offset;
 
-				collisionStorage[Hash(currWorldName)].push_back(Fcollision(coords[lineNum], identifier[0]));
+				collisionStorage[currWorldId].push_back(Fcollision(coords[lineNum], identifier[0]));
 
 				lineNum++;
 			}

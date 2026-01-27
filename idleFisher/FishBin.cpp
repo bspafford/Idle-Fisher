@@ -24,17 +24,16 @@ void FishBin::draw(Shader* shaderProgram) {
 }
 
 void FishBin::sellFish() {
-	for (int i = 0; i < SaveData::saveData.fishData.size(); i++) {
-		FsaveFishData* currSaveFish = &SaveData::saveData.fishData[i];
-		FfishData* currFish = &SaveData::data.fishData[currSaveFish->id];
+	for (auto& [fishId, currSaveFish] : SaveData::saveData.fishData) {
+		FfishData* currFish = &SaveData::data.fishData.at(fishId);
 
-		for (int j = 0; j < SaveData::saveData.fishData[i].numOwned.size(); j++) {
-			double currencyGained = currSaveFish->numOwned[j] * upgrades::getFishSellPrice(*currFish, j);
+		for (int j = 0; j < currSaveFish.numOwned.size(); j++) {
+			double currencyGained = currSaveFish.numOwned[j] * upgrades::getFishSellPrice(*currFish, j);
 			if (currencyGained > 0)
 				SaveData::saveData.currencyList[currFish->currencyId].unlocked = true;
 			SaveData::saveData.currencyList[currFish->currencyId].numOwned += currencyGained;
 			SaveData::saveData.currencyList[currFish->currencyId].totalNumOwned += currencyGained;
-			currSaveFish->numOwned[j] = 0;
+			currSaveFish.numOwned[j] = 0;
 		}
 	}
 

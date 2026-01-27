@@ -5,11 +5,11 @@
 class text;
 class Ubutton;
 struct FrebirthStruct;
-struct FsaveRebirthStruct;
+struct SaveEntry;
 
 class UrebirthUnlock : public widget {
 public:
-	UrebirthUnlock(widget* parent, int id);
+	UrebirthUnlock(widget* parent, uint32_t id);
 	~UrebirthUnlock();
 	void draw(Shader* shaderProgram) override;
 	bool isMouseOver();
@@ -26,5 +26,5 @@ private:
 	std::unique_ptr<text> upgradeCost;
 
 	FrebirthStruct* rebirthInfo;
-	FsaveRebirthStruct* saveRebirthInfo;
+	SaveEntry* saveRebirthInfo;
 };

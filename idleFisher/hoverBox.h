@@ -5,7 +5,6 @@
 class text;
 class Background;
 struct FachievementStruct;
-struct FsaveAchievementStruct;
 
 class UhoverBox : public widget {
 public:

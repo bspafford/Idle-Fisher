@@ -35,11 +35,10 @@ UcurrencyConverterWidget::~UcurrencyConverterWidget() {
 }
 
 void UcurrencyConverterWidget::setup() {
-	for (int i = 1; i < SaveData::data.currencyData.size() - 1; i++) {
-		FcurrencyStruct* currData = &SaveData::data.currencyData[i];
-		FsaveCurrencyStruct* currSaveData = &SaveData::saveData.currencyList[currData->id];
-		if (currSaveData->unlocked && SaveData::saveData.currencyList[currData->id + 1].unlocked) { // if currency and next are unlocked
-			std::unique_ptr<UcurrencyConverterBox> upgradeBox = std::make_unique<UcurrencyConverterBox>(this, currData, currSaveData);
+	for (auto& [key, currData] : SaveData::data.currencyData) {
+		FsaveCurrencyStruct* currSaveData = &SaveData::saveData.currencyList.at(currData.id);
+		if (currSaveData->unlocked && SaveData::saveData.currencyList.at(currData.id).unlocked) { // if currency and next are unlocked
+			std::unique_ptr<UcurrencyConverterBox> upgradeBox = std::make_unique<UcurrencyConverterBox>(this, &currData, currSaveData);
 			if (upgradeBox->buyButton)
 				upgradeBox->buyButton->setParent(upgradeHolder.get());
 			upgradeHolder->addChild(upgradeBox.get(), upgradeBox->getSize().y);
@@ -114,8 +113,7 @@ void UcurrencyConverterWidget::addedToViewport() {
 	// if not do nothing
 	int unlockedNum = 0;
 	//for (const FsaveCurrencyStruct currency : SaveData::saveData.currencyList) {
-	for (int i = 1; i < SaveData::saveData.currencyList.size(); i++) {
-		FsaveCurrencyStruct currency = SaveData::saveData.currencyList[i];
+	for (auto& [id, currency] : SaveData::saveData.currencyList) {
 		if (currency.unlocked)
 			unlockedNum++;
 	}
@@ -124,13 +122,13 @@ void UcurrencyConverterWidget::addedToViewport() {
 	if (childListSize != unlockedNum) {
 		// add children needed
 		// its possible for there to be multiple new currencies
-
+		/*
 		// loop through starting at i = childListSize - 1 to unlockedNum
 		// then add child, child being currency[i]
 		for (int i = childListSize; i < unlockedNum-1; i++) {
-			FcurrencyStruct* currData = &SaveData::data.currencyData[i+1];
-			FsaveCurrencyStruct* currSaveData = &SaveData::saveData.currencyList[currData->id];
-			if (currSaveData->unlocked && SaveData::saveData.currencyList[currData->id + 1].unlocked) { // if currency and next are unlocked
+			FcurrencyStruct* currData = &SaveData::data.currencyData.at();
+			FsaveCurrencyStruct* currSaveData = &SaveData::saveData.currencyList.at(currData->worldId);
+			if (currSaveData->unlocked && SaveData::saveData.currencyList.at(currData->worldId).unlocked) { // if currency and next are unlocked
 				std::unique_ptr<UcurrencyConverterBox> upgradeBox = std::make_unique<UcurrencyConverterBox>(this, currData, currSaveData);
 				if (upgradeBox->buyButton)
 					upgradeBox->buyButton->setParent(upgradeHolder.get());
@@ -138,6 +136,7 @@ void UcurrencyConverterWidget::addedToViewport() {
 				currencyConverterBoxList.push_back(std::move(upgradeBox));
 			}
 		}
+		*/
 	}
 	setupLocs();
 }

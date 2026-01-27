@@ -24,6 +24,6 @@ vector GetAbsoluteLoc(vector loc, vector size, bool useWorldPos, vector pivot, A
 			 newLoc.y = (loc.y + pixelScreenSize.y);
 		 }
 
-		 return (newLoc - pivotLoc).ToPixel();
+		 return (newLoc - pivotLoc).floor();
 	 }
 }

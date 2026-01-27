@@ -4,12 +4,12 @@
 #include "Input.h"
 
 AvaultPlacedItems::AvaultPlacedItems() {
+	/*
 	// load all the vault stuff
 	// place items / make struct
-	for (int i = 0; i < SaveData::saveData.vaultUnlockList.size(); i++) {
-		FvaultUnlocksStruct* vaultUnlocks = &SaveData::data.vaultUnlockData[i];
-		FsaveVaultUnlocksStruct* saveVaultUnlocks = &SaveData::saveData.vaultUnlockList[i];
-		if (saveVaultUnlocks->unlocked) {
+	for (auto& [vaultId, saveVaultUnlocks] : SaveData::saveData.vaultUnlockList) {
+		FvaultUnlocksStruct* vaultUnlocks = &SaveData::data.vaultUnlockData.at(vaultId);
+		if (saveVaultUnlocks->level) {
 			// add to list and set loc
 			FvaultStuff vaultStuff;
 
@@ -20,6 +20,7 @@ AvaultPlacedItems::AvaultPlacedItems() {
 			itemList.push_back(vaultStuff);
 		}
 	}
+	*/
 }
 
 void AvaultPlacedItems::draw(Shader* shaderProgram) {

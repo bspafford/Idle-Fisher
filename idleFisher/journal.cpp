@@ -45,8 +45,9 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	xButton->addCallback(this, &Ujournal::closeWidget);
 
 	if (SaveData::data.worldData.size() >= 2) {
-		worldName1 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
-		worldName2 = std::make_unique<text>(this, SaveData::data.worldData[0].name, "biggerStraightDark", vector{ 0.f, 0.f }, false, false, TEXT_ALIGN_CENTER);
+		FworldStruct& worldData = SaveData::data.worldData.at(4u);
+		worldName1 = std::make_unique<text>(this, worldData.name, "biggerStraightDark", vector{0.f, 0.f}, false, false, TEXT_ALIGN_CENTER);
+		worldName2 = std::make_unique<text>(this, worldData.name, "biggerStraightDark", vector{0.f, 0.f}, false, false, TEXT_ALIGN_CENTER);
 
 		worldProgress1 = std::make_unique<UprogressBar>(this, vector{ 100.f, 5.f }, false);
 		worldProgress1->SetPivot({ 0.5f, 0.f });
@@ -62,11 +63,10 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 		journalProgressWidget = std::make_unique<UjournalProgressWidget>(this, 5, 15, 5);
 	}
 
-	for (int i = 0; i < SaveData::data.fishData.size(); i++) {
-		FfishData* currFish = &SaveData::data.fishData[i];
-		FsaveFishData* currSaveFish = &SaveData::saveData.fishData[i];
+	for (auto& [fishId, fishData] : SaveData::data.fishData) {
+		FsaveFishData* saveFishData = &SaveData::saveData.fishData.at(fishId);
 
-		std::unique_ptr<UfishBox> fishBox = std::make_unique<UfishBox>(this, currFish, currSaveFish);
+		std::unique_ptr<UfishBox> fishBox = std::make_unique<UfishBox>(this, &fishData, saveFishData);
 
 		fishBoxList.push_back(std::move(fishBox));
 	}
@@ -142,6 +142,8 @@ Ujournal::~Ujournal() {
 }
 
 void Ujournal::draw(Shader* shaderProgram) {
+	uint32_t worldId = Scene::GetWorldId(pageNum);
+
 	if (journalClosed && !journalTimer->IsFinished())
 		journalClosed->draw(shaderProgram);
 	if (journalAnim && !journalAnim->IsFinished() && journalTimer->IsFinished())
@@ -156,7 +158,8 @@ void Ujournal::draw(Shader* shaderProgram) {
 		if (pageNum == -1)
 			break;
 
-		if (fishBoxList[i]->fishData->levelName == SaveData::data.worldData[pageNum].worldName || (SaveData::data.worldData.size() > pageNum && fishBoxList[i]->fishData->levelName == SaveData::data.worldData[pageNum].worldName))
+		FworldStruct& worldData = SaveData::data.worldData.at(worldId);
+		if (fishBoxList[i]->fishData->worldId == worldData.id || (SaveData::data.worldData.size() > pageNum && fishBoxList[i]->fishData->worldId == worldData.id))
 			fishBoxList[i]->draw(shaderProgram);
 	}
 
@@ -171,7 +174,7 @@ void Ujournal::draw(Shader* shaderProgram) {
 		worldName1->draw(shaderProgram);
 		worldName2->draw(shaderProgram);
 
-		if (SaveData::saveData.worldList[pageNum].unlocked) {
+		if (SaveData::saveData.worldList.at(worldId).level) {
 			worldProgress1->draw(shaderProgram);
 			worldProgress2->draw(shaderProgram);
 
@@ -254,16 +257,18 @@ void Ujournal::updatePages() {
 		return;
 
 	if (pageNum != -1) {
-		std::string worldName = SaveData::data.worldData[pageNum].name;
+		FworldStruct& worldData = SaveData::data.worldData.at(Scene::GetWorldId(pageNum));
+		SaveEntry& saveWorldData = SaveData::saveData.worldList.at(worldData.id);
+		std::string worldName = worldData.name;
 
-		if (SaveData::saveData.worldList[pageNum].unlocked)
+		if (saveWorldData.level)
 			worldName1->setText(worldName);
 		else
 			worldName1->setText("???");
 
-		calcWorldPercentage(worldProgress1.get(), worldProgress2.get(), pageNum);
+		calcWorldPercentage(worldProgress1.get(), worldProgress2.get(), worldData.id);
 
-		bool world2Unlocked = SaveData::saveData.worldList[pageNum].unlocked;
+		bool world2Unlocked = saveWorldData.level;
 		if (world2Unlocked && SaveData::data.worldData.size() > pageNum) // checks if in range, incase add world and its only on left page
 			worldName2->setText(worldName);
 		else if (!world2Unlocked)
@@ -342,9 +347,9 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 
 	// find world name
 	std::string worldName = "";
-	for (FworldStruct world : SaveData::data.worldData) {
-		if (world.worldName == fishData->levelName) {
-			worldName = world.name;
+	for (auto& [worldId, worldData] : SaveData::data.worldData) {
+		if (worldData.id == fishData->worldId) {
+			worldName = worldData.name;
 		}
 	}
 
@@ -360,7 +365,7 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	fishSize->setText("Biggest (Max: " + std::to_string(fishData->maxSize) + "in)");
 
 	vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
-	map = std::make_unique<Image>("images/widget/maps/" + fishData->levelName + ".png", vector{ 0, 0 }, false);
+	map = std::make_unique<Image>("images/widget/maps/" + std::to_string(fishData->worldId) + ".png", vector{ 0, 0 }, false);
 	map->SetPivot({ 0.5f, 0.5f });
 	map->setLoc(center + vector{ 63.f, -35.f });
 
@@ -473,15 +478,15 @@ void Ujournal::setupLocs() {
 	worldProgress2->setLoc(center + vector{ 68.f, 71.f });
 }
 
-void Ujournal::calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, int worldId) {
+void Ujournal::calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar* rareProgressBar, uint32_t worldId) {
 	unlockedFish1 = 0, fishStars1 = 0, maxFishSize1 = 0;
 	unlockedFish2 = 0, fishStars2 = 0, maxFishSize2 = 0;
 	unlockedTotal1 = 0, starsTotal1 = 0, SizeTotal1 = 0;
 	unlockedTotal2 = 0, starsTotal2 = 0, SizeTotal2 = 0;
 
-	for (FfishData fishData : SaveData::data.fishData) {
+	for (auto& [fishId, fishData] : SaveData::data.fishData) {
 		FsaveFishData saveFishData = SaveData::saveData.fishData[fishData.id];
-		if (fishData.levelName == SaveData::data.worldData[worldId].worldName) {
+		if (fishData.worldId == SaveData::data.worldData.at(worldId).id) {
 			if (!fishData.isRareFish) { //  && saveFishData.unlocked
 				unlockedTotal1++;
 				starsTotal1 += 3;

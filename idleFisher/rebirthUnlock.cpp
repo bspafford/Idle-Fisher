@@ -7,9 +7,9 @@
 
 #include "debugger.h"
 
-UrebirthUnlock::UrebirthUnlock(widget* parent, int id) : widget(parent) {
-	rebirthInfo = &SaveData::data.rebirthData[id];
-	saveRebirthInfo = &SaveData::saveData.rebirthList[id];
+UrebirthUnlock::UrebirthUnlock(widget* parent, uint32_t id) : widget(parent) {
+	rebirthInfo = &SaveData::data.rebirthData.at(id);
+	saveRebirthInfo = &SaveData::saveData.rebirthList.at(id);
 
 	background = std::make_unique<Image>("images/widget/rebirthIcons/background.png", vector{ 0, 0 }, false);
 
@@ -21,14 +21,14 @@ UrebirthUnlock::UrebirthUnlock(widget* parent, int id) : widget(parent) {
 	button->addCallback(this, &UrebirthUnlock::onClick);
 
 	upgradeCost = std::make_unique<text>(this, shortNumbers::convert2Short(rebirthInfo->currencyNum), "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	if (!saveRebirthInfo->unlocked) {
+	if (!saveRebirthInfo->level) {
 		if (background)
 			background->setColorMod(glm::vec4(75.f/255.f, 75.f/255.f, 75.f/255.f, 1.f));
 		if (button)
 			button->SetColorMod(glm::vec4(75.f / 255.f, 75.f / 255.f, 75.f / 255.f, 1.f));
 	}
 
-	if (saveRebirthInfo->unlocked)
+	if (saveRebirthInfo->level)
 		unlock();
 }
 
@@ -42,7 +42,7 @@ void UrebirthUnlock::draw(Shader* shaderProgram) {
 }
 
 void UrebirthUnlock::onClick() {
-	if (!saveRebirthInfo->unlocked && prerequisitesMet() && SaveData::saveData.rebirthCurrency >= rebirthInfo->currencyNum) {
+	if (!saveRebirthInfo->level && prerequisitesMet() && SaveData::saveData.rebirthCurrency >= rebirthInfo->currencyNum) {
 		SaveData::saveData.rebirthCurrency -= rebirthInfo->currencyNum;
 		static_cast<UrebirthWidget*>(getParent())->update();
 		unlock();
@@ -50,14 +50,14 @@ void UrebirthUnlock::onClick() {
 }
 
 bool UrebirthUnlock::prerequisitesMet() {
-	for (int id : rebirthInfo->prerequisites)
-		if (!SaveData::saveData.rebirthList[id].unlocked)
+	for (uint32_t id : rebirthInfo->prerequisites)
+		if (!SaveData::saveData.rebirthList.at(id).level)
 			return false;
 	return true;
 }
 
 void UrebirthUnlock::unlock() {
-	saveRebirthInfo->unlocked = true;
+	saveRebirthInfo->level = true;
 	upgradeCost->setVisibility(false);
 
 	background->setColorMod(glm::vec4(1.f));

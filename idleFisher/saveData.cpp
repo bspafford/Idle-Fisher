@@ -1,6 +1,7 @@
 #include "saveData.h"
 #include "main.h"
 #include "timer.h"
+#include "Scene.h"
 
 #include <iostream>
 
@@ -80,23 +81,30 @@ void SaveData::autoSave() {
 	autoSaveTimer->start(autoSaveInterval);
 }
 
-template <typename T1, typename T2> static void recalcList(std::vector<T1>& data, std::vector<T2>& saveData) {
+template <typename T>
+void assignId(T& data, uint32_t id) {
+	data.id = id;
+}
+
+template <typename T1, typename T2>
+void assignId(std::pair<T1, T2>& pairedData, uint32_t id) {
+	pairedData.first.id = id;
+	pairedData.second.id = id;
+}
+
+template <typename T1, typename T2> static void recalcList(std::unordered_map<uint32_t, T1>& data, std::unordered_map<uint32_t, T2>& saveData) {
 	// return if both lists are the same size
 	if (saveData.size() == data.size())
 		return;
 
-	std::vector<T2> tempSaveData;
-	for (int i = 0; i < data.size(); i++) {
-		if (i <= (int)saveData.size() - 1) { // if saveData has that index then keep it
-			tempSaveData.push_back(saveData[i]);
-		} else { // else make new
-			T2 temp;
-			temp.id = data[i].id;
-			tempSaveData.push_back(temp);
+	saveData.reserve(data.size());
+	for (auto& [id, d] : data) {
+		if (saveData.find(id) == saveData.end()) {
+			T2 temp{};
+			assignId(temp, id);
+			saveData.emplace(id, std::move(temp));
 		}
 	}
-
-	saveData = tempSaveData;
 }
 
 void SaveData::recalcLists() {
@@ -109,15 +117,13 @@ void SaveData::recalcLists() {
 	recalcList(data.petData, saveData.petList);
 	recalcList(data.vaultUnlockData, saveData.vaultUnlockList);
 	recalcList(data.baitData, saveData.baitList);
-	recalcList(data.buffData, saveData.buffList);
 	recalcList(data.rebirthData, saveData.rebirthList);
 	recalcList(data.achievementData, saveData.achievementList);
-	// npcSave
 	recalcList(data.worldData, saveData.npcSave);
 	recalcList(data.currencyData, saveData.currencyConversionList);
 
-	saveData.worldList[0].unlocked = true; // world 1 is always unlocked
-	saveData.currencyList[1].unlocked = true; // currency 1 is always unlocked
+	saveData.worldList.at(4u).level = true; // world 1 is always unlocked
+	saveData.currencyList.at(4u).unlocked = true; // currency 1 is always unlocked
 }
 
 void SaveData::saveSettings() {
@@ -169,7 +175,8 @@ void SaveData::LoadData() {
 	input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
 
 	nlohmann::json j_from_bytes = nlohmann::json::from_bson(buffer.begin(), buffer.end());
-	SaveData::data = j_from_bytes.get<Fdata>();
+	SaveData::data = j_from_bytes["data"].get<Fdata>();
+	SaveData::orderedData = j_from_bytes["orderedData"].get<ForderedData>();
 }
 
 std::filesystem::path SaveData::GetSaveFolder() {
@@ -204,4 +211,19 @@ std::filesystem::path SaveData::GetDataPath() {
 
 std::filesystem::path SaveData::GetJsonDataPath() {
 	return GetDataPath() / "data.bson";
+}
+
+FfishData FfishData::GetCheapestFishInWorld(uint32_t worldId) {
+	if (worldId == 0)
+		worldId = Scene::GetCurrWorldId();
+
+	FfishData cheapestFish;
+	cheapestFish.currencyNum = std::numeric_limits<int>::max();
+	for (auto& [key, value] : SaveData::data.fishData) {
+		if (value.worldId == worldId) {
+			if (value.currencyNum < cheapestFish.currencyNum)
+				cheapestFish = value;
+		}
+	}
+	return cheapestFish;
 }

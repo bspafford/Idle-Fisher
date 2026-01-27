@@ -13,6 +13,7 @@
 #include "Scene.h"
 #include "Cursor.h"
 #include "GPULoadCollector.h"
+#include "upgrades.h"
 
 // npc
 #include "fishTransporter.h"
@@ -147,6 +148,7 @@ int Main::createWindow() {
 		BlurBox::DrawFinal(Scene::twoDShader);
 
 		textureManager::EndFrame();
+		Stats::UpdateDirty();
 
 		DrawShadows();
 
@@ -188,7 +190,7 @@ void Main::Start() {
 	Audio::Init();
 
 	Scene::Init();
-	Scene::openLevel("titleScreen", WORLD_SET_LOC_NONE, true, true);
+	Scene::openLevel(1u, WORLD_SET_LOC_NONE, true, true);
 	Scene::deferredChangeWorld();
 	
 	fps::fps();
@@ -341,7 +343,6 @@ void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 	widget::resizeScreen();
 	BlurBox::ResizeScreen();
 }
-
 void Main::checkInputs() {
 	if (Scene::isLoading())
 		return;
@@ -349,14 +350,14 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_ESCAPE)) {
 		if (widget::getCurrWidget())
 			widget::getCurrWidget()->removeFromViewport();
-		else if (Scene::getCurrWorldName() != "titleScreen")
+		else if (Scene::GetCurrWorldId() != 1u) // title screen
 			pauseMenu->addToViewport(nullptr);
 	}
 
-	std::string currWorldName = Scene::getCurrWorldName();
-	if (Input::getKeyDown(GLFW_KEY_C) && currWorldName != "titleScreen")
+	uint32_t currWorld = Scene::GetCurrWorldId();
+	if (Input::getKeyDown(GLFW_KEY_C) && currWorld != 1u) // title screen
 		achievementWidget->addToViewport(nullptr);
-	if (Input::getKeyDown(GLFW_KEY_V) && currWorldName != "titleScreen")
+	if (Input::getKeyDown(GLFW_KEY_V) && currWorld != 1u) // title screen
 		journal->addToViewport(nullptr);
 
 
@@ -364,24 +365,24 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_K))
 		SaveData::save();
 	if (Input::getKeyDown(GLFW_KEY_J)) {
-		SaveData::saveData.currencyList[1].numOwned += 1000000;
-		SaveData::saveData.currencyList[1].totalNumOwned += 1000000;
+		SaveData::saveData.currencyList.at(4u).numOwned += 1000000;
+		SaveData::saveData.currencyList.at(4u).totalNumOwned += 1000000;
 
-		for (int i = 0; i < 0; i++) {
-			SaveData::saveData.currencyList[i + 1].numOwned += 1000;
-			SaveData::saveData.currencyList[i + 1].totalNumOwned += 1000;
-			SaveData::saveData.currencyList[i + 1].unlocked = true;
+		for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
+			currencyData.numOwned += 1000;
+			currencyData.totalNumOwned += 1000;
+			currencyData.unlocked = true;
 		}
 		currencyWidget->updateList();
 	}
 	if (Input::getKeyDown(GLFW_KEY_L)) {
-		SaveData::saveData.currencyList[1].numOwned = 0;
-		SaveData::saveData.currencyList[1].totalNumOwned += 0;
+		SaveData::saveData.currencyList.at(4u).numOwned = 0;
+		SaveData::saveData.currencyList.at(4u).totalNumOwned = 0;
 		currencyWidget->updateList();
 	}
 
 	if (Input::getKeyDown(GLFW_KEY_O))
-		Scene::openLevel("rebirth", WORLD_SET_LOC_SAILOR, false);
+		Scene::openLevel(3u, WORLD_SET_LOC_SAILOR, false);
 #endif
 }
 
@@ -408,22 +409,19 @@ void Main::rebirth() {
 	// reset stuff
 	vector playerLoc = { 200, -84 };
 
-	//SaveData::saveData.fishData 
-	for (int i = 0; i < SaveData::saveData.fishData.size(); i++) {
-		FsaveFishData* currFish = &SaveData::saveData.fishData[i];
-		currFish->numOwned = std::vector<double>(4);
-	}
+	// reset fish list
+	for (auto& fish : SaveData::saveData.fishData)
+		fish.second.numOwned = std::vector<double>(4); // resets list to all 0s
 
-	SaveData::saveData.currencyList = std::vector<FsaveCurrencyStruct>(0);
-	SaveData::saveData.upgradeList = std::vector<FsaveUpgradeStruct>(0);
-	SaveData::saveData.worldList = std::vector<FsaveWorldStruct>(0);
-	SaveData::saveData.mechanicStruct = std::vector<FsaveMechanicStruct>(0);
-	SaveData::saveData.autoFisherList = std::vector<FsaveAutoFisherStruct>(0);
-	SaveData::saveData.petList = std::vector<FsavePetStruct>(0);
-	SaveData::saveData.equippedPet.id = -1;
+	SaveData::saveData.currencyList = std::unordered_map<uint32_t, FsaveCurrencyStruct>(0);
+	SaveData::saveData.upgradeList = std::unordered_map<uint32_t, SaveEntry>(0);
+	SaveData::saveData.worldList = std::unordered_map<uint32_t, SaveEntry>(0);
+	SaveData::saveData.mechanicStruct = std::unordered_map<uint32_t, SaveEntry>(0);
+	SaveData::saveData.autoFisherList = std::unordered_map<uint32_t, std::pair<SaveEntry, FsaveAutoFisherStruct>>(0);
+	SaveData::saveData.petList = std::unordered_map<uint32_t, SaveEntry>(0);
+	SaveData::saveData.equippedPetId = -1;
 	SaveData::saveData.fishingRod = FsaveFishingRodStruct();
-	SaveData::saveData.equippedBait = FsaveBaitStruct();
-	SaveData::saveData.buffList = std::vector<FsaveBuffStruct>(0);
+	SaveData::saveData.equippedBaitId = -1;
 
 	Scene::pet = nullptr;
 
@@ -435,15 +433,13 @@ void Main::rebirth() {
 		world::currWorld->autoFisherList.clear();
 	heldFishWidget->updateList();
 	currencyWidget->updateList();
-	Scene::openLevel("world1", WORLD_SET_LOC_SAILOR, true);
+	Scene::openLevel(4u, WORLD_SET_LOC_SAILOR, true);
 }
 
 double Main::calcRebirthCurrency() {
 	double totalPoints = 0; // total amount of points, calculated based on fish
-	for (int i = 0; i < SaveData::saveData.currencyList.size(); i++) {
-		FsaveCurrencyStruct* curr = &SaveData::saveData.currencyList[i];
-		totalPoints += curr->totalNumOwned * curr->id;
-	}
+	for (auto& currency : SaveData::saveData.currencyList)
+		totalPoints += currency.second.totalNumOwned; // fix, make it so it counts based on value later
 
 	double n = pow(SaveData::saveData.totalRebirthCurrency, double(3)) * double(10);			// how many points needed for each level (level 1 = 10, level 2 = 80...)
 	double tempRebirthCurrency = std::cbrt((totalPoints + n) / double(10));						// returns level with input of currency

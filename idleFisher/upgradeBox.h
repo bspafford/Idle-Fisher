@@ -9,25 +9,20 @@ class text;
 class Ubutton;
 class verticalBox;
 struct FworldStruct;
-struct FsaveWorldStruct;
 struct FfishingRodStruct;
-struct FsaveFishingRodStruct;
 struct FbaitStruct;
-struct FsaveBaitStruct;
 struct FpetStruct;
-struct FsavePetStruct;
 struct FupgradeStruct;
-struct FsaveUpgradeStruct;
 struct FvaultUnlocksStruct;
-struct FsaveVaultUnlocksStruct;
+struct SaveEntry;
 
 class UupgradeBox : public widget {
 public:
-	UupgradeBox(widget* parent, widget* NPCWidget, FworldStruct* worldStruct, FsaveWorldStruct* saveWorldStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, FsaveBaitStruct* saveBaitStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* data, FsavePetStruct* saveData);
-	UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* data, FsaveUpgradeStruct* saveData);
-	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, FsaveVaultUnlocksStruct* saveData);
+	UupgradeBox(widget* parent, widget* NPCWidget, FworldStruct* worldStruct, SaveEntry* saveWorldStruct);
+	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct);
+	UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* data, SaveEntry* saveData);
+	UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* data, SaveEntry* saveData);
+	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, SaveEntry* saveData);
 	~UupgradeBox();
 	void setup();
 	void update();
@@ -43,17 +38,16 @@ private:
 
 	// structs
 	FworldStruct* worldStruct;
-	FsaveWorldStruct* saveWorldStruct;
+	SaveEntry* saveWorldStruct;
 	FfishingRodStruct* fishingRodStruct;
-	FsaveFishingRodStruct* saveFishingRodStruct;
 	FbaitStruct* baitStruct;
-	FsaveBaitStruct* saveBaitStruct;
+	SaveEntry* saveBaitStruct;
 	FpetStruct* petStruct;
-	FsavePetStruct* savePetStruct;
+	SaveEntry* savePetStruct;
 	FupgradeStruct* upgradeStruct;
-	FsaveUpgradeStruct* saveUpgradeStruct;
+	SaveEntry* saveUpgradeStruct;
 	FvaultUnlocksStruct* vaultUnlocksStruct;
-	FsaveVaultUnlocksStruct* saveVaultUnlocksStruct;
+	SaveEntry* saveVaultUnlocksStruct;
 
 	std::unique_ptr<Image> background;
 
@@ -69,10 +63,10 @@ private:
 	std::unique_ptr<text> upgradeText;
 	std::unique_ptr<text> buttonPriceText;
 	std::unique_ptr<Image> currencyImg;
-	int* currencyId;
+	uint32_t* currencyId;
 	int* upgradeNum;
 	int upgradeMax = 1;
-	bool* unlocked;
+	int* unlocked;
 	double* price;
 	double priceFallback;
 

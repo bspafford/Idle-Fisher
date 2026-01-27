@@ -13,7 +13,7 @@ public:
 	UidleProfitWidget(widget* parent);
 	~UidleProfitWidget();
 	void draw(Shader* shaderProgram) override;
-	void setup(std::vector<FsaveFishData> fishList);
+	void setup(std::unordered_map<uint32_t, FsaveFishData> fishList);
 private:
 	void setupLocs() override;
 

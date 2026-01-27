@@ -8,8 +8,7 @@ Afisherman::Afisherman(vector loc) : npc(loc) {
 	setup("fisherman");
 	fishermanWidget = std::make_unique<UfishermanWidget>(nullptr, this);
 
-	int worldId = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	discovered = &SaveData::saveData.npcSave[worldId].fishermanDiscovered;
+	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).fishermanDiscovered;
 }
 
 Afisherman::~Afisherman() {

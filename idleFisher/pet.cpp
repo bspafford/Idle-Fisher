@@ -5,9 +5,9 @@
 
 #include "debugger.h"
 
-Apet::Apet(FsavePetStruct* pet, vector loc) {
-	this->pet = &SaveData::data.petData[pet->id];
-	SaveData::saveData.equippedPet = *pet;
+Apet::Apet(FpetStruct* pet, vector loc) {
+	this->pet = pet;
+	SaveData::saveData.equippedPetId = pet->id;
 	img = std::make_unique<Image>("images/pets/" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
 	setLoc(loc);
 
@@ -15,7 +15,7 @@ Apet::Apet(FsavePetStruct* pet, vector loc) {
 }
 
 Apet::~Apet() {
-	SaveData::saveData.equippedPet.id = -1;
+	SaveData::saveData.equippedPetId = 0;
 }
 
 void Apet::update(float deltaTime) {

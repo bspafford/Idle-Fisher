@@ -42,15 +42,15 @@ private:
 	std::vector<std::unique_ptr<Image>> worldLines;
 	std::vector<vector> worldLineLoc = { {398.f, 609.f}, {425.f, 588.f}, {557.f, 584.f}, {619.f, 434.f}, {722.f, 423.f}, {721.f, 358.f}, {588.f, 323.f}, {419.f, 344.f}, {390.f, 376.f} };
 
-	void openWorld1() { std::cout << "is it working?" << std::endl; openLevel("world1"); }
-	void openWorld2() { openLevel("world2"); }
-	void openWorld3() { openLevel("world3"); }
-	void openWorld4() { openLevel("world4"); }
-	void openWorld5() { openLevel("world5"); }
-	void openWorld6() { openLevel("world6"); }
-	void openWorld7() { openLevel("world7"); }
-	void openWorld8() { openLevel("world8"); }
-	void openWorld9() { openLevel("world9"); }
-	void openWorld10() { openLevel("world10"); }
-	void openLevel(std::string levelName);
+	void openWorld1() { openLevel(4u); }
+	void openWorld2() { openLevel(5u); }
+	void openWorld3() { openLevel(6u); }
+	void openWorld4() { openLevel(7u); }
+	void openWorld5() { openLevel(8u); }
+	void openWorld6() { openLevel(9u); }
+	void openWorld7() { openLevel(10u); }
+	void openWorld8() { openLevel(11u); }
+	void openWorld9() { openLevel(12u); }
+	void openWorld10() { openLevel(13u); }
+	void openLevel(uint32_t levelId);
 };

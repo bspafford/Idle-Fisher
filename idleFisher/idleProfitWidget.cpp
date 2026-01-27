@@ -45,7 +45,7 @@ void UidleProfitWidget::draw(Shader* shaderProgram) {
 	heldFishWidget->draw(shaderProgram);
 }
 
-void UidleProfitWidget::setup(std::vector<FsaveFishData> fishList) {
+void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishList) {
 	heldFishWidget->updateList(fishList);
 }
 

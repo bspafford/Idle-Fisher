@@ -37,7 +37,7 @@ UmerchantWidget::UmerchantWidget(widget* parent, npc* NPCParent) : widget(parent
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	npcBackground->SetPivot({ 1.f, 0.f });
 
-	selectedWorldIcon = std::make_unique<Image>("images/widget/selectedWorldIcon.png", vector{ 0, 0 }, false);
+	selectedWorldIcon = std::make_unique<Image>("images/widget/selectedTabIcon.png", vector{ 0, 0 }, false);
 
 	setup();
 	//setupLocs();
@@ -52,30 +52,22 @@ void UmerchantWidget::setup() {
 		// if it is then add a scroll box to list
 	// else
 		// add the upgrade box to the last index of the list
-	std::string lastWorldName = "";
-	int worldIndex = 1;
-	for (int i = 0; i < SaveData::data.upgradeData.size(); i++) {
-		FupgradeStruct* currData = &SaveData::data.upgradeData[i];
-		FsaveUpgradeStruct* currSaveData = &SaveData::saveData.upgradeList[currData->id];
 
-		if (currData->levelName != lastWorldName) {
-			// for every world add a button to the list
-			
-			std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "currency/coin" + std::to_string(worldIndex) + ".png", 12, 12, 1, vector{ 0, 0 }, false, false);
-			worldButtonList.push_back(std::move(button));
+	// for every world add a button to the list
+	for (auto& worldId : Scene::GetWorldsList()) {
+		std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "currency/coin" + std::to_string(worldId) + ".png", 16, 16, 1, vector{ 0, 0 }, false, false);
+		worldButtonList.push_back(std::move(button));
 
-			std::unique_ptr<UscrollBox> scrollBox = std::make_unique<UscrollBox>(this);
-			scrollBox->setVisibility(false);
-			upgradeHolderList.push_back(std::move(scrollBox));
-			lastWorldName = currData->levelName;
-			
-			worldIndex++;
-		}
+		std::unique_ptr<UscrollBox> scrollBox = std::make_unique<UscrollBox>(this);
+		scrollBox->setVisibility(false);
+		upgradeHolderList.push_back(std::move(scrollBox));
+	}
 
-		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolderList[upgradeHolderList.size() - 1].get(), this, currData, currSaveData);
-		if (upgradeBox->buyButton)
-			upgradeBox->buyButton->setParent(upgradeHolderList[upgradeHolderList.size() - 1].get());
-		upgradeHolderList[upgradeHolderList.size() - 1]->addChild(upgradeBox.get(), upgradeBox->getSize().y);
+	for (auto& [key, currData] : SaveData::data.upgradeData) {
+		SaveEntry& currSaveData = SaveData::saveData.upgradeList[currData.id];
+
+		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolderList[upgradeHolderList.size() - 1].get(), this, &currData, &currSaveData);
+		upgradeHolderList[Scene::GetWorldIndex(currData.worldId)]->addChild(upgradeBox.get(), upgradeBox->getSize().y);
 		upgradeBoxList.push_back(std::move(upgradeBox));
 	}
 	upgradeHolderList[0]->setVisibility(true);
@@ -120,11 +112,13 @@ void UmerchantWidget::draw(Shader* shaderProgram) {
 
 	nameHolder->draw(shaderProgram);
 
-	for (int i = 0; i < upgradeHolderList.size(); i++) {
-		if (!SaveData::saveData.worldList[i].unlocked)
-			break;
-		upgradeHolderList[i]->draw(shaderProgram);
-		worldButtonList[i]->draw(shaderProgram);
+	for (auto& [worldId, worldData] : SaveData::saveData.worldList) {
+		if (!worldData.level) // if not unlocked
+			continue;
+
+		int worldIdx = Scene::GetWorldIndex(worldData.id);
+		upgradeHolderList[worldIdx]->draw(shaderProgram);
+		worldButtonList[worldIdx]->draw(shaderProgram);
 	}
 
 	closeButton->draw(shaderProgram);

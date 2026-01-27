@@ -126,7 +126,7 @@ void titleScreen::fadeToBlack() {
 
 void titleScreen::openWorld() {
 	transitionBox->setColor(glm::vec4(18 / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f)); // makes sure it goes to alpha 100% instead of like 99%
-	Scene::openLevel("world1", WORLD_SET_LOC_NONE);
+	Scene::openLevel(4u, WORLD_SET_LOC_NONE);
 }
 
 void titleScreen::exit() {
@@ -361,7 +361,7 @@ void world::start() {
 
 	// load idle profits
 	loadIdleProfits();
-	if (autoFisherList.size() > 0 && SaveData::saveData.mechanicStruct[0].unlocked) { // if has atleast 1 autofisher and has fish transporter
+	if (autoFisherList.size() > 0 && SaveData::saveData.mechanicStruct[0].level) { // if has atleast 1 autofisher and has fish transporter
 		Main::idleProfitWidget->addToViewport(nullptr);
 	}
 
@@ -592,9 +592,9 @@ void world::sortDraw(Shader* shaderProgram) {
 void world::setupAutoFishers() {
 	autoFisherList.clear();
 	// load autoFisher
-	for (int i = 0; i < SaveData::saveData.autoFisherList.size(); i++) {
-		if (SaveData::saveData.autoFisherList[i].unlocked && SaveData::data.autoFisherData[i].worldName == Scene::getCurrWorldName()) {
-			std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(i);
+	for (auto& [id, afData] : SaveData::saveData.autoFisherList) {
+		if (afData.first.level && SaveData::data.autoFisherData.at(id).worldId == Scene::GetCurrWorldId()) {
+			std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(id);
 			autoFisherList.push_back(std::move(autoFisher));
 		}
 	}
@@ -626,7 +626,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 	fishBin = std::make_unique<FishBin>(vector(662.f, 472.f));
 
 	// npcs
-	if (SaveData::saveData.mechanicStruct[0].unlocked)
+	if (SaveData::saveData.mechanicStruct.at(4u).level)
 		fishTransporter = std::make_unique<AfishTransporter>(vector(1320.f, 630.f));
 
 	fisherman = std::make_unique<Afisherman>(vector(792, 533.f));

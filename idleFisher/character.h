@@ -78,7 +78,7 @@ private:
 
 	// fish stuff
 	FfishData calcFish(int& quality, int& fishSize);
-	std::vector<std::pair<int, double>> calcFishProbability(std::vector<FfishData> fishData);
+	std::vector<std::pair<uint32_t, double>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData);
 
 	static inline std::unique_ptr<animation> anim;
 	std::unique_ptr<animation> fishingRod;

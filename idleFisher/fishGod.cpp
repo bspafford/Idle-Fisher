@@ -9,7 +9,6 @@ AfishGod::AfishGod(vector loc) : npc(loc) {
 	
 	rebirthWidget = std::make_unique<UrebirthWidget>(nullptr);
 
-	int worldId = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
 	discovered = &discoveredFallback;
 }
 

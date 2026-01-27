@@ -15,8 +15,7 @@ Aatm::Aatm(vector loc) : npc(loc) {
 	setup("atm");
 	currencyConverterWidget = std::make_unique<UcurrencyConverterWidget>(nullptr, this);
 
-	int worldId = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	discovered = &SaveData::saveData.npcSave[worldId].atmDiscovered;
+	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).atmDiscovered;
 }
 
 Aatm::~Aatm() {

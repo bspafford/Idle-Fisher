@@ -25,7 +25,7 @@
 
 #include "debugger.h"
 
-AautoFisher::AautoFisher(int id) {
+AautoFisher::AautoFisher(uint32_t id) {
 	if (!autoFisherSpriteSheet)
 		autoFisherSpriteSheet = std::make_shared<Image>("images/autoFisher/autoFisher.png", vector{ 0, 0 }, true);
 	if (!fishingLineSpriteSheet)
@@ -34,9 +34,10 @@ AautoFisher::AautoFisher(int id) {
 		outlineSpriteSheet = std::make_shared<Image>("images/autoFisher/outline.png", vector{ 0, 0 }, true);
 
 	this->id = id;
-	SaveData::saveData.autoFisherList[id].unlocked = true;
+	auto& afData = SaveData::saveData.autoFisherList.at(id);
+	afData.first.level = true;
 	loc = { SaveData::data.autoFisherData[id].xLoc, SaveData::data.autoFisherData[id].yLoc };
-	level = &SaveData::saveData.autoFisherList[id].level;
+	level = &afData.first.level;
 
 	setupCollision();
 	
@@ -44,20 +45,20 @@ AautoFisher::AautoFisher(int id) {
 
 	// auto fisher animation
 	float duration = 0.1f;
-	std::unordered_map<std::string, animDataStruct> autoFisherData;
-	autoFisherData.insert({ "1", animDataStruct({0, 0}, {39, 0}, true) });
-	autoFisherData.insert({ "2", animDataStruct({0, 1}, {39, 1}, true) });
-	autoFisherData.insert({ "3", animDataStruct({0, 2}, {39, 2}, true) });
-	autoFisherData.insert({ "4", animDataStruct({0, 3}, {39, 3}, true) });
-	autoFisherData.insert({ "5", animDataStruct({0, 4}, {39, 4}, true) });
-	autoFisherData.insert({ "6", animDataStruct({0, 5}, {39, 5}, true) });
-	autoFisherData.insert({ "7", animDataStruct({0, 6}, {39, 6}, true) });
-	autoFisherData.insert({ "8", animDataStruct({0, 7}, {39, 7}, true) });
-	autoFisherData.insert({ "9", animDataStruct({0, 8}, {39, 8}, true) });
-	autoFisherData.insert({ "10", animDataStruct({0, 9}, {39, 9}, true) });
-	autoFisherData.insert({ "11", animDataStruct({0, 10}, {39, 10}, true) });
+	std::unordered_map<std::string, animDataStruct> autoFisherAnimData;
+	autoFisherAnimData.insert({ "1", animDataStruct({0, 0}, {39, 0}, true) });
+	autoFisherAnimData.insert({ "2", animDataStruct({0, 1}, {39, 1}, true) });
+	autoFisherAnimData.insert({ "3", animDataStruct({0, 2}, {39, 2}, true) });
+	autoFisherAnimData.insert({ "4", animDataStruct({0, 3}, {39, 3}, true) });
+	autoFisherAnimData.insert({ "5", animDataStruct({0, 4}, {39, 4}, true) });
+	autoFisherAnimData.insert({ "6", animDataStruct({0, 5}, {39, 5}, true) });
+	autoFisherAnimData.insert({ "7", animDataStruct({0, 6}, {39, 6}, true) });
+	autoFisherAnimData.insert({ "8", animDataStruct({0, 7}, {39, 7}, true) });
+	autoFisherAnimData.insert({ "9", animDataStruct({0, 8}, {39, 8}, true) });
+	autoFisherAnimData.insert({ "10", animDataStruct({0, 9}, {39, 9}, true) });
+	autoFisherAnimData.insert({ "11", animDataStruct({0, 10}, {39, 10}, true) });
 
-	anim = std::make_unique<animation>(autoFisherSpriteSheet, 42, 58, autoFisherData, true, loc);
+	anim = std::make_unique<animation>(autoFisherSpriteSheet, 42, 58, autoFisherAnimData, true, loc);
 	anim->addFrameCallback(this, &AautoFisher::OutlineUpdate);
 	anim->addAnimEvent(40, this, &AautoFisher::catchFish);
 	anim->setAnimation("1");
@@ -207,42 +208,47 @@ int AautoFisher::calcCurrencyInList(FfishData fish, std::vector<FsaveFishData> h
 
 FfishData AautoFisher::calcFish() {
 	float rand = math::randRange(0.f, 1.f);
-	std::vector<std::vector<float>> probList = calcFishProbability(SaveData::data.fishData);
+	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData);
 
 	for (int i = 0; i < probList.size(); i++) {
-		if (rand <= probList[i][1]) {
-			return SaveData::data.fishData[probList[i][0]];
-		}
+		if (rand <= probList[i].second)
+			return SaveData::data.fishData.at(probList[i].first);
 	}
 
 
 	// shouldn't hit this
-	return SaveData::data.fishData[1];
+	return SaveData::data.fishData.begin()->second;
 }
 
-std::vector<std::vector<float>> AautoFisher::calcFishProbability(std::vector<FfishData> fishData, bool isCurrencyAFactor) {
+std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData, bool isCurrencyAFactor) {
 
 	float totalProb = 0;// premiumChance;
 
 	double heldCurrency = calcCurrencyHeld();
 
 	// starts at 1 to skip premium
-	for (int i = 1; i < fishData.size(); i++) {
+	for (auto& [key, value] : fishData) {
+		if (key == 1u) // premium fish id
+			continue; // dont include premium here
+
 		// see if autofisher has enough fishing power, see if theres enough room for the fish
-		if (fishData[i].fishingPower <= fishingPower && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
-			if ((isCurrencyAFactor && heldCurrency + upgrades::getFishSellPrice(fishData[i], 0) <= maxCurrency) || !isCurrencyAFactor)
-				totalProb += float(fishData[i].probability);
+		if (value.fishingPower <= fishingPower && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
+			if ((isCurrencyAFactor && heldCurrency + upgrades::getFishSellPrice(value, 0) <= maxCurrency) || !isCurrencyAFactor)
+				totalProb += float(value.probability);
 		}
 	}
-	std::vector<std::vector<float>> probList;
+	std::vector<std::pair<uint32_t, float>> probList;
 	float test = 0;
 
 	// starts at 1 to skip premium
-	for (int i = 1; i < fishData.size(); i++) {
-		if (fishData[i].fishingPower <= fishingPower && (fishData[i].levelName == Scene::getCurrWorldName() || fishData[i].levelName == "premium")) {
-			if ((isCurrencyAFactor && heldCurrency + upgrades::getFishSellPrice(fishData[i], 0) <= maxCurrency) || !isCurrencyAFactor) {
-				test += fishData[i].probability / totalProb;
-					probList.push_back(std::vector<float>{(float)fishData[i].id, test});
+	for (auto& [key, value] : fishData) {
+		if (key == 1u)
+			continue; // dont include premium here
+
+		if (value.fishingPower <= fishingPower && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
+			if ((isCurrencyAFactor && heldCurrency + upgrades::getFishSellPrice(value, 0) <= maxCurrency) || !isCurrencyAFactor) {
+				test += value.probability / totalProb;
+					probList.push_back(std::pair{value.id, test});
 			}
 		}
 	}
@@ -297,13 +303,15 @@ void AautoFisher::upgrade() {
 	if (*level >= maxLevel)
 		return;
 
-	std::vector<double> levelPrice = getUpgradeCost();
-	if (SaveData::saveData.currencyList[1].numOwned < levelPrice[1])
+	std::tuple<uint32_t, int, double> levelPrice = getUpgradeCost();
+	auto& [upgradeCurrencyId, upgradeLevel, upgradePrice] = levelPrice;
+
+	if (SaveData::saveData.currencyList.at(upgradeCurrencyId).numOwned < upgradePrice)
 		return;
 
 	// take currency
-	SaveData::saveData.currencyList[1].numOwned -= levelPrice[1];
-	*level += levelPrice[0];
+	SaveData::saveData.currencyList.at(upgradeCurrencyId).numOwned -= upgradePrice;
+	*level += upgradeLevel;
 
 	Main::currencyWidget->updateList();
 
@@ -320,11 +328,8 @@ void AautoFisher::upgrade() {
 		afMoreInfoUI->updateUI();
 }
 
-// [0] for level, [1] for price
-std::vector<double> AautoFisher::getUpgradeCost() {
-	double currency = SaveData::saveData.currencyList[1].numOwned;
-
-	// int multiplier = multiplierList[multiplierIndex];
+std::tuple<uint32_t, int, double> AautoFisher::getUpgradeCost() {
+	double currency = SaveData::saveData.currencyList.at(worldId).numOwned;
 
 	int tempLevel = *level;
 	if (multiplier != (int)INFINITY) {
@@ -339,19 +344,19 @@ std::vector<double> AautoFisher::getUpgradeCost() {
 		if (UI)
 			UI->buttonText->setText(shortNumbers::convert2Short(cost));
 
-		return { (double)tempLevel - *level, cost };
+		return std::tuple(worldId, tempLevel - *level, cost);
 	} else {
 		double minPrice = price(*level);
 		// return 1 if don't have enough money for 1 upgrade
 		if (currency < minPrice) {
 			if (UI)
 				UI->buttonText->setText(shortNumbers::convert2Short(minPrice));
-			return { 1, minPrice };
+			return std::tuple(worldId, 1, minPrice);
 		}
 
 		double cost = 0;
 		int num = 0;
-
+		
 		// if have enough money && isn't max level
 		while (cost + price(num + *level) <= currency && *level + num < maxLevel) {
 			//std::cout << "cost: " << cost << " + " << price(num + *level) << " <= " << currency << " && " << *level << " + " << num << " < " << maxLevel << std::endl;
@@ -361,7 +366,7 @@ std::vector<double> AautoFisher::getUpgradeCost() {
 
 		if (UI)
 			UI->buttonText->setText(shortNumbers::convert2Short(cost));
-		return { (double)num, cost };
+		return std::tuple(worldId, num, cost);
 	}
 }
 
@@ -379,53 +384,52 @@ float AautoFisher::getCatchTime() {
 double AautoFisher::calcIdleProfits(double afkTime) {
 	double currencyNum = 0;
 	int numOfFishCatched = round(afkTime / getCatchTime());
-	std::vector<vector> fishList = calcAutoFishList(numOfFishCatched);
+	std::vector<std::pair<uint32_t, double>> fishList = calcAutoFishList(numOfFishCatched);
 	for (int i = 0; i < fishList.size(); i++) {
-		FfishData* currFish = &SaveData::data.fishData[fishList[i].y];
-		currencyNum += fishList[i].x * upgrades::getFishSellPrice(*currFish, 0);
+		FfishData* currFish = &SaveData::data.fishData.at(fishList[i].first);
+		currencyNum += fishList[i].second * upgrades::getFishSellPrice(*currFish, 0);
 	}
 
 	return currencyNum;
 }
 
-// { fish num, fish id }
-std::vector<vector> AautoFisher::calcAutoFishList(int fishNum) {
-	std::vector<FfishData> fishList;
-	std::vector<vector> fishNumList;
+std::vector<std::pair<uint32_t, double>> AautoFisher::calcAutoFishList(int fishNum) {
+	std::unordered_map<uint32_t, FfishData> fishList;
+	std::vector<std::pair<uint32_t, double>> fishNumList;
 
 	int fishingRodId = 0;
 	if (fishingRodId == -1)
 		fishingRodId = 0;
 
 	// calc all fish in world
-	for (int i = 0; i < SaveData::saveData.fishData.size(); i++) {
-		if (SaveData::data.fishData[i].levelName == Scene::getCurrWorldName() && fishingPower >= SaveData::data.fishData[i].fishingPower) {
-			fishList.push_back(SaveData::data.fishData[i]);
+	for (auto& [key, value] : SaveData::data.fishData) {
+		if (value.worldId == Scene::GetCurrWorldId() && fishingPower >= value.fishingPower) {
+			fishList.insert({key, value});
 		}
 	}
 
-	std::vector<float> fishChance = calcIdleFishChance(fishList);
+	std::unordered_map<uint32_t, float> fishChance = calcIdleFishChance(fishList);
 
-	for (int i = 0; i < fishList.size(); i++) {
-		int prob = fishChance[i] * (float)fishNum;
-		vector fishIdList(prob, fishList[i].id);
-		fishNumList.push_back(fishIdList);
+	for (auto& [key, value] : fishList) {
+		int prob = fishChance.at(key) * (float)fishNum;
+		std::pair<uint32_t, double> fishPair(key, prob);
+		fishNumList.push_back(fishPair);
 	}
 
 	return fishNumList;
 }
 
 // calculates what fish the auto fisher can catch
-std::vector<float> AautoFisher::calcIdleFishChance(std::vector<FfishData> fishList) {
-	std::vector<float> probList;
+std::unordered_map<uint32_t, float> AautoFisher::calcIdleFishChance(std::unordered_map<uint32_t, FfishData> fishList) {
+	std::unordered_map<uint32_t, float> probList;
 	float total = 0;
 
-	for (int i = 0; i < fishList.size(); i++) {
-		total += fishList[i].probability;
+	for (auto& [key, value] : fishList) {
+		total += value.probability;
 	}
 
-	for (int i = 0; i < fishList.size(); i++) {
-		probList.push_back(fishList[i].probability / total);
+	for (auto& [key, value] : fishList) {
+		probList.insert({ key, value.probability / total });
 	}
 
 	return probList;
@@ -448,7 +452,7 @@ double AautoFisher::calcMPS() {
 	// avg currency
 	// avg fish cought
 
-	std::vector<std::vector<float>> probList = calcFishProbability(SaveData::data.fishData, false);
+	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData, false);
 
 	// total
 	// price * percent
@@ -457,10 +461,10 @@ double AautoFisher::calcMPS() {
 	float totalPrice = 0;
 	for (int i = 0; i < probList.size(); i++) {
 		// * %
-		int id = probList[i][0];
-		float percent = probList[i][1];
+		uint32_t id = probList[i].first;
+		float percent = probList[i].second;
 
-		totalPrice += (percent - prevPercent) * upgrades::getFishSellPrice(SaveData::data.fishData[id], 0);
+		totalPrice += (percent - prevPercent) * upgrades::getFishSellPrice(SaveData::data.fishData.at(id), 0);
 		//std::cout << "percent: " << percent << ", price: " << ((percent - prevPercent) * upgrades::getFishSellPrice(SaveData::data.fishData[id])) << std::endl;
 
 		prevPercent = percent;

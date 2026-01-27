@@ -83,21 +83,21 @@ void UUIWidget::draw(Shader* shaderProgram) {
 	currRunRebirthPoints->draw(shaderProgram);
 	rebirthPointNum->draw(shaderProgram);
 
-	int worldId = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	if (worldId != -1) {
-		if (atmButton && SaveData::saveData.npcSave[worldId].atmDiscovered)
-			atmButton->draw(shaderProgram);
-		if (petSellerButton && SaveData::saveData.npcSave[worldId].petSellerDiscovered)
-			petSellerButton->draw(shaderProgram);
-		if (mechanicButton && SaveData::saveData.npcSave[worldId].mechanicDiscovered)
-			mechanicButton->draw(shaderProgram);
-		if (fishermanButton && SaveData::saveData.npcSave[worldId].fishermanDiscovered)
-			fishermanButton->draw(shaderProgram);
-		if (sailorButton && SaveData::saveData.npcSave[worldId].sailorDiscovered)
-			sailorButton->draw(shaderProgram);
-		if (merchantButton && SaveData::saveData.npcSave[worldId].merchantDiscovered)
-			merchantButton->draw(shaderProgram);
-	}
+	// draw npc buttons if discovered
+	FsaveNPCStruct& npcData = SaveData::saveData.npcSave.at(Scene::GetCurrWorldId());
+
+	if (atmButton && npcData.atmDiscovered)
+		atmButton->draw(shaderProgram);
+	if (petSellerButton && npcData.petSellerDiscovered)
+		petSellerButton->draw(shaderProgram);
+	if (mechanicButton && npcData.mechanicDiscovered)
+		mechanicButton->draw(shaderProgram);
+	if (fishermanButton && npcData.fishermanDiscovered)
+		fishermanButton->draw(shaderProgram);
+	if (sailorButton && npcData.sailorDiscovered)
+		sailorButton->draw(shaderProgram);
+	if (merchantButton && npcData.merchantDiscovered)
+		merchantButton->draw(shaderProgram);
 
 	if (NPCshowButton)
 		NPCshowButton->draw(shaderProgram);
@@ -162,24 +162,20 @@ void UUIWidget::showNPCButtons() {
 }
 
 void UUIWidget::updateButtonsLoc() {
-	// temp
-	int worldId = Scene::getWorldIndexFromName(Scene::getCurrWorldName());
-	if (worldId == -1)
-		return;
-	
 	buttonsList.clear();
 
-	if (SaveData::saveData.npcSave[worldId].merchantDiscovered)
+	FsaveNPCStruct& npcData = SaveData::saveData.npcSave.at(Scene::GetCurrWorldId());
+	if (npcData.merchantDiscovered)
 		buttonsList.push_back(merchantButton.get());
-	if (SaveData::saveData.npcSave[worldId].sailorDiscovered)
+	if (npcData.sailorDiscovered)
 		buttonsList.push_back(sailorButton.get());
-	if (SaveData::saveData.npcSave[worldId].fishermanDiscovered)
+	if (npcData.fishermanDiscovered)
 		buttonsList.push_back(fishermanButton.get());
-	if (SaveData::saveData.npcSave[worldId].mechanicDiscovered)
+	if (npcData.mechanicDiscovered)
 		buttonsList.push_back(mechanicButton.get());
-	if (SaveData::saveData.npcSave[worldId].petSellerDiscovered)
+	if (npcData.petSellerDiscovered)
 		buttonsList.push_back(petSellerButton.get());
-	if (SaveData::saveData.npcSave[worldId].atmDiscovered)
+	if (npcData.atmDiscovered)
 		buttonsList.push_back(atmButton.get());
 
 	vector startLoc = NPCshowButton->getLoc() + vector{ 8.f, 2.f };

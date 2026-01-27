@@ -26,7 +26,7 @@ UheldFishWidget::UheldFishWidget(widget* parent) : widget(parent) {
 	SetPivot({ 0.f, 1.f });
 }
 
-void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
+void UheldFishWidget::updateList(std::unordered_map<uint32_t, FsaveFishData> saveFishList) {
 	if (saveFishList.size() == 0)
 		saveFishList = SaveData::saveData.fishData;
 	fishList = saveFishList;
@@ -39,14 +39,14 @@ void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
 
 	float biggestSizeX = 0.f;
 	float yOffset = 1.f;
-	for (int i = 0; i < fishList.size(); i++) { // loop through fish
-		for (int j = 0; j < fishList[i].numOwned.size(); j++) { // loop through fish qualities
-			if (fishList[i].numOwned[j] == 0) // if no fish of this quality, skip
+	for (auto& [fishId, fishData] : fishList) { // loop through fish
+		for (int j = 0; j < fishData.numOwned.size(); j++) { // loop through fish qualities
+			if (fishData.numOwned[j] == 0) // if no fish of this quality, skip
 				continue;
 
 			// setup fishNumWidget
 			std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
-			widget->setup(&SaveData::data.fishData[fishList[i].id], &fishList[i], j);
+			widget->setup(&SaveData::data.fishData.at(fishId), &fishData, j);
 			biggestSizeX = math::max(biggestSizeX, widget->getSize().x);
 			fishScrollBox->addChild(widget.get(), widget->getSize().y + yOffset);
 			fishNumList.push_back(std::move(widget));
@@ -54,11 +54,11 @@ void UheldFishWidget::updateList(std::vector<FsaveFishData> saveFishList) {
 	}
 
 	// setup currency
-	getCurrency();
+	UpdateCurrencyMap();
 	currencyList.clear();
-	for (int i = 0; i < currency.size(); i++) {
+	for (auto& [currencyId, currencyNum] : currency) {
 		std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
-		widget->setup(&SaveData::data.currencyData[currency[i].x], currency[i].y);
+		widget->setup(&SaveData::data.currencyData.at(currencyId), currencyNum);
 		biggestSizeX = math::max(biggestSizeX, widget->getSize().x);
 		currencyScrollBox->addChild(widget.get(), widget->getSize().y + yOffset);
 		currencyList.push_back(std::move(widget));
@@ -85,43 +85,31 @@ void UheldFishWidget::setupLocs() {
 	setSize({ size.x, vertBox->getOverflowSize() });
 }
 
-std::vector<FsaveFishData> UheldFishWidget::removeUnneededFish() {
-	std::vector<FsaveFishData> data;
-	for (int i = 0; i < fishList.size(); i++) {
-		if (fishList[i].calcCaughtFish() > 0)
-			data.push_back(fishList[i]);
+std::unordered_map<uint32_t, FsaveFishData> UheldFishWidget::removeUnneededFish() {
+	std::unordered_map<uint32_t, FsaveFishData> data;
+	for (auto& [fishId, fishData] : fishList) {
+		if (fishData.calcCaughtFish() > 0)
+			data.insert({ fishId, fishData });
 	}
 
 	return data;
 }
 
-void UheldFishWidget::getCurrency() {
-	// x == id, y == num
+void UheldFishWidget::UpdateCurrencyMap() {
 	currency.clear();
-	std::vector<vector> currencyList;
 
-	for (int i = 0; i < fishList.size(); i++) {
-		FsaveFishData saveFish = fishList[i];
-		FfishData fish = SaveData::data.fishData[saveFish.id];
+	for (auto& [fishId, saveFish] : fishList) {
+		FfishData& fish = SaveData::data.fishData.at(saveFish.id);
 
-		for (int j = 0; j < fishList[i].numOwned.size(); j++) {
-			int index = currencyInList(fish.currencyId, currencyList);
-			if (index != -1) { // in list
-				currencyList[index].y += float(upgrades::getFishSellPrice(fish, j) * saveFish.numOwned[j]);
-			} else { // need to add it to list
-				currencyList.push_back({ (float)fish.currencyId, float(upgrades::getFishSellPrice(fish, j) * saveFish.numOwned[j]) });
-			}
-		}
+		for (int j = 0; j < saveFish.numOwned.size(); j++)
+			currency[fish.currencyId] += upgrades::getFishSellPrice(fish, j) * saveFish.numOwned[j];
 	}
-
-	currency = currencyList;
 }
 
-int UheldFishWidget::currencyInList(int id, std::vector<vector> currencyList) {
+int UheldFishWidget::currencyInList(uint32_t id, const std::vector<std::pair<uint32_t, double>>& currencyList) {
 	for (int i = 0; i < currencyList.size(); i++) {
-		if (currencyList[i].x == id)
+		if (currencyList[i].first == id)
 			return i;
 	}
-
 	return -1;
 }

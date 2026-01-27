@@ -67,7 +67,7 @@ void buyAutoFisher::spawnAutoFisher() {
 
 
 	price = calcPrice();
-	SaveData::saveData.currencyList[1].numOwned -= price;
+	SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned -= price;
 	Main::currencyWidget->updateList();
 
 	//vector loc = Main::autoFisherLocs[(int)Main::autoFisherList.size()];
@@ -87,22 +87,20 @@ void buyAutoFisher::spawnAutoFisher() {
 	}
 }
 
-int buyAutoFisher::calcAutoFisherId() {
+uint32_t buyAutoFisher::calcAutoFisherId() {
 	int autoFisherNumPerWorld = 0;
 	int autoFisherWorldNum = 0;
-	std::string currWorldName = Scene::getCurrWorldName();
-	for (FautoFisherStruct autoFisher : SaveData::data.autoFisherData) {
-		if (autoFisher.worldName == "world1")
+	uint32_t currWorld = Scene::GetCurrWorldId();
+	for (auto& [afId, afData] : SaveData::data.autoFisherData) {
+		if (afData.worldId == 4u) // world1
 			autoFisherNumPerWorld++;
 
-		if (autoFisher.worldName == currWorldName && SaveData::saveData.autoFisherList[autoFisher.id].unlocked)
+		if (afData.worldId == currWorld && SaveData::saveData.autoFisherList.at(afId).first.level)
 			autoFisherWorldNum++;
 	}
 
-	std::string stringNum = currWorldName.substr(std::string("world").size(), currWorldName.size());
-	int worldMultiplier = (std::stoi(stringNum) - 1) * autoFisherNumPerWorld + autoFisherWorldNum;
-
-	return worldMultiplier;
+	uint32_t id = Scene::GetWorldIndex() * autoFisherNumPerWorld + autoFisherWorldNum;
+	return id;
 }
 
 double buyAutoFisher::calcPrice() {
@@ -111,7 +109,7 @@ double buyAutoFisher::calcPrice() {
 }
 
 bool buyAutoFisher::hasCurrency() {
-	if (SaveData::saveData.currencyList[1].numOwned >= calcPrice())
+	if (SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned >= calcPrice())
 		return true;
 	return false;
 }
@@ -121,8 +119,10 @@ void buyAutoFisher::updateLoc() {
 		return;
 	}
 
-	if (plusAnim) {
-		plusAnim->setLoc({ SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].xLoc + 4, SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].yLoc + 2 });
+	if (plusAnim) { // go to next location
+
+		//std::string lastAfId = world::currWorld->autoFisherList[world::currWorld->autoFisherList.size() - 1]->id;
+		//plusAnim->setLoc({ SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].xLoc + 4, SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].yLoc + 2 });
 		priceText->setLoc(plusAnim->getLoc() + vector{ 0, plusAnim->GetCellSize().y - 6.f * stuff::pixelSize});
 	}
 
@@ -160,8 +160,8 @@ void buyAutoFisher::setupCollision() {
 
 bool buyAutoFisher::calcMaxAutoFishers() {
 	int maxAutoFishers = 0;
-	for (FautoFisherStruct autoFisher : SaveData::data.autoFisherData)
-		if (autoFisher.worldName == Scene::getCurrWorldName())
+	for (auto& [afId, afData] : SaveData::data.autoFisherData)
+		if (afData.worldId == Scene::GetCurrWorldId())
 			maxAutoFishers++;
 
 	return world::currWorld->autoFisherList.size()  >= maxAutoFishers;

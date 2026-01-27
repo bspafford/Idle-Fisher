@@ -19,7 +19,7 @@ UcurrencyConverterBox::UcurrencyConverterBox(widget* parent, FcurrencyStruct* cu
 	this->saveCurrencyStruct = saveCurrencyStruct;
 
 	nameString = currencyStruct->name;
-	descriptionString = SaveData::data.currencyData[currencyStruct->id + 1].name;
+	descriptionString = SaveData::data.currencyData.at(currencyStruct->id).name;
 
 	setup();
 }
@@ -35,7 +35,7 @@ void UcurrencyConverterBox::setup() {
 	//name = std::make_unique<text(nameString, "straight", { 0, 0 });
 	currency1 = std::make_unique<Image>(currencyStruct->thumbnail, vector{ 0, 0 }, false);
 	currency1Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
-	currency2 = std::make_unique<Image>(SaveData::data.currencyData[currencyStruct->id+1].thumbnail, vector{ 0, 0 }, false);
+	currency2 = std::make_unique<Image>(SaveData::data.currencyData.at(currencyStruct->id).thumbnail, vector{0, 0}, false);
 	currency2Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 	arrow = std::make_unique<Image>("images/widget/arrow.png", vector{ 0, 0 }, false);
 
@@ -46,7 +46,7 @@ void UcurrencyConverterBox::setup() {
 	buttonPriceText->setTextColor(255, 0, 0);
 
 	// if going
-	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList[currencyStruct->id];
+	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList.at(currencyStruct->id);
 	if (currencyConversionStruct->converting) {
 		Aatm* atm = dynamic_cast<Aatm*>(widgetParent->parent);
 		if (atm) {
@@ -132,7 +132,7 @@ void UcurrencyConverterBox::buyUpgrade() {
 	if (!atm)
 		return;
 
-	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList[currencyStruct->id];
+	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList.at(currencyStruct->id);
 	if (currencyConversionStruct->converting) {
 		//atm->stopConversion(currencyStruct, saveCurrencyStruct, currencyConversionStruct);
 		buttonPriceText->setText("Start");
@@ -153,7 +153,7 @@ void UcurrencyConverterBox::update() {
 		buttonPriceText->setText("Stop");
 	} */
 
-	FcurrencyConversionStruct conversion = SaveData::saveData.currencyConversionList[currencyStruct->id];
+	FcurrencyConversionStruct conversion = SaveData::saveData.currencyConversionList.at(currencyStruct->id);
 	currency1Num->setText(shortNumbers::convert2Short(conversion.price));
 	currency2Num->setText(shortNumbers::convert2Short(conversion.yield));
 	setupLocs();
