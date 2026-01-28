@@ -154,7 +154,7 @@ int main() {
 	bool outputColPak = true;
 
 	if (outputImagePak) {
-		ParseImageFile((base + "debug/png_files.txt").c_str());
+		ParseImageFile((base + "debugData/png_files.txt").c_str());
 		Output(imagePak.c_str(), rootDir.c_str(), imageData);
 		//Input(pakPath.c_str());
 	}
@@ -182,7 +182,7 @@ int main() {
 	}
 
 	if (outputColPak) {
-		OutputCol(colPak, "../../idleFisher/data/debug/collision.col");
+		OutputCol(colPak, "../../idleFisher/data/debugData/collision.col");
 		//InputCol(colPak);
 	}
 

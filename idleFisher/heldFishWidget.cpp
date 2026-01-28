@@ -102,7 +102,7 @@ void UheldFishWidget::UpdateCurrencyMap() {
 		FfishData& fish = SaveData::data.fishData.at(saveFish.id);
 
 		for (int j = 0; j < saveFish.numOwned.size(); j++)
-			currency[fish.currencyId] += upgrades::getFishSellPrice(fish, j) * saveFish.numOwned[j];
+			currency[fish.worldId] += upgrades::getFishSellPrice(fish, j) * saveFish.numOwned[j];
 	}
 }
 

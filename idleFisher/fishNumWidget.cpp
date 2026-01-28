@@ -34,7 +34,7 @@ void UfishNumWidget::setup(FfishData* fish, FsaveFishData* saveFish, int fishQua
 }
 
 void UfishNumWidget::setup(FcurrencyStruct* currency, double num) {
-	thumbnail = std::make_unique<Image>(currency->thumbnail, vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/currency/coin" + std::to_string(currency->id) + ".png", vector{0, 0}, false);
 
 	currencyNum = num;
 	setupText();

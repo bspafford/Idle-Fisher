@@ -62,6 +62,11 @@ void Stats::UpdateDirty() {
 
 
 
+void upgrades::init() {
+	// converts list to unordered map
+	for (auto& [id, upgradeData] : SaveData::data.upgradeData)
+		saveUpgradeMap.insert({ upgradeData.upgradeFunctionName, &SaveData::saveData.upgradeList.at(id)});
+}
 
 SaveEntry* upgrades::getUpgrade(std::string upgradeFuncName) {
 	return saveUpgradeMap[upgradeFuncName];

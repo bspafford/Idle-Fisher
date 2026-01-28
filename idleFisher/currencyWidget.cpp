@@ -20,7 +20,8 @@ void UcurrencyWidget::updateList() {
 
 	// setup currency
 	currencyList.clear();
-	for (auto& [key, saveCurrency] : SaveData::saveData.currencyList) {
+	for (const uint32_t& currencyId : SaveData::orderedData.currencyData) {
+		FsaveCurrencyStruct& saveCurrency = SaveData::saveData.currencyList.at(currencyId);
 		if (saveCurrency.numOwned != 0) {
 			yOffset -= stuff::pixelSize;
 

@@ -293,7 +293,7 @@ void Acharacter::leftClick() {
 		fishingRod->setAnimation("pullSE", true);
 		fishingRod->start();
 		// add fish
-		if (currFish.id != 538u) { // if not premium
+		if (currFish.id != 1u) { // if not premium
 			if (!SaveData::saveData.fishData[currFish.id].unlocked)
 				Main::fishUnlocked->start(currFish);
 
@@ -401,7 +401,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	float totalProb = 0; // premiumChance;
 	int index = 0;
 	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.currencyId == 1u)) {
+		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
 			float val = value.probability;
 			if (index < petBuff.size())
 				val *= petBuff[index];
@@ -417,7 +417,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	double percent = 0.0;
 	int index1 = 0;
 	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.currencyId == 1u)) {
+		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
 			double multi = 1.0;
 			if (index1 < petBuff.size())
 				multi = petBuff[index1];
@@ -429,7 +429,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	}
 
 	if (canCatchPremium)
-		probList.push_back({ std::pair<uint32_t, double>{fishData.at(538u).id, 1.0} });
+		probList.push_back({ std::pair<uint32_t, double>{ 1u, 1.0 } }); // premium
 
 	return probList;
 }

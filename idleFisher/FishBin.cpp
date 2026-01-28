@@ -30,9 +30,9 @@ void FishBin::sellFish() {
 		for (int j = 0; j < currSaveFish.numOwned.size(); j++) {
 			double currencyGained = currSaveFish.numOwned[j] * upgrades::getFishSellPrice(*currFish, j);
 			if (currencyGained > 0)
-				SaveData::saveData.currencyList[currFish->currencyId].unlocked = true;
-			SaveData::saveData.currencyList[currFish->currencyId].numOwned += currencyGained;
-			SaveData::saveData.currencyList[currFish->currencyId].totalNumOwned += currencyGained;
+				SaveData::saveData.currencyList[currFish->worldId].unlocked = true;
+			SaveData::saveData.currencyList[currFish->worldId].numOwned += currencyGained;
+			SaveData::saveData.currencyList[currFish->worldId].totalNumOwned += currencyGained;
 			currSaveFish.numOwned[j] = 0;
 		}
 	}

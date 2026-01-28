@@ -50,7 +50,7 @@ void parseData(T& data, std::vector<std::string> row) {
 }
 
 template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vector<uint32_t>& orderedData, std::string csvName) {
-    std::ifstream colFile("../../idleFisher/data/debug/dataBases/" + csvName + ".csv");
+    std::ifstream colFile("../../idleFisher/data/debugData/dataBases/" + csvName + ".csv");
     if (colFile.is_open()) {
         std::string line, word;
         std::getline(colFile, line); // removes first line because its a descriptor

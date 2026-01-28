@@ -63,8 +63,9 @@ void UmerchantWidget::setup() {
 		upgradeHolderList.push_back(std::move(scrollBox));
 	}
 
-	for (auto& [key, currData] : SaveData::data.upgradeData) {
-		SaveEntry& currSaveData = SaveData::saveData.upgradeList[currData.id];
+	for (const uint32_t& currencyId : SaveData::orderedData.upgradeData) {
+		SaveEntry& currSaveData = SaveData::saveData.upgradeList.at(currencyId);
+		FupgradeStruct& currData = SaveData::data.upgradeData.at(currencyId);
 
 		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolderList[upgradeHolderList.size() - 1].get(), this, &currData, &currSaveData);
 		upgradeHolderList[Scene::GetWorldIndex(currData.worldId)]->addChild(upgradeBox.get(), upgradeBox->getSize().y);

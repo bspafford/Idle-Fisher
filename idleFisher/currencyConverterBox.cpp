@@ -33,9 +33,11 @@ void UcurrencyConverterBox::setup() {
 
 	//thumbnailBackground = std::make_unique<Image("images/widget/thumbnailBackground.png");
 	//name = std::make_unique<text(nameString, "straight", { 0, 0 });
-	currency1 = std::make_unique<Image>(currencyStruct->thumbnail, vector{ 0, 0 }, false);
+
+	std::string currencyThumbnail = "images/currency/coin" + std::to_string(currencyStruct->id) + ".png";
+	currency1 = std::make_unique<Image>(currencyThumbnail, vector{ 0, 0 }, false);
 	currency1Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
-	currency2 = std::make_unique<Image>(SaveData::data.currencyData.at(currencyStruct->id).thumbnail, vector{0, 0}, false);
+	currency2 = std::make_unique<Image>(currencyThumbnail, vector{0, 0}, false);
 	currency2Num = std::make_unique<text>(this, " ", "straight", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 	arrow = std::make_unique<Image>("images/widget/arrow.png", vector{ 0, 0 }, false);
 

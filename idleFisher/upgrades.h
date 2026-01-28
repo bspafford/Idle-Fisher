@@ -92,7 +92,7 @@ class upgrades {
 public:
 	static bool upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double* price = NULL);
 
-	static void init() {}
+	static void init();
 	static double calcPrice(FupgradeStruct* upgradeStruct, SaveEntry* saveUpgradeStruct) { return 0; }
 	static SaveEntry* getUpgrade(std::string upgradeFuncName);
 

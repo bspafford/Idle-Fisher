@@ -331,7 +331,7 @@ images/autofisher/ui/openui/openui.png
 images/character/characterspritesheet.png
 images/character/fishingrod.png
 images/character/idlese1.png
-images/currency/coin.png
+images/currency/coin1.png
 images/currency/coin4.png
 images/currency/coin5.png
 images/currency/coin6.png
@@ -342,7 +342,6 @@ images/currency/coin10.png
 images/currency/coin11.png
 images/currency/coin12.png
 images/currency/coin13.png
-images/currency/premiumcurrency.png
 images/fish/angel.png
 images/fish/ash.png
 images/fish/balloon.png

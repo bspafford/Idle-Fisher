@@ -30,14 +30,13 @@ struct FfishData {
     float fishSpeed;
     float greenDifficulty;
     float yellowDifficulty;
-    uint32_t currencyId;
     int currencyNum;
     uint32_t worldId;
     int minSize = 1;
     int maxSize = 1;
     bool isRareFish = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, currencyId, currencyNum, worldId, minSize, maxSize, isRareFish);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, currencyNum, worldId, minSize, maxSize, isRareFish);
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
@@ -49,12 +48,11 @@ struct FfishData {
         fishSpeed = std::stof(row[6]);
         greenDifficulty = std::stof(row[7]);
         yellowDifficulty = std::stof(row[8]);
-        currencyId = std::stoul(row[9]);
-        currencyNum = std::stoi(row[10]);
-        worldId = std::stoul(row[11]);
-        minSize = std::stoi(row[12]);
-        maxSize = std::stoi(row[13]);
-        isRareFish = std::stoi(row[14]);
+        currencyNum = std::stoi(row[9]);
+        worldId = std::stoul(row[10]);
+        minSize = std::stoi(row[11]);
+        maxSize = std::stoi(row[12]);
+        isRareFish = std::stoi(row[13]);
     }
 
     static FfishData GetCheapestFishInWorld(uint32_t worldId = 0);
@@ -89,16 +87,14 @@ struct FsaveFishData {
 struct FcurrencyStruct {
     // world id
     uint32_t id;
-    std::string thumbnail;
     std::string name;
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
-        thumbnail = row[1];
-        name = row[2];
+        name = row[1];
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FcurrencyStruct, id, thumbnail, name);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FcurrencyStruct, id, name);
 };
 
 struct FsaveCurrencyStruct {
