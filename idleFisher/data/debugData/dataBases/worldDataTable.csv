@@ -1,0 +1,14 @@
+id,name,description,currencyId,currencyCost
+1,Title Screen,,0,0
+2,Vault,,0,0
+3,Rebirth,,0,0
+4,Forest,This is your starting spot the middle of nowhere,1,0
+5,Deep Ocean,You got stranded out in the middle of the ocean,1,10000
+6,Tropical Island,So tropical,2,10000
+7,Desert,So hot,3,4
+8,Swamp,Nasty,4,3
+9,Cherry Blossom,Wow so pretty,5,7
+10,Snowy Village,Its a little chilly,6,1
+11,Volcano,Its hot down here,7,5
+12,Cloudy Sky,Did I die,8,6
+13,Space,How did I get out here,9,4

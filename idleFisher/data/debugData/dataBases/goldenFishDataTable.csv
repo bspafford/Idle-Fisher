@@ -1,0 +1,5 @@
+id,name,description,multiplier,comboMultiplier,time,catchChance
+1,Golden Fish,,0,0,0,32
+2,,,0,0,0,32
+3,Multiplier,Gives 10x fish catching for 1 minute and 30 seconds,10,20,90,32
+4,Multiplier,Gives 100x fish catching for 10 seconds,100,200,10,4

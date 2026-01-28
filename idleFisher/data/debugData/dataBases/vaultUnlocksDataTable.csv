@@ -1,0 +1,5 @@
+id,currencyId,currencyNum,name,description,buffFunction,decorThumbnail,buffValue
+1,4,1,something,this is a thingy,buff,images/vault/cactus.png,1
+2,4,1,something,this is a thingy,buff,images/vault/pool.png,1
+3,4,1,something,this is a thingy,buff,images/vault/cube.png,1
+4,4,1,something,this is a thingy,buff,images/vault/sphere.png,1
