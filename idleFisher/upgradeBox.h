@@ -8,19 +8,16 @@ class Image;
 class text;
 class Ubutton;
 class verticalBox;
-struct FworldStruct;
-struct FfishingRodStruct;
 struct FbaitStruct;
-struct FpetStruct;
 struct FupgradeStruct;
 struct FvaultUnlocksStruct;
 struct SaveEntry;
 
 class UupgradeBox : public widget {
 public:
-	UupgradeBox(widget* parent, widget* NPCWidget, FworldStruct* worldStruct, SaveEntry* saveWorldStruct);
+	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct);
 	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* data, SaveEntry* saveData);
+	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveData);
 	UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* data, SaveEntry* saveData);
 	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, SaveEntry* saveData);
 	~UupgradeBox();
@@ -37,12 +34,9 @@ private:
 	widget* NPCWidget;
 
 	// structs
-	FworldStruct* worldStruct;
 	SaveEntry* saveWorldStruct;
-	FfishingRodStruct* fishingRodStruct;
 	FbaitStruct* baitStruct;
 	SaveEntry* saveBaitStruct;
-	FpetStruct* petStruct;
 	SaveEntry* savePetStruct;
 	FupgradeStruct* upgradeStruct;
 	SaveEntry* saveUpgradeStruct;
@@ -63,12 +57,8 @@ private:
 	std::unique_ptr<text> upgradeText;
 	std::unique_ptr<text> buttonPriceText;
 	std::unique_ptr<Image> currencyImg;
-	uint32_t* currencyId;
-	int* upgradeNum;
-	int upgradeMax = 1;
-	int* unlocked;
-	double* price;
-	double priceFallback;
+
+	uint32_t upgradeId;
 
 public:
 	std::unique_ptr<Ubutton> buyButton;

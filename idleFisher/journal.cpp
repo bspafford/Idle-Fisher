@@ -44,8 +44,8 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	xButton->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	xButton->addCallback(this, &Ujournal::closeWidget);
 
-	if (SaveData::data.worldData.size() >= 2) {
-		FworldStruct& worldData = SaveData::data.worldData.at(4u);
+	if (SaveData::orderedData.worldData.size() >= 2) {
+		ProgressionNode& worldData = SaveData::data.progressionData.at(4u);
 		worldName1 = std::make_unique<text>(this, worldData.name, "biggerStraightDark", vector{0.f, 0.f}, false, false, TEXT_ALIGN_CENTER);
 		worldName2 = std::make_unique<text>(this, worldData.name, "biggerStraightDark", vector{0.f, 0.f}, false, false, TEXT_ALIGN_CENTER);
 
@@ -158,8 +158,7 @@ void Ujournal::draw(Shader* shaderProgram) {
 		if (pageNum == -1)
 			break;
 
-		FworldStruct& worldData = SaveData::data.worldData.at(worldId);
-		if (fishBoxList[i]->fishData->worldId == worldData.id || (SaveData::data.worldData.size() > pageNum && fishBoxList[i]->fishData->worldId == worldData.id))
+		if (fishBoxList[i]->fishData->worldId == worldId || (SaveData::orderedData.worldData.size() > pageNum && fishBoxList[i]->fishData->worldId == worldId))
 			fishBoxList[i]->draw(shaderProgram);
 	}
 
@@ -169,7 +168,7 @@ void Ujournal::draw(Shader* shaderProgram) {
 		xButton->draw(shaderProgram);
 
 	if (pageNum != -1) {
-		if (forwardButton && pageNum != SaveData::data.worldData.size() - 1)
+		if (forwardButton && pageNum != SaveData::orderedData.worldData.size() - 1)
 			forwardButton->draw(shaderProgram);
 		worldName1->draw(shaderProgram);
 		worldName2->draw(shaderProgram);

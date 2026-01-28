@@ -2,7 +2,8 @@
 
 #include <fstream>
 
-template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vector<uint32_t>& orderedData, std::string csvName);
+template <typename T> void readData(std::unordered_map<uint32_t, T>* a, std::vector<uint32_t>* orderedData, std::string csvName);
+void readData(std::vector<uint32_t>* orderedData, std::string csvName);
 void ReadCSV(Fdata& data, ForderedData& orderedData);
 void OutputToJson(Fdata& data, ForderedData& orderedData);
 
@@ -14,19 +15,19 @@ int main() {
 }
 
 void ReadCSV(Fdata& data, ForderedData& orderedData) {
-    readData(data.fishData, orderedData.fishData, "fishDataTable");
-    readData(data.currencyData, orderedData.currencyData, "currencyDataTable");
-    readData(data.autoFisherData, orderedData.autoFisherData, "autoFisherDataTable");
-    readData(data.worldData, orderedData.worldData, "worldDataTable");
-    readData(data.fishingRodData, orderedData.fishingRodData, "fishingRodDataTable");
-    readData(data.achievementData, orderedData.achievementData, "achievementDataTable");
-    readData(data.baitData, orderedData.baitData, "baitDataTable");
-    readData(data.goldenFishData, orderedData.goldenFishData, "goldenFishDataTable");
-    readData(data.mechanicStruct, orderedData.mechanicStruct, "mechanicDataTable");
-    readData(data.petData, orderedData.petData, "petDataTable");
-    readData(data.rebirthData, orderedData.rebirthData, "rebirthDataTable");
-    readData(data.upgradeData, orderedData.upgradeData, "upgradeDataTable");
-    readData(data.vaultUnlockData, orderedData.vaultUnlockData, "vaultUnlocksDataTable");
+    readData(&data.fishData, &orderedData.fishData, "fishDataTable");
+    readData(&data.currencyData, &orderedData.currencyData, "currencyDataTable");
+    readData(&data.autoFisherData, &orderedData.autoFisherData, "autoFisherDataTable");
+    readData(&orderedData.worldData, "worldDataTable");
+    readData(&data.fishingRodData, nullptr, "fishingRodDataTable");
+    readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
+    readData(&data.baitData, &orderedData.baitData, "baitDataTable");
+    readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
+    readData(&orderedData.mechanicStruct, "mechanicDataTable");
+    readData(&data.petData, &orderedData.petData, "petDataTable");
+    readData(&data.rebirthData, &orderedData.rebirthData, "rebirthDataTable");
+    readData(&data.upgradeData, &orderedData.upgradeData, "upgradeDataTable");
+    readData(&data.vaultUnlockData, &orderedData.vaultUnlockData, "vaultUnlocksDataTable");
 }
 
 void OutputToJson(Fdata& data, ForderedData& orderedData) {
@@ -49,7 +50,21 @@ void parseData(T& data, std::vector<std::string> row) {
     data.parseData(row);
 }
 
-template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vector<uint32_t>& orderedData, std::string csvName) {
+void readData(std::vector<uint32_t>* orderedData, std::string csvName) {
+    std::ifstream colFile("../../idleFisher/data/debugData/dataBases/" + csvName + ".csv");
+    if (colFile.is_open()) {
+        std::string line, word;
+        std::getline(colFile, line); // removes first line because its a descriptor
+        while (colFile.good()) {
+            std::getline(colFile, line);
+
+            uint32_t id = std::stoul(line);
+            orderedData->push_back(id);
+        }
+    }
+}
+
+template <typename T> void readData(std::unordered_map<uint32_t, T>* a, std::vector<uint32_t>* orderedData, std::string csvName) {
     std::ifstream colFile("../../idleFisher/data/debugData/dataBases/" + csvName + ".csv");
     if (colFile.is_open()) {
         std::string line, word;
@@ -87,8 +102,10 @@ template <typename T> void readData(std::unordered_map<uint32_t, T>& a, std::vec
 
             T data;
             parseData(data, row);
-            a.insert({ data.id, data });
-            orderedData.push_back(data.id);
+            if (a)
+                a->insert({ data.id, data });
+            if (orderedData)
+                orderedData->push_back(data.id);
         }
     }
 }

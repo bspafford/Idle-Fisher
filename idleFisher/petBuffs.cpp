@@ -24,7 +24,7 @@ double petBuffs::chanceToDoubleCatch() {
 	if (SaveData::saveData.equippedPetId != 661) // octopus
 		return 1;
 
-	int rand = math::randRange(0, 1/SaveData::data.petData.at(SaveData::saveData.equippedPetId).buffValue);
+	int rand = math::randRange(0, 1 / SaveData::data.petData.at(SaveData::saveData.equippedPetId).buffValue);
 	if (rand <= 1)
 		return 2;
 	return 1;

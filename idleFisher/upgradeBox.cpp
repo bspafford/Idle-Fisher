@@ -17,7 +17,7 @@
 
 #include "debugger.h"
 
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FworldStruct* worldStruct, SaveEntry* saveWorldStruct) : widget(parent) {
+UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->worldStruct = worldStruct;
 	this->saveWorldStruct = saveWorldStruct;
@@ -25,9 +25,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FworldStruct* worldS
 	nameString = worldStruct->name;
 	descriptionString = worldStruct->description;
 
-	unlocked = &saveWorldStruct->level;
-	price = &worldStruct->currencyNum;
-	currencyId = &worldStruct->currencyId;
+	upgradeId = saveWorldStruct->id;
 
 	callback = std::bind(&UupgradeBox::openWorld, this);
 
@@ -44,9 +42,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStr
 	buffString = baitStruct->buffs;
 	debuffString = baitStruct->debuffs;
 
-	unlocked = &saveBaitStruct->level;
-	price = &baitStruct->currencyNum;
-	currencyId = &baitStruct->currencyId;
+	upgradeId = baitStruct->id;
 
 	callback = std::bind(&UupgradeBox::equipBait, this);
 
@@ -55,7 +51,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStr
 	setup();
 }
 
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruct, SaveEntry* savePetStruct) : widget(parent) {
+UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* savePetStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->petStruct = petStruct;
 	this->savePetStruct = savePetStruct;
@@ -63,9 +59,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruc
 	nameString = petStruct->name;
 	descriptionString = petStruct->description;
 
-	unlocked = &savePetStruct->level;
-	price = &petStruct->currencyNum;
-	currencyId = &petStruct->currencyId;
+	upgradeId = petStruct->id;
 
 	callback = std::bind(&UupgradeBox::spawnPet, this);
 
@@ -82,11 +76,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* upgr
 	nameString = upgradeStruct->name;
 	descriptionString = upgradeStruct->description;
 
-	upgradeNum = &saveUpgradeStruct->level;
-	upgradeMax = upgradeStruct->upgradeNumMax;
-	priceFallback = upgrades::calcPrice(upgradeStruct, saveUpgradeStruct);
-	price = &priceFallback;
-	currencyId = &upgradeStruct->worldId;
+	upgradeId = upgradeStruct->id;
 
 	setup();
 }
@@ -100,7 +90,6 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct*
 	descriptionString = vaultUnlocksStruct->description;
 
 	unlocked = &saveVaultUnlocksStruct->level;
-	price = &vaultUnlocksStruct->currencyNum;
 	currencyId = &vaultUnlocksStruct->currencyId;
 
 	setup();
@@ -122,7 +111,7 @@ void UupgradeBox::setup() {
 	buyButton->addCallback(this, &UupgradeBox::buyUpgrade);
 	buyButton->SetPivot({ 1.f, 0.5f });
 
-	buttonPriceText = std::make_unique<text>(this, shortNumbers::convert2Short(*price), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	buttonPriceText = std::make_unique<text>(this, "0", "straightDark", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 	buttonPriceText->setTextColor(255, 0, 0);
 	buttonPriceText->SetPivot({ 0.f, 0.5f });
 
@@ -149,7 +138,8 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 	buyButton->draw(shaderProgram);
 
 	if (upgradeStruct) {
-		if (*price <= SaveData::saveData.currencyList.at(*currencyId).numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) // can afford, or max level
+		double price = Upgrades::GetPrice(upgradeId);
+		if (price <= SaveData::saveData.currencyList.at(*currencyId).numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) // can afford, or max level
 			buttonPriceText->setTextColor(255, 255, 255); // set to og color
 		else // cant afford
 			buttonPriceText->setTextColor(255, 0, 0); // set red
@@ -230,84 +220,68 @@ bool UupgradeBox::mouseOver() {
 }
 
 void UupgradeBox::buyUpgrade() {
-	if (upgradeStruct) {
-		SaveEntry* upgrade = upgrades::getUpgrade(upgradeStruct->upgradeFunctionName);
-		upgrades::upgrade(SaveData::data.upgradeData.at(upgrade->id), this, price);
-	} else {
-		if ((!unlocked || !*unlocked) && (!price || *price > SaveData::saveData.currencyList[*currencyId].numOwned))
-			return;
-		
-		if (upgradeNum) {
-			if (*upgradeNum >= upgradeMax)
-				return;
+	double newPrice = Upgrades::LevelUp(upgradeId, 1);
 
-			(*upgradeNum)++;
+	// will equip the item or object once the layer has unlocked it, instead of needing to click twice
+	if (savePetStruct && !savePetStruct->level)
+		spawnPet();
+	else if (saveBaitStruct && !saveBaitStruct->level)
+		equipBait();
+
+	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked)) {
+		if (unlocked) {
+			if (!*unlocked) {
+				*unlocked = true;
 				SaveData::saveData.currencyList[*currencyId].numOwned -= *price;
-
-			if (upgradeText)
-				upgradeText->setText(std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax));
+			} else if (callback) {
+				// equip / use
+				callback();
+			}
 		}
 
-		// will equip the item or object once the layer has unlocked it, instead of needing to click twice
-		if (savePetStruct && !savePetStruct->level)
-			spawnPet();
-		else if (saveBaitStruct && !saveBaitStruct->level)
-			equipBait();
-
-		if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked)) {
-			if (unlocked) {
-				if (!*unlocked) {
-					*unlocked = true;
-					SaveData::saveData.currencyList[*currencyId].numOwned -= *price;
-				} else if (callback) {
-					// equip / use
-					callback();
-				}
-			}
-
-			if (petStruct) {
-				// since happening after function its gotta be reversed
-				if (Scene::pet.get() && petStruct == Scene::pet->getPetStruct()) {
-					NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
-					if (npcWidget)
-						for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
-							widget* child = npcWidget->upgradeHolder->GetChildAt(i).child;
-							UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
-							if (upgradeBox && upgradeBox->savePetStruct->level)
-								upgradeBox->buttonPriceText->setText("equip");
-						}
-					buttonPriceText->setText("remove");
-				} else {
-					buttonPriceText->setText("equip");
-				}
-			} else if (baitStruct) {
-				// since happening after function its gotta be reversed
-				if (baitStruct->id == SaveData::saveData.equippedBaitId) {
-					UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);
-					if (fishermanWidget) {
-						for (int i = 0; i < fishermanWidget->baitHolderList->GetChildrenCount(); i++) {
-							widget* child = fishermanWidget->baitHolderList->GetChildAt(i).child;
-							UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
-							if (upgradeBox && upgradeBox->saveBaitStruct->level)
-								upgradeBox->buttonPriceText->setText("equip");
-						}
+		if (petStruct) {
+			// since happening after function its gotta be reversed
+			if (Scene::pet.get() && petStruct == Scene::pet->getPetStruct()) {
+				NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
+				if (npcWidget)
+					for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
+						widget* child = npcWidget->upgradeHolder->GetChildAt(i).child;
+						UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
+						if (upgradeBox && upgradeBox->savePetStruct->level)
+							upgradeBox->buttonPriceText->setText("equip");
 					}
-					buttonPriceText->setText("remove");
-					// then remove pet
-				} else {
-
-					buttonPriceText->setText("equip");
-				}
-
+				buttonPriceText->setText("remove");
 			} else {
-				buyButton->enable(false);
-				buttonPriceText->setText("Max");
-				setupLocs(); // updates the locks of the button and the upgrade text
+				buttonPriceText->setText("equip");
 			}
-		}
+		} else if (baitStruct) {
+			// since happening after function its gotta be reversed
+			if (baitStruct->id == SaveData::saveData.equippedBaitId) {
+				UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);
+				if (fishermanWidget) {
+					for (int i = 0; i < fishermanWidget->baitHolderList->GetChildrenCount(); i++) {
+						widget* child = fishermanWidget->baitHolderList->GetChildAt(i).child;
+						UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
+						if (upgradeBox && upgradeBox->saveBaitStruct->level)
+							upgradeBox->buttonPriceText->setText("equip");
+					}
+				}
+				buttonPriceText->setText("remove");
+				// then remove pet
+			} else {
 
-		Main::currencyWidget->updateList();
+				//buttonPriceText->setText("equip");
+			}
+
+		} else {
+			//buyButton->enable(false);
+			//buttonPriceText->setText("Max");
+			//setupLocs(); // updates the locks of the button and the upgrade text
+		}
 	}
+	
+	update();
+	Main::currencyWidget->updateList(); // update currency list
 }
 
 void UupgradeBox::update() {
@@ -330,8 +304,10 @@ void UupgradeBox::update() {
 			buyButton->enable(false);
 			buttonPriceText->setText("Max");
 		}
-	} else
-		buttonPriceText->setText(shortNumbers::convert2Short(*price));
+	} else {
+		double price = Upgrades::GetPrice(upgradeStruct->id);
+		buttonPriceText->setText(shortNumbers::convert2Short(price));
+	}
 }
 
 void UupgradeBox::openWorld() {

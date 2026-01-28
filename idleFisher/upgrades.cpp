@@ -5,10 +5,68 @@
 #include "baitBuffs.h"
 #include "achievementBuffs.h"
 
-double Stats::Get(Stat s) {
+double Upgrades::Get(Stat s) {
 	return cachedValues.at(s);
 }
 
+double Upgrades::LevelUp(uint32_t upgradeId, int levels) {
+	ProgressionNode& progressNode = SaveData::data.progressionData.at(upgradeId);
+	SaveEntry& saveProgress = SaveData::saveData.upgradeList.at(upgradeId);
+
+	// check if already at max level
+	if (saveProgress.level + levels >= progressNode.maxLevel)
+		return;
+
+	Stat& stat = progressNode.stat;
+
+	// check if there is already a cached price or not
+	double price = 0.0;
+	if (levels == 1) { // if only upgrade 1 level, check cache
+		auto it = cachedPrices.find(upgradeId);
+		price = it == cachedPrices.end() ? CalcPrice(progressNode, saveProgress, levels) : it->second;
+	} else {
+		price = CalcPrice(progressNode, saveProgress, levels);
+	}
+
+	FsaveCurrencyStruct& currency = SaveData::saveData.currencyList.at(progressNode.worldId);
+
+	if (currency.numOwned >= price) { // if player has enough currency
+		currency.numOwned -= price; // remove currency
+		saveProgress.level += levels; // increase level
+		if (saveProgress.level > progressNode.maxLevel) // cap at max level
+			saveProgress.level = progressNode.maxLevel;
+
+		// update cached price
+		cachedPrices[upgradeId] = CalcPrice(progressNode, saveProgress, 1);
+
+		MarkDirty(stat);
+	}
+
+	return price;
+}
+
+double Upgrades::GetPrice(uint32_t upgradeId) {
+	auto it = cachedPrices.find(upgradeId);
+	if (it == cachedPrices.end()) { // if no cached price
+		ProgressionNode& progressNode = SaveData::data.progressionData.at(upgradeId);
+		SaveEntry& saveProgress = SaveData::saveData.upgradeList.at(upgradeId);
+
+		double price = CalcPrice(progressNode, saveProgress);
+		cachedPrices.insert({ upgradeId, price }); // add to cache
+		return price;
+	} else
+		return it->second;
+}
+
+double Upgrades::CalcPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels) {
+	// ((base + add * level) * multiply^level)^exponent
+	double price = 0.0;
+	for (int i = 1; i <= levels; ++i) // start i at 1 to skip current level price
+		price += (upgrade.cost.base + upgrade.cost.add * (saveUpgrade.level + i)) * std::pow(upgrade.cost.mul, (saveUpgrade.level + i));
+	return price;
+}
+
+/*
 void Stats::AddModifier(Upgrade upgrade) {
 	// what do i want to pass add modifier?
 	// maybe just the upgradeId and a reference to the SaveData value?
@@ -25,7 +83,7 @@ void Stats::AddModifier(Upgrade upgrade) {
 
 	auto [it, inserted] = allModifiers.emplace(upgrade.id, upgrade);
 	if (inserted) // only add modifier if it wasn't already in allModifiers list
-		modifiersPerStat[upgrade.stat].push_back(&it->second);
+		modifiersPerStat[upgrade.stat].push_back(it->first);
 
 	MarkDirty(upgrade.stat);
 }
@@ -33,21 +91,23 @@ void Stats::AddModifier(Upgrade upgrade) {
 void Stats::RemoveModifier(Upgrade upgrade) {
 
 }
+*/
 
-void Stats::MarkDirty(Stat s) {
+void Upgrades::MarkDirty(Stat s) {
 	dirty.insert(s);
 }
 
-void Stats::Update(double dt) {
+void Upgrades::Update(double dt) {
 
 }
 
-void Stats::UpdateDirty() {
-	for (auto& stat : dirty) { // loop through dirty stats
+void Upgrades::UpdateDirty() {
+	for (auto stat : dirty) { // loop through dirty stats
 		double& cachedValue = cachedValues[stat];
-		for (Upgrade* mod : modifiersPerStat[stat]) { // recalculate all modifiers of stat
-			SaveEntry& saveMod = saveModifiers.at(mod->id);
-			cachedValue += std::pow((mod->base + mod->add * saveMod.level) * std::pow(mod->mul, saveMod.level), mod->exp);
+		for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
+			FupgradeStruct& mod = SaveData::data.upgradeData.at(upgradeId);
+			SaveEntry& saveMod = SaveData::saveData.upgradeList.at(mod.id);
+			cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
 		}
 	}
 
@@ -64,8 +124,8 @@ void Stats::UpdateDirty() {
 
 void upgrades::init() {
 	// converts list to unordered map
-	for (auto& [id, upgradeData] : SaveData::data.upgradeData)
-		saveUpgradeMap.insert({ upgradeData.upgradeFunctionName, &SaveData::saveData.upgradeList.at(id)});
+	//for (auto& [id, upgradeData] : SaveData::data.upgradeData)
+		//saveUpgradeMap.insert({ upgradeData.upgradeFunctionName, &SaveData::saveData.upgradeList.at(id)});
 }
 
 SaveEntry* upgrades::getUpgrade(std::string upgradeFuncName) {

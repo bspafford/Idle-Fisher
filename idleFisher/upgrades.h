@@ -12,66 +12,53 @@
 
 enum class Stat {
 // fish
-	FishPrice, // how much fish sell for
+	FishPrice = 1, // how much fish sell for
 	
 // fish combo widget
-	FishComboSpeed, // how fast the fish moves back and forth
+	FishComboSpeed = 2, // how fast the fish moves back and forth
 
-	GreenComboSize, // how big green zone is
-	YellowComboSize, // how big yellow zone is
+	GreenComboSize = 3, // how big green zone is
+	YellowComboSize = 4, // how big yellow zone is
 
-	ComboUnlocked, // is combo unlocked
-	ComboMax, // max combo
-	ComboMin, // min combo
+	ComboUnlocked = 5, // is combo unlocked
+	ComboMax = 6, // max combo
+	ComboMin = 7, // min combo
 
-	ComboIncrease, // how much the combo increases when clicking green zone
-	ComboDecreaseOnBounce, // how much the combo decreases when bouncing off the walls on a missed cycle
-	ComboReset, // the min combo when clicking blue zone
+	ComboIncrease = 8, // how much the combo increases when clicking green zone
+	ComboDecreaseOnBounce = 9, // how much the combo decreases when bouncing off the walls on a missed cycle
+	ComboReset = 10, // the min combo when clicking blue zone
 	
 // fishing rod
-	Power, // how strong the fishing rod is
-	CatchNum, // how many fish the player catches per cast
+	Power = 11, // how strong the fishing rod is
+	CatchNum = 12, // how many fish the player catches per cast
 
 // Premium fish
-	PremiumCatchChance, // how common it is to catch the premium fish
-	PremiumCoolDownTime, // how long it takes until you can catch another premium fish
+	PremiumCatchChance = 13, // how common it is to catch the premium fish
+	PremiumCoolDownTime = 14, // how long it takes until you can catch another premium fish
 
 // fish school
-	MaxFishSchoolSpawnInterval,
-	MinFishSchoolSpawnInterval,
+	MaxFishSchoolSpawnInterval = 15,
+	MinFishSchoolSpawnInterval = 16,
 
 // rain
-	MaxRainSpawnInterval,
-	MinRainSpawnInterval,
+	MaxRainSpawnInterval = 17,
+	MinRainSpawnInterval = 18,
 };
 
-
-struct Upgrade {
-	Stat stat; // what this upgrade improves
-	std::string id; // unique id for this upgrade, string for backwards compatibility
-	int maxLevel = 1;
-	// ((base + add * level) * multiply^level)^exponent
-	double base = 0.0;
-	double add = 0.0;
-	double mul = 1.0;
-	double exp = 1.0;
-};
-
-// for things like price
-//struct Upgrade {
-//	std::string name;
-//	Stat targetStat; // what it affects
-//	double basePrice;
-//	double priceMultiplier; // per level: base * pow(priceMultiplier, level);
-//	int& level;
-//	int maxLevel = -1;
-//};
-
-class Stats {
+class Upgrades {
 public:
 	static double Get(Stat s);
-	static void AddModifier(Upgrade upgrade);
-	static void RemoveModifier(Upgrade upgrade);
+
+	// this function is called when an upgrade is purchased
+	// increases the level of the upgrade
+	// removes currency
+	// and updates the cached value
+	static double LevelUp(uint32_t upgradeId, int levels = 1);
+	static double GetPrice(uint32_t upgradeId);
+	static double CalcPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1);
+
+	//static void AddModifier(Upgrade upgrade);
+	//static void RemoveModifier(Upgrade upgrade);
 	static void MarkDirty(Stat s);
 	static void Update(double dt); // for temporary buffs
 
@@ -79,9 +66,12 @@ public:
 	static void UpdateDirty();
 
 private:
-	static inline std::unordered_map<std::string, Upgrade> allModifiers;
-	static inline std::unordered_map<std::string, SaveEntry> saveModifiers;
-	static inline std::unordered_map<Stat, std::vector<Upgrade*>> modifiersPerStat; // points to allModifiers modifier
+	// only cached the values for the next level, not multiple levels
+	static inline std::unordered_map<uint32_t, double> cachedPrices;
+
+	static inline std::unordered_map<Stat, std::vector<uint32_t>> modifiersPerStat; // modifiers sorted by stat
+	// the cached calculated upgrade values
+	// things like fish price, fishing rod power, etc
 	static inline std::unordered_map<Stat, double> cachedValues;
 	static inline std::unordered_set<Stat> dirty;
 };

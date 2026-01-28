@@ -5,7 +5,6 @@
 #include "path.h"
 
 class Shader;
-struct FpetStruct;
 
 class Apet {
 public:

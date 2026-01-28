@@ -1,6 +1,4 @@
-id,name,thumbnail
-1,fishing rod 1,images/widget/thumbnails/fishingRod1.png
-2,fishing rod 2,images/widget/thumbnails/fishingRod2.png
-3,fishing rod 3,images/widget/thumbnails/fishingRod3.png
-4,fishing rod 4,images/widget/thumbnails/fishingRod4.png
-5,fishing rod 5,images/widget/thumbnails/fishingRod5.png
+id,effectBase,effectAdd,effectMul,effectExp
+114,10,10,1,1
+115,1,1,1,1
+116,1,1,1,1
