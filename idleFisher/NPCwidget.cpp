@@ -44,10 +44,6 @@ NPCwidget::NPCwidget(widget* parent, npc* NPCParent, std::string npcName) : widg
 	setupLocs();
 }
 
-NPCwidget::~NPCwidget() {
-
-}
-
 void NPCwidget::draw(Shader* shaderProgram) {
 	__super::draw(shaderProgram);
 

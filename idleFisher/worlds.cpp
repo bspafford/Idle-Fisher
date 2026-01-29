@@ -361,7 +361,7 @@ void world::start() {
 
 	// load idle profits
 	loadIdleProfits();
-	if (autoFisherList.size() > 0 && SaveData::saveData.mechanicStruct[0].level) { // if has atleast 1 autofisher and has fish transporter
+	if (autoFisherList.size() > 0 && SaveData::saveData.progressionData.at(90u).level) { // if has atleast 1 autofisher and has fish transporter
 		Main::idleProfitWidget->addToViewport(nullptr);
 	}
 
@@ -592,9 +592,11 @@ void world::sortDraw(Shader* shaderProgram) {
 void world::setupAutoFishers() {
 	autoFisherList.clear();
 	// load autoFisher
-	for (auto& [id, afData] : SaveData::saveData.autoFisherList) {
-		if (afData.first.level && SaveData::data.autoFisherData.at(id).worldId == Scene::GetCurrWorldId()) {
-			std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(id);
+	for (uint32_t afId : SaveData::orderedData.autoFisherData) {
+		ProgressionNode& afData = SaveData::data.progressionData.at(afId);
+		SaveEntry& afSaveData = SaveData::saveData.progressionData.at(afId);
+		if (afSaveData.level && afData.worldId == Scene::GetCurrWorldId()) {
+			std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(afId);
 			autoFisherList.push_back(std::move(autoFisher));
 		}
 	}
@@ -626,7 +628,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 	fishBin = std::make_unique<FishBin>(vector(662.f, 472.f));
 
 	// npcs
-	if (SaveData::saveData.mechanicStruct.at(4u).level)
+	if (SaveData::saveData.progressionData.at(90u).level)
 		fishTransporter = std::make_unique<AfishTransporter>(vector(1320.f, 630.f));
 
 	fisherman = std::make_unique<Afisherman>(vector(792, 533.f));

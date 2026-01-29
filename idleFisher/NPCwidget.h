@@ -15,7 +15,6 @@ class Image;
 class NPCwidget : public widget {
 public:
 	NPCwidget(widget* parent, npc* NPCParent, std::string npcName);
-	~NPCwidget();
 
 	void draw(Shader* shaderProgram) override;
 	void setupLocs() override;

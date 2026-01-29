@@ -91,11 +91,12 @@ uint32_t buyAutoFisher::calcAutoFisherId() {
 	int autoFisherNumPerWorld = 0;
 	int autoFisherWorldNum = 0;
 	uint32_t currWorld = Scene::GetCurrWorldId();
-	for (auto& [afId, afData] : SaveData::data.autoFisherData) {
+	for (uint32_t afId : SaveData::orderedData.autoFisherData) {
+		ProgressionNode& afData = SaveData::data.progressionData.at(afId);
 		if (afData.worldId == 4u) // world1
 			autoFisherNumPerWorld++;
 
-		if (afData.worldId == currWorld && SaveData::saveData.autoFisherList.at(afId).first.level)
+		if (afData.worldId == currWorld && SaveData::saveData.progressionData.at(afId).level)
 			autoFisherWorldNum++;
 	}
 
@@ -160,9 +161,11 @@ void buyAutoFisher::setupCollision() {
 
 bool buyAutoFisher::calcMaxAutoFishers() {
 	int maxAutoFishers = 0;
-	for (auto& [afId, afData] : SaveData::data.autoFisherData)
+	for (uint32_t afId : SaveData::orderedData.autoFisherData) {
+		ProgressionNode& afData = SaveData::data.progressionData.at(afId);
 		if (afData.worldId == Scene::GetCurrWorldId())
 			maxAutoFishers++;
+	}
 
 	return world::currWorld->autoFisherList.size()  >= maxAutoFishers;
 }

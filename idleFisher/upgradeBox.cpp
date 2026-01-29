@@ -19,17 +19,12 @@
 
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
-	this->worldStruct = worldStruct;
 	this->saveWorldStruct = saveWorldStruct;
-
-	nameString = worldStruct->name;
-	descriptionString = worldStruct->description;
-
-	upgradeId = saveWorldStruct->id;
+	stat = Stat::None;
 
 	callback = std::bind(&UupgradeBox::openWorld, this);
 
-	setup();
+	setup(saveWorldStruct->id);
 }
 
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct) : widget(parent) {
@@ -37,69 +32,59 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStr
 	this->baitStruct = baitStruct;
 	this->saveBaitStruct = saveBaitStruct;
 
-	nameString = baitStruct->name;
-	descriptionString = baitStruct->description;
 	buffString = baitStruct->buffs;
 	debuffString = baitStruct->debuffs;
-
-	upgradeId = baitStruct->id;
+	stat = Stat::None;
 
 	callback = std::bind(&UupgradeBox::equipBait, this);
 
-	thumbnail = std::make_unique<Image>(baitStruct->thumbnail, vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/widget/thumbnails/" + std::to_string(baitStruct->id) + ".png", vector{0, 0}, false);
 	
-	setup();
+	setup(baitStruct->id);
 }
 
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* savePetStruct) : widget(parent) {
+UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruct, SaveEntry* savePetStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->petStruct = petStruct;
 	this->savePetStruct = savePetStruct;
-
-	nameString = petStruct->name;
-	descriptionString = petStruct->description;
-
-	upgradeId = petStruct->id;
+	stat = petStruct->stat;
 
 	callback = std::bind(&UupgradeBox::spawnPet, this);
 
-	thumbnail = std::make_unique<Image>("images/pets/" + std::to_string(petStruct->id) + ".png", vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/pets/" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
 
-	setup();
+	setup(savePetStruct->id);
 }
 
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* upgradeStruct, SaveEntry* saveUpgradeStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->upgradeStruct = upgradeStruct;
 	this->saveUpgradeStruct = saveUpgradeStruct;
+	stat = upgradeStruct->stat;
 
-	nameString = upgradeStruct->name;
-	descriptionString = upgradeStruct->description;
-
-	upgradeId = upgradeStruct->id;
-
-	setup();
+	setup(upgradeStruct->id);
 }
 
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* vaultUnlocksStruct, SaveEntry* saveVaultUnlocksStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->vaultUnlocksStruct = vaultUnlocksStruct;
 	this->saveVaultUnlocksStruct = saveVaultUnlocksStruct;
+	stat = Stat::None;
 
-	nameString = vaultUnlocksStruct->name;
-	descriptionString = vaultUnlocksStruct->description;
-
-	unlocked = &saveVaultUnlocksStruct->level;
-	currencyId = &vaultUnlocksStruct->currencyId;
-
-	setup();
+	setup(vaultUnlocksStruct->id);
 }
 
 UupgradeBox::~UupgradeBox() {
 
 }
 
-void UupgradeBox::setup() {
+void UupgradeBox::setup(uint32_t progressId) {
+	progressNode = &SaveData::data.progressionData.at(progressId);
+	saveProgressNode = &SaveData::saveData.progressionData.at(progressId);
+
+	nameString = progressNode->name;
+	descriptionString = progressNode->description;
+
 	background = std::make_unique<Image>("images/widget/upgradeBoxBackground.png", vector{ 0, 0 }, false);
 
 	thumbnailBackground = std::make_unique<Image>("images/widget/thumbnailBackground.png", vector{ 0, 0 }, false);
@@ -115,11 +100,11 @@ void UupgradeBox::setup() {
 	buttonPriceText->setTextColor(255, 0, 0);
 	buttonPriceText->SetPivot({ 0.f, 0.5f });
 
-	currencyImg = std::make_unique<Image>("images/currency/coin" + std::to_string(*currencyId) + ".png", vector{ 0, 0 }, false);
+	currencyImg = std::make_unique<Image>("images/currency/coin" + std::to_string(progressNode->worldId) + ".png", vector{ 0, 0 }, false);
 	currencyImg->SetPivot({ 1.f, 0.5f });
 
-	if (upgradeMax > 1) {
-		upgradeText = std::make_unique<text>(this, std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
+	if (progressNode->maxLevel > 1) {
+		upgradeText = std::make_unique<text>(this, std::to_string(saveProgressNode->level) + "/" + std::to_string(progressNode->maxLevel), "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_RIGHT);
 		upgradeText->SetPivot({ 0.f, 0.5f });
 	}
 
@@ -137,23 +122,16 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 	name->draw(shaderProgram);
 	buyButton->draw(shaderProgram);
 
-	if (upgradeStruct) {
-		double price = Upgrades::GetPrice(upgradeId);
-		if (price <= SaveData::saveData.currencyList.at(*currencyId).numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) // can afford, or max level
-			buttonPriceText->setTextColor(255, 255, 255); // set to og color
-		else // cant afford
-			buttonPriceText->setTextColor(255, 0, 0); // set red
-	} else if (price) {
-		if ((unlocked && *unlocked) || *price <= SaveData::saveData.currencyList.at(*currencyId).numOwned || (upgradeNum && *upgradeNum >= upgradeMax)) { // can afford, or max level
-			buttonPriceText->setTextColor(255, 255, 255); // set to og color
-		} else // cant afford
-			buttonPriceText->setTextColor(255, 0, 0); // set red
-	}
+	double price = Upgrades::GetPrice(progressNode->id);
+	if (price <= SaveData::saveData.currencyList.at(progressNode->worldId).numOwned || (saveProgressNode->level >= progressNode->maxLevel)) // can afford, or max level
+		buttonPriceText->setTextColor(255, 255, 255); // set to og color
+	else // cant afford
+		buttonPriceText->setTextColor(255, 0, 0); // set red
 
 	buttonPriceText->draw(shaderProgram);
 
 	// draw if not max or unlocked
-	if ((!unlocked || (unlocked && !*unlocked)) && (!upgradeNum || (upgradeNum && *upgradeNum < upgradeMax)))
+	if (saveProgressNode->level < progressNode->maxLevel) // if not max level
 		currencyImg->draw(shaderProgram);
 
 	if (upgradeText)
@@ -220,7 +198,8 @@ bool UupgradeBox::mouseOver() {
 }
 
 void UupgradeBox::buyUpgrade() {
-	double newPrice = Upgrades::LevelUp(upgradeId, 1);
+	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->worldId, stat)) // if not max level, and don't have enough currency
+		return; // didn't have enough money to purchase upgrade
 
 	// will equip the item or object once the layer has unlocked it, instead of needing to click twice
 	if (savePetStruct && !savePetStruct->level)
@@ -228,16 +207,8 @@ void UupgradeBox::buyUpgrade() {
 	else if (saveBaitStruct && !saveBaitStruct->level)
 		equipBait();
 
-	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked)) {
-		if (unlocked) {
-			if (!*unlocked) {
-				*unlocked = true;
-				SaveData::saveData.currencyList[*currencyId].numOwned -= *price;
-			} else if (callback) {
-				// equip / use
-				callback();
-			}
-		}
+	if (saveProgressNode->level >= progressNode->maxLevel) { // if max level / unlocked
+		callback();
 
 		if (petStruct) {
 			// since happening after function its gotta be reversed
@@ -285,11 +256,13 @@ void UupgradeBox::buyUpgrade() {
 }
 
 void UupgradeBox::update() {
+	
+
 	if (upgradeText)
-		upgradeText->setText(std::to_string(*upgradeNum) + "/" + std::to_string(upgradeMax));
+		upgradeText->setText(std::to_string(saveProgressNode->level) + "/" + std::to_string(progressNode->maxLevel));
 
 	// show remove or equipped if unlocked
-	if ((upgradeNum && *upgradeNum >= upgradeMax) || (unlocked && *unlocked)) {
+	if (saveProgressNode->level >= progressNode->maxLevel) {
 		if (petStruct) { // if unlocked
 			if (SaveData::saveData.equippedPetId == petStruct->id)
 				buttonPriceText->setText("remove");
@@ -311,7 +284,7 @@ void UupgradeBox::update() {
 }
 
 void UupgradeBox::openWorld() {
-	Scene::openLevel(worldStruct->id);
+	Scene::openLevel(saveWorldStruct->id);
 }
 
 void UupgradeBox::spawnPet() {

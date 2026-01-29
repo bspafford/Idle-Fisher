@@ -148,7 +148,7 @@ int Main::createWindow() {
 		BlurBox::DrawFinal(Scene::twoDShader);
 
 		textureManager::EndFrame();
-		Stats::UpdateDirty();
+		Upgrades::UpdateDirty();
 
 		DrawShadows();
 
@@ -413,12 +413,9 @@ void Main::rebirth() {
 	for (auto& fish : SaveData::saveData.fishData)
 		fish.second.numOwned = std::vector<double>(4); // resets list to all 0s
 
-	SaveData::saveData.currencyList = std::unordered_map<uint32_t, FsaveCurrencyStruct>(0);
-	SaveData::saveData.upgradeList = std::unordered_map<uint32_t, SaveEntry>(0);
-	SaveData::saveData.worldList = std::unordered_map<uint32_t, SaveEntry>(0);
-	SaveData::saveData.mechanicStruct = std::unordered_map<uint32_t, SaveEntry>(0);
-	SaveData::saveData.autoFisherList = std::unordered_map<uint32_t, std::pair<SaveEntry, FsaveAutoFisherStruct>>(0);
-	SaveData::saveData.petList = std::unordered_map<uint32_t, SaveEntry>(0);
+	SaveData::saveData.currencyList.clear();
+	SaveData::saveData.progressionData.clear();
+	SaveData::saveData.autoFisherList.clear();
 	SaveData::saveData.equippedPetId = -1;
 	SaveData::saveData.fishingRod = FsaveFishingRodStruct();
 	SaveData::saveData.equippedBaitId = -1;

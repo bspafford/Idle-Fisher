@@ -491,7 +491,7 @@ void AfishTransporter::upgrade(SaveEntry* mechanicStruct) {
 }
 
 void AfishTransporter::SetStats() {
-	SaveEntry* mechanicStruct = &SaveData::saveData.mechanicStruct.at(Scene::GetCurrWorldId());
+	SaveEntry* mechanicStruct = &SaveData::saveData.progressionData.at(Scene::GetCurrWorldId());
 
 	maxHoldNum = mechanicStruct->level * 100 + 100;
 

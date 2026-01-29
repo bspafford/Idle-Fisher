@@ -202,10 +202,7 @@ int Scene::GetWorldIndex(uint32_t worldId) {
 	if (worldId == 0u)
 		worldId = GetCurrWorldId();
 
-	for (int i = 0; i < SaveData::orderedData.worldData.size(); i++) {
-		if (SaveData::orderedData.worldData[i] == worldId)
-			return i - worldOffset;
-	}
+	return 0;
 }
 
 uint32_t Scene::GetPrevWorldId() {
@@ -218,7 +215,8 @@ uint32_t Scene::GetCurrWorldId() {
 }
 
 uint32_t Scene::GetWorldId(int index) {
-	return SaveData::orderedData.worldData[index + worldOffset];
+	return 0u;
+	//return SaveData::orderedData.worldData[index + worldOffset];
 }
 
 //uint32_t Scene::GetWorldId(std::string worldName) {
@@ -316,6 +314,7 @@ void Scene::updateShaders(float deltaTime) {
 }
 
 std::vector<uint32_t> Scene::GetWorldsList() {
-	std::vector<uint32_t>& worldData = SaveData::orderedData.worldData;
-	return std::vector<uint32_t>(worldData.begin() + worldOffset, worldData.end());
+	//std::vector<uint32_t>& worldData = SaveData::orderedData.worldData;
+	//return std::vector<uint32_t>(worldData.begin() + worldOffset, worldData.end());
+	return {};
 }

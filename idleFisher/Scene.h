@@ -111,8 +111,4 @@ private:
 	static inline std::recursive_mutex mtx;
 	static inline std::mutex cvMtx;
 	static inline std::condition_variable cv;
-
-	// how many world levels to offset the world id by
-	// titleSceen, vault, and rebirth are not counted as world levels
-	static inline int worldOffset = 3;
 };

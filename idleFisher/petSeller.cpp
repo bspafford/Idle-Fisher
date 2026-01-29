@@ -5,7 +5,7 @@
 
 ApetSeller::ApetSeller(vector loc) : npc(loc) {
 	setup("petSeller");
-	widget->setup(SaveData::data.petData, SaveData::saveData.petList);
+	widget->setup(SaveData::data.petData, SaveData::saveData.progressionData);
 
 	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).petSellerDiscovered;
 }

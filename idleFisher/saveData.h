@@ -223,6 +223,8 @@ struct FupgradeStruct {
         stat = static_cast<Stat>(std::stoi(row[1]));
         effect = { std::stod(row[2]), std::stod(row[3]), std::stod(row[4]), std::stod(row[5]) };
 	}
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FupgradeStruct, id, stat, effect);
 };
 
 // upgrades that improve/unlock stats
@@ -307,6 +309,13 @@ struct FpetStruct {
         id = std::stoul(row[0]);
 		stat = static_cast<Stat>(std::stoi(row[1]));
     }
+};
+
+struct FmechanicStruct {
+	uint32_t id; // progression id
+    uint32_t worldId;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FmechanicStruct, id, worldId);
 };
 
 struct FgoldenFishStruct {
@@ -394,9 +403,11 @@ struct Fdata {
     // currencies
     std::unordered_map<uint32_t, FcurrencyStruct> currencyData;
 
+    std::unordered_map<uint32_t, ProgressionNode> progressionData;
+
     // npc upgrades
     std::unordered_map<uint32_t, FupgradeStruct> upgradeData;
-    std::unordered_map<uint32_t, ProgressionNode> progressionData;
+    std::unordered_map<uint32_t, FmechanicStruct> mechanicStruct;
     std::unordered_map<uint32_t, FautoFisherStruct> autoFisherData;
     std::unordered_map<uint32_t, FpetStruct> petData;
     std::unordered_map<uint32_t, FvaultUnlocksStruct> vaultUnlockData;
@@ -410,7 +421,7 @@ struct Fdata {
     std::unordered_map<uint32_t, FachievementStruct> achievementData;
     std::unordered_map<uint32_t, FrebirthStruct> rebirthData;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, autoFisherData, vaultUnlockData, baitData, achievementData, rebirthData);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, upgradeData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
 };
 
 struct ForderedData {
@@ -448,22 +459,18 @@ struct FsaveData {
     std::unordered_map<uint32_t, FsaveCurrencyStruct> currencyList;
     std::unordered_map<uint32_t, FcurrencyConversionStruct> currencyConversionList;
 
+    std::unordered_map<uint32_t, SaveEntry> progressionData;
+
     // npc upgrades
     std::unordered_map<uint32_t, FsaveNPCStruct> npcSave;
-    std::unordered_map<uint32_t, SaveEntry> upgradeList;
-    std::unordered_map<uint32_t, SaveEntry> worldList;
-    std::unordered_map<uint32_t, SaveEntry> mechanicStruct;
-    std::unordered_map<uint32_t, std::pair<SaveEntry, FsaveAutoFisherStruct>> autoFisherList;
-    std::unordered_map<uint32_t, SaveEntry> petList;
+    std::unordered_map<uint32_t, FsaveAutoFisherStruct> autoFisherList;
     uint32_t equippedPetId; // progression id
     std::unordered_map<uint32_t, FsaveVaultUnlocksStruct> vaultUnlockList;
 
     // upgrades
     FsaveFishingRodStruct fishingRod;
     uint32_t equippedBaitId; // progression id
-    std::unordered_map<uint32_t, SaveEntry> baitList;
 
-    // big stuff
     std::unordered_map<uint32_t, SaveEntry> achievementList;
 
     // rebirth stuff
@@ -471,9 +478,8 @@ struct FsaveData {
     double rebirthCurrency = 0;
     double totalRebirthCurrency = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, npcSave, upgradeList,
-        worldList, mechanicStruct, autoFisherList, petList, equippedPetId, vaultUnlockList, fishingRod, equippedBaitId, baitList, achievementList,
-        rebirthList, rebirthCurrency, totalRebirthCurrency);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, progressionData, npcSave,
+        equippedPetId, vaultUnlockList, fishingRod, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 
 struct FsettingsData {

@@ -173,7 +173,7 @@ void Ujournal::draw(Shader* shaderProgram) {
 		worldName1->draw(shaderProgram);
 		worldName2->draw(shaderProgram);
 
-		if (SaveData::saveData.worldList.at(worldId).level) {
+		if (SaveData::saveData.progressionData.at(worldId).level) {
 			worldProgress1->draw(shaderProgram);
 			worldProgress2->draw(shaderProgram);
 
@@ -229,7 +229,7 @@ void Ujournal::draw(Shader* shaderProgram) {
 
 void Ujournal::forwardPage() {
 	pageNum++;
-	int size = int(SaveData::data.worldData.size()) - 1;
+	int size = int(SaveData::orderedData.worldData.size()) - 1;
 	if (pageNum > size)
 		pageNum = size;
 
@@ -252,12 +252,12 @@ void Ujournal::backwardPage() {
 }
 
 void Ujournal::updatePages() {
-	if (SaveData::saveData.worldList.size() == 0)
+	if (SaveData::orderedData.worldData.size() == 0)
 		return;
 
 	if (pageNum != -1) {
-		FworldStruct& worldData = SaveData::data.worldData.at(Scene::GetWorldId(pageNum));
-		SaveEntry& saveWorldData = SaveData::saveData.worldList.at(worldData.id);
+		ProgressionNode& worldData = SaveData::data.progressionData.at(Scene::GetWorldId(pageNum));
+		SaveEntry& saveWorldData = SaveData::saveData.progressionData.at(worldData.id);
 		std::string worldName = worldData.name;
 
 		if (saveWorldData.level)
@@ -268,7 +268,7 @@ void Ujournal::updatePages() {
 		calcWorldPercentage(worldProgress1.get(), worldProgress2.get(), worldData.id);
 
 		bool world2Unlocked = saveWorldData.level;
-		if (world2Unlocked && SaveData::data.worldData.size() > pageNum) // checks if in range, incase add world and its only on left page
+		if (world2Unlocked && SaveData::orderedData.worldData.size() > pageNum) // checks if in range, incase add world and its only on left page
 			worldName2->setText(worldName);
 		else if (!world2Unlocked)
 			worldName2->setText("???");
@@ -343,14 +343,6 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	fishThumbnail->setImage(fishData->thumbnail);
 	selectedFishName->setText(fishData->name);
 	selectedFishDescription->setText(fishData->description);
-
-	// find world name
-	std::string worldName = "";
-	for (auto& [worldId, worldData] : SaveData::data.worldData) {
-		if (worldData.id == fishData->worldId) {
-			worldName = worldData.name;
-		}
-	}
 
 	baseCurrencyNum->setText(shortNumbers::convert2Short(fishData->currencyNum));
 	currencyNum->setText(shortNumbers::convert2Short(upgrades::getFishSellPrice(*fishData, 0)));
@@ -485,7 +477,7 @@ void Ujournal::calcWorldPercentage(UprogressBar* normalProgressBar, UprogressBar
 
 	for (auto& [fishId, fishData] : SaveData::data.fishData) {
 		FsaveFishData saveFishData = SaveData::saveData.fishData[fishData.id];
-		if (fishData.worldId == SaveData::data.worldData.at(worldId).id) {
+		if (fishData.worldId == worldId) {
 			if (!fishData.isRareFish) { //  && saveFishData.unlocked
 				unlockedTotal1++;
 				starsTotal1 += 3;

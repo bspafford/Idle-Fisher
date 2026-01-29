@@ -10,7 +10,6 @@ class npc;
 class text;
 class verticalBox;
 class UprogressBar;
-struct FmechanicStruct;
 
 class UmechanicWidget : public widget {
 public:
@@ -25,17 +24,12 @@ public:
 	void upgradeFishTransporter();
 	void update();
 
-	double calcUpgradeCost();
-
 	// checks if the player doesn't have enough money for the upgrades, and will make text red
 	void CheckTextColor();
 
-	double buyCost = 0;
-	double upgradeCost = 0;
-
 	npc* NPCParent;
 
-	FmechanicStruct* mechanicStruct;
+	ProgressionNode* mechanicStruct;
 	SaveEntry* saveMechanicStruct;
 
 	// upgrades

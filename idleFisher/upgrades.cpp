@@ -9,61 +9,65 @@ double Upgrades::Get(Stat s) {
 	return cachedValues.at(s);
 }
 
-double Upgrades::LevelUp(uint32_t upgradeId, int levels) {
+bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
 	ProgressionNode& progressNode = SaveData::data.progressionData.at(upgradeId);
-	SaveEntry& saveProgress = SaveData::saveData.upgradeList.at(upgradeId);
+	SaveEntry& saveProgress = SaveData::saveData.progressionData.at(upgradeId);
 
 	// check if already at max level
-	if (saveProgress.level + levels >= progressNode.maxLevel)
-		return;
-
-	Stat& stat = progressNode.stat;
+	if (saveProgress.level + levels > progressNode.maxLevel)
+		return false;
 
 	// check if there is already a cached price or not
-	double price = 0.0;
+	double newPrice = 0.0;
 	if (levels == 1) { // if only upgrade 1 level, check cache
 		auto it = cachedPrices.find(upgradeId);
-		price = it == cachedPrices.end() ? CalcPrice(progressNode, saveProgress, levels) : it->second;
+		newPrice = it == cachedPrices.end() ? GetPrice(progressNode, saveProgress, levels) : it->second;
 	} else {
-		price = CalcPrice(progressNode, saveProgress, levels);
+		newPrice = GetPrice(progressNode, saveProgress, levels);
 	}
 
 	FsaveCurrencyStruct& currency = SaveData::saveData.currencyList.at(progressNode.worldId);
 
-	if (currency.numOwned >= price) { // if player has enough currency
-		currency.numOwned -= price; // remove currency
+	if (currency.numOwned >= newPrice) { // if player has enough currency
+		currency.numOwned -= newPrice; // remove currency
+		Main::currencyWidget->updateList(); // update currency widget
+
 		saveProgress.level += levels; // increase level
 		if (saveProgress.level > progressNode.maxLevel) // cap at max level
 			saveProgress.level = progressNode.maxLevel;
 
 		// update cached price
-		cachedPrices[upgradeId] = CalcPrice(progressNode, saveProgress, 1);
+		cachedPrices[upgradeId] = GetPrice(progressNode, saveProgress, 1);
 
 		MarkDirty(stat);
+		return true;
 	}
-
-	return price;
+	return false;
 }
 
 double Upgrades::GetPrice(uint32_t upgradeId) {
 	auto it = cachedPrices.find(upgradeId);
 	if (it == cachedPrices.end()) { // if no cached price
 		ProgressionNode& progressNode = SaveData::data.progressionData.at(upgradeId);
-		SaveEntry& saveProgress = SaveData::saveData.upgradeList.at(upgradeId);
+		SaveEntry& saveProgress = SaveData::saveData.progressionData.at(upgradeId);
 
-		double price = CalcPrice(progressNode, saveProgress);
+		double price = GetPrice(progressNode, saveProgress);
 		cachedPrices.insert({ upgradeId, price }); // add to cache
 		return price;
 	} else
 		return it->second;
 }
 
-double Upgrades::CalcPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels) {
+double Upgrades::GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels) {
 	// ((base + add * level) * multiply^level)^exponent
 	double price = 0.0;
 	for (int i = 1; i <= levels; ++i) // start i at 1 to skip current level price
 		price += (upgrade.cost.base + upgrade.cost.add * (saveUpgrade.level + i)) * std::pow(upgrade.cost.mul, (saveUpgrade.level + i));
 	return price;
+}
+
+double Upgrades::GetCached(Stat stat) {
+	return cachedValues.at(stat);
 }
 
 /*
@@ -94,6 +98,9 @@ void Stats::RemoveModifier(Upgrade upgrade) {
 */
 
 void Upgrades::MarkDirty(Stat s) {
+	if (s == Stat::None)
+		return;
+
 	dirty.insert(s);
 }
 
@@ -106,7 +113,7 @@ void Upgrades::UpdateDirty() {
 		double& cachedValue = cachedValues[stat];
 		for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
 			FupgradeStruct& mod = SaveData::data.upgradeData.at(upgradeId);
-			SaveEntry& saveMod = SaveData::saveData.upgradeList.at(mod.id);
+			SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
 			cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
 		}
 	}

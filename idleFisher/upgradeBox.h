@@ -9,19 +9,22 @@ class text;
 class Ubutton;
 class verticalBox;
 struct FbaitStruct;
+struct FpetStruct;
 struct FupgradeStruct;
 struct FvaultUnlocksStruct;
 struct SaveEntry;
+struct ProgressionNode;
+enum class Stat;
 
 class UupgradeBox : public widget {
 public:
 	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct);
 	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveData);
+	UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruct, SaveEntry* saveData);
 	UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* data, SaveEntry* saveData);
 	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, SaveEntry* saveData);
 	~UupgradeBox();
-	void setup();
+	void setup(uint32_t progressId);
 	void update();
 
 	void draw(Shader* shaderProgram) override;
@@ -37,6 +40,7 @@ private:
 	SaveEntry* saveWorldStruct;
 	FbaitStruct* baitStruct;
 	SaveEntry* saveBaitStruct;
+	FpetStruct* petStruct;
 	SaveEntry* savePetStruct;
 	FupgradeStruct* upgradeStruct;
 	SaveEntry* saveUpgradeStruct;
@@ -58,7 +62,9 @@ private:
 	std::unique_ptr<text> buttonPriceText;
 	std::unique_ptr<Image> currencyImg;
 
-	uint32_t upgradeId;
+	ProgressionNode* progressNode;
+	SaveEntry* saveProgressNode;
+	Stat stat;
 
 public:
 	std::unique_ptr<Ubutton> buyButton;

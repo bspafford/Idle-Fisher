@@ -11,6 +11,8 @@
 #include "exprtk.hpp"
 
 enum class Stat {
+	None = 0, // no stat
+
 // fish
 	FishPrice = 1, // how much fish sell for
 	
@@ -53,9 +55,12 @@ public:
 	// increases the level of the upgrade
 	// removes currency
 	// and updates the cached value
-	static double LevelUp(uint32_t upgradeId, int levels = 1);
+	// returns true if successfully upgraded, price is outputted through reference, can be null
+	static bool LevelUp(uint32_t upgradeId, Stat stat, int levels = 1);
 	static double GetPrice(uint32_t upgradeId);
-	static double CalcPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1);
+	static double GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1);
+
+	static double GetCached(Stat stat);
 
 	//static void AddModifier(Upgrade upgrade);
 	//static void RemoveModifier(Upgrade upgrade);

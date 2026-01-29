@@ -34,10 +34,11 @@ AautoFisher::AautoFisher(uint32_t id) {
 		outlineSpriteSheet = std::make_shared<Image>("images/autoFisher/outline.png", vector{ 0, 0 }, true);
 
 	this->id = id;
-	auto& afData = SaveData::saveData.autoFisherList.at(id);
-	afData.first.level = true;
-	loc = { SaveData::data.autoFisherData[id].xLoc, SaveData::data.autoFisherData[id].yLoc };
-	level = &afData.first.level;
+	SaveEntry& afProgData = SaveData::saveData.progressionData.at(id);
+	FautoFisherStruct& afData = SaveData::data.autoFisherData.at(id);
+	afProgData.level = true;
+	loc = { afData.xLoc, afData.yLoc };
+	level = &afProgData.level;
 
 	setupCollision();
 	

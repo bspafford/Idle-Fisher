@@ -110,20 +110,15 @@ template <typename T1, typename T2> static void recalcList(std::unordered_map<ui
 void SaveData::recalcLists() {
 	recalcList(data.fishData, saveData.fishData);
 	recalcList(data.currencyData, saveData.currencyList);
-	recalcList(data.upgradeData, saveData.upgradeList);
-	recalcList(data.worldData, saveData.worldList);
-	recalcList(data.mechanicStruct, saveData.mechanicStruct);
+	recalcList(data.progressionData, saveData.progressionData);
 	recalcList(data.autoFisherData, saveData.autoFisherList);
-	recalcList(data.petData, saveData.petList);
 	recalcList(data.vaultUnlockData, saveData.vaultUnlockList);
-	recalcList(data.baitData, saveData.baitList);
 	recalcList(data.rebirthData, saveData.rebirthList);
 	recalcList(data.achievementData, saveData.achievementList);
-	recalcList(data.worldData, saveData.npcSave);
 	recalcList(data.currencyData, saveData.currencyConversionList);
 
-	saveData.worldList.at(4u).level = true; // world 1 is always unlocked
-	saveData.currencyList.at(4u).unlocked = true; // currency 1 is always unlocked
+	saveData.progressionData.at(53u).level = true; // world 1 is always unlocked
+	saveData.currencyList.at(53u).unlocked = true; // currency 1 is always unlocked
 }
 
 void SaveData::saveSettings() {
