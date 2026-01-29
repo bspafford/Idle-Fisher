@@ -73,11 +73,11 @@ void Scene::draw(Shader* shaderProgram) {
 
 	// draw game loop after loaded
 	if (loadingDone) {
-		if (titleScreen::currTitleScreen && currWorld == 1u) {
+		if (titleScreen::currTitleScreen && currWorld == 50u) {
 			titleScreen::currTitleScreen->draw(shaderProgram);
-		} else if (currWorld == 2u) {
+		} else if (currWorld == 51u) { // vault
 			vaultWorld::draw(shaderProgram);
-		} else if (currWorld == 3u) {
+		} else if (currWorld == 52u) { // rebirth
 			rebirthWorld::draw(shaderProgram);
 		} else if (world::currWorld)
 			world::currWorld->draw(shaderProgram);
@@ -90,7 +90,7 @@ void Scene::openLevelThread(uint32_t worldId, WorldLoc worldChangeLoc, bool over
 	std::cout << "starting to load world!\n";
 
 	// a wait to make sure the textures get created properly before loading the world
-	if (waitToUploadGPUdata && worldId != 1u) { // title screen
+	if (waitToUploadGPUdata && worldId != 50u) { // title screen
 		std::unique_lock lock(cvMtx);
 		cv.wait(lock, [] { return waitToUploadGPUdata == false; });
 	}
@@ -100,7 +100,7 @@ void Scene::openLevelThread(uint32_t worldId, WorldLoc worldChangeLoc, bool over
 	if (isStartup)
 		StartSetup();
 
-	if (worldId == 2u && currWorld != 2u) // vault
+	if (worldId == 51u && currWorld != 51u) // vault
 		prevWorld = currWorld;
 	currWorld = worldId;
 	SaveData::saveData.currWorld = currWorld;
@@ -116,33 +116,33 @@ void Scene::openLevelThread(uint32_t worldId, WorldLoc worldChangeLoc, bool over
 	world::currWorld = nullptr;
 	titleScreen::currTitleScreen = nullptr;
 	
-	if (currWorld == 1u) {
+	if (currWorld == 50u) {
 		titleScreen::currTitleScreen = std::make_unique<titleScreen>();
-	} else if (currWorld == 2u) {
+	} else if (currWorld == 51u) {
 		vaultWorld::vaultWorld();
 		vaultWorld::start();
-	} else if (currWorld == 3u) {
+	} else if (currWorld == 52u) {
 		rebirthWorld::rebirthWorld();
 		rebirthWorld::start();
-	} else if (currWorld == 4u) {
+	} else if (currWorld == 53u) {
 		world::currWorld = std::make_unique<world1>(worldChangeLoc);
-	} else if (currWorld == 5u) {
+	} else if (currWorld == 54u) {
 		world::currWorld = std::make_unique<world2>(worldChangeLoc);
-	} else if (currWorld == 6u) {
+	} else if (currWorld == 55u) {
 		world::currWorld = std::make_unique<world3>(worldChangeLoc);
-	} else if (currWorld == 7u) {
+	} else if (currWorld == 56u) {
 		world::currWorld = std::make_unique<world4>(worldChangeLoc);
-	} else if (currWorld == 8u) {
+	} else if (currWorld == 57u) {
 		world::currWorld = std::make_unique<world5>(worldChangeLoc);
-	} else if (currWorld == 9u) {
+	} else if (currWorld == 58u) {
 		world::currWorld = std::make_unique<world6>(worldChangeLoc);
-	} else if (currWorld == 10u) {
+	} else if (currWorld == 59u) {
 		world::currWorld = std::make_unique<world7>(worldChangeLoc);
-	} else if (currWorld == 11u) {
+	} else if (currWorld == 60u) {
 		world::currWorld = std::make_unique<world8>(worldChangeLoc);
-	} else if (currWorld == 12u) {
+	} else if (currWorld == 61u) {
 		world::currWorld = std::make_unique<world9>(worldChangeLoc);
-	} else if (currWorld == 13u) {
+	} else if (currWorld == 62u) {
 		world::currWorld = std::make_unique<world10>(worldChangeLoc);
 	}
 
@@ -215,8 +215,7 @@ uint32_t Scene::GetCurrWorldId() {
 }
 
 uint32_t Scene::GetWorldId(int index) {
-	return 0u;
-	//return SaveData::orderedData.worldData[index + worldOffset];
+	return SaveData::orderedData.worldData[index + worldOffset];
 }
 
 //uint32_t Scene::GetWorldId(std::string worldName) {
@@ -314,7 +313,6 @@ void Scene::updateShaders(float deltaTime) {
 }
 
 std::vector<uint32_t> Scene::GetWorldsList() {
-	//std::vector<uint32_t>& worldData = SaveData::orderedData.worldData;
-	//return std::vector<uint32_t>(worldData.begin() + worldOffset, worldData.end());
-	return {};
+	std::vector<uint32_t>& worldData = SaveData::orderedData.worldData;
+	return std::vector<uint32_t>(worldData.begin() + worldOffset, worldData.end());
 }

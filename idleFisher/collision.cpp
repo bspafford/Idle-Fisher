@@ -505,6 +505,8 @@ bool collision::sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector e
 	float tOnEdge = math::dot(hitPoint - a, edgeDir) / math::dot(edgeDir, edgeDir);
 	if (tOnEdge < 0 || tOnEdge > 1) return false;
 
+	toi /= stuff::pixelSize;
+
 	toiOut = toi;
 	normalOut = edgeNormal;
 
@@ -526,6 +528,8 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
+	t0 /= stuff::pixelSize;
+	t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;
@@ -561,7 +565,7 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	const int maxIterations = 2;
 
 	float timeRemaining = 1.0f;
-	vector v = math::normalize(move) * GetCharacter()->GetSpeed() * deltaTime;
+	vector v = math::normalize(move) * vector(1.f, 0.5f) * GetCharacter()->GetSpeed() * deltaTime;
 
 	for (int iteration = 0; iteration < maxIterations && timeRemaining > 0.0f; ++iteration) {
 		float minTOI = timeRemaining;
@@ -658,6 +662,8 @@ bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circ
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
+	t0 /= stuff::pixelSize;
+	t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;

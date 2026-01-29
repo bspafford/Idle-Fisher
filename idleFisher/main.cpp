@@ -190,7 +190,7 @@ void Main::Start() {
 	Audio::Init();
 
 	Scene::Init();
-	Scene::openLevel(1u, WORLD_SET_LOC_NONE, true, true);
+	Scene::openLevel(50u, WORLD_SET_LOC_NONE, true, true);
 	Scene::deferredChangeWorld();
 	
 	fps::fps();
@@ -365,8 +365,8 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_K))
 		SaveData::save();
 	if (Input::getKeyDown(GLFW_KEY_J)) {
-		SaveData::saveData.currencyList.at(4u).numOwned += 1000000;
-		SaveData::saveData.currencyList.at(4u).totalNumOwned += 1000000;
+		SaveData::saveData.currencyList.at(53u).numOwned += 1000000;
+		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1000000;
 
 		for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
 			currencyData.numOwned += 1000;
@@ -376,13 +376,13 @@ void Main::checkInputs() {
 		currencyWidget->updateList();
 	}
 	if (Input::getKeyDown(GLFW_KEY_L)) {
-		SaveData::saveData.currencyList.at(4u).numOwned = 0;
-		SaveData::saveData.currencyList.at(4u).totalNumOwned = 0;
+		SaveData::saveData.currencyList.at(53u).numOwned = 0;
+		SaveData::saveData.currencyList.at(53u).totalNumOwned = 0;
 		currencyWidget->updateList();
 	}
 
 	if (Input::getKeyDown(GLFW_KEY_O))
-		Scene::openLevel(3u, WORLD_SET_LOC_SAILOR, false);
+		Scene::openLevel(52u, WORLD_SET_LOC_SAILOR, false);
 #endif
 }
 
@@ -430,7 +430,7 @@ void Main::rebirth() {
 		world::currWorld->autoFisherList.clear();
 	heldFishWidget->updateList();
 	currencyWidget->updateList();
-	Scene::openLevel(4u, WORLD_SET_LOC_SAILOR, true);
+	Scene::openLevel(53u, WORLD_SET_LOC_SAILOR, true);
 }
 
 double Main::calcRebirthCurrency() {

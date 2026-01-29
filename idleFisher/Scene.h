@@ -111,4 +111,8 @@ private:
 	static inline std::recursive_mutex mtx;
 	static inline std::mutex cvMtx;
 	static inline std::condition_variable cv;
+
+	// skip titleScreen, vault, rebirth
+	// used with orderedData.worldData
+	static inline int worldOffset = 3;
 };

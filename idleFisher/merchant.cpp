@@ -8,7 +8,7 @@ Amerchant::Amerchant(vector loc) : npc(loc) {
 	setup("merchant");
 	merchantWidget = std::make_unique<UmerchantWidget>(nullptr, this);
 
-	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).merchantDiscovered;
+	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].merchantDiscovered;
 }
 
 Amerchant::~Amerchant() {

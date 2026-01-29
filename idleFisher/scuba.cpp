@@ -8,7 +8,7 @@ Ascuba::Ascuba(vector loc) : npc(loc) {
 
 	rebirthWidget = std::make_unique<UrebirthWidget>(nullptr);
 
-	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).scubaDiscovered;
+	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].scubaDiscovered;
 }
 
 void Ascuba::click() {

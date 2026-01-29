@@ -15,6 +15,7 @@ int main() {
 }
 
 void ReadCSV(Fdata& data, ForderedData& orderedData) {
+	readData(&data.progressionData, nullptr, "progressionDataTable");
     readData(&data.fishData, &orderedData.fishData, "fishDataTable");
     readData(&data.currencyData, &orderedData.currencyData, "currencyDataTable");
     readData(&data.autoFisherData, &orderedData.autoFisherData, "autoFisherDataTable");
@@ -23,7 +24,7 @@ void ReadCSV(Fdata& data, ForderedData& orderedData) {
     readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
     readData(&data.baitData, &orderedData.baitData, "baitDataTable");
     readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
-    readData(&orderedData.mechanicStruct, "mechanicDataTable");
+    readData(&data.mechanicStruct, &orderedData.mechanicStruct, "mechanicDataTable");
     readData(&data.petData, &orderedData.petData, "petDataTable");
     readData(&data.rebirthData, &orderedData.rebirthData, "rebirthDataTable");
     readData(&data.upgradeData, &orderedData.upgradeData, "upgradeDataTable");
@@ -99,6 +100,10 @@ template <typename T> void readData(std::unordered_map<uint32_t, T>* a, std::vec
 
             if (row.size() == 0)
                 return;
+
+            // if starts with "//" then skip
+            if (row[0].starts_with("//"))
+                continue;
 
             T data;
             parseData(data, row);

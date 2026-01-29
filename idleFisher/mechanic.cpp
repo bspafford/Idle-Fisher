@@ -8,7 +8,7 @@ Amechanic::Amechanic(vector loc) : npc(loc) {
 	setup("mechanic");
 	mechanicWidget = std::make_unique<UmechanicWidget>(nullptr, this);
 
-	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).mechanicDiscovered;
+	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].mechanicDiscovered;
 }
 
 Amechanic::~Amechanic() {

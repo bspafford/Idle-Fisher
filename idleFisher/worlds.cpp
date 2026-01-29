@@ -126,7 +126,7 @@ void titleScreen::fadeToBlack() {
 
 void titleScreen::openWorld() {
 	transitionBox->setColor(glm::vec4(18 / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f)); // makes sure it goes to alpha 100% instead of like 99%
-	Scene::openLevel(4u, WORLD_SET_LOC_NONE);
+	Scene::openLevel(53u, WORLD_SET_LOC_NONE);
 }
 
 void titleScreen::exit() {

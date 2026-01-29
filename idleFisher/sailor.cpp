@@ -7,7 +7,7 @@ Asailor::Asailor(vector loc) : npc(loc) {
 	setup("sailor");
 	sailorWidget = std::make_unique<UsailorWidget>(nullptr);
 
-	discovered = &SaveData::saveData.npcSave.at(Scene::GetCurrWorldId()).sailorDiscovered;
+	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].sailorDiscovered;
 }
 
 Asailor::~Asailor() {

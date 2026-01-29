@@ -38,7 +38,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStr
 
 	callback = std::bind(&UupgradeBox::equipBait, this);
 
-	thumbnail = std::make_unique<Image>("images/widget/thumbnails/" + std::to_string(baitStruct->id) + ".png", vector{0, 0}, false);
+	thumbnail = std::make_unique<Image>("images/widget/thumbnails/bait" + std::to_string(baitStruct->id) + ".png", vector{0, 0}, false);
 	
 	setup(baitStruct->id);
 }
@@ -51,7 +51,7 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruc
 
 	callback = std::bind(&UupgradeBox::spawnPet, this);
 
-	thumbnail = std::make_unique<Image>("images/pets/" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/pets/pet" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
 
 	setup(savePetStruct->id);
 }
@@ -198,7 +198,7 @@ bool UupgradeBox::mouseOver() {
 }
 
 void UupgradeBox::buyUpgrade() {
-	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->worldId, stat)) // if not max level, and don't have enough currency
+	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->id, stat)) // if not max level, and don't have enough currency
 		return; // didn't have enough money to purchase upgrade
 
 	// will equip the item or object once the layer has unlocked it, instead of needing to click twice
@@ -208,7 +208,8 @@ void UupgradeBox::buyUpgrade() {
 		equipBait();
 
 	if (saveProgressNode->level >= progressNode->maxLevel) { // if max level / unlocked
-		callback();
+		if (callback)
+			callback();
 
 		if (petStruct) {
 			// since happening after function its gotta be reversed
@@ -278,7 +279,7 @@ void UupgradeBox::update() {
 			buttonPriceText->setText("Max");
 		}
 	} else {
-		double price = Upgrades::GetPrice(upgradeStruct->id);
+		double price = Upgrades::GetPrice(progressNode->id);
 		buttonPriceText->setText(shortNumbers::convert2Short(price));
 	}
 }

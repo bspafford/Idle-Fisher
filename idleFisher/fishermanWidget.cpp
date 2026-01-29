@@ -121,7 +121,7 @@ void UfishermanWidget::setup() {
 	// set view box images
 	std::unique_ptr<Ubutton> button = std::make_unique<Ubutton>(this, "widget/thumbnails/fishingRodThumbnail.png", 16, 16, 1, vector{ 0, 0 }, false, false);
 	buttonList.push_back(std::move(button));
-	std::unique_ptr<Ubutton> button2 = std::make_unique<Ubutton>(this, "widget/thumbnails/worm.png", 16, 16, 1, vector{ 0, 0 }, false, false);
+	std::unique_ptr<Ubutton> button2 = std::make_unique<Ubutton>(this, "widget/thumbnails/bait76.png", 16, 16, 1, vector{ 0, 0 }, false, false);
 	buttonList.push_back(std::move(button2));
 
 	buttonList[0]->addCallback(this, &UfishermanWidget::setPage1);
@@ -270,8 +270,8 @@ void UfishermanWidget::setupLocs() {
 
 void UfishermanWidget::upgradePower() {
 	double cost = upgrades::calcFishingRodPowerPrice();
-	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
 		SaveData::saveData.fishingRod.power.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
@@ -282,8 +282,8 @@ void UfishermanWidget::upgradePower() {
 
 void UfishermanWidget::upgradeSpeed() {
 	double cost = upgrades::calcFishingRodSpeedPrice();
-	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
 		SaveData::saveData.fishingRod.speed.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
@@ -294,8 +294,8 @@ void UfishermanWidget::upgradeSpeed() {
 
 void UfishermanWidget::upgradeCatchChance() {
 	double cost = upgrades::calcFishingRodCatchChancePrice();
-	if (SaveData::saveData.currencyList.at(4u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(4u).numOwned -= cost;
+	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
+		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
 		SaveData::saveData.fishingRod.catchChance.level++;
 		Main::currencyWidget->updateList();
 		updateStats();
@@ -323,7 +323,7 @@ void UfishermanWidget::updateStats() {
 }
 
 void UfishermanWidget::CheckTextColor() {
-	FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(4u);
+	FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(53u);
 
 	// power
 	if (currencyData.numOwned >= powerCost)

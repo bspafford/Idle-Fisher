@@ -15,13 +15,13 @@ void achievement::createAchievementList() {
 
 	// money achievements
 	achievements.push_back(std::make_unique<achievement>(5u,
-			[]() { return SaveData::saveData.currencyList.at(4u).totalNumOwned >= 1; }));
+			[]() { return SaveData::saveData.currencyList.at(53u).totalNumOwned >= 1; }));
 	achievements.push_back(std::make_unique<achievement>(6u,
-			[]() { return SaveData::saveData.currencyList.at(4u).totalNumOwned >= 100; }));
+			[]() { return SaveData::saveData.currencyList.at(53u).totalNumOwned >= 100; }));
 	achievements.push_back(std::make_unique<achievement>(7u,
-			[]() { return SaveData::saveData.currencyList.at(4u).totalNumOwned >= 10000; }));
+			[]() { return SaveData::saveData.currencyList.at(53u).totalNumOwned >= 10000; }));
 	achievements.push_back(std::make_unique<achievement>(8u,
-			[]() { return SaveData::saveData.currencyList.at(4u).totalNumOwned >= 1000000; }));
+			[]() { return SaveData::saveData.currencyList.at(53u).totalNumOwned >= 1000000; }));
 }
 
 void achievement::checkAchievements() {

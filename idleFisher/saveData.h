@@ -316,6 +316,11 @@ struct FmechanicStruct {
     uint32_t worldId;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FmechanicStruct, id, worldId);
+
+    void parseData(std::vector<std::string> row) {
+        id = std::stoul(row[0]);
+        worldId = std::stoul(row[1]);
+    }
 };
 
 struct FgoldenFishStruct {
@@ -449,8 +454,8 @@ struct FsaveData {
     // player loc
     vector playerLoc = { 730, 490 };
 
-    uint32_t currWorld = 4u; // world1
-    uint32_t prevWorld = 4u; // world1 // incase the player is in the vault when they exit / save
+    uint32_t currWorld = 53u; // world1
+    uint32_t prevWorld = 53u; // world1 // incase the player is in the vault when they exit / save
 
     // fish stuff
     std::unordered_map<uint32_t, FsaveFishData> fishData;
