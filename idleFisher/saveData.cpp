@@ -213,10 +213,10 @@ FfishData FfishData::GetCheapestFishInWorld(uint32_t worldId) {
 		worldId = Scene::GetCurrWorldId();
 
 	FfishData cheapestFish;
-	cheapestFish.currencyNum = std::numeric_limits<int>::max();
+	cheapestFish.basePrice = std::numeric_limits<int>::max();
 	for (auto& [key, value] : SaveData::data.fishData) {
 		if (value.worldId == worldId) {
-			if (value.currencyNum < cheapestFish.currencyNum)
+			if (value.basePrice < cheapestFish.basePrice)
 				cheapestFish = value;
 		}
 	}

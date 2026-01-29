@@ -47,9 +47,33 @@ enum class Stat {
 	MinRainSpawnInterval = 18,
 };
 
+enum class StatContextType {
+	None = 0,
+	Fish = 1,
+	Bait = 2,
+	Pet = 3,
+	Upgrade = 4,
+	VaultUnlock = 5,
+};
+
+struct StatContext {
+	Stat stat = Stat::None;
+	uint32_t id = 0; // id of the context, fish id, bait id, pet id, upgrade id, vault unlock id
+	StatContextType type = StatContextType::None;
+
+	double value = 0.0;
+
+	// Fish Data
+	StatContext(Stat _stat, uint32_t _id, StatContextType _type, double _value)
+		: stat(_stat), id(_id), type(_type), value(_value) {}
+};
+
 class Upgrades {
 public:
-	static double Get(Stat s);
+	static void Init();
+
+	// gets the final calculated stat value
+	static double Get(const StatContext& statCtx);
 
 	// this function is called when an upgrade is purchased
 	// increases the level of the upgrade
@@ -71,10 +95,14 @@ public:
 	static void UpdateDirty();
 
 private:
+	// gets the base stat value without any modifiers/base values
+	static double GetStat(Stat s);
+	static double Recalculate(Stat s);
+
 	// only cached the values for the next level, not multiple levels
 	static inline std::unordered_map<uint32_t, double> cachedPrices;
 
-	static inline std::unordered_map<Stat, std::vector<uint32_t>> modifiersPerStat; // modifiers sorted by stat
+	static inline std::unordered_map<Stat, std::unordered_set<uint32_t>> modifiersPerStat; // modifiers sorted by stat
 	// the cached calculated upgrade values
 	// things like fish price, fishing rod power, etc
 	static inline std::unordered_map<Stat, double> cachedValues;
@@ -94,9 +122,6 @@ public:
 	static double calcFishingRodPowerPrice();
 	static double calcFishingRodSpeedPrice();
 	static double calcFishingRodCatchChancePrice();
-
-	// calculates how much the all the upgrades combine should equal
-	static double getFishSellPrice(const FfishData& fish, int quality);
 
 	static double calcGreenFishingUpgrade();
 	static double calcYellowFishingUpgrade();

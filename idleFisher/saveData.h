@@ -42,13 +42,13 @@ struct FfishData {
     float fishSpeed;
     float greenDifficulty;
     float yellowDifficulty;
-    int currencyNum;
+    double basePrice;
     uint32_t worldId;
     int minSize = 1;
     int maxSize = 1;
     bool isRareFish = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, currencyNum, worldId, minSize, maxSize, isRareFish);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, basePrice, worldId, minSize, maxSize, isRareFish);
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
@@ -60,7 +60,7 @@ struct FfishData {
         fishSpeed = std::stof(row[6]);
         greenDifficulty = std::stof(row[7]);
         yellowDifficulty = std::stof(row[8]);
-        currencyNum = std::stoi(row[9]);
+        basePrice = std::stod(row[9]);
         worldId = std::stoul(row[10]);
         minSize = std::stoi(row[11]);
         maxSize = std::stoi(row[12]);

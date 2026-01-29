@@ -273,6 +273,8 @@ void Scene::StartSetup() {
 
 void Scene::FinishSetup() {
 	SaveData::load();
+	Upgrades::Init();
+
 	upgrades::init();
 	achievementBuffs::init();
 	if (SaveData::saveData.equippedPetId != 0u)

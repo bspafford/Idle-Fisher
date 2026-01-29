@@ -5,8 +5,37 @@
 #include "baitBuffs.h"
 #include "achievementBuffs.h"
 
-double Upgrades::Get(Stat s) {
-	return cachedValues.at(s);
+void Upgrades::Init() {
+	// setup modifiers per stat
+	for (auto& [id, upgradeData] : SaveData::data.upgradeData)
+		modifiersPerStat[upgradeData.stat].insert(upgradeData.id);
+
+	for (auto& [id, upgradedata] : SaveData::data.upgradeData)
+		modifiersPerStat[upgradedata.stat].insert(upgradedata.id);
+
+	// initial calculation of all stats
+	for (auto& [stat, mods] : modifiersPerStat)
+		Recalculate(stat);
+}
+
+double Upgrades::Get(const StatContext& statCtx) {
+	switch(statCtx.type) {
+	case StatContextType::Fish: {
+		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
+		double qualityMultiplier = 1 + (statCtx.value * 0.1);
+		return GetStat(statCtx.stat) * fishData.basePrice * qualityMultiplier;
+	} default:
+		return GetStat(statCtx.stat);
+	}
+}
+
+double Upgrades::GetStat(Stat s) {
+	auto it = cachedValues.find(s);
+	if (it != cachedValues.end())
+		return it->second;
+
+	// wasn't in map
+	return Recalculate(s);
 }
 
 bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
@@ -70,33 +99,6 @@ double Upgrades::GetCached(Stat stat) {
 	return cachedValues.at(stat);
 }
 
-/*
-void Stats::AddModifier(Upgrade upgrade) {
-	// what do i want to pass add modifier?
-	// maybe just the upgradeId and a reference to the SaveData value?
-
-	// then add it to allModifiers if it isn't already
-	// maybe the modifier could be a reference to the SaveData level?
-
-	// the finally mark dirty
-
-
-	// so then in the list i will have the upgradeId and the level that will auto update? 
-	// but i need to make sure everytime the level updates the mark that stat dirty
-	// 
-
-	auto [it, inserted] = allModifiers.emplace(upgrade.id, upgrade);
-	if (inserted) // only add modifier if it wasn't already in allModifiers list
-		modifiersPerStat[upgrade.stat].push_back(it->first);
-
-	MarkDirty(upgrade.stat);
-}
-
-void Stats::RemoveModifier(Upgrade upgrade) {
-
-}
-*/
-
 void Upgrades::MarkDirty(Stat s) {
 	if (s == Stat::None)
 		return;
@@ -109,16 +111,21 @@ void Upgrades::Update(double dt) {
 }
 
 void Upgrades::UpdateDirty() {
-	for (auto stat : dirty) { // loop through dirty stats
-		double& cachedValue = cachedValues[stat];
-		for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
-			FupgradeStruct& mod = SaveData::data.upgradeData.at(upgradeId);
-			SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
-			cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
-		}
-	}
+	for (auto stat : dirty) // loop through dirty stats
+		Recalculate(stat);
 
 	dirty.clear();
+}
+
+double Upgrades::Recalculate(Stat stat) {
+	double& cachedValue = cachedValues[stat];
+	for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
+		FupgradeStruct& mod = SaveData::data.upgradeData.at(upgradeId);
+		SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
+		cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
+	}
+
+	return cachedValue;
 }
 
 
@@ -176,30 +183,6 @@ double upgrades::calcFishingRodSpeedPrice() {
 double upgrades::calcFishingRodCatchChancePrice() {
 	int level = SaveData::saveData.fishingRod.catchChance.level;
 	return 20 * pow(1.75, level);
-}
-
-// calculates how much the all the upgrades combine should equal
-double upgrades::getFishSellPrice(const FfishData& fish, int quality) {
-	return 1;
-	/*
-	// upgrades
-	double value = 0;
-	value += getUpgrade("fishSellPriceWorld1")->value;
-	value += getUpgrade("fishSellPriceWorld2")->value;
-	value += getUpgrade("fishSellPriceWorld3")->value;
-	value += getUpgrade("fishSellPriceWorld4")->value;
-	value += getUpgrade("fishSellPriceWorld5")->value;
-	value += getUpgrade("fishSellPriceWorld6")->value;
-	value += getUpgrade("fishSellPriceWorld7")->value;
-	value += getUpgrade("fishSellPriceWorld8")->value;
-	value += getUpgrade("fishSellPriceWorld9")->value;
-	value += getUpgrade("fishSellPriceWorld10")->value;
-
-	// pet stuff
-	double petBuff = petBuffs::increaseFishPrice();
-
-	return fish.currencyNum * (value + 1) * (petBuff + 1) * achievementBuffs::getFishPercentIncrease(fish.id) * (1.f + (quality * .1f));
-	*/
 }
 
 double upgrades::calcGreenFishingUpgrade() {

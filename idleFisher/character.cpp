@@ -521,10 +521,10 @@ void Acharacter::premiumFishBuff() {
 
 		// calc 10% of currency + held fish
 		double heldCurrency = currencyStruct.numOwned;
-		for (auto& fishData : SaveData::data.fishData) {
-			if (fishData.second.worldId == Scene::GetCurrWorldId()) {
-				FsaveFishData* saveFish = &SaveData::saveData.fishData[fishData.second.id];
-				heldCurrency += saveFish->numOwned[0] * upgrades::getFishSellPrice(fishData.second, 0);
+		for (auto& [fishId, fishData] : SaveData::data.fishData) {
+			if (fishData.worldId == Scene::GetCurrWorldId()) {
+				FsaveFishData* saveFish = &SaveData::saveData.fishData.at(fishId);
+				heldCurrency += saveFish->numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, StatContextType::Fish, 0));
 			}
 		}
 

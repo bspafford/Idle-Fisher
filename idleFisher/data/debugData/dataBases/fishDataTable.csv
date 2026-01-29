@@ -1,4 +1,4 @@
-id,name,description,imgPath,probability,fishingPower,fishSpeed,fidhGreenDifficulty,yellowDifficulty,currencyFromFish,worldId,minSize,maxSize,isRareFish
+id,name,description,imgPath,probability,fishingPower,fishSpeed,fidhGreenDifficulty,yellowDifficulty,basePrice,worldId,minSize,maxSize,isRareFish
 1,premium,premium,images/fish/premium.png,0.5,0,1,1,100,1,50,1,10,0
 2,Dirt Fish,fish made out of dirt,images/fish/dirtFish.png,45,10,1,1,1,1,53,1,10,0
 3,Leaf Fish,leaf,images/fish/leaf.png,25,20,1,2,2,2,53,1,10,0
