@@ -22,7 +22,7 @@ void ReadCSV(Fdata& data, ForderedData& orderedData) {
     readData(&orderedData.worldData, "worldDataTable");
     readData(&data.modifierData, &orderedData.fishingRodData, "fishingRodDataTable");
     readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
-    readData(&data.baitData, &orderedData.baitData, "baitDataTable");
+    readData(&data.modifierData, &orderedData.baitData, "baitDataTable");
     readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
     readData(&data.mechanicStruct, &orderedData.mechanicStruct, "mechanicDataTable");
     readData(&data.modifierData, &orderedData.petData, "petDataTable");

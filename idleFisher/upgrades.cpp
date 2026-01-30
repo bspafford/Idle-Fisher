@@ -7,8 +7,11 @@
 
 void Upgrades::Init() {
 	// setup modifiers per stat
-	for (auto& [id, petData] : SaveData::data.modifierData)
-		modifiersPerStat[petData.stat].insert(petData.id);
+	for (auto& [id, modNode] : SaveData::data.modifierData) {
+		for (auto& [stat, modData] : modNode.stats) {
+			modifiersPerStat[stat].insert(id);
+		}
+	}
 
 	// initial calculation of all stats
 	for (auto& [stat, mods] : modifiersPerStat)
@@ -45,7 +48,7 @@ double Upgrades::Get(const StatContext& statCtx) {
 		FfishData& fishData = SaveData::data.fishData.at(1u); // get premium fish data
 		return fishData.probability * GetBaseStat(statCtx.stat); // increases chance to catch premium fish based on premium fish probability
 	} case Stat::CatchNum: {
-		double goldenFishVal = GetBaseStat(Stat::PremiumBuff);
+		double goldenFishVal = (GetBaseStat(Stat::PremiumBuff) + 1);
 		return GetBaseStat(statCtx.stat) * goldenFishVal * GetCharacter()->GetCombo();
 	} case Stat::GreenComboSize: {
 		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
@@ -67,13 +70,13 @@ double Upgrades::GetBaseStat(Stat s) {
 	if (it != cachedValues.end())
 		return it->second;
 
-	// wasn't in map
 	return Recalculate(s);
 }
 
-bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
+bool Upgrades::LevelUp(uint32_t upgradeId, int levels) {
 	ProgressionNode& progressNode = SaveData::data.progressionData.at(upgradeId);
 	SaveEntry& saveProgress = SaveData::saveData.progressionData.at(upgradeId);
+	ModifierNode& modNode = SaveData::data.modifierData.at(upgradeId);
 
 	// check if already at max level
 	// maxLevel of 0 means infinite levels
@@ -103,7 +106,9 @@ bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
 		// update cached price
 		cachedPrices[upgradeId] = GetPrice(progressNode, saveProgress, 1);
 
-		MarkDirty(stat);
+		// mark all modified stats as dirty
+		for (auto& [id, modData] : modNode.stats)
+			MarkDirty(modData.stat);
 		return true;
 	}
 	return false;
@@ -154,10 +159,12 @@ void Upgrades::UpdateDirty() {
 
 double Upgrades::Recalculate(Stat stat) {
 	double& cachedValue = cachedValues[stat];
-	for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
+	for (uint32_t upgradeId : modifiersPerStat.at(stat)) { // recalculate all modifiers of stat
 		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
 		SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
-		cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
+
+		ModData& modData = mod.stats.at(stat);
+		cachedValue += std::pow((modData.effect.base + modData.effect.add * saveMod.level) * std::pow(modData.effect.mul, saveMod.level), modData.effect.exp);
 	}
 
 	return cachedValue;

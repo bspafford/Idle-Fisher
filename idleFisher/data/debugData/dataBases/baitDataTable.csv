@@ -1,18 +1,18 @@
-id,buffs,debuffs,buffValues
-73,,Increase Fish Speed,1
-74,Chance To Not Reset Combo,,1
-75,Increase Fish Caught,Increase Fish Intervals,"(1,1)"
-76,Decrease Fish Intervals,Decrease Fish Caught,"(1,1)"
-77,Increase Golden Fish Chance,,1
-78,Decrease Golden Fish Cooldown,,1
-79,Increase Yellow / Green,,"(1,1)"
-80,Decrease Fish Move Speed,,1
-81,Increase Green,Decrease Yellow,"(1,1)"
-82,Increase Yellow,Decrease Green,"(1,1)"
-83,Increase Yellow / Green,Increase Fish Speed,"(1,1,1)"
-84,Catch More Fish,Increase Fish Speed,"(1,1)"
-85,Increase Fish Bounce Num,,1
-86,Increase Combo Max,,1
-87,Increase Combo Increase,,1
-88,Start At Higher Combo,,1
-89,Increase Fish Caught\nDecrease Fish Intervals\nIncrease Combo,,"(1,1,1)"
+id,"((stat,buffType,effectBase,effectAdd,effectMul,effectExp),...)"
+73,"(2,2,1,0,1,1)"
+74,"(20,1,1,0,1,1)"
+75,"(12,1,1,0,1,1)"
+76,"(0,1,1,0,1,1)"
+77,"(13,1,1,0,1,1)"
+78,"(14,1,1,0,1,1)"
+79,"(3,1,1,0,1,1),(4,1,1,0,1,1)"
+80,"(2,1,1,0,1,1)"
+81,"(3,1,1,0,1,1),(4,2,1,0,1,1)"
+82,"(4,1,1,0,1,1),(3,2,1,0,1,1)"
+83,"(3,1,1,0,1,1),(4,1,1,0,1,1),(2,2,1,0,1,1)"
+84,"(12,1,1,0,1,1),(2,2,1,0,1,1)"
+85,"(0,1,1,0,1,1)"
+86,"(6,1,1,0,1,1)"
+87,"(8,1,1,0,1,1)"
+88,"(7,1,1,0,1,1)"
+89,"(12,1,1,0,1,1),(2,1,1,0,1,1),(6,1,1,0,1,1)"

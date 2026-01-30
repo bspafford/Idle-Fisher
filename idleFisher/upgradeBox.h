@@ -15,12 +15,16 @@ struct ProgressionNode;
 struct ModifierNode;
 enum class Stat;
 
+enum class UpgradeBoxType {
+	Pet,
+	Bait,
+	Upgrade,
+};
+
 class UupgradeBox : public widget {
 public:
 	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct);
-	// either pet or upgrade is filled
-	UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, bool upgrade);
+	UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, UpgradeBoxType type);
 	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, SaveEntry* saveData);
 	~UupgradeBox();
 	void setup(uint32_t progressId);
@@ -37,7 +41,7 @@ private:
 
 	// structs
 	SaveEntry* saveWorldStruct;
-	FbaitStruct* baitStruct;
+	ModifierNode* baitStruct;
 	SaveEntry* saveBaitStruct;
 	ModifierNode* petStruct;
 	SaveEntry* savePetStruct;
@@ -54,8 +58,6 @@ private:
 
 	std::string nameString;
 	std::string descriptionString;
-	std::string buffString;
-	std::string debuffString;
 
 	std::unique_ptr<text> upgradeText;
 	std::unique_ptr<text> buttonPriceText;
@@ -63,7 +65,6 @@ private:
 
 	ProgressionNode* progressNode;
 	SaveEntry* saveProgressNode;
-	Stat stat;
 
 public:
 	std::unique_ptr<Ubutton> buyButton;

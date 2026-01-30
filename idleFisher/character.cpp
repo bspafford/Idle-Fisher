@@ -271,7 +271,7 @@ void Acharacter::leftClick() {
 			int combo = Main::fishComboWidget->getCombo();
 			switch (combo) {
 			case 0:
-				if (!baitBuffs::chanceToKeepCombo()) // reset combo if false
+				if (!Upgrades::Get(Stat::ShouldResetCombo)) // reset combo if false
 					comboNum = Upgrades::Get(StatContext(Stat::ComboReset, comboNum));
 				break;
 			// case 1: // stays the same
@@ -692,8 +692,8 @@ void Acharacter::setCatchPremium() {
 	canCatchPremium = true;
 }
 
-void Acharacter::equipBait(FbaitStruct* bait) {
-	SaveData::saveData.equippedBaitId = bait->id;
+void Acharacter::equipBait(uint32_t baitId) {
+	SaveData::saveData.equippedBaitId = baitId;
 	Main::achievementWidget->updateEquipmentWidget();
 }
 

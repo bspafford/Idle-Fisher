@@ -29,6 +29,8 @@ enum class Stat {
 	ComboIncrease = 8, // how much the combo increases when clicking green zone
 	ComboDecreaseOnBounce = 9, // how much the combo decreases when bouncing off the walls on a missed cycle
 	ComboReset = 10, // the min combo when clicking blue zone
+
+	ShouldResetCombo = 20, // whether the combo should reset on a miss
 	
 // fishing rod
 	Power = 11, // how strong the fishing rod is
@@ -46,6 +48,11 @@ enum class Stat {
 // rain
 	MaxRainSpawnInterval = 17,
 	MinRainSpawnInterval = 18,
+};
+
+enum class ModifierType {
+	Buff = 1,
+	Debuff = 2,
 };
 
 struct StatContext {
@@ -90,7 +97,7 @@ public:
 	// removes currency
 	// and updates the cached value
 	// returns true if successfully upgraded, price is outputted through reference, can be null
-	static bool LevelUp(uint32_t upgradeId, Stat stat, int levels = 1);
+	static bool LevelUp(uint32_t upgradeId, int levels = 1);
 	static double GetPrice(uint32_t upgradeId);
 	static double GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1);
 

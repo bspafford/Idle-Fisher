@@ -210,7 +210,7 @@ void UmechanicWidget::setupLocs() {
 
 void UmechanicWidget::buyFishTransporter() {
 
-	if (Upgrades::LevelUp(mechanicStruct->id, Stat::None)) {
+	if (Upgrades::LevelUp(mechanicStruct->id)) {
 
 		// spawn the fish transproter
 		world::currWorld->spawnFishTransporter();
@@ -244,7 +244,7 @@ void UmechanicWidget::update() {
 }
 
 void UmechanicWidget::upgradeFishTransporter() {
-	if (Upgrades::LevelUp(mechanicStruct->id, Stat::None)) {
+	if (Upgrades::LevelUp(mechanicStruct->id)) {
 		if (world::currWorld->fishTransporter)
 			world::currWorld->fishTransporter->upgrade(saveMechanicStruct);
 		update();

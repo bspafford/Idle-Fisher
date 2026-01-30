@@ -20,47 +20,38 @@
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 	this->saveWorldStruct = saveWorldStruct;
-	stat = Stat::None;
 
 	callback = std::bind(&UupgradeBox::openWorld, this);
 
 	setup(saveWorldStruct->id);
 }
 
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct) : widget(parent) {
-	this->NPCWidget = NPCWidget;
-	this->baitStruct = baitStruct;
-	this->saveBaitStruct = saveBaitStruct;
-
-	buffString = baitStruct->buffs;
-	debuffString = baitStruct->debuffs;
-	stat = Stat::None;
-
-	callback = std::bind(&UupgradeBox::equipBait, this);
-
-	thumbnail = std::make_unique<Image>("images/widget/thumbnails/bait" + std::to_string(baitStruct->id) + ".png", vector{0, 0}, false);
-	
-	setup(baitStruct->id);
-}
-
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, bool upgrade) : widget(parent) {
+UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, UpgradeBoxType type) : widget(parent) {
 	this->NPCWidget = NPCWidget;
 
-	if (upgrade) {
+	if (type == UpgradeBoxType::Upgrade) {
 		upgradeStruct = data;
 		saveUpgradeStruct = saveData;
-		stat = upgradeStruct->stat;
 
 		setup(upgradeStruct->id);
-	} else { // is pet
+	} else if (type == UpgradeBoxType::Pet){ // is pet
 		petStruct = data;
 		savePetStruct = saveData;
-		stat = petStruct->stat;
 
 		callback = std::bind(&UupgradeBox::spawnPet, this);
 		thumbnail = std::make_unique<Image>("images/pets/pet" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
 	
 		setup(savePetStruct->id);
+	} else if (type == UpgradeBoxType::Bait) {
+		this->NPCWidget = NPCWidget;
+		this->baitStruct = data;
+		this->saveBaitStruct = saveData;
+
+		callback = std::bind(&UupgradeBox::equipBait, this);
+
+		thumbnail = std::make_unique<Image>("images/widget/thumbnails/bait" + std::to_string(baitStruct->id) + ".png", vector{ 0, 0 }, false);
+
+		setup(baitStruct->id);
 	}
 }
 
@@ -68,7 +59,6 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct*
 	this->NPCWidget = NPCWidget;
 	this->vaultUnlocksStruct = vaultUnlocksStruct;
 	this->saveVaultUnlocksStruct = saveVaultUnlocksStruct;
-	stat = Stat::None;
 
 	setup(vaultUnlocksStruct->id);
 }
@@ -145,7 +135,7 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 				widget->setNameDescription(nameString, descriptionString);
 		} else if (UfishermanWidget* widget = dynamic_cast<UfishermanWidget*>(NPCWidget)) {
 			if (widget && widget->name->getString() != nameString) {
-				widget->setNameDescription(nameString, buffString, debuffString);
+				widget->setNameDescription(nameString, descriptionString);
 			}
 		}
 	}
@@ -197,7 +187,7 @@ bool UupgradeBox::mouseOver() {
 }
 
 void UupgradeBox::buyUpgrade() {
-	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->id, stat)) // if not max level, and don't have enough currency
+	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->id)) // if not max level, and don't have enough currency
 		return; // didn't have enough money to purchase upgrade
 
 	// will equip the item or object once the layer has unlocked it, instead of needing to click twice
@@ -301,7 +291,7 @@ void UupgradeBox::spawnPet() {
 
 void UupgradeBox::equipBait() {
 	if (SaveData::saveData.equippedBaitId == 0 || baitStruct->id != SaveData::saveData.equippedBaitId)
-		GetCharacter()->equipBait(baitStruct);
+		GetCharacter()->equipBait(baitStruct->id);
 	else {
 		// unequip bait
 		SaveData::saveData.equippedBaitId = -1;

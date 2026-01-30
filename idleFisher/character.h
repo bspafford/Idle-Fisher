@@ -38,7 +38,7 @@ public:
 	// Can be a negative value
 	void IncreaseCombo(double comboChange);
 
-	void equipBait(FbaitStruct* bait);
+	void equipBait(uint32_t baitId);
 
 private:
 	void drawFishingLine(Shader* shaderProgram);

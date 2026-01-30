@@ -108,10 +108,12 @@ void UfishermanWidget::setup() {
 	// setup bait
 	baitHolderList = std::make_unique<UscrollBox>(this);
 	baitHolderList->setVisibility(false);
-	for (auto& [id, baitData] : SaveData::data.baitData) {
-		SaveEntry* baitSaveData = &SaveData::saveData.progressionData.at(baitData.id);
+	for (uint32_t baitId : SaveData::orderedData.baitData) {
+		ModifierNode& baitData = SaveData::data.modifierData.at(baitId);
+		
+		SaveEntry* baitSaveData = &SaveData::saveData.progressionData.at(baitId);
 
-		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(baitHolderList.get(), this, &baitData, baitSaveData);
+		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(baitHolderList.get(), this, &baitData, baitSaveData, UpgradeBoxType::Bait);
 		if (upgradeBox->buyButton)
 			upgradeBox->buyButton->setParent(baitHolderList.get());
 		baitHolderList->addChild(upgradeBox.get(), upgradeBox->getSize().y);
@@ -193,10 +195,10 @@ void UfishermanWidget::draw(Shader* shaderProgram) {
 	closeButton->draw(shaderProgram);
 }
 
-void UfishermanWidget::setNameDescription(std::string nameString, std::string buffString, std::string debuffString) {
+void UfishermanWidget::setNameDescription(std::string nameString, std::string description) {
 	name->setText(nameString);
-	buffText->setText(buffString);
-	debuffText->setText(debuffString);
+	buffText->setText(description);
+	//debuffText->setText(debuffString);
 
 	// change nameHolder sizes
 	nameHolder->changeChildHeight(name.get(), name->getSize().y + 1.f);
@@ -269,21 +271,21 @@ void UfishermanWidget::setupLocs() {
 }
 
 void UfishermanWidget::upgradePower() {
-	if (Upgrades::LevelUp(114u, Stat::Power)) {
+	if (Upgrades::LevelUp(114u)) {
 		updateStats();
 		fishingRodThumbnail->setImage("images/widget/thumbnails/fishingRod" + std::to_string(calcFishingRodIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeSpeed() {
-	if (Upgrades::LevelUp(115u, Stat::FishComboSpeed)) {
+	if (Upgrades::LevelUp(115u)) {
 		updateStats();
 		fishingLineThumbnail->setImage("images/widget/thumbnails/fishingLine" + std::to_string(calcFishingLineIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeCatchChance() {
-	if (Upgrades::LevelUp(116u, Stat::CatchNum)) {
+	if (Upgrades::LevelUp(116u)) {
 		updateStats();
 		bobberThumbnail->setImage("images/widget/thumbnails/bobber" + std::to_string(calcBobberIndex() + 1) + ".png");
 	}

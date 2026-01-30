@@ -75,23 +75,23 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 71,53,100,Auto Fisher #9,,9,0,10,1
 72,53,100,Auto Fisher #10,,10,0,11,1
 // bait,,,,,,,,
-73,53,1,Pepper,,1,0,1,1
-74,53,1,Fish Food,,2,0,1,1
-75,53,1,Canned Meat,,3,0,1,1
-76,53,1,Worm,,4,0,1,1
-77,53,1,temp3,,5,0,1,1
-78,53,1,temp4,,6,0,1,1
-79,53,1,temp5,,7,0,1,1
-80,53,1,temp6,,8,0,1,1
-81,53,1,temp7,,9,0,1,1
-82,53,1,temp8,,10,0,1,1
-83,53,1,temp9,,11,0,1,1
-84,53,1,temp10,,12,0,1,1
-85,53,1,temp11,,13,0,1,1
-86,53,1,temp12,,14,0,1,1
-87,53,1,temp13,,15,0,1,1
-88,53,1,temp14,,16,0,1,1
-89,53,1,Master Bait,,17,0,1,1
+73,53,1,Pepper,Increase Fish Speed,1,0,1,1
+74,53,1,Fish Food,Chance To Not Reset Combo,2,0,1,1
+75,53,1,Canned Meat,Increase Fish Caught\nIncrease Fish Intervals,3,0,1,1
+76,53,1,Worm,Decrease Fish Intervals\nDecrease Fish Caught,4,0,1,1
+77,53,1,temp3,Increase Golden Fish Chance,5,0,1,1
+78,53,1,temp4,Decrease Golden Fish Cooldown,6,0,1,1
+79,53,1,temp5,Increase Yellow / Green,7,0,1,1
+80,53,1,temp6,Decrease Fish Move Speed,8,0,1,1
+81,53,1,temp7,Increase Green\nDecrease Yellow,9,0,1,1
+82,53,1,temp8,Increase Yellow\nDecrease Green,10,0,1,1
+83,53,1,temp9,Increase Yellow / Green\nIncrease Fish Speed,11,0,1,1
+84,53,1,temp10,Catch More Fish\nIncrease Fish Speed,12,0,1,1
+85,53,1,temp11,Increase Fish Bounce Num,13,0,1,1
+86,53,1,temp12,Increase Combo Max,14,0,1,1
+87,53,1,temp13,Increase Combo Increase,15,0,1,1
+88,53,1,temp14,Start At Higher Combo,16,0,1,1
+89,53,1,Master Bait,Increase Fish Caught\nDecrease Fish Speed\nIncrease Combo,17,0,1,1
 // mechanic data,,,,,,,,
 90,53,100,George,,1000,0,1,1
 91,54,100,,,10000,0,1,1

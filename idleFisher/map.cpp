@@ -161,7 +161,7 @@ void Umap::openLevel(uint32_t levelId) {
 
 	if (saveWorld.level) { // already unlocked
 		Scene::openLevel(levelId);
-	} else if (Upgrades::LevelUp(levelId, Stat::None)) {
+	} else if (Upgrades::LevelUp(levelId)) {
 		// update the map
 		worldButtons.at(levelId).second->setText(worldData->name);
 		Main::currencyWidget->updateList();

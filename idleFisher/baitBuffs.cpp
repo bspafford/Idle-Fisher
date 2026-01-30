@@ -1,6 +1,7 @@
 #include "baitBuffs.h"
 #include "saveData.h"
 
+/*
 double baitBuffs::increaseFishSpeed() {
 	uint32_t id = 1u; // pepper
 	if (SaveData::saveData.equippedBaitId != id)
@@ -121,3 +122,4 @@ std::vector<double> baitBuffs::increaseFishCaughtDecreaseFishIntervalsIncreaseCo
 		return { 0, 0, 0 };
 	return SaveData::data.baitData.at(id).buffValues;
 }
+*/

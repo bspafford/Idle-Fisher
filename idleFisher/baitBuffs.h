@@ -4,6 +4,7 @@
 
 class baitBuffs {
 public:
+	/*
 	// increases the fish combo speed, just cause
 	static double increaseFishSpeed();
 	// calculates a chance to not reset combo, returns FALSE for reset, TRUE to keep combo
@@ -34,4 +35,5 @@ public:
 	static double startAtHigherCombo();
 	// index 0 = increase fish caught, index 1 = decrease fish intervals, index 2 = increase combo
 	static std::vector<double> increaseFishCaughtDecreaseFishIntervalsIncreaseCombo();
+	*/
 };

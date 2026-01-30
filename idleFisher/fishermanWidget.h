@@ -20,7 +20,7 @@ public:
 	void setupLocs() override;
 	void showUpgradePage(int index);
 
-	void setNameDescription(std::string name, std::string buffString, std::string debuffString);
+	void setNameDescription(std::string name, std::string description);
 
 	void updateStats();
 	void upgradePower();
