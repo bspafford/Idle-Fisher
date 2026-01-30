@@ -54,4 +54,19 @@ public:
 
 		setupLocs();
 	}
+
+	template <typename T1, typename T2>
+	void setup(std::unordered_map<uint32_t, T1>& data, std::vector<uint32_t> ids, std::unordered_map<uint32_t, T2>& saveData) {
+		for (uint32_t id : ids) {
+			T1* currData = &data.at(id);
+			T2* currSaveData = &saveData.at(currData->id);
+			std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolder.get(), this, currData, currSaveData, false);
+			if (upgradeBox->buyButton)
+				upgradeBox->buyButton->setParent(upgradeHolder.get());
+			upgradeHolder->addChild(upgradeBox.get(), upgradeBox->getSize().y);
+			upgradeBoxList.push_back(std::move(upgradeBox));
+		}
+
+		setupLocs();
+	}
 };

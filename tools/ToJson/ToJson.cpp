@@ -20,14 +20,14 @@ void ReadCSV(Fdata& data, ForderedData& orderedData) {
     readData(&data.currencyData, &orderedData.currencyData, "currencyDataTable");
     readData(&data.autoFisherData, &orderedData.autoFisherData, "autoFisherDataTable");
     readData(&orderedData.worldData, "worldDataTable");
-    readData(&data.fishingRodData, nullptr, "fishingRodDataTable");
+    readData(&data.modifierData, &orderedData.fishingRodData, "fishingRodDataTable");
     readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
     readData(&data.baitData, &orderedData.baitData, "baitDataTable");
     readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
     readData(&data.mechanicStruct, &orderedData.mechanicStruct, "mechanicDataTable");
-    readData(&data.petData, &orderedData.petData, "petDataTable");
+    readData(&data.modifierData, &orderedData.petData, "petDataTable");
     readData(&data.rebirthData, &orderedData.rebirthData, "rebirthDataTable");
-    readData(&data.upgradeData, &orderedData.upgradeData, "upgradeDataTable");
+    readData(&data.modifierData, &orderedData.upgradeData, "upgradeDataTable");
     readData(&data.vaultUnlockData, &orderedData.vaultUnlockData, "vaultUnlocksDataTable");
 }
 

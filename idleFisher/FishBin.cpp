@@ -28,7 +28,7 @@ void FishBin::sellFish() {
 		FfishData* currFish = &SaveData::data.fishData.at(fishId);
 
 		for (int j = 0; j < currSaveFish.numOwned.size(); j++) {
-			double currencyGained = currSaveFish.numOwned[j] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, StatContextType::Fish, j));
+			double currencyGained = currSaveFish.numOwned[j] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, j));
 			if (currencyGained > 0)
 				SaveData::saveData.currencyList[currFish->worldId].unlocked = true;
 			SaveData::saveData.currencyList[currFish->worldId].numOwned += currencyGained;

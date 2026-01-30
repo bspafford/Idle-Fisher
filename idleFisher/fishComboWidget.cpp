@@ -33,7 +33,7 @@ void UfishComboWidget::SetFish(FfishData fish, int quality) {
 	this->quality = quality;
 
 	updateComboSize();
-	fishSpeed = upgrades::calcFishComboSpeed(currFish, quality);
+	fishSpeed = Upgrades::Get(StatContext(Stat::FishComboSpeed, currFish.id, quality));
 
 	setupRandomCombo();
 }

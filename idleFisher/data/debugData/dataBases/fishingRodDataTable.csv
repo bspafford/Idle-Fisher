@@ -1,4 +1,4 @@
-id,effectBase,effectAdd,effectMul,effectExp
-114,10,10,1,1
-115,1,1,1,1
-116,1,1,1,1
+id,stat,effectBase,effectAdd,effectMul,effectExp
+114,11,10,10,1,1
+115,2,1,1,1,1
+116,12,1,1,1,1

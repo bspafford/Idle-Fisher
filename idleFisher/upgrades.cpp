@@ -7,11 +7,8 @@
 
 void Upgrades::Init() {
 	// setup modifiers per stat
-	for (auto& [id, upgradeData] : SaveData::data.upgradeData)
-		modifiersPerStat[upgradeData.stat].insert(upgradeData.id);
-
-	for (auto& [id, upgradedata] : SaveData::data.upgradeData)
-		modifiersPerStat[upgradedata.stat].insert(upgradedata.id);
+	for (auto& [id, petData] : SaveData::data.modifierData)
+		modifiersPerStat[petData.stat].insert(petData.id);
 
 	// initial calculation of all stats
 	for (auto& [stat, mods] : modifiersPerStat)
@@ -19,11 +16,18 @@ void Upgrades::Init() {
 }
 
 double Upgrades::Get(const StatContext& statCtx) {
-	switch(statCtx.type) {
-	case StatContextType::Fish: {
+	switch(statCtx.stat) {
+	case Stat::FishPrice: {
 		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
 		double qualityMultiplier = 1 + (statCtx.value * 0.1);
 		return GetStat(statCtx.stat) * fishData.basePrice * qualityMultiplier;
+	} case Stat::FishComboSpeed: {
+		// fishing power affects fish combo speed
+		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
+		double qualityMultiplier = 1.0 + (statCtx.value * 0.1);
+		double speed = (0.1 * GetCharacter()->GetCombo() + 0.9) * static_cast<double>(fishData.fishSpeed) * qualityMultiplier; // increases speed
+		double finalSpeed = math::max(speed / GetStat(statCtx.stat), 0.1); // decreases speed, and makes sure that it gives the fish a min speed, so it doesn't get stuck
+		return finalSpeed;
 	} default:
 		return GetStat(statCtx.stat);
 	}
@@ -43,7 +47,8 @@ bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
 	SaveEntry& saveProgress = SaveData::saveData.progressionData.at(upgradeId);
 
 	// check if already at max level
-	if (saveProgress.level + levels > progressNode.maxLevel)
+	// maxLevel of 0 means infinite levels
+	if (progressNode.maxLevel != 0 && saveProgress.level + levels > progressNode.maxLevel)
 		return false;
 
 	// check if there is already a cached price or not
@@ -62,7 +67,8 @@ bool Upgrades::LevelUp(uint32_t upgradeId, Stat stat, int levels) {
 		Main::currencyWidget->updateList(); // update currency widget
 
 		saveProgress.level += levels; // increase level
-		if (saveProgress.level > progressNode.maxLevel) // cap at max level
+		// maxLevel of 0 means infinite levels
+		if (progressNode.maxLevel != 0 && saveProgress.level > progressNode.maxLevel) // cap at max level
 			saveProgress.level = progressNode.maxLevel;
 
 		// update cached price
@@ -120,7 +126,7 @@ void Upgrades::UpdateDirty() {
 double Upgrades::Recalculate(Stat stat) {
 	double& cachedValue = cachedValues[stat];
 	for (uint32_t upgradeId : modifiersPerStat[stat]) { // recalculate all modifiers of stat
-		FupgradeStruct& mod = SaveData::data.upgradeData.at(upgradeId);
+		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
 		SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
 		cachedValue += std::pow((mod.effect.base + mod.effect.add * saveMod.level) * std::pow(mod.effect.mul, saveMod.level), mod.effect.exp);
 	}
@@ -146,7 +152,7 @@ SaveEntry* upgrades::getUpgrade(std::string upgradeFuncName) {
 	return saveUpgradeMap[upgradeFuncName];
 }
 
-bool upgrades::upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double* price) {
+bool upgrades::upgrade(ModifierNode upgradeStruct, UupgradeBox* boxRef, double* price) {
 	return false;
 	/*
 	if (upgradeStruct.id == "")
@@ -168,21 +174,6 @@ bool upgrades::upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double
 	}
 	return false;
 	*/
-}
-
-double upgrades::calcFishingRodPowerPrice() {
-	int level = SaveData::saveData.fishingRod.power.level;
-	return 30 * pow(3, level);
-}
-
-double upgrades::calcFishingRodSpeedPrice() {
-	int level = SaveData::saveData.fishingRod.speed.level;
-	return 10 * pow(2, level);
-}
-
-double upgrades::calcFishingRodCatchChancePrice() {
-	int level = SaveData::saveData.fishingRod.catchChance.level;
-	return 20 * pow(1.75, level);
 }
 
 double upgrades::calcGreenFishingUpgrade() {
@@ -228,26 +219,16 @@ double upgrades::calcComboReset(double currCombo, double comboMax) {
 	return math::max(currCombo / 2.f, calcComboMin(comboMax));
 }
 
-double upgrades::calcFishComboSpeed(FfishData currFish, int quality) {
-	// look at fishing rod
-	// look at fish speed
-	double speed = (0.1 * GetCharacter()->GetCombo() + 0.9) / (upgrades::calcFishingRodPower() / 5.0) * static_cast<double>(currFish.fishSpeed);
-	speed *= (baitBuffs::increaseFishSpeed() + 1.0) * (baitBuffs::increaseFishSpeedIncreaseYellowGreen()[0] + 1.0) * (baitBuffs::increaseFishSpeedCatchMoreFish()[0] + 1.0); // debuff
-	speed *= (1.0 - petBuffs::decreaseFishComboSpeed()) * (1.0 - baitBuffs::decreaseFishMoveSpeed()) * (1.0 + (0.1 * quality)); // buff
-
-	return math::max(speed, 0.1); // makes minimum speed 0.1 so fish will still move if too strong
-}
-
 double upgrades::calcComboDecreaseOnBounce() {
 	return 1;
 }
 
 double upgrades::calcFishingRodPower() {
-	return SaveData::saveData.fishingRod.power.level * 10;
+	return SaveData::saveData.progressionData.at(114u).level * 10;
 }
 
 double upgrades::calcFishingRodCatchChance() {
-	return SaveData::saveData.fishingRod.catchChance.level;
+	return SaveData::saveData.progressionData.at(116).level;
 }
 
 double upgrades::calcFishCatchNum() {
@@ -295,13 +276,14 @@ float upgrades::calcMinRainSpawnInterval() {
 }
 
 int upgrades::calcFishingRodIndex() {
-	return SaveData::saveData.fishingRod.power.level / 10;
+	return 1;
+	//return SaveData::saveData.fishingRod.power.level / 10;
 }
 
 int upgrades::calcFishingLineIndex() {
-	return SaveData::saveData.fishingRod.speed.level / 10;
+	return 1;// SaveData::saveData.fishingRod.speed.level / 10;
 }
 
 int upgrades::calcBobberIndex() {
-	return SaveData::saveData.fishingRod.catchChance.level / 10;
+	return 1;// SaveData::saveData.fishingRod.catchChance.level / 10;
 }

@@ -173,7 +173,7 @@ void AautoFisher::catchFish() {
 	int catchNum = 1;
 
 	// if there is enough room for the fish
-	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, StatContextType::Fish, 0)) * catchNum <= maxCurrency) {
+	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * catchNum <= maxCurrency) {
 		int index = calcCurrencyInList(currFish, heldFish);
 
 		if (index != -1) {
@@ -234,7 +234,7 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 
 		// see if autofisher has enough fishing power, see if theres enough room for the fish
 		if (fData.fishingPower <= fishingPower && (fData.worldId == Scene::GetCurrWorldId() || fData.worldId == 1u)) {
-			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, StatContextType::Fish, 0)) <= maxCurrency) || !isCurrencyAFactor)
+			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor)
 				totalProb += float(fData.probability);
 		}
 	}
@@ -247,7 +247,7 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 			continue; // dont include premium here
 
 		if (fData.fishingPower <= fishingPower && (fData.worldId == Scene::GetCurrWorldId() || fData.worldId == 1u)) {
-			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, StatContextType::Fish, 0)) <= maxCurrency) || !isCurrencyAFactor) {
+			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor) {
 				test += fData.probability / totalProb;
 					probList.push_back(std::pair{ fishId, test});
 			}
@@ -294,7 +294,7 @@ double AautoFisher::calcCurrencyHeld(std::vector<FsaveFishData> fishList) {
 	for (int i = 0; i < fishList.size(); i++) {
 		FsaveFishData currSaveFish = fishList[i];
 		FfishData currFish = SaveData::data.fishData[currSaveFish.id];
-		currency += currSaveFish.numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, StatContextType::Fish, 0));
+		currency += currSaveFish.numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0));
 	}
 
 	return currency;
@@ -388,7 +388,7 @@ double AautoFisher::calcIdleProfits(double afkTime) {
 	std::vector<std::pair<uint32_t, double>> fishList = calcAutoFishList(numOfFishCatched);
 	for (int i = 0; i < fishList.size(); i++) {
 		FfishData* currFish = &SaveData::data.fishData.at(fishList[i].first);
-		currencyNum += fishList[i].second * Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, StatContextType::Fish, 0));
+		currencyNum += fishList[i].second * Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, 0));
 	}
 
 	return currencyNum;
@@ -465,7 +465,7 @@ double AautoFisher::calcMPS() {
 		uint32_t id = probList[i].first;
 		float percent = probList[i].second;
 
-		totalPrice += (percent - prevPercent) * Upgrades::Get(StatContext(Stat::FishPrice, id, StatContextType::Fish, 0));
+		totalPrice += (percent - prevPercent) * Upgrades::Get(StatContext(Stat::FishPrice, id, 0));
 		//std::cout << "percent: " << percent << ", price: " << ((percent - prevPercent) * upgrades::getFishSellPrice(SaveData::data.fishData[id])) << std::endl;
 
 		prevPercent = percent;

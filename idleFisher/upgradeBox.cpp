@@ -43,26 +43,25 @@ UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStr
 	setup(baitStruct->id);
 }
 
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruct, SaveEntry* savePetStruct) : widget(parent) {
+UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, bool upgrade) : widget(parent) {
 	this->NPCWidget = NPCWidget;
-	this->petStruct = petStruct;
-	this->savePetStruct = savePetStruct;
-	stat = petStruct->stat;
 
-	callback = std::bind(&UupgradeBox::spawnPet, this);
+	if (upgrade) {
+		upgradeStruct = data;
+		saveUpgradeStruct = saveData;
+		stat = upgradeStruct->stat;
 
-	thumbnail = std::make_unique<Image>("images/pets/pet" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
+		setup(upgradeStruct->id);
+	} else { // is pet
+		petStruct = data;
+		savePetStruct = saveData;
+		stat = petStruct->stat;
 
-	setup(savePetStruct->id);
-}
-
-UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* upgradeStruct, SaveEntry* saveUpgradeStruct) : widget(parent) {
-	this->NPCWidget = NPCWidget;
-	this->upgradeStruct = upgradeStruct;
-	this->saveUpgradeStruct = saveUpgradeStruct;
-	stat = upgradeStruct->stat;
-
-	setup(upgradeStruct->id);
+		callback = std::bind(&UupgradeBox::spawnPet, this);
+		thumbnail = std::make_unique<Image>("images/pets/pet" + std::to_string(savePetStruct->id) + ".png", vector{ 0, 0 }, false);
+	
+		setup(savePetStruct->id);
+	}
 }
 
 UupgradeBox::UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* vaultUnlocksStruct, SaveEntry* saveVaultUnlocksStruct) : widget(parent) {
@@ -253,7 +252,7 @@ void UupgradeBox::buyUpgrade() {
 	}
 	
 	update();
-	Main::currencyWidget->updateList(); // update currency list
+	Main::heldFishWidget->updateList(); // update held fish widget, incase something like an upgrade affects it
 }
 
 void UupgradeBox::update() {

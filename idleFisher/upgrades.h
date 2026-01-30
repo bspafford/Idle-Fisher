@@ -59,13 +59,12 @@ enum class StatContextType {
 struct StatContext {
 	Stat stat = Stat::None;
 	uint32_t id = 0; // id of the context, fish id, bait id, pet id, upgrade id, vault unlock id
-	StatContextType type = StatContextType::None;
 
 	double value = 0.0;
 
 	// Fish Data
-	StatContext(Stat _stat, uint32_t _id, StatContextType _type, double _value)
-		: stat(_stat), id(_id), type(_type), value(_value) {}
+	StatContext(Stat _stat, uint32_t _id, double _value)
+		: stat(_stat), id(_id), value(_value) {}
 };
 
 class Upgrades {
@@ -113,15 +112,11 @@ class upgrades {
 	static inline std::unordered_map<std::string, SaveEntry*> saveUpgradeMap;
 
 public:
-	static bool upgrade(FupgradeStruct upgradeStruct, UupgradeBox* boxRef, double* price = NULL);
+	static bool upgrade(ModifierNode upgradeStruct, UupgradeBox* boxRef, double* price = NULL);
 
 	static void init();
-	static double calcPrice(FupgradeStruct* upgradeStruct, SaveEntry* saveUpgradeStruct) { return 0; }
+	static double calcPrice(ModifierNode* upgradeStruct, SaveEntry* saveUpgradeStruct) { return 0; }
 	static SaveEntry* getUpgrade(std::string upgradeFuncName);
-
-	static double calcFishingRodPowerPrice();
-	static double calcFishingRodSpeedPrice();
-	static double calcFishingRodCatchChancePrice();
 
 	static double calcGreenFishingUpgrade();
 	static double calcYellowFishingUpgrade();
@@ -136,7 +131,6 @@ public:
 	
 
 	// how many times the combo fish can go hit the walls until it goes away
-	static double calcFishComboSpeed(FfishData currFish, int quality);
 	static double calcComboDecreaseOnBounce();
 
 	// fishing rod

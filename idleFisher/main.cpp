@@ -417,7 +417,6 @@ void Main::rebirth() {
 	SaveData::saveData.progressionData.clear();
 	SaveData::saveData.autoFisherList.clear();
 	SaveData::saveData.equippedPetId = -1;
-	SaveData::saveData.fishingRod = FsaveFishingRodStruct();
 	SaveData::saveData.equippedBaitId = -1;
 
 	Scene::pet = nullptr;

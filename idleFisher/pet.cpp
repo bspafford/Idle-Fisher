@@ -5,7 +5,7 @@
 
 #include "debugger.h"
 
-Apet::Apet(FpetStruct* pet, vector loc) {
+Apet::Apet(ModifierNode* pet, vector loc) {
 	this->pet = pet;
 	SaveData::saveData.equippedPetId = pet->id;
 	img = std::make_unique<Image>("images/pets/" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
@@ -47,6 +47,6 @@ void Apet::setLoc(vector loc) {
 	img->setLoc(loc - vector{ img->getSize().x / 2.f, img->getSize().y });
 }
 
-FpetStruct* Apet::getPetStruct() {
+ModifierNode* Apet::getPetStruct() {
 	return pet;
 }

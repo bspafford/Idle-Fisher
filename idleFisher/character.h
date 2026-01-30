@@ -38,7 +38,6 @@ public:
 	// Can be a negative value
 	void IncreaseCombo(double comboChange);
 
-	void equipFishingRod(FfishingRodStruct* fishingRod);
 	void equipBait(FbaitStruct* bait);
 
 private:

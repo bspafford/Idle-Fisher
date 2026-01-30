@@ -262,7 +262,7 @@ void Acharacter::leftClick() {
 		return;
 
 	// puts bobber in water
-	if (Cursor::getMouseOverWater() && SaveData::saveData.fishingRod.power.level > 0 && !isFishing) {
+	if (Cursor::getMouseOverWater() && SaveData::saveData.progressionData.at(114u).level > 0 && !isFishing) { // if power is > 0
 		Input::setLeftClick(this, &Acharacter::StartFishing, false);
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->isVisible()) {
@@ -524,7 +524,7 @@ void Acharacter::premiumFishBuff() {
 		for (auto& [fishId, fishData] : SaveData::data.fishData) {
 			if (fishData.worldId == Scene::GetCurrWorldId()) {
 				FsaveFishData* saveFish = &SaveData::saveData.fishData.at(fishId);
-				heldCurrency += saveFish->numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, StatContextType::Fish, 0));
+				heldCurrency += saveFish->numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0));
 			}
 		}
 
@@ -690,10 +690,6 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 
 void Acharacter::setCatchPremium() {
 	canCatchPremium = true;
-}
-
-void Acharacter::equipFishingRod(FfishingRodStruct* fishingRod) {
-	Main::achievementWidget->updateEquipmentWidget();
 }
 
 void Acharacter::equipBait(FbaitStruct* bait) {

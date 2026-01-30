@@ -9,19 +9,18 @@ class text;
 class Ubutton;
 class verticalBox;
 struct FbaitStruct;
-struct FpetStruct;
-struct FupgradeStruct;
 struct FvaultUnlocksStruct;
 struct SaveEntry;
 struct ProgressionNode;
+struct ModifierNode;
 enum class Stat;
 
 class UupgradeBox : public widget {
 public:
 	UupgradeBox(widget* parent, widget* NPCWidget, SaveEntry* saveWorldStruct);
 	UupgradeBox(widget* parent, widget* NPCWidget, FbaitStruct* baitStruct, SaveEntry* saveBaitStruct);
-	UupgradeBox(widget* parent, widget* NPCWidget, FpetStruct* petStruct, SaveEntry* saveData);
-	UupgradeBox(widget* parent, widget* NPCWidget, FupgradeStruct* data, SaveEntry* saveData);
+	// either pet or upgrade is filled
+	UupgradeBox(widget* parent, widget* NPCWidget, ModifierNode* data, SaveEntry* saveData, bool upgrade);
 	UupgradeBox(widget* parent, widget* NPCWidget, FvaultUnlocksStruct* data, SaveEntry* saveData);
 	~UupgradeBox();
 	void setup(uint32_t progressId);
@@ -40,9 +39,9 @@ private:
 	SaveEntry* saveWorldStruct;
 	FbaitStruct* baitStruct;
 	SaveEntry* saveBaitStruct;
-	FpetStruct* petStruct;
+	ModifierNode* petStruct;
 	SaveEntry* savePetStruct;
-	FupgradeStruct* upgradeStruct;
+	ModifierNode* upgradeStruct;
 	SaveEntry* saveUpgradeStruct;
 	FvaultUnlocksStruct* vaultUnlocksStruct;
 	SaveEntry* saveVaultUnlocksStruct;

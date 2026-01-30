@@ -345,7 +345,7 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	selectedFishDescription->setText(fishData->description);
 
 	baseCurrencyNum->setText(shortNumbers::convert2Short(fishData->basePrice));
-	currencyNum->setText(shortNumbers::convert2Short(Upgrades::Get(StatContext(Stat::FishPrice, fishData->id, StatContextType::Fish, 0 ))));
+	currencyNum->setText(shortNumbers::convert2Short(Upgrades::Get(StatContext(Stat::FishPrice, fishData->id, 0 ))));
 	caughtNum->setText(shortNumbers::convert2Short(saveFishData->calcTotalCaughtFish()));
 	powerNum->setText(shortNumbers::convert2Short(fishData->fishingPower));
 	speedNum->setText(shortNumbers::convert2Short(fishData->fishSpeed));

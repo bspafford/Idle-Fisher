@@ -139,26 +139,6 @@ struct FsaveAutoFisherStruct {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveAutoFisherStruct, id, fullness);
 };
 
-struct FfishingRodStruct {
-    uint32_t id; // progression id
-    ScalingFormula effect;
-
-    void parseData(std::vector<std::string> row) {
-        id = std::stoul(row[0]);
-		effect = { std::stod(row[1]), std::stod(row[2]), std::stod(row[3]), std::stod(row[4]) };
-    }
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishingRodStruct, id, effect);
-};
-
-struct FsaveFishingRodStruct {
-    SaveEntry power;
-	SaveEntry speed;
-	SaveEntry catchChance;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishingRodStruct, power, speed, catchChance);
-};
-
 struct FbaitStruct {
     uint32_t id; // progression id
     std::string buffs;
@@ -213,20 +193,6 @@ struct FachievementStruct {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FachievementStruct, id, name, description, stat, weight);
 };
 
-struct FupgradeStruct {
-    uint32_t id; // progression id
-    Stat stat; // what this upgrade improves
-    ScalingFormula effect; // upgrade scaling
-
-    void parseData(std::vector<std::string> row) {
-        id = std::stoul(row[0]);
-        stat = static_cast<Stat>(std::stoi(row[1]));
-        effect = { std::stod(row[2]), std::stod(row[3]), std::stod(row[4]), std::stod(row[5]) };
-	}
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FupgradeStruct, id, stat, effect);
-};
-
 // upgrades that improve/unlock stats
 struct ProgressionNode {
     uint32_t id; // unique id for this upgrade
@@ -249,6 +215,20 @@ struct ProgressionNode {
         description = row[4];
 
         cost = { std::stod(row[5]), std::stod(row[6]), std::stod(row[7]), std::stod(row[8])};
+    }
+};
+
+struct ModifierNode {
+    uint32_t id; // progressionId
+    Stat stat;
+	ScalingFormula effect;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ModifierNode, id, stat, effect);
+
+    void parseData(std::vector<std::string> row) {
+        id = std::stoul(row[0]);
+        stat = static_cast<Stat>(std::stoi(row[1]));
+        effect = { std::stod(row[2]), std::stod(row[3]), std::stod(row[4]), std::stod(row[5]) };
     }
 };
 
@@ -296,18 +276,6 @@ struct FrebirthStruct {
 
         currencyNum = std::stod(row[7]);
         loc = { std::stof(row[8]), std::stof(row[9]) };
-    }
-};
-
-struct FpetStruct {
-    uint32_t id;
-	Stat stat; // what this pet improves
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FpetStruct, id, stat);
-
-    void parseData(std::vector<std::string> row) {
-        id = std::stoul(row[0]);
-		stat = static_cast<Stat>(std::stoi(row[1]));
     }
 };
 
@@ -409,24 +377,21 @@ struct Fdata {
     std::unordered_map<uint32_t, FcurrencyStruct> currencyData;
 
     std::unordered_map<uint32_t, ProgressionNode> progressionData;
+    std::unordered_map<uint32_t, ModifierNode> modifierData;
 
     // npc upgrades
-    std::unordered_map<uint32_t, FupgradeStruct> upgradeData;
     std::unordered_map<uint32_t, FmechanicStruct> mechanicStruct;
     std::unordered_map<uint32_t, FautoFisherStruct> autoFisherData;
-    std::unordered_map<uint32_t, FpetStruct> petData;
     std::unordered_map<uint32_t, FvaultUnlocksStruct> vaultUnlockData;
     
-
-    // upgrades
-    std::unordered_map<uint32_t, FfishingRodStruct> fishingRodData;
+    // fishing rod upgrades
     std::unordered_map<uint32_t, FbaitStruct> baitData;
 
     // big stuff
     std::unordered_map<uint32_t, FachievementStruct> achievementData;
     std::unordered_map<uint32_t, FrebirthStruct> rebirthData;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, upgradeData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, modifierData, mechanicStruct, autoFisherData, vaultUnlockData, baitData, achievementData, rebirthData);
 };
 
 struct ForderedData {
@@ -439,11 +404,12 @@ struct ForderedData {
     std::vector<uint32_t> autoFisherData;   // progression ids
     std::vector<uint32_t> petData;          // progression ids
     std::vector<uint32_t> vaultUnlockData;
+	std::vector<uint32_t> fishingRodData;   // progression ids
     std::vector<uint32_t> baitData;         // progression ids
     std::vector<uint32_t> achievementData;
     std::vector<uint32_t> rebirthData;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ForderedData, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, baitData, achievementData, rebirthData);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ForderedData, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
 };
 
 struct FsaveData {
@@ -473,7 +439,6 @@ struct FsaveData {
     std::unordered_map<uint32_t, FsaveVaultUnlocksStruct> vaultUnlockList;
 
     // upgrades
-    FsaveFishingRodStruct fishingRod;
     uint32_t equippedBaitId; // progression id
 
     std::unordered_map<uint32_t, SaveEntry> achievementList;
@@ -484,7 +449,7 @@ struct FsaveData {
     double totalRebirthCurrency = 0;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, progressionData, npcSave,
-        equippedPetId, vaultUnlockList, fishingRod, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
+        equippedPetId, vaultUnlockList, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 
 struct FsettingsData {

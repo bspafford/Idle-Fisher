@@ -274,7 +274,7 @@ void AfishTransporter::finishCollectTimer() {
 	}
 
 	// check if fish transporter has enough space for even the smallest fish
-	if (maxHoldNum - calcCurrencyHeld() < Upgrades::Get(StatContext(Stat::FishPrice, FfishData::GetCheapestFishInWorld().id, StatContextType::Fish, 0)))
+	if (maxHoldNum - calcCurrencyHeld() < Upgrades::Get(StatContext(Stat::FishPrice, FfishData::GetCheapestFishInWorld().id, 0)))
 		autoFisherIndex = -1;
 
 	vector goTo = calcGoTo(autoFisherIndex);
@@ -302,7 +302,7 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 			FfishData* currFish = &SaveData::data.fishData[saveCurrFish->id];
 
 			// max amount of fish the transporter can carry before full
-			int fishMax = (maxHoldNum - calcCurrencyHeld()) / Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, StatContextType::Fish, 0));
+			int fishMax = (maxHoldNum - calcCurrencyHeld()) / Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, 0));
 			if (saveCurrFish->numOwned[0] <= fishMax) { // if can hold all fish
 				addFishtoHeld(saveCurrFish, saveCurrFish->numOwned[0]);
 				saveCurrFish->numOwned[0] = 0;
@@ -365,7 +365,7 @@ void AfishTransporter::sortFishList(std::vector<FsaveFishData> &list) {
 		index = -1;
 		mostExpensive = -1;
 		for (int j = 0; j < list.size(); j++) {
-			double fishPrice = Upgrades::Get(StatContext(Stat::FishPrice, list[j].id, StatContextType::Fish, 0));
+			double fishPrice = Upgrades::Get(StatContext(Stat::FishPrice, list[j].id, 0));
 			if (mostExpensive < fishPrice) {
 				mostExpensive = fishPrice;
 				index = j;
@@ -383,7 +383,7 @@ double AfishTransporter::calcCurrencyHeld() {
 	double currency = 0;
 	for (auto saveFishData : holding) {
 		FfishData fish = SaveData::data.fishData[saveFishData.second.id];
-		currency += Upgrades::Get(StatContext(Stat::FishPrice, fish.id, StatContextType::Fish, 0)) * saveFishData.second.numOwned[0];
+		currency += Upgrades::Get(StatContext(Stat::FishPrice, fish.id, 0)) * saveFishData.second.numOwned[0];
 	}
 	return currency;
 }

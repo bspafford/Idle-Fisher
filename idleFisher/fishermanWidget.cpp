@@ -269,37 +269,22 @@ void UfishermanWidget::setupLocs() {
 }
 
 void UfishermanWidget::upgradePower() {
-	double cost = upgrades::calcFishingRodPowerPrice();
-	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
-		SaveData::saveData.fishingRod.power.level++;
-		Main::currencyWidget->updateList();
+	if (Upgrades::LevelUp(114u, Stat::Power)) {
 		updateStats();
-
 		fishingRodThumbnail->setImage("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeSpeed() {
-	double cost = upgrades::calcFishingRodSpeedPrice();
-	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
-		SaveData::saveData.fishingRod.speed.level++;
-		Main::currencyWidget->updateList();
+	if (Upgrades::LevelUp(115u, Stat::FishComboSpeed)) {
 		updateStats();
-
 		fishingLineThumbnail->setImage("images/widget/thumbnails/fishingLine" + std::to_string(upgrades::calcFishingLineIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeCatchChance() {
-	double cost = upgrades::calcFishingRodCatchChancePrice();
-	if (SaveData::saveData.currencyList.at(53u).numOwned >= cost) {
-		SaveData::saveData.currencyList.at(53u).numOwned -= cost;
-		SaveData::saveData.fishingRod.catchChance.level++;
-		Main::currencyWidget->updateList();
+	if (Upgrades::LevelUp(116u, Stat::CatchNum)) {
 		updateStats();
-	
 		bobberThumbnail->setImage("images/widget/thumbnails/bobber" + std::to_string(upgrades::calcBobberIndex() + 1) + ".png");
 	}
 }
@@ -309,16 +294,17 @@ void UfishermanWidget::updateStats() {
 	//speedStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcMinFishingInterval(), true) + "s - " + shortNumbers::convert2Short(upgrades::calcMaxFishingInterval(), true) + "s");
 	catchChanceStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodCatchChance()));
 
-	powerCost = upgrades::calcFishingRodPowerPrice();
-	speedCost = upgrades::calcFishingRodSpeedPrice();
-	chanceCost = upgrades::calcFishingRodCatchChancePrice();
+	
+	powerCost = Upgrades::GetPrice(114u);
+	speedCost = Upgrades::GetPrice(115u);
+	chanceCost = Upgrades::GetPrice(116u);
 	powerButtonPrice->setText(shortNumbers::convert2Short(powerCost));
 	speedButtonPrice->setText(shortNumbers::convert2Short(speedCost));
 	catchChanceButtonPrice->setText(shortNumbers::convert2Short(chanceCost));
 
-	powerLevelText->setText(std::to_string(SaveData::saveData.fishingRod.power.level));
-	speedLevelText->setText(std::to_string(SaveData::saveData.fishingRod.speed.level));
-	catchChanceLevelText->setText(std::to_string(SaveData::saveData.fishingRod.catchChance.level));
+	powerLevelText->setText(std::to_string(SaveData::saveData.progressionData.at(114u).level)); // power
+	speedLevelText->setText(std::to_string(SaveData::saveData.progressionData.at(115u).level)); // speed
+	catchChanceLevelText->setText(std::to_string(SaveData::saveData.progressionData.at(116u).level)); // catch chance
 
 }
 
