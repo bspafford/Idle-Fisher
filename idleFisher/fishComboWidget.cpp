@@ -95,7 +95,7 @@ void UfishComboWidget::Update(float deltaTime) {
 	if (hitWall) {
 		if (!clickedThisBounce) {
 			// decrease the combo
-			GetCharacter()->IncreaseCombo(-upgrades::calcComboDecreaseOnBounce());
+			GetCharacter()->IncreaseCombo(-Upgrades::Get(Stat::ComboDecreaseOnBounce));
 
 			// update combo number
 			Main::comboWidget->spawnComboNumber();
@@ -150,17 +150,11 @@ void UfishComboWidget::draw(Shader* shaderProgram) {
 }
 
 void UfishComboWidget::updateComboSize() {
-	greenRect->setSize({ math::clamp(calcGreenSize(), 0.f, 1.f) * getValidWidth(nullptr), backgroundRect->getSize().y });
-	yellowRect->setSize({ math::clamp(calcYellowSize(), 0.f, 1.f) * getValidWidth(nullptr), backgroundRect->getSize().y });
+	greenRect->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::GreenComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundRect->getSize().y));
+	yellowRect->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::YellowComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundRect->getSize().y));
 }
 
-float UfishComboWidget::calcGreenSize() {
-	return upgrades::calcGreenFishingUpgrade() / 100.f * (upgrades::calcFishingRodPower() / currFish.greenDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
-}
 
-float UfishComboWidget::calcYellowSize() {
-	return calcGreenSize() + upgrades::calcYellowFishingUpgrade() * 2.f / 100.f * (upgrades::calcFishingRodPower() / currFish.yellowDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
-}
 
 float UfishComboWidget::getValidWidth(URectangle* rect) {
 	if (rect) return backgroundRect->getSize().x - rect->getSize().x;

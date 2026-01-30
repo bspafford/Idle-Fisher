@@ -309,7 +309,7 @@ world::world() {
 	isRaining = false;
 	circleAnim = std::make_unique<CircleLoad>();
 
-	rainStartTimer->start(math::randRange(upgrades::calcMinRainSpawnInterval(), upgrades::calcMaxRainSpawnInterval()));
+	rainStartTimer->start(math::randRange(Upgrades::Get(Stat::MinRainSpawnInterval), Upgrades::Get(Stat::MaxRainSpawnInterval)));
 }
 
 void world::startRain() {
@@ -325,7 +325,7 @@ void world::stopRain() {
 	darkenScreenTimer->start(1);
 	rain->stop();
 
-	rainStartTimer->start(math::randRange(upgrades::calcMinRainSpawnInterval(), upgrades::calcMaxRainSpawnInterval()));
+	rainStartTimer->start(math::randRange(Upgrades::Get(Stat::MinRainSpawnInterval), Upgrades::Get(Stat::MaxRainSpawnInterval)));
 }
 
 void world::darkenScreen() {
@@ -343,7 +343,7 @@ void world::start() {
 	// on init make the circle appear
 	fishSchoolSpawnTimer = CreateDeferred<Timer>();
 	fishSchoolSpawnTimer->addCallback(this, &world::spawnFishSchool);
-	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
+	fishSchoolSpawnTimer->start(math::randRange(Upgrades::Get(Stat::MinFishSchoolSpawnInterval), Upgrades::Get(Stat::MaxFishSchoolSpawnInterval)));
 
 	// bind texture stuff for water
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
@@ -392,7 +392,7 @@ void world::spawnFishSchool() {
 		std::unique_ptr<AfishSchool> fishSchool = std::make_unique<AfishSchool>(vector{ x, y });
 		fishSchoolList.push_back(std::move(fishSchool));
 	}
-	fishSchoolSpawnTimer->start(math::randRange(upgrades::calcMinFishSchoolSpawnInterval(), upgrades::calcMaxFishSchoolSpawnInterval()));
+	fishSchoolSpawnTimer->start(math::randRange(Upgrades::Get(Stat::MinFishSchoolSpawnInterval), Upgrades::Get(Stat::MaxFishSchoolSpawnInterval)));
 }
 
 void world::removeFishSchool(AfishSchool* fishSchool) {

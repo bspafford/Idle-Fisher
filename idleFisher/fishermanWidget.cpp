@@ -44,13 +44,13 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	selectedIcon = std::make_unique<Image>("images/widget/selectedTabIcon.png", vector{ 0, 0 }, false);
 
 	// fishing rod page
-	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png", vector{0, 0}, false);
+	fishingRodThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingRod" + std::to_string(calcFishingRodIndex() + 1) + ".png", vector{0, 0}, false);
 	fishingRodThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishingRodThumbnail->SetPivot({ 1.f, 0.5f });
-	fishingLineThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingLine" + std::to_string(upgrades::calcFishingLineIndex() + 1) + ".png", vector{ 0, 0 }, false);
+	fishingLineThumbnail = std::make_unique<Image>("images/widget/thumbnails/fishingLine" + std::to_string(calcFishingLineIndex() + 1) + ".png", vector{ 0, 0 }, false);
 	fishingLineThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishingLineThumbnail->SetPivot({ 1.f, 0.5f });
-	bobberThumbnail = std::make_unique<Image>("images/widget/thumbnails/bobber" + std::to_string(upgrades::calcBobberIndex() + 1) + ".png", vector{ 0, 0 }, false);
+	bobberThumbnail = std::make_unique<Image>("images/widget/thumbnails/bobber" + std::to_string(calcBobberIndex() + 1) + ".png", vector{ 0, 0 }, false);
 	bobberThumbnail->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	bobberThumbnail->SetPivot({ 1.f, 0.5f });
 
@@ -271,28 +271,28 @@ void UfishermanWidget::setupLocs() {
 void UfishermanWidget::upgradePower() {
 	if (Upgrades::LevelUp(114u, Stat::Power)) {
 		updateStats();
-		fishingRodThumbnail->setImage("images/widget/thumbnails/fishingRod" + std::to_string(upgrades::calcFishingRodIndex() + 1) + ".png");
+		fishingRodThumbnail->setImage("images/widget/thumbnails/fishingRod" + std::to_string(calcFishingRodIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeSpeed() {
 	if (Upgrades::LevelUp(115u, Stat::FishComboSpeed)) {
 		updateStats();
-		fishingLineThumbnail->setImage("images/widget/thumbnails/fishingLine" + std::to_string(upgrades::calcFishingLineIndex() + 1) + ".png");
+		fishingLineThumbnail->setImage("images/widget/thumbnails/fishingLine" + std::to_string(calcFishingLineIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::upgradeCatchChance() {
 	if (Upgrades::LevelUp(116u, Stat::CatchNum)) {
 		updateStats();
-		bobberThumbnail->setImage("images/widget/thumbnails/bobber" + std::to_string(upgrades::calcBobberIndex() + 1) + ".png");
+		bobberThumbnail->setImage("images/widget/thumbnails/bobber" + std::to_string(calcBobberIndex() + 1) + ".png");
 	}
 }
 
 void UfishermanWidget::updateStats() {
-	powerStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodPower()));
-	//speedStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcMinFishingInterval(), true) + "s - " + shortNumbers::convert2Short(upgrades::calcMaxFishingInterval(), true) + "s");
-	catchChanceStatsTextNum->setText(shortNumbers::convert2Short(upgrades::calcFishingRodCatchChance()));
+	powerStatsTextNum->setText(shortNumbers::convert2Short(Upgrades::GetBaseStat(Stat::Power)));
+	speedStatsTextNum->setText(shortNumbers::convert2Short(Upgrades::GetBaseStat(Stat::FishComboSpeed)));
+	catchChanceStatsTextNum->setText(shortNumbers::convert2Short(Upgrades::GetBaseStat(Stat::CatchNum)));
 
 	
 	powerCost = Upgrades::GetPrice(114u);
@@ -328,4 +328,16 @@ void UfishermanWidget::CheckTextColor() {
 		catchChanceButtonPrice->setTextColor(255, 255, 255);
 	else
 		catchChanceButtonPrice->setTextColor(255, 0, 0);
+}
+
+int UfishermanWidget::calcFishingRodIndex() {
+	return SaveData::saveData.progressionData.at(114u).level / 10;
+}
+
+int UfishermanWidget::calcFishingLineIndex() {
+	return SaveData::saveData.progressionData.at(115u).level / 10;
+}
+
+int UfishermanWidget::calcBobberIndex() {
+	return SaveData::saveData.progressionData.at(116u).level / 10;
 }

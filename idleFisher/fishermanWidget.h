@@ -41,6 +41,13 @@ private:
 	// checks if the player doesn't have enough money for the upgrades, and will make text red
 	void CheckTextColor();
 
+	// returns the index of what current fishing rod the player is on
+	int calcFishingRodIndex();
+	// returns the index of what current fishing line the player is on
+	int calcFishingLineIndex();
+	// returns the index of what current bobber the player is on
+	int calcBobberIndex();
+
 	int selectedPageIndex = 0;
 
 	double powerCost = 0;

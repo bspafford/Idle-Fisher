@@ -275,7 +275,6 @@ void Scene::FinishSetup() {
 	SaveData::load();
 	Upgrades::Init();
 
-	upgrades::init();
 	achievementBuffs::init();
 	if (SaveData::saveData.equippedPetId != 0u)
 		pet = std::make_unique<Apet>(&SaveData::data.modifierData.at(SaveData::saveData.equippedPetId), vector{400, -200});

@@ -37,6 +37,7 @@ enum class Stat {
 // Premium fish
 	PremiumCatchChance = 13, // how common it is to catch the premium fish
 	PremiumCoolDownTime = 14, // how long it takes until you can catch another premium fish
+	PremiumBuff = 19, // calculates all active premium fish buffs
 
 // fish school
 	MaxFishSchoolSpawnInterval = 15,
@@ -47,22 +48,28 @@ enum class Stat {
 	MinRainSpawnInterval = 18,
 };
 
-enum class StatContextType {
-	None = 0,
-	Fish = 1,
-	Bait = 2,
-	Pet = 3,
-	Upgrade = 4,
-	VaultUnlock = 5,
-};
-
 struct StatContext {
 	Stat stat = Stat::None;
 	uint32_t id = 0; // id of the context, fish id, bait id, pet id, upgrade id, vault unlock id
 
 	double value = 0.0;
 
-	// Fish Data
+	// General Data
+	StatContext(Stat _stat)
+		: stat(_stat) {
+	}
+
+	// Green/Yellow Combo Size
+	StatContext(Stat _stat, uint32_t _id)
+		: stat(_stat), id(_id) {
+	}
+
+	// Combo Reset
+	StatContext(Stat _stat, double _value)
+		: stat(_stat), value(_value) {
+	}
+
+	// Fish Data, Fish Combo Speed
 	StatContext(Stat _stat, uint32_t _id, double _value)
 		: stat(_stat), id(_id), value(_value) {}
 };
@@ -73,6 +80,10 @@ public:
 
 	// gets the final calculated stat value
 	static double Get(const StatContext& statCtx);
+	// gets the final calculated stat value
+	static double Get(Stat stat);
+	// gets the base stat value without any modifiers
+	static double GetBaseStat(Stat s);
 
 	// this function is called when an upgrade is purchased
 	// increases the level of the upgrade
@@ -94,8 +105,6 @@ public:
 	static void UpdateDirty();
 
 private:
-	// gets the base stat value without any modifiers/base values
-	static double GetStat(Stat s);
 	static double Recalculate(Stat s);
 
 	// only cached the values for the next level, not multiple levels
@@ -106,54 +115,4 @@ private:
 	// things like fish price, fishing rod power, etc
 	static inline std::unordered_map<Stat, double> cachedValues;
 	static inline std::unordered_set<Stat> dirty;
-};
-
-class upgrades {
-	static inline std::unordered_map<std::string, SaveEntry*> saveUpgradeMap;
-
-public:
-	static bool upgrade(ModifierNode upgradeStruct, UupgradeBox* boxRef, double* price = NULL);
-
-	static void init();
-	static double calcPrice(ModifierNode* upgradeStruct, SaveEntry* saveUpgradeStruct) { return 0; }
-	static SaveEntry* getUpgrade(std::string upgradeFuncName);
-
-	static double calcGreenFishingUpgrade();
-	static double calcYellowFishingUpgrade();
-
-	static bool IsComboUnlocked();
-	static double calcComboMax();
-	static double calcComboMin(double comboMax);
-
-	static double calcComboIncrease(double comboMax);
-	// when the player clicks on the blue zone
-	static double calcComboReset(double currCombo, double comboMax);
-	
-
-	// how many times the combo fish can go hit the walls until it goes away
-	static double calcComboDecreaseOnBounce();
-
-	// fishing rod
-	static double calcFishingRodPower();
-	static double calcFishingRodCatchChance();
-
-	static double calcFishCatchNum();
-
-	static double calcConversionTime(FcurrencyConversionStruct* conversion);
-
-	static double calcPremiumCatchChance();
-	static float calcPremiumCoolDownTime();
-
-	static float calcMaxFishSchoolSpawnInterval();
-	static float calcMinFishSchoolSpawnInterval();
-
-	static float calcMaxRainSpawnInterval();
-	static float calcMinRainSpawnInterval();
-
-	// returns the index of what current fishing rod the player is on
-	static int calcFishingRodIndex();
-	// returns the index of what current fishing line the player is on
-	static int calcFishingLineIndex();
-	// returns the index of what current bobber the player is on
-	static int calcBobberIndex();
 };

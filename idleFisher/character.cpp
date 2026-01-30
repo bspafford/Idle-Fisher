@@ -267,17 +267,17 @@ void Acharacter::leftClick() {
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->isVisible()) {
 		// catch fish
-		if (upgrades::IsComboUnlocked()) {
+		if (Upgrades::Get(Stat::ComboUnlocked)) {
 			int combo = Main::fishComboWidget->getCombo();
 			switch (combo) {
 			case 0:
 				if (!baitBuffs::chanceToKeepCombo()) // reset combo if false
-					comboNum = upgrades::calcComboReset(comboNum, upgrades::calcComboMax());
+					comboNum = Upgrades::Get(StatContext(Stat::ComboReset, comboNum));
 				break;
 			// case 1: // stays the same
 			case 2:
-				double comboMax = upgrades::calcComboMax();
-				comboNum = math::clamp(comboNum + upgrades::calcComboIncrease(comboMax), upgrades::calcComboMin(comboMax), comboMax);
+				double comboMax = Upgrades::Get(Stat::ComboMax);
+				comboNum = math::clamp(comboNum + Upgrades::Get(Stat::ComboIncrease), Upgrades::Get(Stat::ComboMin), comboMax);
 				break;
 			}
 
@@ -303,7 +303,7 @@ void Acharacter::leftClick() {
 					Main::newRecordWidget->start(currFishSize);
 			}
 
-			double catchNum = upgrades::calcFishCatchNum();
+			double catchNum = Upgrades::Get(Stat::CatchNum);
 			SaveData::saveData.fishData[currFish.id].unlocked = true;
 			SaveData::saveData.fishData[currFish.id].numOwned[currFishQuality] += catchNum;
 			SaveData::saveData.fishData[currFish.id].totalNumOwned[currFishQuality] += catchNum;
@@ -317,7 +317,7 @@ void Acharacter::leftClick() {
 			// high fast buff, get more fish on catch
 			premiumFishBuff();
 			// start premium fish cooldown
-			premiumCatchTimer->start(upgrades::calcPremiumCoolDownTime());
+			premiumCatchTimer->start(Upgrades::Get(Stat::PremiumCoolDownTime));
 			canCatchPremium = false;
 
 			Main::currencyWidget->updateList();
@@ -397,11 +397,11 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	// then add the premium chance at the end
 	std::vector<float> petBuff = petBuffs::increaseChanceOfHigherFish();
 
-	double premiumChance = canCatchPremium ? upgrades::calcPremiumCatchChance() : 0.0;
+	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
 	float totalProb = 0; // premiumChance;
 	int index = 0;
 	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
+		if (value.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
 			float val = value.probability;
 			if (index < petBuff.size())
 				val *= petBuff[index];
@@ -417,7 +417,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	double percent = 0.0;
 	int index1 = 0;
 	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= upgrades::calcFishingRodPower() && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
+		if (value.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
 			double multi = 1.0;
 			if (index1 < petBuff.size())
 				multi = petBuff[index1];
@@ -495,7 +495,7 @@ void Acharacter::stopFishing() {
 void Acharacter::comboOvertimeFinished() {
 	// remove widget
 	comboOvertimeWidget->setVisibility(false);
-	comboNum = upgrades::calcComboMin(upgrades::calcComboMax());
+	comboNum = Upgrades::Get(Stat::ComboMin);
 	Main::comboWidget->hideComboText();
 }
 
@@ -646,7 +646,7 @@ void Acharacter::calcFishSchoolUpgrades() {
 bool Acharacter::canCatchWorldFish() {
 	for (auto& fish : SaveData::data.fishData) {
 		if (Scene::GetCurrWorldId() == fish.second.worldId) {
-			if (upgrades::calcFishingRodPower() < fish.second.fishingPower)
+			if (Upgrades::Get(StatContext(Stat::Power)) < fish.second.fishingPower)
 				return false;
 			return true;
 		}
@@ -706,6 +706,5 @@ float Acharacter::getFishSchoolMultiplier() {
 }
 
 void Acharacter::IncreaseCombo(double comboChange) {
-	double comboMax = upgrades::calcComboMax();
-	comboNum = math::clamp(comboNum + comboChange, upgrades::calcComboMin(comboMax), comboMax);
+	comboNum = math::clamp(comboNum + comboChange, Upgrades::Get(Stat::ComboMin), Upgrades::Get(Stat::ComboMax));
 }

@@ -19,8 +19,6 @@ public:
 	void Stop();
 	void Update(float deltaTime);
 
-	float calcYellowSize();
-	float calcGreenSize();
 	FfishData currFish;
 	int quality;
 
