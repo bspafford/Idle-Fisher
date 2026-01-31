@@ -13,7 +13,6 @@ class verticalBox;
 class UfishermanWidget : public widget {
 public:
 	UfishermanWidget(widget* parent, npc* NPCParent);
-	~UfishermanWidget();
 
 	void draw(Shader* shaderProgram) override;
 	void setup();

@@ -51,19 +51,18 @@ void Scene::openLevel(uint32_t worldId, WorldLoc _worldChangeLoc, bool _override
 }
 
 void Scene::draw(Shader* shaderProgram) {
-	std::unique_lock lock(mtx);
-
-	if (loadingTexturesDone && !hasLoadedGPUData) {
+	if (loadingTexturesDone.load() && !hasLoadedGPUData.load()) {
 		std::unique_lock lock(mtx);
-		hasLoadedGPUData = true;
+		hasLoadedGPUData.store(true);
 		GPULoadCollector::LoadAllGPUData();
 		Main::setupWidgets();
-		waitToUploadGPUdata = false;
+		waitToUploadGPUdata.store(false);
 		cv.notify_one();
 	}
 
 	// first frame after finished loading
 	if (loadingDone && !hasFinishedLoading) {
+		std::unique_lock lock(mtx);
 		hasFinishedLoading = true;
 		finishedLoading();
 		// draw loading screen while loading
@@ -73,6 +72,8 @@ void Scene::draw(Shader* shaderProgram) {
 
 	// draw game loop after loaded
 	if (loadingDone) {
+		std::unique_lock lock(mtx);
+
 		if (titleScreen::currTitleScreen && currWorld == 50u) {
 			titleScreen::currTitleScreen->draw(shaderProgram);
 		} else if (currWorld == 51u) { // vault
@@ -111,11 +112,12 @@ void Scene::openLevelThread(uint32_t worldId, WorldLoc worldChangeLoc, bool over
 	// deconstruct worlds
 	Texture::deleteCache();
 	AStar::Deconstructor();
+
 	vaultWorld::deconstructor();
 	rebirthWorld::deconstructor();
 	world::currWorld = nullptr;
 	titleScreen::currTitleScreen = nullptr;
-	
+
 	if (currWorld == 50u) {
 		titleScreen::currTitleScreen = std::make_unique<titleScreen>();
 	} else if (currWorld == 51u) {
@@ -180,27 +182,14 @@ void Scene::LoadTextures() {
 	std::cout << "finished loading textures!\n";
 }
 
-/*
-int Scene::GetWorldIndex(std::string worldName) {
-	std::unique_lock lock(mtx);
-
-	if (worldName == "")
-		worldName = currWorldName;
-
-	std::string worldPrefix = "world";
-	if (worldName.rfind(worldPrefix, 0) == 0) // starts with world
-		return std::stoi(worldName.substr(worldPrefix.size(), worldName.length() - worldPrefix.size())) - 1;
-	return -1; // didn't contain worldPrefix
-}
-*/
-
-//std::string Scene::WorldIdxToName(int worldIndex) {
-//	return "world" + std::to_string(worldIndex + 1);
-//}
-
 int Scene::GetWorldIndex(uint32_t worldId) {
 	if (worldId == 0u)
 		worldId = GetCurrWorldId();
+
+	for (int i = 0; i < SaveData::orderedData.worldData.size() - worldOffset; i++) {
+		if (SaveData::orderedData.worldData[i + worldOffset] == worldId)
+			return i;
+	}
 
 	return 0;
 }
@@ -218,17 +207,8 @@ uint32_t Scene::GetWorldId(int index) {
 	return SaveData::orderedData.worldData[index + worldOffset];
 }
 
-//uint32_t Scene::GetWorldId(std::string worldName) {
-//	std::unique_lock lock(mtx);
-//
-//	for (auto& worldData : SaveData::orderedData.worldData) {
-//		
-//	}
-//}
-
 bool Scene::isLoading() {
-	std::unique_lock lock(mtx);
-	return !loadingDone;
+	return !loadingDone.load();
 }
 
 void Scene::deferredChangeWorld() {
@@ -282,7 +262,7 @@ void Scene::FinishSetup() {
 }
 
 void Scene::updateShaders(float deltaTime) {
-	std::unique_lock lock(mtx);
+	//std::unique_lock lock(mtx);
 	// set water movement
 	waveFactor += waveSpeed * deltaTime;
 	if (waveFactor >= 1.f) // loop if hit 1

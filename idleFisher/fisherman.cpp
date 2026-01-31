@@ -11,10 +11,6 @@ Afisherman::Afisherman(vector loc) : npc(loc) {
 	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].fishermanDiscovered;
 }
 
-Afisherman::~Afisherman() {
-
-}
-
 void Afisherman::click() {
 	// set save data discovered to true
 	*discovered = true;

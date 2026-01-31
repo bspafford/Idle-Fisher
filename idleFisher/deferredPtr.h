@@ -23,18 +23,18 @@ class DeferredPtr {
 public:
 	// default constructor
 	DeferredPtr() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(mutex);
 		ptr = nullptr;
 	}
 
 	DeferredPtr(CreateDeferred<T>&& cd) {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(mutex);
 		ptr = cd.ptr;
 		CreateNew(cd);
 	}
 
 	~DeferredPtr() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(mutex);
 		if (ptr) DeferredDelete(ptr);
 	}
 
@@ -47,12 +47,13 @@ public:
 	bool operator!() const { return ptr == nullptr; }
 
 private:
-	static inline std::recursive_mutex mutex;
+	static inline std::mutex staticMutex;
+	std::mutex mutex;
 	static inline bool shuttingDown = false;
 	T* ptr = nullptr;
 
 	DeferredPtr<T>& CreateNew(CreateDeferred<T>& other) {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(mutex);
 		if (ptr) DeferredDelete(ptr); // delete if already created
 		ptr = other.ptr;
 		other.ptr = nullptr; // transfer ownership
@@ -60,13 +61,12 @@ private:
 		return *this;
 	}
 
-	static void DeferredDelete(T* obj) {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+	void DeferredDelete(T* obj) {
 		if (!shuttingDown) {
 			if constexpr (requires(T* t) { t->GoingToDelete(); })
 				obj->GoingToDelete(); // only compiled if it exists
 
-			static std::vector<T*>& list = GetDeferredList();
+			std::vector<T*>& list = GetDeferredList();
 			list.push_back(obj);
 		} else { // otherwise delete now because program is closing
 			delete obj;
@@ -74,8 +74,8 @@ private:
 	}
 
 	static void AddObject(T* obj) {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		static std::vector<T*>& instances = GetInstanceList();
+		std::lock_guard<std::mutex> lock(staticMutex);
+		std::vector<T*>& instances = GetInstanceList();
 
 		auto it = std::find(instances.begin(), instances.end(), obj);
 		if (it != instances.end())
@@ -90,25 +90,23 @@ private:
 	}
 
 	static std::vector<T*>& GetInstanceList() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> instances;
 		return instances;
 	}
 
 	static std::vector<T*>& GetDeferredList() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
 		static std::vector<T*> deferred;
 		return deferred;
 	}
 
 public:
 	static std::vector<T*> GetInstanceListVal() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(staticMutex);
 		return GetInstanceList();
 	}
 
 	static void FlushDeferred() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(staticMutex);
 		auto& instances = GetInstanceList();
 		auto& deferred = GetDeferredList();
 		for (T* obj : deferred) {
@@ -123,7 +121,7 @@ public:
 
 	// When program starts to close
 	static void BeginShutdown() {
-		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::lock_guard<std::mutex> lock(staticMutex);
 		shuttingDown = true;
 	}
 };

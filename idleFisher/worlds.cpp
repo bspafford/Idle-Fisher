@@ -335,10 +335,6 @@ void world::darkenScreen() {
 		darkenValue = (1 - darkenScreenTimer->getTime() / darkenScreenTimer->getMaxTime()) * 100;
 }
 
-world::~world() {
-
-}
-
 void world::start() {
 	// on init make the circle appear
 	fishSchoolSpawnTimer = CreateDeferred<Timer>();

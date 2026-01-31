@@ -142,7 +142,6 @@ int Main::createWindow() {
 
 		BlurBox::BindFramebuffer();
 		draw(Scene::twoDShader);
-
 		BlurBox::UnbindFramebuffer();
 
 		BlurBox::DrawFinal(Scene::twoDShader);

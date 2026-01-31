@@ -93,14 +93,14 @@ uint32_t buyAutoFisher::calcAutoFisherId() {
 	uint32_t currWorld = Scene::GetCurrWorldId();
 	for (uint32_t afId : SaveData::orderedData.autoFisherData) {
 		ProgressionNode& afData = SaveData::data.progressionData.at(afId);
-		if (afData.worldId == 4u) // world1
+		if (afData.worldId == 53u) // world1
 			autoFisherNumPerWorld++;
 
 		if (afData.worldId == currWorld && SaveData::saveData.progressionData.at(afId).level)
 			autoFisherWorldNum++;
 	}
 
-	uint32_t id = Scene::GetWorldIndex() * autoFisherNumPerWorld + autoFisherWorldNum;
+	uint32_t id = SaveData::orderedData.autoFisherData.at(Scene::GetWorldIndex() * autoFisherNumPerWorld + autoFisherWorldNum);
 	return id;
 }
 
@@ -121,10 +121,22 @@ void buyAutoFisher::updateLoc() {
 	}
 
 	if (plusAnim) { // go to next location
+		uint32_t nextAfId = 0;
+		if (world::currWorld->autoFisherList.size() > 0) {
+			uint32_t lastAfId = world::currWorld->autoFisherList.back()->id;
+			for (int i = 0; i < SaveData::orderedData.autoFisherData.size(); i++) {
+				uint32_t id = SaveData::orderedData.autoFisherData[i];
+				if (id == lastAfId) {
+					nextAfId = SaveData::orderedData.autoFisherData[i + 1];
+				}
+			}
+		} else {
+			nextAfId = SaveData::orderedData.autoFisherData[0]; // get first auto fisher
+		}
 
-		//std::string lastAfId = world::currWorld->autoFisherList[world::currWorld->autoFisherList.size() - 1]->id;
-		//plusAnim->setLoc({ SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].xLoc + 4, SaveData::data.autoFisherData[int(world::currWorld->autoFisherList.size())].yLoc + 2 });
-		priceText->setLoc(plusAnim->getLoc() + vector{ 0, plusAnim->GetCellSize().y - 6.f * stuff::pixelSize});
+		FautoFisherStruct& afData = SaveData::data.autoFisherData.at(nextAfId);
+		plusAnim->setLoc(vector(afData.xLoc, afData.yLoc));
+		priceText->setLoc(plusAnim->getLoc() + vector(0, plusAnim->GetCellSize().y - 6.f));
 	}
 
 

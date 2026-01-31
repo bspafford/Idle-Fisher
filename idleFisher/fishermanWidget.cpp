@@ -100,10 +100,6 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	setup();
 }
 
-UfishermanWidget::~UfishermanWidget() {
-
-}
-
 void UfishermanWidget::setup() {
 	// setup bait
 	baitHolderList = std::make_unique<UscrollBox>(this);

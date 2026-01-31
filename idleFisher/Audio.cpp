@@ -43,8 +43,12 @@ Audio::Audio(std::string path) {
 }
 
 Audio::~Audio() {
+    std::cout << "im being deleted!\n";
+
     ma_sound_uninit(&sound);
     ma_decoder_uninit(&decoder);
+
+    std::cout << "i got deleted!\n";
 }
 
 void Audio::Play() {

@@ -14,39 +14,40 @@
 #include "fishTransporter.h"
 #include "AautoFisher.h"
 
+#include "rain.h"
+#include "FishBin.h"
+#include "buyAutoFisher.h"
+#include "CircleLoad.h"
+#include "petShop.h"
+#include "mechanicHouse.h"
+#include "merchantShop.h"
+#include "house.h"
+#include "mechanic.h"
+#include "merchant.h"
+#include "petSeller.h"
+#include "scuba.h"
+#include "atm.h"
+#include "fisherman.h"
+#include "ship.h"
+#include "sailor.h"
+#include "rock.h"
+#include "fishSchool.h"
+
 class animation;
 class Timer;
 class Ubutton;
 class Shader;
 class URectangle;
 class text;
-class CircleLoad;
 
-class buyAutoFisher;
-class FishBin;
-class AfishSchool;
-class Aship;
 class ArebirthExit;
 
 class npc;
-class Asailor;
-class Afisherman;
-class Aatm;
-class Ascuba;
-class ApetSeller;
-class Amerchant;
-class Amechanic;
 class Adecorator;
-class Arain;
 class AfishGod;
 
 // npc buidings
 class Abuilding;
-class Ahouse;
-class AmerchantShop;
-class AmechanicHouse;
-class ApetShop;
-class Arock;
 
 class titleScreen {
 public:
@@ -132,7 +133,6 @@ private:
 class world {
 public:
 	world();
-	~world();
 	
 	static inline std::unique_ptr<world> currWorld;
 
@@ -174,7 +174,7 @@ public:
 	std::vector<std::unique_ptr<Arock>> rockList;
 
 	// trees
-	std::vector< std::unique_ptr<Atree>> trees;
+	std::vector<std::unique_ptr<Atree>> trees;
 	void sortTreeList();
 
 	void sortDraw(Shader* shaderProgram);

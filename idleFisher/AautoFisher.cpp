@@ -26,6 +26,8 @@
 #include "debugger.h"
 
 AautoFisher::AautoFisher(uint32_t id) {
+	worldId = Scene::GetCurrWorldId();
+
 	if (!autoFisherSpriteSheet)
 		autoFisherSpriteSheet = std::make_shared<Image>("images/autoFisher/autoFisher.png", vector{ 0, 0 }, true);
 	if (!fishingLineSpriteSheet)

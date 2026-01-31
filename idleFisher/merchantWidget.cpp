@@ -64,11 +64,12 @@ void UmerchantWidget::setup() {
 	}
 
 	for (const uint32_t& upgradeId : SaveData::orderedData.upgradeData) {
+		ProgressionNode& data = SaveData::data.progressionData.at(upgradeId);
 		SaveEntry& currSaveData = SaveData::saveData.progressionData.at(upgradeId);
 		ModifierNode& currData = SaveData::data.modifierData.at(upgradeId);
 
 		std::unique_ptr<UupgradeBox> upgradeBox = std::make_unique<UupgradeBox>(upgradeHolderList[upgradeHolderList.size() - 1].get(), this, &currData, &currSaveData, UpgradeBoxType::Upgrade);
-		upgradeHolderList[Scene::GetWorldIndex(upgradeId)]->addChild(upgradeBox.get(), upgradeBox->getSize().y);
+		upgradeHolderList[Scene::GetWorldIndex(data.worldId)]->addChild(upgradeBox.get(), upgradeBox->getSize().y);
 		upgradeBoxList.push_back(std::move(upgradeBox));
 	}
 	upgradeHolderList[0]->setVisibility(true);

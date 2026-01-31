@@ -32,10 +32,11 @@ void Arain::draw(Shader* shaderProgram) {
 		rainDrop->setLoc(locs[i]);
 		rainDrop->draw(shaderProgram);
 	}
-
 }
 
 void Arain::start() {
+	return; // to do
+
 	isStopped = false;
 
 	for (int i = 0; i < 50; i++) {
@@ -104,7 +105,7 @@ void Arain::removeAnimList() {
 	for (int i = animList.size() - 1; i >= 0; i--) {
 		if (animList[i]->IsFinished()) {
 			animList[i]->stop();
-			animList.erase(animList.begin() + i);
+			animList.erase(animList.begin() + i); // causes memory corruption, can't delete animation (self) while inside one of your own callbacks
 		}
 	}
 }
