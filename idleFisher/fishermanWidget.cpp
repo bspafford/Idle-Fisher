@@ -22,14 +22,10 @@ UfishermanWidget::UfishermanWidget(widget* parent, npc* NPCParent) : widget(pare
 	npcImg->SetPivot({ 0.5f, 0.f });
 
 	name = std::make_unique<text>(this, "---", "biggerStraight", vector{ 0, 0 });
-	buffText = std::make_unique<text>(this, "---", "straight", vector{ 0, 0 });
-	buffText->setTextColor(0, 255, 0);
-	debuffText = std::make_unique<text>(this, "---", "straight", vector{ 0, 0 });
-	debuffText->setTextColor(255, 0, 0);
+	description = std::make_unique<text>(this, "---", "straight", vector{ 0, 0 });
 	nameHolder = std::make_unique<verticalBox>(this);
 	nameHolder->addChild(name.get(), 8);
-	nameHolder->addChild(buffText.get(), 7);
-	nameHolder->addChild(debuffText.get(), 7);
+	nameHolder->addChild(description.get(), 7);
 
 	npcBackground = std::make_unique<Image>("images/widget/npcBackground.png", vector{ 0, 0 }, false);
 	npcBackground->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
@@ -191,15 +187,13 @@ void UfishermanWidget::draw(Shader* shaderProgram) {
 	closeButton->draw(shaderProgram);
 }
 
-void UfishermanWidget::setNameDescription(std::string nameString, std::string description) {
+void UfishermanWidget::setNameDescription(std::string nameString, std::string descriptionString) {
 	name->setText(nameString);
-	buffText->setText(description);
-	//debuffText->setText(debuffString);
+	description->setText(descriptionString);
 
 	// change nameHolder sizes
 	nameHolder->changeChildHeight(name.get(), name->getSize().y + 1.f);
-	nameHolder->changeChildHeight(buffText.get(), buffText->getSize().y + 1.f);
-	nameHolder->changeChildHeight(debuffText.get(), debuffText->getSize().y + 1.f);
+	nameHolder->changeChildHeight(description.get(), description->getSize().y + 1.f);
 }
 
 void UfishermanWidget::setupLocs() {
@@ -216,8 +210,7 @@ void UfishermanWidget::setupLocs() {
 
 	vector nameHolderSize = infoBackground->getSize() - 10.f;
 	name->setLineLength(nameHolderSize.x);
-	buffText->setLineLength(nameHolderSize.x);
-	debuffText->setLineLength(nameHolderSize.x);
+	description->setLineLength(nameHolderSize.x);
 	nameHolder->setLocAndSize(infoBackground->getAbsoluteLoc() + 5.f, nameHolderSize);
 
 	vector baitHolderPos = (upgradeBackground->getAbsoluteLoc() + vector{ 4, 3 }).floor();

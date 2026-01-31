@@ -23,7 +23,6 @@ struct FfontInfo {
 	std::vector<Rect> letterRect = std::vector<Rect>(126);
 };
 
-
 class text : public widget {
 public:
 	static void Init();
@@ -35,7 +34,7 @@ public:
 	void setText(std::string text);
 	void draw(Shader* shader);
 	// void setAlignment(std::string alignment);
-	void makeText(int i, std::string text, vector &offset);
+	void makeText(int& i, std::string text, vector &offset);
 	vector getSize();
 	std::string getString();
 	void setTextColor(int r, int g, int b);
@@ -57,6 +56,10 @@ public:
 	void makeTextTexture();
 
 private:
+	// parses out the color
+	std::string ParseTextString(std::string text);
+	glm::vec4 ParseColor(const std::string& color);
+
 	vector getFBOSize();
 
 	static inline std::vector<text*> instances;
@@ -94,4 +97,7 @@ private:
 	Anchor yAnchor = ANCHOR_TOP;
 
 	bool hasDropChar = false;
+
+	// index, color
+	std::vector<std::pair<int, glm::vec4>> colorList;
 };

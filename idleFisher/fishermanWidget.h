@@ -87,8 +87,7 @@ private:
 
 	// stats
 	std::unique_ptr<verticalBox> nameHolder;
-	std::unique_ptr<text> buffText;
-	std::unique_ptr<text> debuffText;
+	std::unique_ptr<text> description;
 	std::unique_ptr<Image> infoBackground;
 
 	// npc img

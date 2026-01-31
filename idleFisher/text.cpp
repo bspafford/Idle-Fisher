@@ -71,15 +71,11 @@ void text::setTextColor(int r, int g, int b) {
 	colorMod = glm::vec4(r / 255.f, g / 255.f, b / 255.f, 1.f);
 }
 
-void text::makeText(int i, std::string text, vector &offset) {
+void text::makeText(int& i, std::string text, vector &offset) {
 	if (text[i] == ' ') {
 		start = i;
 		numLetters = 0;
 	}
-
-	std::string dropList("qypgj");
-	if (std::find(dropList.begin(), dropList.end(), text[i]) != dropList.end())
-		hasDropChar = true;	
 
 	Rect letterRect = fontInfo->letterRect[text[i]];
 	// ignores special chars, and makes sure the char is in the font
@@ -89,10 +85,14 @@ void text::makeText(int i, std::string text, vector &offset) {
 		throw std::runtime_error("Character is not in list");
 	}
 
+	std::string dropList("qypgj");
+	if (std::find(dropList.begin(), dropList.end(), text[i]) != dropList.end())
+		hasDropChar = true;	
+
 	// makes new line
 	if (text[i] == '\n') {
 		offset.x = 0;
-		offset.y += (fontInfo->height + 1);
+		offset.y -= (fontInfo->height + 1);
 	} else {
 		std::shared_ptr<Rect> source = std::make_shared<Rect>(letterRect);
 
@@ -134,36 +134,30 @@ void text::makeText(int i, std::string text, vector &offset) {
 }
 
 void text::setText(std::string text) {
-	if (text == textString)
+	std::string parsed = ParseTextString(text);
+	if (parsed == textString)
 		return;
 
-	// converts \\n to \n
-	size_t pos = 0;
-	while ((pos = text.find("\\n", pos)) != std::string::npos) {
-		text.replace(pos, 2, "\n");
-		pos += 1;
-	}
-
-	textString = text;
+	textString = parsed;
 	hasDropChar = false;
 	
-	if (text == "")
+	if (textString == "")
 		return;
 
 	if (!SaveData::settingsData.pixelFont) {
 		changeFont();
 	} else {
 		letters.clear();
-		letters = std::vector<std::unique_ptr<Image>>(text.size());
+		letters = std::vector<std::unique_ptr<Image>>(textString.size());
 
 		vector offset = { 0, 0 };
 		if (alignment == TEXT_ALIGN_RIGHT) {
 			for (int i = letters.size() - 1; i >= 0; i--) {
-				makeText(i, text, offset);
+				makeText(i, textString, offset);
 			}
 		} else if (alignment == TEXT_ALIGN_LEFT || alignment == TEXT_ALIGN_CENTER) {
 			for (int i = 0; i < letters.size(); i++) {
-				makeText(i, text, offset);
+				makeText(i, textString, offset);
 			}
 		}
 
@@ -186,6 +180,44 @@ void text::setText(std::string text) {
 	}
 }
 
+std::string text::ParseTextString(std::string text) {
+	colorList.clear();
+
+	// converts \\n to \n
+	size_t pos = 0;
+	while ((pos = text.find("\\n", pos)) != std::string::npos) {
+		text.replace(pos, 2, "\n");
+	}
+
+	for (size_t i = 0; i < text.size(); i++) {
+		if (text[i] == '<') { // color modifier
+			// find >, and parse inner
+			// if start with '/' then its ending the color
+			size_t pos = text.find('>', i);
+			if (pos != std::string::npos) {
+				int start = i + 1;
+				int len = pos - i - 1;
+				std::string color = text.substr(start, len);
+				text.erase(start - 1, len + 2); // remove color modifier from string, including <>
+
+				colorList.push_back(std::pair(i, ParseColor(color)));
+			}
+		}
+	}
+
+	return text;
+}
+
+glm::vec4 text::ParseColor(const std::string& color) {
+	if (color == "red")
+		return glm::vec4(1, 0, 0, 1);
+	else if (color == "green")
+		return glm::vec4(0, 1, 0, 1);
+	else if (color == "blue")
+		return glm::vec4(0, 0, 1, 1);
+	return glm::vec4(1); // default white
+}
+
 void text::makeTextTexture() {
 	if (!GPULoadCollector::isOnMainThread())
 		return;
@@ -204,15 +236,26 @@ void text::makeTextTexture() {
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
 	fbo->Bind();
 	
+	int colorIndex = 0; // keeps track of what color the text is on
+
 	// Draw to the FBO
-	for (int i = 0; i < letters.size(); i++)
+	for (int i = 0; i < letters.size(); i++) {
+		// set color from color modifier
+		if (colorIndex + 1 < colorList.size() && i >= colorList[colorIndex + 1].first) // check to see if should change to next color
+			colorIndex++;
+
 		if (letters[i]) {
-			letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->height + fboSize.y}.round()); // push to top of fbo
+			letters[i]->setLoc(vector{ letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->height + fboSize.y }.round()); // push to top of fbo
 			std::string dropList("qypgj");
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
-				letters[i]->setLoc(vector{letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight
+				letters[i]->setLoc(vector{ letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight
+
+			if (colorList.size() != 0)
+				letters[i]->setColorMod(colorList[colorIndex].second);
+
 			letters[i]->draw(Scene::twoDShader);
 		}
+	}
 	fbo->Unbind();
 
 	setLoc(loc);
