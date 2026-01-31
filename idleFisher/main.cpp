@@ -416,8 +416,8 @@ void Main::rebirth() {
 	SaveData::saveData.currencyList.clear();
 	SaveData::saveData.progressionData.clear();
 	SaveData::saveData.autoFisherList.clear();
-	SaveData::saveData.equippedPetId = -1;
-	SaveData::saveData.equippedBaitId = -1;
+	SaveData::saveData.equippedPetId = 0;
+	SaveData::saveData.equippedBaitId = 0;
 
 	Scene::pet = nullptr;
 

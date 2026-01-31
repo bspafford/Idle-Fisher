@@ -365,12 +365,6 @@
     <ClCompile Include="placeable.cpp">
       <Filter>Source Files\buildings</Filter>
     </ClCompile>
-    <ClCompile Include="petBuffs.cpp">
-      <Filter>Source Files\buffs</Filter>
-    </ClCompile>
-    <ClCompile Include="baitBuffs.cpp">
-      <Filter>Source Files\buffs</Filter>
-    </ClCompile>
     <ClCompile Include="achievementBuffs.cpp">
       <Filter>Source Files\buffs</Filter>
     </ClCompile>
@@ -700,9 +694,6 @@
     <ClInclude Include="buyAutoFisher.h">
       <Filter>Header Files\pathfinding\npc</Filter>
     </ClInclude>
-    <ClInclude Include="exprtk.hpp">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="AStar.h">
       <Filter>Header Files\pathfinding</Filter>
     </ClInclude>
@@ -740,12 +731,6 @@
       <Filter>Header Files\buffs</Filter>
     </ClInclude>
     <ClInclude Include="achievementBuffs.h">
-      <Filter>Header Files\buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="baitBuffs.h">
-      <Filter>Header Files\buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="petBuffs.h">
       <Filter>Header Files\buffs</Filter>
     </ClInclude>
     <ClInclude Include="idleProfitWidget.h">

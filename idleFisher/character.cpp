@@ -13,8 +13,6 @@
 #include "timer.h"
 #include "fishSchool.h"
 #include "upgrades.h"
-#include "petBuffs.h"
-#include "baitBuffs.h"
 #include "achievement.h"
 
 // widget
@@ -262,10 +260,12 @@ void Acharacter::leftClick() {
 		return;
 
 	// puts bobber in water
-	if (Cursor::getMouseOverWater() && SaveData::saveData.progressionData.at(114u).level > 0 && !isFishing) { // if power is > 0
+	if (Cursor::getMouseOverWater() && Upgrades::Get(Stat::Power) > 0 && !isFishing) { // if power is > 0
 		Input::setLeftClick(this, &Acharacter::StartFishing, false);
 	// catch fish
 	} else if (isFishing && Main::fishComboWidget->isVisible()) {
+		showFish = false;
+
 		// catch fish
 		if (Upgrades::Get(Stat::ComboUnlocked)) {
 			int combo = Main::fishComboWidget->getCombo();
@@ -292,6 +292,14 @@ void Acharacter::leftClick() {
 		anim->start();
 		fishingRod->setAnimation("pullSE", true);
 		fishingRod->start();
+
+		// set fish image
+		if (!fishImg) {
+			fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, true);
+			fishImg->SetPivot({ 0.5f, 0.5f });
+		} else
+			fishImg->setImage(currFish.thumbnail.c_str());
+
 		// add fish
 		if (currFish.id != 1u) { // if not premium
 			if (!SaveData::saveData.fishData[currFish.id].unlocked)
@@ -303,13 +311,21 @@ void Acharacter::leftClick() {
 					Main::newRecordWidget->start(currFishSize);
 			}
 
-			double catchNum = Upgrades::Get(Stat::CatchNum);
-			SaveData::saveData.fishData[currFish.id].unlocked = true;
-			SaveData::saveData.fishData[currFish.id].numOwned[currFishQuality] += catchNum;
-			SaveData::saveData.fishData[currFish.id].totalNumOwned[currFishQuality] += catchNum;
+			double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0; // 387 / 100 = 3.87
+			double caught = floor(catchNum); // guarenteed caught // 3
+			double remainder = catchNum - caught; // percent remainder // 3.87 - 3 = 0.87
+			if (math::randRange(0.0, 1.0) < remainder) // random check to see if player got rolled over value
+				caught++;
+
+			if (caught > 0) { // can catch no fish
+				SaveData::saveData.fishData[currFish.id].unlocked = true;
+				SaveData::saveData.fishData[currFish.id].numOwned[currFishQuality] += caught;
+				SaveData::saveData.fishData[currFish.id].totalNumOwned[currFishQuality] += caught;
+				showFish = true;
+			}
 
 		} else { // if premium
-			SaveData::saveData.currencyList[0].numOwned++;
+			SaveData::saveData.currencyList.at(1u).numOwned++;
 
 			// give the player buffs
 			// instance cash, instantly collect currency
@@ -321,6 +337,8 @@ void Acharacter::leftClick() {
 			canCatchPremium = false;
 
 			Main::currencyWidget->updateList();
+
+			showFish = true;
 		}
 
 		achievement::checkAchievements();
@@ -333,11 +351,6 @@ void Acharacter::leftClick() {
 
 		// start up fishing again
 		fishing();
-
-		// set fish image
-		fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, true);
-		fishImg->SetPivot({ 0.5f, 0.5f });
-		showFish = true;
 
 		bobberBobTimer->stop();
 		bobberCatchTimer->start(stuff::animSpeed * 4.f);
@@ -395,7 +408,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	// then do (100 - premium chance) / 100
 	// calc fish chance and multuply by that number
 	// then add the premium chance at the end
-	std::vector<float> petBuff = petBuffs::increaseChanceOfHigherFish();
+	std::vector<float> petBuff = { 1, 1, 1, 1, 1 }; // petBuffs::increaseChanceOfHigherFish();
 
 	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
 	float totalProb = 0; // premiumChance;
@@ -693,8 +706,18 @@ void Acharacter::setCatchPremium() {
 }
 
 void Acharacter::equipBait(uint32_t baitId) {
+	uint32_t oldBaitId = SaveData::saveData.equippedBaitId;
+
+	// make sure to change id first, so MarkDirty knows is unequipped
 	SaveData::saveData.equippedBaitId = baitId;
-	Main::achievementWidget->updateEquipmentWidget();
+
+	if (oldBaitId != 0) { // makes sure there was an previously equipped bait
+		ModifierNode& oldBaitData = SaveData::data.modifierData.at(oldBaitId);
+		Upgrades::MarkDirty(oldBaitData.stats);
+	}
+
+	ModifierNode& newBaitData = SaveData::data.modifierData.at(SaveData::saveData.equippedBaitId);
+	Upgrades::MarkDirty(newBaitData.stats);
 }
 
 double Acharacter::GetCombo() {

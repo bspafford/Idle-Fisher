@@ -1,9 +1,6 @@
 #include "upgrades.h"
 #include "main.h"
 #include "character.h"
-#include "petBuffs.h"
-#include "baitBuffs.h"
-#include "achievementBuffs.h"
 
 void Upgrades::Init() {
 	// setup modifiers per stat
@@ -34,7 +31,7 @@ double Upgrades::Get(const StatContext& statCtx) {
 		return finalSpeed;
 
 	} case Stat::ComboMin: {
-		return GetBaseStat(Stat::ComboMax) * GetBaseStat(statCtx.stat); // min is a percentage of max
+		return math::max(GetBaseStat(Stat::ComboMax) * GetBaseStat(statCtx.stat), 1.0); // min is a percentage of max
 
 	} case Stat::ComboReset: {
 		double currCombo = statCtx.value;
@@ -52,10 +49,10 @@ double Upgrades::Get(const StatContext& statCtx) {
 		return GetBaseStat(statCtx.stat) * goldenFishVal * GetCharacter()->GetCombo();
 	} case Stat::GreenComboSize: {
 		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
-		return Upgrades::GetBaseStat(statCtx.stat) / 100.f * (Upgrades::Get(Stat::Power) / fishData.greenDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
+		return (Upgrades::GetBaseStat(statCtx.stat) + 1) / 100.f * (Upgrades::Get(Stat::Power) / fishData.greenDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
 	} case Stat::YellowComboSize: {
 		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
-		return Upgrades::GetBaseStat(statCtx.stat) / 100.f * (Upgrades::Get(Stat::Power) / fishData.yellowDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
+		return (Upgrades::GetBaseStat(statCtx.stat) + 1) / 100.f * (Upgrades::Get(Stat::Power) / fishData.yellowDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
 	} default:
 		return GetBaseStat(statCtx.stat);
 	}
@@ -66,6 +63,13 @@ double Upgrades::Get(Stat stat) {
 }
 
 double Upgrades::GetBaseStat(Stat s) {
+	// make sure the cachedValue isn't dirty first
+	auto dirtyIt = dirty.find(s);
+	if (dirtyIt != dirty.end()) { // if stat in set
+		dirty.erase(dirtyIt); // remove from dirty set
+		return Recalculate(s); // recalculate and return
+	}
+
 	auto it = cachedValues.find(s);
 	if (it != cachedValues.end())
 		return it->second;
@@ -139,11 +143,16 @@ double Upgrades::GetCached(Stat stat) {
 	return cachedValues.at(stat);
 }
 
-void Upgrades::MarkDirty(Stat s) {
-	if (s == Stat::None)
+void Upgrades::MarkDirty(Stat stat) {
+	if (stat == Stat::None)
 		return;
 
-	dirty.insert(s);
+	dirty.insert(stat);
+}
+
+void Upgrades::MarkDirty(const std::unordered_map<Stat, ModData> stats) {
+	for (auto& [stat, modData] : stats)
+		MarkDirty(stat);
 }
 
 void Upgrades::Update(double dt) {
@@ -161,11 +170,30 @@ double Upgrades::Recalculate(Stat stat) {
 	double& cachedValue = cachedValues[stat];
 	for (uint32_t upgradeId : modifiersPerStat.at(stat)) { // recalculate all modifiers of stat
 		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
-		SaveEntry& saveMod = SaveData::saveData.progressionData.at(mod.id);
+		SaveEntry& saveProgressNode = SaveData::saveData.progressionData.at(mod.id);
+
+		if (!IsModifierActive(mod))
+			continue; // continue if modifier is not active
 
 		ModData& modData = mod.stats.at(stat);
-		cachedValue += std::pow((modData.effect.base + modData.effect.add * saveMod.level) * std::pow(modData.effect.mul, saveMod.level), modData.effect.exp);
+
+		double value = std::pow((modData.effect.base + modData.effect.add * saveProgressNode.level) * std::pow(modData.effect.mul, saveProgressNode.level), modData.effect.exp);
+
+		if (modData.buffType == ModifierType::Buff)
+			cachedValue += value;
+		else if (modData.buffType == ModifierType::Debuff)
+			cachedValue -= value;
 	}
 
 	return cachedValue;
+}
+
+bool Upgrades::IsModifierActive(const ModifierNode& modifier) {
+	switch (modifier.activation) {
+	case ModifierActivation::Always:
+		return true;
+	case ModifierActivation::Equipped:
+		return SaveData::saveData.equippedBaitId == modifier.id ||
+			SaveData::saveData.equippedPetId == modifier.id;
+	}
 }

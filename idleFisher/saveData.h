@@ -8,6 +8,7 @@
 
 enum class Stat;
 enum class ModifierType;
+enum class ModifierActivation;
 
 enum Resolution {
     RES_NATIVE,
@@ -115,12 +116,14 @@ struct ModData {
 struct ModifierNode {
     uint32_t id; // progressionId
     std::unordered_map<Stat, ModData> stats;
+    ModifierActivation activation;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ModifierNode, id, stats);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ModifierNode, id, stats, activation);
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
         stats = ModData::ParseData(row[1]);
+        activation = static_cast<ModifierActivation>(std::stoi(row[2]));
     }
 };
 
@@ -486,9 +489,10 @@ struct FsettingsData {
     int cursor = true;
 
     // Misc
+    int movement = 0; // isometric (slowed y) vs normal
     int interpMethod = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor, interpMethod);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor, movement, interpMethod);
 
     // compares the struct byte by byte, so i don't have to manually update it
     bool operator==(const FsettingsData other) {

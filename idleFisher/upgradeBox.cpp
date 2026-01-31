@@ -294,7 +294,7 @@ void UupgradeBox::equipBait() {
 		GetCharacter()->equipBait(baitStruct->id);
 	else {
 		// unequip bait
-		SaveData::saveData.equippedBaitId = -1;
+		SaveData::saveData.equippedBaitId = 0;
 	}
 }
 

@@ -120,17 +120,17 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	star1 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star1->SetPivot({ 0.5f, 0.f });
 	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	star1Text->SetPivot({ 0.f, 0.5f });
+	star1Text->SetPivot({ 0.f, 1.f });
 	star1Text->setTextColor(85, 177, 241);
 	star2 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star2->SetPivot({ 0.5f, 0.f });
 	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	star2Text->SetPivot({ 0.f, 0.5f });
+	star2Text->SetPivot({ 0.f, 1.f });
 	star2Text->setTextColor(85, 177, 241);
 	star3 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star3->SetPivot({ 0.5f, 0.f });
 	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
-	star3Text->SetPivot({ 0.f, 0.5f });
+	star3Text->SetPivot({ 0.f, 1.f });
 	star3Text->setTextColor(85, 177, 241);
 
 	setupLocs();
@@ -326,9 +326,9 @@ void Ujournal::updatePages() {
 		star2->setLoc(center + vector{ -63.f, 65.f });
 		star3->setLoc(center + vector{ -48.f, 65.f });
 
-		star1Text->setLoc(star1->getAbsoluteLoc() + star1->getSize() / 2.f);
-		star2Text->setLoc(star2->getAbsoluteLoc() + star2->getSize() / 2.f);
-		star3Text->setLoc(star3->getAbsoluteLoc() + star3->getSize() / 2.f);
+		star1Text->setLoc(star1->getAbsoluteLoc() + vector(star1->getSize().x / 2.f, -2));
+		star2Text->setLoc(star2->getAbsoluteLoc() + vector(star2->getSize().x / 2.f, -2));
+		star3Text->setLoc(star3->getAbsoluteLoc() + vector(star3->getSize().x / 2.f, -2));
 	}
 }
 

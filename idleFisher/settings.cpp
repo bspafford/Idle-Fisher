@@ -142,6 +142,9 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 // Misc
 	scrollBox->addChild(miscTitle.get(), miscTitle->getSize().y + 3.f);
 
+	movementBlock = std::make_unique<UsettingsBlock>(this, "Movement", length, std::vector<std::string>{ "Isometric", "Normal" }, & SaveData::settingsData.movement);
+	scrollBox->addChild(movementBlock.get(), movementBlock->getSize().y);
+
 	interpMethodBlock = std::make_unique<UsettingsBlock>(this, "Interpolation", length, std::vector<std::string>{ "Nearest", "Linear" }, &SaveData::settingsData.interpMethod);
 	interpMethodBlock->addCallback(this, &Usettings::SetInterpMethod);
 	scrollBox->addChild(interpMethodBlock.get(), interpMethodBlock->getSize().y);

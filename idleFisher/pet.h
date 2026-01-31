@@ -16,6 +16,8 @@ public:
 	void setLoc(vector loc);
 	ModifierNode* getPetStruct();
 private:
+	void EquipPet(ModifierNode* petNode);
+
 	std::unique_ptr<AStar> Astar;
 
 	float speed = 70;

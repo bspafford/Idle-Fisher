@@ -86,6 +86,7 @@ private:
 
 	// Misc
 	std::unique_ptr<text> miscTitle;
+	std::unique_ptr<UsettingsBlock> movementBlock;
 	std::unique_ptr<UsettingsBlock> interpMethodBlock;
 
 	std::unique_ptr<ConfirmWidget> confirmWidget;

@@ -48,7 +48,7 @@ void UequippedWidget::update() {
 
 	std::string thumbnail = "";
 	if (SaveData::saveData.equippedBaitId != 0u)
-		thumbnail = "images/widget/thumbnails/" + std::to_string(SaveData::saveData.equippedBaitId) + ".png";
+		thumbnail = "images/widget/thumbnails/bait" + std::to_string(SaveData::saveData.equippedBaitId) + ".png";
 	baitEquip = std::make_unique<Image>(thumbnail, vector{ 0, 0 }, false);
 	baitEquip->setLoc(baitEquipSlot->getLoc());
 }

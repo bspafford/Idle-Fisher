@@ -2,12 +2,13 @@
 #include "saveData.h"
 #include "main.h"
 #include "character.h"
+#include "upgrades.h"
 
 #include "debugger.h"
 
 Apet::Apet(ModifierNode* pet, vector loc) {
 	this->pet = pet;
-	SaveData::saveData.equippedPetId = pet->id;
+	EquipPet(pet);
 	img = std::make_unique<Image>("images/pets/" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
 	setLoc(loc);
 
@@ -49,4 +50,18 @@ void Apet::setLoc(vector loc) {
 
 ModifierNode* Apet::getPetStruct() {
 	return pet;
+}
+
+void Apet::EquipPet(ModifierNode* petData) {
+	uint32_t oldPetId = SaveData::saveData.equippedPetId;
+
+	// make sure to change id first, so MarkDirty knows is unequipped
+	SaveData::saveData.equippedPetId = pet->id;
+
+	if (oldPetId != 0) { // makes sure there was an previously equipped pet
+		ModifierNode& oldPetData = SaveData::data.modifierData.at(oldPetId);
+		Upgrades::MarkDirty(oldPetData.stats);
+	}
+
+	Upgrades::MarkDirty(petData->stats);
 }

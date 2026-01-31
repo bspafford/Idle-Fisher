@@ -565,7 +565,19 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 	const int maxIterations = 2;
 
 	float timeRemaining = 1.0f;
-	vector v = math::normalize(move) * vector(1.f, 0.5f) * GetCharacter()->GetSpeed() * deltaTime;
+
+	//move = math::normalize(move);
+	if (SaveData::settingsData.movement == 0) { // isometric
+		move.y *= 0.5f;
+		move = math::normalize(move);
+		if (move.x == 0)
+			move.y *= 0.8f;
+		if (move.x != 0 && move.y != 0)
+			move *= 0.9f;
+	} else
+		move = math::normalize(move);
+
+	vector v = move * GetCharacter()->GetSpeed() * deltaTime;
 
 	for (int iteration = 0; iteration < maxIterations && timeRemaining > 0.0f; ++iteration) {
 		float minTOI = timeRemaining;

@@ -8,7 +8,6 @@
 #include "upgradeBox.h"
 #include "heldFishWidget.h"
 #include "premiumBuffWidget.h"
-#include "exprtk.hpp"
 
 enum class Stat {
 	None = 0, // no stat
@@ -53,6 +52,11 @@ enum class Stat {
 enum class ModifierType {
 	Buff = 1,
 	Debuff = 2,
+};
+
+enum class ModifierActivation {
+	Always = 1,
+	Equipped = 2,
 };
 
 struct StatContext {
@@ -105,7 +109,8 @@ public:
 
 	//static void AddModifier(Upgrade upgrade);
 	//static void RemoveModifier(Upgrade upgrade);
-	static void MarkDirty(Stat s);
+	static void MarkDirty(Stat stat);
+	static void MarkDirty(const std::unordered_map<Stat, ModData> stats);
 	static void Update(double dt); // for temporary buffs
 
 	// Updates all of the changed values at the end of the frame
@@ -113,6 +118,7 @@ public:
 
 private:
 	static double Recalculate(Stat s);
+	static bool IsModifierActive(const ModifierNode& modifier);
 
 	// only cached the values for the next level, not multiple levels
 	static inline std::unordered_map<uint32_t, double> cachedPrices;

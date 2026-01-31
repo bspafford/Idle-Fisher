@@ -95,7 +95,7 @@ private:
 	static inline std::unique_ptr<animation> bobberWaterAnimFront;
 	static inline std::unique_ptr<animation> bobberWaterAnimBack;
 
-	float speed = 85.f;
+	float speed = 75.f;
 
 	vector moveDir;
 

@@ -203,7 +203,6 @@
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
     <ClCompile Include="background.cpp" />
-    <ClCompile Include="baitBuffs.cpp" />
     <ClCompile Include="blurBox.cpp" />
     <ClCompile Include="building.cpp" />
     <ClCompile Include="button.cpp" />
@@ -279,7 +278,6 @@
     <ClCompile Include="pathfinding.cpp" />
     <ClCompile Include="pauseMenu.cpp" />
     <ClCompile Include="pet.cpp" />
-    <ClCompile Include="petBuffs.cpp" />
     <ClCompile Include="petSeller.cpp" />
     <ClCompile Include="petShop.cpp" />
     <ClCompile Include="placeable.cpp" />
@@ -333,7 +331,6 @@
     <ClInclude Include="AStar.h" />
     <ClInclude Include="atm.h" />
     <ClInclude Include="autoFisherUI.h" />
-    <ClInclude Include="baitBuffs.h" />
     <ClInclude Include="building.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="buyAutoFisher.h" />
@@ -352,7 +349,6 @@
     <ClInclude Include="FishBin.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="equippedWidget.h" />
-    <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="fishBox.h" />
     <ClInclude Include="fishComboWidget.h" />
     <ClInclude Include="fisherman.h" />
@@ -395,7 +391,6 @@
     <ClInclude Include="pathfinding.h" />
     <ClInclude Include="pauseMenu.h" />
     <ClInclude Include="pet.h" />
-    <ClInclude Include="petBuffs.h" />
     <ClInclude Include="petSeller.h" />
     <ClInclude Include="petShop.h" />
     <ClInclude Include="placeable.h" />
