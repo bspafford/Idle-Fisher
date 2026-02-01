@@ -187,7 +187,7 @@ void Acharacter::move(float deltaTime) {
 
 	// if should use collision // debugging
 	if (true)
-		collision::testCCD(col.get(), moveDir, deltaTime);
+		collision::TestCollision(col.get(), moveDir, deltaTime);
 	else {
 		vector normDir = math::normalize(moveDir);
 		SaveData::saveData.playerLoc.x += normDir.x * speed * deltaTime;

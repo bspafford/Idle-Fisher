@@ -69,7 +69,7 @@ public:
 	// CCD
 	static bool sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float& toiOut, vector& normalOut);
 	static bool sweepPointVsCircle(vector p0, vector v, vector center, float radius, float& toiOut, vector& normalOut);
-	static bool testCCD(Fcollision* playerCol, vector move, float deltaTime);
+	static void TestCollision(Fcollision* playerCol, vector move, float deltaTime);
 	static bool circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float& toiOut, vector& normalOut);
 
 	static bool testMouse(vector mousePos);
@@ -80,6 +80,11 @@ public:
 	static void addCollisionObject(Fcollision* col);
 	static void replaceCollisionObject(Fcollision* oldCol, Fcollision* newCol);
 private:
+	// used for low fps, just clamps move dir
+	static float TestCCD(Fcollision* playerCol, vector move);
+	// returns minimum translation vector (mtv)
+	static vector TestSAT(Fcollision* playerCol);
+
 	static inline std::mutex mutex;
 
 	static inline std::vector<Fcollision*> allCollision;

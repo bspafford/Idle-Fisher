@@ -81,27 +81,29 @@ void collision::removeCollisionObject(Fcollision* collision) {
 }
 
 bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, std::vector<vector> vertices, vector& normal, float& depth) {
-	normal = { 0, 0 };
-	depth = INFINITY;
+	normal = vector(0, 0);
+	depth = std::numeric_limits<float>::max();
+
+	vector axis = vector(0, 0);
+	float axisDepth = 0.f;
+	float minA, maxA, minB, maxB;
 
 	for (int i = 0; i < vertices.size(); i++) {
 		vector va = vertices[i];
 		vector vb = vertices[(i + 1) % vertices.size()];
 
-		vector edge = va - vb;
-		vector axis = { -edge.y, edge.x };
+		vector edge = vb - va;
+		axis = vector(-edge.y, edge.x);
 		axis = math::normalize(axis);
 
-		float minA, maxA;
-		float minB, maxB;
 		projectVertices(vertices, axis, minA, maxA);
 		projectCircle(circleCenter, circleRadius, axis, minB, maxB);
 
-		if (minA >= maxB || minB >= maxA) {
+		if (minA >= maxB || minB >= maxA)
 			return false;
-		}
 
-		float axisDepth = math::min(maxB - minA, maxA - minB);
+		axisDepth = math::min(maxB - minA, maxA - minB);
+
 		if (axisDepth < depth) {
 			depth = axisDepth;
 			normal = axis;
@@ -111,30 +113,26 @@ bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, 
 	int cpIndex = findClosestPointOnPolygon(circleCenter, vertices);
 	vector cp = vertices[cpIndex];
 
-	vector axis = cp - circleCenter;
+	axis = cp - circleCenter;
 	axis = math::normalize(axis);
 
-	float minA, maxA;
-	float minB, maxB;
 	projectVertices(vertices, axis, minA, maxA);
 	projectCircle(circleCenter, circleRadius, axis, minB, maxB);
 
-	if (minA >= maxB || minB >= maxA) {
+	if (minA >= maxB || minB >= maxA)
 		return false;
-	}
 
-	float axisDepth = math::min(maxB - minA, maxA - minB);
+	axisDepth = math::min(maxB - minA, maxA - minB);
+
 	if (axisDepth < depth) {
 		depth = axisDepth;
 		normal = axis;
 	}
 
 	vector polygonCenter = findArithmeticMean(vertices);
-
 	vector direction = polygonCenter - circleCenter;
-
-	if (math::dot(direction, normal) < 0) // its the wrong direction
-		normal = { -normal.x, -normal.y };
+	if (math::dot(direction, normal) < 0.f)
+		normal = -normal;
 
 	return true;
 }
@@ -238,11 +236,10 @@ bool collision::intersectPolygons(std::vector<vector> verticesA, std::vector<vec
 }
 
 void collision::projectVertices(std::vector<vector> vertices, vector axis, float& min, float& max) {
-	min = INFINITY;
-	max = -INFINITY;
+	min = std::numeric_limits<float>::max();
+	max = -std::numeric_limits<float>::max();
 
-	for (int i = 0; i < vertices.size(); i++) {
-		vector v = vertices[i];
+	for (vector& v : vertices) {
 		float proj = math::dot(v, axis);
 
 		if (proj < min) { min = proj; }
@@ -254,13 +251,12 @@ vector collision::findArithmeticMean(std::vector<vector> vertices) {
 	float sumX = 0;
 	float sumY = 0;
 
-	for (int i = 0; i < vertices.size(); i++) {
-		vector v = vertices[i];
+	for (vector& v : vertices) {
 		sumX += v.x;
 		sumY += v.y;
 	}
 
-	return { sumX / (float)vertices.size(), sumY / (float)vertices.size() };
+	return vector(sumX / (float)vertices.size(), sumY / (float)vertices.size());
 }
 
 bool collision::intersectCircles(vector centerA, float radiusA, vector centerB, float radiusB, vector& normal, float& depth) {
@@ -305,8 +301,34 @@ std::string collision::getIdentifier(std::string str) {
 	return identifier;
 }
 
+double cross(const vector& a, const vector& b, const vector& c) {
+	return (b.x - a.x) * (c.y - a.y)
+		- (b.y - a.y) * (c.x - a.x);
+}
+
+std::string orientation4(const std::vector<vector>& points) {
+	double c1 = cross(points[0], points[1], points[2]);
+	double c2 = cross(points[1], points[2], points[3]);
+	double c3 = cross(points[2], points[3], points[0]);
+	double c4 = cross(points[3], points[0], points[1]);
+
+	bool allPos = (c1 > 0 && c2 > 0 && c3 > 0 && c4 > 0);
+	bool allNeg = (c1 < 0 && c2 < 0 && c3 < 0 && c4 < 0);
+
+	if (allPos) return "CCW";
+	if (allNeg) return "CW";
+
+	if (c1 == 0 || c2 == 0 || c3 == 0 || c4 == 0)
+		return "COLLINEAR";
+
+	return "MIXED"; // self-intersecting or inconsistent order
+}
+
 void collision::showCollisionBoxes(Shader* shaderProgram) {
 #ifdef _DEBUG // just really quickly made, temp code for testing
+	if (!GetCharacter() || !GetCharacter()->GetCollision())
+		return;
+
 	shaderProgram->Activate();
 	shaderProgram->setMat4("projection", GetMainCamera()->getProjectionMat());
 	glm::vec3 camPos = GetMainCamera()->GetPosition();
@@ -347,6 +369,10 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
 				else // if else make blue
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
+
+				std::string temp = orientation4(allCollision[i]->GetPoints());
+				if (temp == "CCW")
+					shaderProgram->setVec4("color", glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 				glBindVertexArray(VAO);
 				glLineWidth(2.5f);
@@ -544,8 +570,12 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 	return toi <= 1.0f;
 }
 
-bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
+void collision::TestCollision(Fcollision* playerCol, vector move, float deltaTime) {
 	std::lock_guard<std::mutex> lock(mutex);
+		
+	// early break if not moving
+	if (move == vector(0, 0))
+		return;
 
 	if (move.x != 0) { // dont need to change if there is no movement on the x axis
 		for (int i = 0; i < stairCollision.size(); i++) {
@@ -562,10 +592,6 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 		}
 	}
 
-	const int maxIterations = 2;
-
-	float timeRemaining = 1.0f;
-
 	//move = math::normalize(move);
 	if (SaveData::settingsData.movement == 0) { // isometric
 		move.y *= 0.5f;
@@ -579,79 +605,76 @@ bool collision::testCCD(Fcollision* playerCol, vector move, float deltaTime) {
 
 	vector v = move * GetCharacter()->GetSpeed() * deltaTime;
 
-	for (int iteration = 0; iteration < maxIterations && timeRemaining > 0.0f; ++iteration) {
-		float minTOI = timeRemaining;
-		vector hitNormal;
-		bool hit = false;
+	// only test CCD when the object is moving faster than its half size
+	// half size, so SAT won't push the object to the other size if its too far
+	vector clampedMove = v;
+	if (v.length() >= playerCol->radius / 2.f) { // player is moving too fast for SAT to work properly
+		// CCD clamp movement
+		float allowedFraction = TestCCD(playerCol, v);
+		clampedMove *= allowedFraction;
+	}
 
-		for (int i = 0; i < allCollision.size(); i++) {
-			if (allCollision[i]->isCircle) {
+	// move player by clamped
+	SaveData::saveData.playerLoc += clampedMove;
+
+	// SAT for overlap resolution
+	vector mtv = TestSAT(playerCol);
+	SaveData::saveData.playerLoc += mtv;
+
+	// slide along wall
+	vector normal = math::normalize(mtv);
+	vector remainingVelocity = v - clampedMove;
+	vector slide = remainingVelocity - normal * math::dot(remainingVelocity, normal);
+	SaveData::saveData.playerLoc += slide;
+}
+
+float collision::TestCCD(Fcollision* playerCol, vector move) {
+	float minTOI = 1.0f; // fraction of movement allowed
+
+	for (Fcollision* col : allCollision) {
+		if (col->isCircle) {
+			float toi;
+			vector normal;
+			if (circleVsCircle(playerCol, move, col, toi, normal)) {
+				if (toi < minTOI) minTOI = toi;
+			}
+		} else {
+			// edges
+			int n = col->GetNumPoints();
+			for (int j = 0; j < n; j++) {
+				vector edgeStart = col->points[j];
+				vector edgeEnd = col->points[(j + 1) % n];
 				float toi;
 				vector normal;
-				if (circleVsCircle(playerCol, v, allCollision[i], toi, normal)) {
-					if (toi < minTOI) {
-						minTOI = toi;
-						hitNormal = normal;
-						hit = true;
-					}
-				}
-			} else {
-				for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
-					float toi;
-					vector normal;
-
-					float pointsSize = static_cast<float>(allCollision[i]->GetNumPoints());
-					vector edgeEnd = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
-					vector edgeStart = { allCollision[i]->points[(j + 1) % int(pointsSize)].x, allCollision[i]->points[(j + 1) % int(pointsSize)].y };
-
-					// treat edge as line segment inflated by radius
-					if (sweepPointVsEdge(GetCharacter()->getCharLoc(), v, edgeStart, edgeEnd, playerCol->radius, toi, normal)) {
-						if (toi < minTOI) {
-							minTOI = toi;
-							hitNormal = normal;
-							hit = true;
-						}
-					}
+				if (sweepPointVsEdge(GetCharacter()->getCharLoc(), move, edgeStart, edgeEnd, playerCol->radius, toi, normal)) {
+					if (toi < minTOI) minTOI = toi;
 				}
 
-				for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
-					float toi;
-					vector normal;
-
-					vector vertex = { allCollision[i]->points[j].x, allCollision[i]->points[j].y };
-
-					// treat vertex as a circle of radius R
-					if (sweepPointVsCircle(GetCharacter()->getCharLoc(), v, vertex, playerCol->radius, toi, normal)) {
-						if (toi < minTOI) {
-							minTOI = toi;
-							hitNormal = normal;
-							hit = true;
-						}
-					}
+				vector vertex = col->points[j];
+				if (sweepPointVsCircle(GetCharacter()->getCharLoc(), move, vertex, playerCol->radius, toi, normal)) {
+					if (toi < minTOI) minTOI = toi;
 				}
 			}
 		}
-
-		if (hit) {
-			float safeTOI = std::min(minTOI, timeRemaining);
-			safeTOI -= 0.01f;
-
-			SaveData::saveData.playerLoc.x += v.x * safeTOI;
-			SaveData::saveData.playerLoc.y += v.y * safeTOI;
-
-			timeRemaining -= safeTOI;
-
-			// Slide: remove velocity into the surface
-			float vn = math::dot(v, hitNormal);
-			v = v - hitNormal * vn; // direction along the wall
-		} else {
-			SaveData::saveData.playerLoc.x += v.x * timeRemaining;
-			SaveData::saveData.playerLoc.y += v.y * timeRemaining;
-			break;
-		}
 	}
 
-	return true;
+	// Subtract small epsilon so player doesn’t overlap
+	return std::max(0.0f, minTOI - 0.01f);
+}
+
+vector collision::TestSAT(Fcollision* playerCol) {
+	vector mtv(0, 0);
+	for (Fcollision* col : allCollision) {
+		vector normal = vector(0, 0);
+		float depth = 0;
+		//if (isCloseEnough(playerCol, col)) { // was causing problems
+			if ((col->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, col->points[0], col->radius, normal, depth)) || intersectCirclePolygon(playerCol->points[0], playerCol->radius, col->GetPoints(), normal, depth)) {
+				// pushes back player from collision
+				mtv += -normal * depth;
+			}
+		//}
+	}
+	return mtv;
 }
 
 bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float& toiOut, vector& normalOut) {
