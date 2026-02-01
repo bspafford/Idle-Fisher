@@ -48,6 +48,8 @@ Audio::~Audio() {
 }
 
 void Audio::Play() {
+    ma_sound_stop(&sound); // stops the sound
+    ma_sound_seek_to_pcm_frame(&sound, 0); // resets back to the beginning
     ma_sound_start(&sound);
 }
 

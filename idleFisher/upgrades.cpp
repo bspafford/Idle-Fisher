@@ -30,6 +30,11 @@ double Upgrades::Get(const StatContext& statCtx) {
 		double finalSpeed = math::max(speed / GetBaseStat(statCtx.stat), 0.1); // decreases speed, and makes sure that it gives the fish a min speed, so it doesn't get stuck
 		return finalSpeed;
 
+	} case Stat::ComboMax: {
+		bool isUnlocked = SaveData::saveData.progressionData.at(4u).level; // is combo unlocked
+		if (!isUnlocked)
+			return 1.f; // max combo is 1 if not unlocked
+		return GetBaseStat(Stat::ComboMax); // will return 2 at level 0 since base is 2
 	} case Stat::ComboMin: {
 		return math::max(GetBaseStat(Stat::ComboMax) * GetBaseStat(statCtx.stat), 1.0); // min is a percentage of max
 
@@ -135,7 +140,8 @@ double Upgrades::GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade
 	// ((base + add * level) * multiply^level)^exponent
 	double price = 0.0;
 	for (int i = 1; i <= levels; ++i) // start i at 1 to skip current level price
-		price += (upgrade.cost.base + upgrade.cost.add * (saveUpgrade.level + i)) * std::pow(upgrade.cost.mul, (saveUpgrade.level + i));
+		// subtracting 1 so the base value is equal to what's in the data table
+		price += std::pow((upgrade.cost.base + upgrade.cost.add * (saveUpgrade.level - 1 + i)) * std::pow(upgrade.cost.mul, (saveUpgrade.level - 1 + i)), upgrade.cost.exp);
 	return price;
 }
 
@@ -167,8 +173,14 @@ void Upgrades::UpdateDirty() {
 }
 
 double Upgrades::Recalculate(Stat stat) {
-	double& cachedValue = cachedValues[stat];
-	for (uint32_t upgradeId : modifiersPerStat.at(stat)) { // recalculate all modifiers of stat
+	double cachedValue = 0.0;
+	auto it = modifiersPerStat.find(stat);
+	if (it == modifiersPerStat.end()) {
+		std::cout << "Stat: '" << static_cast<int>(stat) << "' was not in ModifiersPerStat map\n";
+		return 0;
+	}
+
+	for (uint32_t upgradeId : it->second) { // recalculate all modifiers of stat
 		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
 		SaveEntry& saveProgressNode = SaveData::saveData.progressionData.at(mod.id);
 
@@ -185,6 +197,7 @@ double Upgrades::Recalculate(Stat stat) {
 			cachedValue -= value;
 	}
 
+	cachedValues[stat] = cachedValue; // add updated value to cache
 	return cachedValue;
 }
 

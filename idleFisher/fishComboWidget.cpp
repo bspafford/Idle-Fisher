@@ -19,9 +19,17 @@ UfishComboWidget::UfishComboWidget(widget* parent) : widget(parent) {
 	fishImg->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	fishImg->SetPivot(vector{ 0.5f, 0.5f });
 
-	greenRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.4510, 1.0, 0.0, 1.0));
-	yellowRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, vector{ 0, 0 }, false, glm::vec4(0.8863, 1.0, 0.0, 1.0));
-	backgroundRect = std::make_unique<URectangle>(this, vector{ 0, 0 }, fishComboBorderImg->getSize() - 14.f, false, glm::vec4(0.3608, 0.4980, 0.6000, 1.f));
+	greenImg = std::make_unique<Image>("images/widget/comboBoxGreen.png", vector{ 0, 0 }, false);
+	yellowImg = std::make_unique<Image>("images/widget/comboBoxYellow.png", vector{ 0, 0 }, false);
+	backgroundImg = std::make_unique<Image>("images/widget/comboBoxBlue.png", vector{0, 0}, false);
+	backgroundImg->setSize(vector(fishComboBorderImg->getSize().x - 14.f, backgroundImg->getSize().y));
+
+	greenWhiteLeft = std::make_unique<Image>("images/widget/comboBoxWhite.png", vector{ 0, 0 }, false);
+	greenWhiteRight = std::make_unique<Image>("images/widget/comboBoxWhite.png", vector{ 0, 0 }, false);
+	greenWhiteRight->SetPivot(vector(1.f, 0.f));
+	yellowWhiteLeft = std::make_unique<Image>("images/widget/comboBoxWhite.png", vector{ 0, 0 }, false);
+	yellowWhiteRight = std::make_unique<Image>("images/widget/comboBoxWhite.png", vector{ 0, 0 }, false);
+	yellowWhiteRight->SetPivot(vector(1.f, 0.f));
 
 	shake = std::make_unique<Eshake>(0);
 
@@ -61,11 +69,11 @@ int UfishComboWidget::getCombo() {
 	if (!fishMoveBack)
 		fishX += fishImg->getSize().x;
 
-	int minGreen = greenRect->getAbsoluteLoc().x;
-	int maxGreen = greenRect->getAbsoluteLoc().x + greenRect->getSize().x;
+	int minGreen = greenImg->getAbsoluteLoc().x;
+	int maxGreen = greenImg->getAbsoluteLoc().x + greenImg->getSize().x;
 
-	int minYellow = yellowRect->getAbsoluteLoc().x;
-	int maxYellow = yellowRect->getAbsoluteLoc().x + yellowRect->getSize().x;
+	int minYellow = yellowImg->getAbsoluteLoc().x;
+	int maxYellow = yellowImg->getAbsoluteLoc().x + yellowImg->getSize().x;
 
 	if (fishX >= minGreen && fishX <= maxGreen)
 		return 2;
@@ -106,15 +114,15 @@ void UfishComboWidget::Update(float deltaTime) {
 			clickedThisBounce = false;
 	}
 
-	shake->setShakeDist(GetCharacter()->GetCombo() / 2.f);
+	shake->setShakeDist(GetCharacter()->GetCombo() / Upgrades::Get(Stat::ComboMax) / 10.f);
 }
 
 void UfishComboWidget::setupRandomCombo() {
 	float yellowRand = math::randRange(0.f, 1.f);
 	float greenRand = math::randRange(0.f, 1.f);
 
-	float validYellow = getValidWidth(yellowRect.get());
-	float validGreen = getValidWidth(greenRect.get());
+	float validYellow = getValidWidth(yellowImg.get());
+	float validGreen = getValidWidth(greenImg.get());
 
 	yellowLoc = math::lerp(0.f, validYellow, yellowRand);
 	greenLoc = math::lerp(0.f, validGreen, greenRand);
@@ -135,13 +143,27 @@ void UfishComboWidget::draw(Shader* shaderProgram) {
 	fishImg->setLoc(vector{ math::lerp(minFishX, maxFishX, fishLoc), fishComboBorderImg->getLoc().y + fishComboBorderImg->getSize().y / 2.f + y});
 	fishImg->setRotation(-cos(fishLoc * 4.f * M_PI) * 9.f);
 
-	backgroundRect->setLoc(fishComboBorderImg->getAbsoluteLoc() + 7.f);
-	yellowRect->setLoc(backgroundRect->getAbsoluteLoc() + vector{ yellowLoc, 0.f });
-	greenRect->setLoc(backgroundRect->getAbsoluteLoc() + vector{ greenLoc, 0.f });
+	backgroundImg->setLoc(fishComboBorderImg->getAbsoluteLoc() + 7.f);
+	yellowImg->setLoc(backgroundImg->getAbsoluteLoc() + vector{ yellowLoc, 0.f });
+	greenImg->setLoc(backgroundImg->getAbsoluteLoc() + vector{ greenLoc, 0.f });
 
-	backgroundRect->draw(shaderProgram);
-	yellowRect->draw(shaderProgram);
-	greenRect->draw(shaderProgram);
+	greenWhiteLeft->setLoc(greenImg->getAbsoluteLoc());
+	greenWhiteRight->setLoc(greenImg->getAbsoluteLoc() + vector(greenImg->getSize().x, 0.f));
+	yellowWhiteLeft->setLoc(yellowImg->getAbsoluteLoc());
+	yellowWhiteRight->setLoc(yellowImg->getAbsoluteLoc() + vector(yellowImg->getSize().x, 0.f));
+
+	backgroundImg->draw(shaderProgram);
+	yellowImg->draw(shaderProgram);
+
+	yellowWhiteLeft->draw(shaderProgram);
+	yellowWhiteRight->draw(shaderProgram);
+	
+	greenImg->draw(shaderProgram);
+	
+	greenWhiteLeft->draw(shaderProgram);
+	greenWhiteRight->draw(shaderProgram);
+
+
 	
 	fishImg->draw(shaderProgram);
 	fishComboBorderImg->draw(shaderProgram);
@@ -150,13 +172,13 @@ void UfishComboWidget::draw(Shader* shaderProgram) {
 }
 
 void UfishComboWidget::updateComboSize() {
-	greenRect->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::GreenComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundRect->getSize().y));
-	yellowRect->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::YellowComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundRect->getSize().y));
+	greenImg->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::GreenComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundImg->getSize().y).round());
+	yellowImg->setSize(vector(math::clamp(Upgrades::Get(StatContext(Stat::YellowComboSize, currFish.id)), 0.0, 1.0) * getValidWidth(nullptr), backgroundImg->getSize().y).round());
 }
 
 
 
-float UfishComboWidget::getValidWidth(URectangle* rect) {
-	if (rect) return backgroundRect->getSize().x - rect->getSize().x;
-	return backgroundRect->getSize().x;
+float UfishComboWidget::getValidWidth(Image* img) {
+	if (img) return backgroundImg->getSize().x - img->getSize().x;
+	return backgroundImg->getSize().x;
 }

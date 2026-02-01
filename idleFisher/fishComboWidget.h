@@ -28,11 +28,15 @@ public:
 	void setupRandomCombo();
 	int getCombo();
 
-	float getValidWidth(URectangle* rect);
+	float getValidWidth(Image* img);
 
-	std::unique_ptr<URectangle> greenRect;
-	std::unique_ptr<URectangle> yellowRect;
-	std::unique_ptr<URectangle> backgroundRect;
+	std::unique_ptr<Image> greenImg;
+	std::unique_ptr<Image> yellowImg;
+	std::unique_ptr<Image> backgroundImg;
+	std::unique_ptr<Image> greenWhiteLeft;
+	std::unique_ptr<Image> greenWhiteRight;
+	std::unique_ptr<Image> yellowWhiteLeft;
+	std::unique_ptr<Image> yellowWhiteRight;
 
 	float yellowLoc = 0.f;
 	float greenLoc = 0.f;

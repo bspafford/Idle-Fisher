@@ -21,7 +21,7 @@ public:
 	void Play();
 	void Stop();
 
-	// 1 is default
+	// 1 is default, 2 doubles making it an octave higher, 0.5 halves it making it one octave lower
 	void SetPitch(float pitch);
 
 private:

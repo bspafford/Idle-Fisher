@@ -499,6 +499,10 @@ images/widget/upgradebackground.png
 images/widget/upgradeboxbackground.png
 images/widget/upgradebutton.png
 images/widget/xbutton.png
+images/widget/comboBoxWhite.png
+images/widget/comboBoxGreen.png
+images/widget/comboBoxYellow.png
+images/widget/comboBoxBlue.png
 images/widget/achievementicons/achievementicon1.png
 images/widget/achievementicons/achievementicon10.png
 images/widget/achievementicons/achievementicon100.png

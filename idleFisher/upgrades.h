@@ -15,13 +15,15 @@ enum class Stat {
 // fish
 	FishPrice = 1, // how much fish sell for
 	
+// Recast
+	RecastProcChance = 21, // Chance for the recast to start
+
 // fish combo widget
 	FishComboSpeed = 2, // how fast the fish moves back and forth
 
 	GreenComboSize = 3, // how big green zone is
 	YellowComboSize = 4, // how big yellow zone is
 
-	ComboUnlocked = 5, // is combo unlocked
 	ComboMax = 6, // max combo
 	ComboMin = 7, // min combo
 

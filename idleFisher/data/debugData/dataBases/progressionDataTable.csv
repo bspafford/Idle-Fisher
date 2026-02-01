@@ -1,54 +1,12 @@
 id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 // upgrades,,,,,,,,
-1,53,100,Feed Fish,Upgrade the sell price of each fish,1,0,10,1.5
-2,53,30,Stock the lake,decreases fishing intervals,1,0,20,1.5
-3,53,30,Catch more fish per cast,Catch more fish per cast,1,0,30,1.5
-4,53,1,Unlock Combo,Collect more fish each cast,1,0,70,1.5
-5,53,8,Increase Combo Max,Allows for the combo to have a higher maximum value,1,0,80,1.5
-6,54,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,40,1.5
-7,54,30,Stock the lake,decreases fishing intervals,1,0,50,1.5
-8,54,30,Catch more fish per cast,Catch more fish per cast,1,0,60,1.5
-9,55,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,100,1.5
-10,55,30,Stock the lake,decreases fishing intervals,1,0,110,1.5
-11,55,30,Catch more fish per cast,Catch more fish per cast,1,0,120,1.5
-12,55,1,Vault,Unlocks the Vault,1,0,130,1.5
-13,56,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,140,1.5
-14,56,30,Stock the lake,decreases fishing intervals,1,0,150,1.5
-15,56,30,Catch more fish per cast,Catch more fish per cast,1,0,160,1.5
-16,56,1,unlock currency converter,,1,0,170,1.5
-17,56,1,less input currency converter,,1,0,180,1.5
-18,56,1,more output currency converter,,1,0,190,1.5
-19,56,1,more input more output,,1,0,200,1.5
-20,57,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,210,1.5
-21,57,30,decrease fishing interval,,1,0,220,1.5
-22,57,30,Catch more fish per cast,Catch more fish per cast,1,0,230,1.5
-23,57,1,increase idle fisher speed,,1,0,240,1.5
-24,57,1,increase fish carrier capacity,,1,0,250,1.5
-25,58,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,260,1.5
-26,58,30,Stock the lake,decreases fishing intervals,1,0,270,1.5
-27,58,30,Catch more fish per cast,Catch more fish per cast,1,0,280,1.5
-28,58,10,increase yellow,,1,0,290,1.5
-29,58,95,increase green,,1,0,300,1.5
-30,59,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,310,1.5
-31,59,30,Stock the lake,decreases fishing intervals,1,0,320,1.5
-32,59,30,Catch more fish per cast,Catch more fish per cast,1,0,330,1.5
-33,59,1,make combo go up more per fish,,1,0,340,1.5
-34,59,1,increase combo cap,,1,0,350,1.5
-35,60,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,360,1.5
-36,60,30,Stock the lake,decreases fishing intervals,1,0,370,1.5
-37,60,30,,,1,0,380,1.5
-38,60,1,catch more fish per cast for idle fishers,,1,0,390,1.5
-39,61,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,400,1.5
-40,61,30,Stock the lake,decreases fishing intervals,1,0,410,1.5
-41,61,30,Catch more fish per cast,Catch more fish per cast,1,0,420,1.5
-42,61,1,less input currency converter,,1,0,430,1.5
-43,61,1,more output currency converter,,1,0,440,1.5
-44,61,1,more input more output,,1,0,450,1.5
-45,62,100,Fish Sell Price,Upgrade the sell price of each fish,1,0,460,1.5
-46,62,30,Stock the lake,decreases fishing intervals,1,0,470,1.5
-47,62,30,Catch more fish per cast,Catch more fish per cast,1,0,480,1.5
-48,62,1,improve idle fisher/transporter,,1,0,490,1.5
-49,62,1,increase idle fishers/transporters speed,,1,0,500,1.5
+1,53,100,Feed Fish,Upgrade The Sell Price Of Each Fish,1,0,10,1.5
+2,53,50,Recast,+0.5% chance to Recast,1000,0,1.5,1
+4,53,1,Unlock Combo,Collect More Fish Each Cast,500,0,1,1
+5,53,100,Increase Combo Max,Increases Max Combo by 10 Per Level,500,0,3,1
+23,53,1,Improve Auto Fisher,,1,0,240,1.5
+33,53,1,Combo Increase,Make Combo Go Up More Per Fish,1,0,340,1.5
+48,53,1,Improve Fish Transporter,,1,0,490,1.5
 // worlds,,,,,,,,
 50,0,0,Title Screen,,0,0,0,0
 51,0,0,Vault,,0,0,0,0
@@ -75,23 +33,15 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 71,53,100,Auto Fisher #9,,9,0,10,1
 72,53,100,Auto Fisher #10,,10,0,11,1
 // bait,,,,,,,,
-73,53,1,Pepper,<red>Increase Fish Speed</red>,1,0,1,1
 74,53,1,Fish Food,<green>Chance To Not Reset Combo<green>,2,0,1,1
-75,53,1,Canned Meat,<green>Increase Fish Caught</green>\n<red>Increase Fish Intervals</red>,3,0,1,1
-76,53,1,Worm,<green>Decrease Fish Intervals</green>\n<red>Decrease Fish Caught</red>,4,0,1,1
+75,53,1,Canned Meat,<green>Catch More Fish</green>\n<red>Increase Fish Speed</red>,3,0,1,1
 77,53,1,temp3,<green>Increase Golden Fish Chance</green>,5,0,1,1
-78,53,1,temp4,<green>Decrease Golden Fish Cooldown</green>,6,0,1,1
 79,53,1,temp5,<green>Increase Yellow / Green</green>,7,0,1,1
 80,53,1,temp6,<green>Decrease Fish Move Speed</green>,8,0,1,1
 81,53,1,temp7,<green>Increase Green</green>\n<red>Decrease Yellow</red>,9,0,1,1
-82,53,1,temp8,<green>Increase Yellow</green>\n<red>Decrease Green</red>,10,0,1,1
-83,53,1,temp9,<green>Increase Yellow / Green</green>\n<red>Increase Fish Speed</red>,11,0,1,1
-84,53,1,temp10,<green>Catch More Fish</green>\n<red>Increase Fish Speed</red>,12,0,1,1
-85,53,1,temp11,<green>Increase Fish Bounce Num</green>,13,0,1,1
-86,53,1,temp12,<green>Increase Combo Max</green>,14,0,1,1
-87,53,1,temp13,<green>Increase Combo Increase</green>,15,0,1,1
 88,53,1,temp14,<green>Start At Higher Combo</green>,16,0,1,1
 89,53,1,Master Bait,<green>Increase Fish Caught\nDecrease Fish Speed\nIncrease Combo</green>,17,0,1,1
+73,53,1,Pepper,<red>Increase Fish Speed</red>,1,0,1,1
 // mechanic data,,,,,,,,
 90,53,100,George,,1000,0,1,1
 91,54,100,,,10000,0,1,1
@@ -104,21 +54,13 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 98,61,100,,,100000000000,0,1,1
 99,62,100,,,1000000000000,0,1,1
 // pet data,,,,,,,,
-100,53,1,Pig,increase fish price,100,0,1,1
-101,53,1,Monkey,increase max combo,1000,0,1,1
-102,54,1,carb,decrease fishing intervals,10000,0,1,1
-103,54,1,Octopus,chance to double catched fish,100000,0,1,1
-104,55,1,Worm,increase bait buff,1000000,0,1,1
-105,55,1,Fox,increase chance of getting higher fish,10000000,0,1,1
-106,56,1,Golden Fish,increase golden fish buff,100000000,0,1,1
-107,56,1,Trutle,decrease fish combo speed,1000000000,0,1,1
-108,57,1,Dog,better fish transporter,10000000000,0,1,1
-109,57,1,Rabbit,increase converter speeds,100000000000,0,1,1
-110,58,1,Chase,incrase combo incrase (example +2 if catch on green instead of +1),100000000000,0,1,1
-111,58,1,Chameleon,increase golden fish chance,100000000000000,0,1,1
-112,59,1,Hawk One,increase fish schools,100000000000000,0,1,1
-113,59,1,Sad White Bush,decrease rain intervals,100000000000000,0,1,1
+100,53,1,Pig,Increase Fish Price,100,0,1,1
+101,53,1,Carb,Increase Max Combo,1000,0,1,1
+106,53,1,Golden Fish,Increase Golden Fish Buff,100000000,0,1,1
+110,53,1,Chase,Increase Combo Increase,100000000000,0,1,1
+112,53,1,Hawk One,Increase Fish Schools,100000000000000,0,1,1
+113,53,1,Sad White Bush,Decrease Rain Intervals,100000000000000,0,1,1
 // fishing rod,,,,,,,,
-114,53,0,Power,What level of fish you can catch,100,2,3,1.5
-115,53,0,Speed,How fast the fish swims,1,1,2,1.5
-116,53,0,Catch Chance,How many fish you catch per cast,1,0,2,1.5
+114,53,0,Power,What Level Of Fish You Can Catch,100,2,3,1
+115,53,0,Speed,How Fast The Fish Swims,1,1,2,1
+116,53,0,Catch Chance,How Many Fish You Catch Per Cast,1,5,1.12,1

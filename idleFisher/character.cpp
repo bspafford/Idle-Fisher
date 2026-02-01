@@ -113,6 +113,10 @@ Acharacter::Acharacter() {
 
 	// Audio
 	catchFishAudio = std::make_unique<Audio>("pop.wav");
+
+	recastTimer = CreateDeferred<Timer>();
+	recastTimer->addCallback(this, &Acharacter::Recast);
+	recastAudio = std::make_unique<Audio>("G.wav");
 }
 
 void Acharacter::animFinished() {
@@ -267,23 +271,22 @@ void Acharacter::leftClick() {
 		showFish = false;
 
 		// catch fish
-		if (Upgrades::Get(Stat::ComboUnlocked)) {
-			int combo = Main::fishComboWidget->getCombo();
-			switch (combo) {
-			case 0:
-				if (!Upgrades::Get(Stat::ShouldResetCombo)) // reset combo if false
-					comboNum = Upgrades::Get(StatContext(Stat::ComboReset, comboNum));
-				break;
-			// case 1: // stays the same
-			case 2:
-				double comboMax = Upgrades::Get(Stat::ComboMax);
-				comboNum = math::clamp(comboNum + Upgrades::Get(Stat::ComboIncrease), Upgrades::Get(Stat::ComboMin), comboMax);
-				break;
-			}
-
-			comboNum = round(comboNum);
-			Main::comboWidget->spawnComboNumber();
+		// dont need to check if combo unlocked, the upgrade class takes care of that
+		int combo = Main::fishComboWidget->getCombo();
+		switch (combo) {
+		case 0:
+			if (!Upgrades::Get(Stat::ShouldResetCombo)) // reset combo if false
+				comboNum = Upgrades::Get(StatContext(Stat::ComboReset, comboNum));
+			break;
+		// case 1: // stays the same
+		case 2:
+			double comboMax = Upgrades::Get(Stat::ComboMax);
+			comboNum = math::clamp(comboNum + Upgrades::Get(Stat::ComboIncrease), Upgrades::Get(Stat::ComboMin), comboMax);
+			break;
 		}
+
+		comboNum = round(comboNum);
+		Main::comboWidget->spawnComboNumber();
 
 		catchFishAudio->Play();
 
@@ -318,6 +321,10 @@ void Acharacter::leftClick() {
 				caught++;
 
 			if (caught > 0) { // can catch no fish
+				double recast = Upgrades::Get(Stat::RecastProcChance);
+				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
+					StartRecast(currFish.id, caught);
+
 				SaveData::saveData.fishData[currFish.id].unlocked = true;
 				SaveData::saveData.fishData[currFish.id].numOwned[currFishQuality] += caught;
 				SaveData::saveData.fishData[currFish.id].totalNumOwned[currFishQuality] += caught;
@@ -730,4 +737,39 @@ float Acharacter::getFishSchoolMultiplier() {
 
 void Acharacter::IncreaseCombo(double comboChange) {
 	comboNum = math::clamp(comboNum + comboChange, Upgrades::Get(Stat::ComboMin), Upgrades::Get(Stat::ComboMax));
+}
+
+void Acharacter::StartRecast(uint32_t fishId, double caughtNum) {
+	recastActive = true;
+	recastNum = 1;
+	chainChance = baseChainChance;
+	fishAtStartOfRecast = fishId;
+	catchNumAtStartOfRecast = caughtNum;
+	Recast();
+}
+
+void Acharacter::Recast() {
+	double caught = catchNumAtStartOfRecast * recastNum;
+
+	std::cout << "recasted!: " << recastNum << ", chainChance: " << chainChance << ", caught: " << caught << "\n";
+
+	FsaveFishData& fishData = SaveData::saveData.fishData.at(fishAtStartOfRecast);
+	fishData.unlocked = true;
+	fishData.numOwned[currFishQuality] += caught;
+	fishData.totalNumOwned[currFishQuality] += caught;
+
+	Main::heldFishWidget->updateList();
+
+	// final fish num should be multiplied by recast num
+		// so it would be like (fishNum * combo * upgrades * etc) * recastNum
+
+	recastAudio->SetPitch(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->Play();
+
+	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain
+		chainChance *= chainFalloff; // reduce chance for next go
+		recastTimer->start(0.25f); // arbitrary time between each recast effect
+		recastNum++;
+	} else
+		recastActive = false;
 }

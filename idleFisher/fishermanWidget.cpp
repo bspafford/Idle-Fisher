@@ -330,5 +330,6 @@ int UfishermanWidget::calcFishingLineIndex() {
 }
 
 int UfishermanWidget::calcBobberIndex() {
+	return 1;//
 	return SaveData::saveData.progressionData.at(116u).level / 10;
 }

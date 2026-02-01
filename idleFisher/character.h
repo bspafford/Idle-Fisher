@@ -142,6 +142,19 @@ private:
 	std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWidget;
 
 	std::unique_ptr<Audio> catchFishAudio;
+
+	// recasting
+	void StartRecast(uint32_t fishId, double caughtNum);
+	void Recast();
+	DeferredPtr<Timer> recastTimer;
+	std::unique_ptr<Audio> recastAudio;
+	const double baseChainChance = 50.0; // will be upgradable
+	double chainChance = baseChainChance; // keeps track of current chain chance
+	const double chainFalloff = 0.5; // reduces the chainChance by * chainReduce, will be upgradable
+	bool recastActive = false;
+	int recastNum = 0; // how many recasts
+	uint32_t fishAtStartOfRecast;
+	double catchNumAtStartOfRecast = 0;
 };
 
 Acharacter* GetCharacter();
