@@ -34,12 +34,12 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 72,53,100,Auto Fisher #10,,10,0,11,1
 // bait,,,,,,,,
 74,53,1,Fish Food,<green>Chance To Not Reset Combo<green>,2,0,1,1
-75,53,1,Canned Meat,<green>Catch More Fish</green>\n<red>Increase Fish Speed</red>,3,0,1,1
-77,53,1,temp3,<green>Increase Golden Fish Chance</green>,5,0,1,1
-79,53,1,temp5,<green>Increase Yellow / Green</green>,7,0,1,1
-80,53,1,temp6,<green>Decrease Fish Move Speed</green>,8,0,1,1
-81,53,1,temp7,<green>Increase Green</green>\n<red>Decrease Yellow</red>,9,0,1,1
-88,53,1,temp14,<green>Start At Higher Combo</green>,16,0,1,1
+75,53,1,Fish,You Wouldnt Dare\n<green>Catch More Fish</green>\n<red>Increase Fish Speed</red>,3,0,1,1
+77,53,1,Mirror,<green>Increase Golden Fish Chance</green>,5,0,1,1
+79,53,1,Creatine,<green>Increase Green / Yellow</green>,7,0,1,1
+80,53,1,Bubble Gum,<green>Decrease Fish Speed</green>,8,0,1,1
+81,53,1,Metronome,<green>Increase Green</green>\n<red>Decrease Yellow</red>,9,0,1,1
+88,53,1,Alarm Clock,<green>Start At Higher Combo</green>,16,0,1,1
 89,53,1,Master Bait,<green>Increase Fish Caught\nDecrease Fish Speed\nIncrease Combo</green>,17,0,1,1
 73,53,1,Pepper,<red>Increase Fish Speed</red>,1,0,1,1
 // mechanic data,,,,,,,,
@@ -54,11 +54,11 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 98,61,100,,,100000000000,0,1,1
 99,62,100,,,1000000000000,0,1,1
 // pet data,,,,,,,,
-100,53,1,Pig,Increase Fish Price,100,0,1,1
+100,53,1,Golden Otter,Knows which fish look expensive\nIncrease Fish Price,100,0,1,1
 101,53,1,Carb,Increase Max Combo,1000,0,1,1
-106,53,1,Golden Fish,Increase Golden Fish Buff,100000000,0,1,1
-110,53,1,Chase,Increase Combo Increase,100000000000,0,1,1
-112,53,1,Hawk One,Increase Fish Schools,100000000000000,0,1,1
+106,53,1,Chase,Increase Golden Fish Buff,100000000,0,1,1
+110,53,1,Earl,Increase Combo Increase,100000000000,0,1,1
+112,53,1,Herding Fish,Increase Fish Schools,100000000000000,0,1,1
 113,53,1,Sad White Bush,Decrease Rain Intervals,100000000000000,0,1,1
 // fishing rod,,,,,,,,
 114,53,0,Power,What Level Of Fish You Can Catch,100,2,3,1

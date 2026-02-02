@@ -33,6 +33,7 @@
 #include "newRecordWidget.h"
 #include "blurBox.h"
 #include "settings.h"
+#include "AudioSystem.h"
 
 #include "debugger.h"
 
@@ -55,7 +56,7 @@ Main::~Main() {
 	DeferredPtr<Timer>::BeginShutdown();
 
 	text::Shutdown();
-	Audio::Shutdown();
+	AudioSystem::Shutdown();
 
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
@@ -186,7 +187,7 @@ void Main::Start() {
 	setTaskbarIcon();
 
 	text::Init();
-	Audio::Init();
+	AudioSystem::Init();
 
 	Scene::Init();
 	Scene::openLevel(50u, WORLD_SET_LOC_NONE, true, true);

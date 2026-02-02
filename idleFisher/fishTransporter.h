@@ -35,8 +35,9 @@ private:
 	void collectTimerUpdate();
 	void collectFish(AautoFisher* autoFisher);
 	double calcCurrencyHeld();
-	// sorts list from biggest index to smallest
-	void sortFishList(std::vector<FsaveFishData>& list);
+	// takes in auto fisher map and returns a sorted list of IDs
+	// sorts list from biggest to smallest
+	std::vector<uint32_t> sortFishList(const std::unordered_map<uint32_t, FsaveFishData>& map);
 	void addFishtoHeld(FsaveFishData* fish, double addNum);
 	vector calcGoTo(int autoFisherIndex);
 	void setLoc(vector loc) override;

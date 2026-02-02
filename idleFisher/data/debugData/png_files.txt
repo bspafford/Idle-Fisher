@@ -1105,16 +1105,9 @@ images/widget/thumbnails/bait74.png
 images/widget/thumbnails/bait75.png
 images/widget/thumbnails/bait76.png
 images/widget/thumbnails/bait77.png
-images/widget/thumbnails/bait78.png
 images/widget/thumbnails/bait79.png
 images/widget/thumbnails/bait80.png
 images/widget/thumbnails/bait81.png
-images/widget/thumbnails/bait82.png
-images/widget/thumbnails/bait83.png
-images/widget/thumbnails/bait84.png
-images/widget/thumbnails/bait85.png
-images/widget/thumbnails/bait86.png
-images/widget/thumbnails/bait87.png
 images/widget/thumbnails/bait88.png
 images/widget/thumbnails/bait89.png
 images/worlds/demo/map.png

@@ -37,7 +37,10 @@ public:
 	void makeText(int& i, std::string text, vector &offset);
 	vector getSize();
 	std::string getString();
+	// 0-255
 	void setTextColor(int r, int g, int b);
+	// 0-1
+	void SetAlpha(float alpha);
 	void setupLocs() override;
 
 	// Wraps text if it goes above line length, set to -1 if text doesn't wrap

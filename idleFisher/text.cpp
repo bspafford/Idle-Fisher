@@ -71,6 +71,10 @@ void text::setTextColor(int r, int g, int b) {
 	colorMod = glm::vec4(r / 255.f, g / 255.f, b / 255.f, 1.f);
 }
 
+void text::SetAlpha(float alpha) {
+	colorMod.a = alpha;
+}
+
 void text::makeText(int& i, std::string text, vector &offset) {
 	if (text[i] == ' ') {
 		start = i;
@@ -188,7 +192,7 @@ std::string text::ParseTextString(std::string text) {
 	while ((pos = text.find("\\n", pos)) != std::string::npos) {
 		text.replace(pos, 2, "\n");
 	}
-
+	
 	for (size_t i = 0; i < text.size(); i++) {
 		if (text[i] == '<') { // color modifier
 			// find >, and parse inner
@@ -236,7 +240,7 @@ void text::makeTextTexture() {
 	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
 	fbo->Bind();
 	
-	int colorIndex = 0; // keeps track of what color the text is on
+	int colorIndex = -1; // keeps track of what color the text is on
 
 	// Draw to the FBO
 	for (int i = 0; i < letters.size(); i++) {
@@ -250,7 +254,7 @@ void text::makeTextTexture() {
 			if (std::find(dropList.begin(), dropList.end(), textString[i]) != dropList.end())
 				letters[i]->setLoc(vector{ letters[i]->getLoc().x, letters[i]->getLoc().y - fontInfo->dropHeight }.round()); // add add dropHeight
 
-			if (colorList.size() != 0)
+			if (colorIndex != -1)
 				letters[i]->setColorMod(colorList[colorIndex].second);
 
 			letters[i]->draw(Scene::twoDShader);

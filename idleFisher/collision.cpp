@@ -301,29 +301,6 @@ std::string collision::getIdentifier(std::string str) {
 	return identifier;
 }
 
-double cross(const vector& a, const vector& b, const vector& c) {
-	return (b.x - a.x) * (c.y - a.y)
-		- (b.y - a.y) * (c.x - a.x);
-}
-
-std::string orientation4(const std::vector<vector>& points) {
-	double c1 = cross(points[0], points[1], points[2]);
-	double c2 = cross(points[1], points[2], points[3]);
-	double c3 = cross(points[2], points[3], points[0]);
-	double c4 = cross(points[3], points[0], points[1]);
-
-	bool allPos = (c1 > 0 && c2 > 0 && c3 > 0 && c4 > 0);
-	bool allNeg = (c1 < 0 && c2 < 0 && c3 < 0 && c4 < 0);
-
-	if (allPos) return "CCW";
-	if (allNeg) return "CW";
-
-	if (c1 == 0 || c2 == 0 || c3 == 0 || c4 == 0)
-		return "COLLINEAR";
-
-	return "MIXED"; // self-intersecting or inconsistent order
-}
-
 void collision::showCollisionBoxes(Shader* shaderProgram) {
 #ifdef _DEBUG // just really quickly made, temp code for testing
 	if (!GetCharacter() || !GetCharacter()->GetCollision())
@@ -369,10 +346,6 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
 				else // if else make blue
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
-
-				std::string temp = orientation4(allCollision[i]->GetPoints());
-				if (temp == "CCW")
-					shaderProgram->setVec4("color", glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 				glBindVertexArray(VAO);
 				glLineWidth(2.5f);

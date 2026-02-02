@@ -296,13 +296,11 @@ float AfishTransporter::calcCollectTimer(AautoFisher* autoFisher, bool getMaxTim
 
 void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 	if (autoFisher) {
-		sortFishList(autoFisher->heldFish);
-		for (int i = 0; i < autoFisher->heldFish.size(); i++) {
-			FsaveFishData* saveCurrFish = &autoFisher->heldFish[i];
-			FfishData* currFish = &SaveData::data.fishData[saveCurrFish->id];
-
+		std::vector<uint32_t> afHeldFishId = sortFishList(autoFisher->heldFish);
+		for (int i = 0; i < afHeldFishId.size(); i++) {
+			FsaveFishData* saveCurrFish = &autoFisher->heldFish.at(afHeldFishId[i]);
 			// max amount of fish the transporter can carry before full
-			int fishMax = (maxHoldNum - calcCurrencyHeld()) / Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, 0));
+			int fishMax = (maxHoldNum - calcCurrencyHeld()) / Upgrades::Get(StatContext(Stat::FishPrice, saveCurrFish->id, 0));
 			if (saveCurrFish->numOwned[0] <= fishMax) { // if can hold all fish
 				addFishtoHeld(saveCurrFish, saveCurrFish->numOwned[0]);
 				saveCurrFish->numOwned[0] = 0;
@@ -315,8 +313,8 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 		autoFisher->afMoreInfoUI->updateUI();
 	} else { // sell fish
 		// give player currency
-		SaveData::saveData.currencyList.at(539u).numOwned += calcCurrencyHeld();
-		SaveData::saveData.currencyList.at(539u).totalNumOwned += calcCurrencyHeld();
+		SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned += calcCurrencyHeld();
+		SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).totalNumOwned += calcCurrencyHeld();
 		holding.clear();
 		Main::currencyWidget->updateList();
 		// update the ui so the upgrade button enables if have enough money
@@ -356,8 +354,14 @@ void AfishTransporter::addFishtoHeld(FsaveFishData* fish, double addNum) {
 	}
 }
 
-void AfishTransporter::sortFishList(std::vector<FsaveFishData> &list) {
-	std::vector<FsaveFishData> sortedList;
+std::vector<uint32_t> AfishTransporter::sortFishList(const std::unordered_map<uint32_t, FsaveFishData>& map) {
+	// map to vector
+	std::vector<FsaveFishData> list;
+	list.reserve(map.size());
+	for (auto& [id, data] : map)
+		list.push_back(data);
+
+	std::vector<uint32_t> sortedList;
 	int index = 0;
 	double mostExpensive = 0;
 	int size = list.size();
@@ -372,11 +376,11 @@ void AfishTransporter::sortFishList(std::vector<FsaveFishData> &list) {
 			}
 		}
 
-		sortedList.push_back(list[index]);
+		sortedList.push_back(list[index].id);
 		list.erase(list.begin() + index);
 	}
 
-	list = sortedList;
+	return sortedList;
 }
 
 double AfishTransporter::calcCurrencyHeld() {
@@ -431,38 +435,35 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 		currency += world::currWorld->autoFisherList[i]->calcMPS() * loopTime * loopNum;
 
 	double currencyMade = 0; // temp
+	FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
 	if (currency > totalCurrency) { // then collect totalCurrency
-		SaveData::saveData.currencyList.at(539u).numOwned += totalCurrency; // temp
-		SaveData::saveData.currencyList.at(539u).totalNumOwned += totalCurrency; // temp
+		currencyData.numOwned += totalCurrency; // temp
+		currencyData.totalNumOwned += totalCurrency; // temp
 		currencyMade = totalCurrency; // temp
 
 
 	} else { // collect currency, and calc how much the autofishers should contain
-		SaveData::saveData.currencyList.at(539u).numOwned += currency;
-		SaveData::saveData.currencyList.at(539u).totalNumOwned += currency;
+		currencyData.numOwned += currency;
+		currencyData.totalNumOwned += currency;
 		currencyMade = currency; // temp
 
 		double remainingCurrency = totalCurrency - currency;
 
 		for (int i = world::currWorld->autoFisherList.size() - 1; i >= 0; i--) {
 			AautoFisher* currAutoFisher = world::currWorld->autoFisherList[i].get();
+			uint32_t fishId = 2; // temp, should be somewhat random, not just the first fish
 			if (remainingCurrency > currAutoFisher->maxCurrency - currAutoFisher->calcCurrencyHeld()) {
 				// add fish to autofisher
-				// temp
-				if (currAutoFisher->heldFish.size() > 0)
-					currAutoFisher->heldFish[0].numOwned[0] = currAutoFisher->maxCurrency; // temp
-				else {
-					FsaveFishData fish;
-					fish.id = 1;
-					fish.numOwned[0] = currAutoFisher->maxCurrency;
-					currAutoFisher->heldFish.push_back(fish);
-				}
+				FsaveFishData fish;
+				fish.id = fishId;
+				fish.numOwned[0] = currAutoFisher->maxCurrency;
+				currAutoFisher->heldFish.insert({ fish.id, fish });
 				std::cout << "heldfish size: " << currAutoFisher->heldFish.size() << std::endl;
 				// remove from remaining currency
 				remainingCurrency -= currAutoFisher->maxCurrency;
 			} else {
 				// add to autofisher
-				currAutoFisher->heldFish[0].numOwned[0] += remainingCurrency;
+				currAutoFisher->heldFish[fishId].numOwned[0] += remainingCurrency;
 				break;
 			}
 		}

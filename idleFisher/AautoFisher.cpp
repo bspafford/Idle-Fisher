@@ -87,6 +87,11 @@ AautoFisher::AautoFisher(uint32_t id) {
 	UI = std::make_unique<autoFisherUI>(nullptr, this, loc);
 
 	afMoreInfoUI = std::make_unique<AFmoreInfoUI>(nullptr, this);
+
+	recastTimer = CreateDeferred<Timer>();
+	recastTimer->addCallback(this, &AautoFisher::Recast);
+	recastAudio = std::make_unique<Audio>("G.wav", loc);
+	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 }
 
 AautoFisher::~AautoFisher() {
@@ -110,6 +115,9 @@ void AautoFisher::Update(float deltaTime) {
 void AautoFisher::draw(Shader* shaderProgram) {
 	if (UI && UI->visible)
 		UI->draw(shaderProgram);
+
+	if (numberWidget)
+		numberWidget->draw(shaderProgram);
 
 	if (anim)
 		anim->draw(shaderProgram);
@@ -176,16 +184,15 @@ void AautoFisher::catchFish() {
 
 	// if there is enough room for the fish
 	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * catchNum <= maxCurrency) {
-		int index = calcCurrencyInList(currFish, heldFish);
+		if (catchNum > 0) {
+			double recast = Upgrades::Get(Stat::RecastProcChance);
+			if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
+				StartRecast(currFish.id, catchNum);
 
-		if (index != -1) {
-			heldFish[index].id = currFish.id;
-			heldFish[index].numOwned[0]++;
-		} else {
-			FsaveFishData saveFish;
-			saveFish.id = currFish.id;
-			saveFish.numOwned[0] = catchNum;
-			heldFish.push_back(saveFish);
+			FsaveFishData& saveFishData = heldFish[currFish.id];
+			saveFishData.id = currFish.id;
+			saveFishData.numOwned[0] += catchNum;
+			saveFishData.totalNumOwned[0] += catchNum;
 		}
 
 		if (anim && calcCurrencyHeld() >= maxCurrency) {
@@ -197,16 +204,6 @@ void AautoFisher::catchFish() {
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
 		afMoreInfoUI->updateUI();
-}
-
-// returns -1 if currency isn't in list
-int AautoFisher::calcCurrencyInList(FfishData fish, std::vector<FsaveFishData> heldFish) {
-	for (int i = 0; i < heldFish.size(); i++) {
-		if (heldFish[i].id == fish.id)
-			return i;
-	}
-
-	return -1;
 }
 
 FfishData AautoFisher::calcFish() {
@@ -288,15 +285,10 @@ void AautoFisher::setStats() {
 }
 
 // takes input if the list isn't heldFish
-double AautoFisher::calcCurrencyHeld(std::vector<FsaveFishData> fishList) {
-	if (fishList.size() == 0)
-		fishList = heldFish;
-
+double AautoFisher::calcCurrencyHeld() {
 	double currency = 0;
-	for (int i = 0; i < fishList.size(); i++) {
-		FsaveFishData currSaveFish = fishList[i];
-		FfishData currFish = SaveData::data.fishData[currSaveFish.id];
-		currency += currSaveFish.numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0));
+	for (auto& [fishId, saveFishData] : heldFish) {
+		currency += saveFishData.numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0));
 	}
 
 	return currency;
@@ -362,7 +354,6 @@ std::tuple<uint32_t, int, double> AautoFisher::getUpgradeCost() {
 		
 		// if have enough money && isn't max level
 		while (cost + price(num + *level) <= currency && *level + num < maxLevel) {
-			//std::cout << "cost: " << cost << " + " << price(num + *level) << " <= " << currency << " && " << *level << " + " << num << " < " << maxLevel << std::endl;
 			cost += price(num + *level);
 			num++;
 		}
@@ -468,8 +459,6 @@ double AautoFisher::calcMPS() {
 		float percent = probList[i].second;
 
 		totalPrice += (percent - prevPercent) * Upgrades::Get(StatContext(Stat::FishPrice, id, 0));
-		//std::cout << "percent: " << percent << ", price: " << ((percent - prevPercent) * upgrades::getFishSellPrice(SaveData::data.fishData[id])) << std::endl;
-
 		prevPercent = percent;
 	}
 
@@ -479,4 +468,35 @@ double AautoFisher::calcMPS() {
 void AautoFisher::OutlineUpdate(int frame) {
 	if (outline)
 		outline->SetCurrFrameLoc(vector(frame, 0));
+}
+
+void AautoFisher::StartRecast(uint32_t fishId, double caughtNum) {
+	recastActive = true;
+	recastNum = 1;
+
+	chainChance = Upgrades::Get(Stat::RecastChainChance);
+	fishAtStartOfRecast = fishId;
+	catchNumAtStartOfRecast = caughtNum;
+	Recast();
+}
+
+void AautoFisher::Recast() {
+	double caught = catchNumAtStartOfRecast * recastNum;
+
+	FsaveFishData& fishData = SaveData::saveData.fishData.at(fishAtStartOfRecast);
+	fishData.unlocked = true;
+	fishData.numOwned[0] += caught;
+	fishData.totalNumOwned[0] += caught;
+
+	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), caught, NumberPrefix::Plus);
+
+	recastAudio->SetPitch(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->Play();
+
+	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain
+		chainChance *= Upgrades::Get(Stat::RecastFalloff); // reduce chance for next go
+		recastTimer->start(0.25f); // arbitrary time between each recast effect
+		recastNum++;
+	} else
+		recastActive = false;
 }

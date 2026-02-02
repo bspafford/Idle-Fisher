@@ -26,6 +26,7 @@
 #include "comboOvertimeWidget.h"
 #include "achievementWidget.h"
 #include "newRecordWidget.h"
+#include "NumberWidget.h"
 
 #include "debugger.h"
 
@@ -117,6 +118,7 @@ Acharacter::Acharacter() {
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
 	recastAudio = std::make_unique<Audio>("G.wav");
+	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 }
 
 void Acharacter::animFinished() {
@@ -210,6 +212,8 @@ void Acharacter::draw(Shader* shaderProgram) {
 		bobberBehind = true;
 		drawFishingLine(shaderProgram);
 	}
+
+	numberWidget->draw(shaderProgram);
 
 	vector animLoc = SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f;
 	anim->setLoc(animLoc);
@@ -305,12 +309,13 @@ void Acharacter::leftClick() {
 
 		// add fish
 		if (currFish.id != 1u) { // if not premium
-			if (!SaveData::saveData.fishData[currFish.id].unlocked)
+			FsaveFishData& saveFishData = SaveData::saveData.fishData[currFish.id];
+			if (!saveFishData.unlocked)
 				Main::fishUnlocked->start(currFish);
 
-			if (SaveData::saveData.fishData[currFish.id].biggestSizeCaught < currFishSize) {
-				SaveData::saveData.fishData[currFish.id].biggestSizeCaught = currFishSize;
-				if (SaveData::saveData.fishData[currFish.id].unlocked)
+			if (saveFishData.biggestSizeCaught < currFishSize) {
+				saveFishData.biggestSizeCaught = currFishSize;
+				if (saveFishData.unlocked)
 					Main::newRecordWidget->start(currFishSize);
 			}
 
@@ -325,9 +330,9 @@ void Acharacter::leftClick() {
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
-				SaveData::saveData.fishData[currFish.id].unlocked = true;
-				SaveData::saveData.fishData[currFish.id].numOwned[currFishQuality] += caught;
-				SaveData::saveData.fishData[currFish.id].totalNumOwned[currFishQuality] += caught;
+				saveFishData.unlocked = true;
+				saveFishData.numOwned[currFishQuality] += caught;
+				saveFishData.totalNumOwned[currFishQuality] += caught;
 				showFish = true;
 			}
 
@@ -742,7 +747,8 @@ void Acharacter::IncreaseCombo(double comboChange) {
 void Acharacter::StartRecast(uint32_t fishId, double caughtNum) {
 	recastActive = true;
 	recastNum = 1;
-	chainChance = baseChainChance;
+
+	chainChance = Upgrades::Get(Stat::RecastChainChance);
 	fishAtStartOfRecast = fishId;
 	catchNumAtStartOfRecast = caughtNum;
 	Recast();
@@ -758,6 +764,8 @@ void Acharacter::Recast() {
 	fishData.numOwned[currFishQuality] += caught;
 	fishData.totalNumOwned[currFishQuality] += caught;
 
+	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), caught, NumberPrefix::Plus);
+
 	Main::heldFishWidget->updateList();
 
 	// final fish num should be multiplied by recast num
@@ -767,7 +775,7 @@ void Acharacter::Recast() {
 	recastAudio->Play();
 
 	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain
-		chainChance *= chainFalloff; // reduce chance for next go
+		chainChance *= Upgrades::Get(Stat::RecastFalloff); // reduce chance for next go
 		recastTimer->start(0.25f); // arbitrary time between each recast effect
 		recastNum++;
 	} else

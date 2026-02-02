@@ -8,6 +8,7 @@
 #include "Image.h"
 #include "comboOvertimeWidget.h"
 #include "Audio.h"
+#include "NumberWidget.h"
 
 class saveData;
 class collision;
@@ -148,13 +149,13 @@ private:
 	void Recast();
 	DeferredPtr<Timer> recastTimer;
 	std::unique_ptr<Audio> recastAudio;
-	const double baseChainChance = 50.0; // will be upgradable
-	double chainChance = baseChainChance; // keeps track of current chain chance
-	const double chainFalloff = 0.5; // reduces the chainChance by * chainReduce, will be upgradable
+	double chainChance = 0.0; // keeps track of current chain chance
 	bool recastActive = false;
 	int recastNum = 0; // how many recasts
 	uint32_t fishAtStartOfRecast;
 	double catchNumAtStartOfRecast = 0;
+
+	std::unique_ptr<NumberWidget> numberWidget;
 };
 
 Acharacter* GetCharacter();

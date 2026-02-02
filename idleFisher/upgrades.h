@@ -17,6 +17,9 @@ enum class Stat {
 	
 // Recast
 	RecastProcChance = 21, // Chance for the recast to start
+	RecastChainChance = 22, // the initial chance the recast has to proc again
+	RecastFalloff = 23, // reduces the chainChance by (next chain chance = chaincChance * chainReduce)
+
 
 // fish combo widget
 	FishComboSpeed = 2, // how fast the fish moves back and forth

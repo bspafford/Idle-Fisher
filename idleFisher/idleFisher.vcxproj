@@ -201,6 +201,7 @@
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="atm.cpp" />
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
     <ClCompile Include="background.cpp" />
     <ClCompile Include="blurBox.cpp" />
@@ -237,6 +238,7 @@
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
     <ClInclude Include="Anchor.h" />
+    <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="blurBox.h" />
     <ClInclude Include="CircleLoad.h" />
@@ -273,6 +275,7 @@
     <ClCompile Include="node.cpp" />
     <ClCompile Include="npc.cpp" />
     <ClCompile Include="NPCwidget.cpp" />
+    <ClCompile Include="NumberWidget.cpp" />
     <ClCompile Include="PakReader.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="pathfinding.cpp" />
@@ -386,6 +389,7 @@
     <ClInclude Include="node.h" />
     <ClInclude Include="npc.h" />
     <ClInclude Include="NPCwidget.h" />
+    <ClInclude Include="NumberWidget.h" />
     <ClInclude Include="PakReader.h" />
     <ClInclude Include="path.h" />
     <ClInclude Include="pathfinding.h" />

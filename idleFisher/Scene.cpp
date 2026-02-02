@@ -6,7 +6,7 @@
 #include "Texture.h"
 #include "AStar.h"
 #include "GPULoadCollector.h"
-#include "Audio.h"
+#include "AudioSystem.h"
 #include "Input.h"
 
 #include "camera.h"
@@ -176,7 +176,7 @@ void Scene::finishedLoading() {
 
 void Scene::LoadTextures() {
 	std::cout << "start loading textures!\n";
-	Audio::LoadData();
+	AudioSystem::LoadData();
 	textureManager::LoadTextures();
 	loadingTexturesDone = true;
 	std::cout << "finished loading textures!\n";

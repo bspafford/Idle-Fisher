@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class Shader;
 class Image;
@@ -16,6 +17,8 @@ class AFmoreInfoUI;
 class Ubutton;
 class animation;
 struct Fcollision;
+class NumberWidget;
+class Audio;
 
 class AautoFisher : public IHoverable {
 public:
@@ -31,11 +34,10 @@ public:
 	void catchFish();
 	FfishData calcFish();
 	std::vector<std::pair<uint32_t, float>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>&, bool isCurrencyAFactor = true);
-	int calcCurrencyInList(FfishData fish, std::vector<FsaveFishData> heldFish);
 	// returns id, level, price
 	std::tuple<uint32_t, int, double> getUpgradeCost();
 	double price(int level);
-	double calcCurrencyHeld(std::vector<FsaveFishData> fishList = std::vector<FsaveFishData>(0));
+	double calcCurrencyHeld();
 	// gets the autofisher to start fishing again once it is no longer full
 	void startFishing();
 
@@ -76,7 +78,7 @@ public:
 	int maxLevel = 100;
 	int maxCurrency = 100;
 
-	std::vector<FsaveFishData> heldFish = std::vector<FsaveFishData>();
+	std::unordered_map<uint32_t, FsaveFishData> heldFish;
 
 	std::unique_ptr<autoFisherUI> UI;
 
@@ -103,4 +105,17 @@ private:
 	static inline std::shared_ptr<Image> autoFisherSpriteSheet;
 	static inline std::shared_ptr<Image> fishingLineSpriteSheet;
 	static inline std::shared_ptr<Image> outlineSpriteSheet;
+
+	// recasting
+	void StartRecast(uint32_t fishId, double caughtNum);
+	void Recast();
+	DeferredPtr<Timer> recastTimer;
+	std::unique_ptr<Audio> recastAudio;
+	double chainChance = 0.0; // keeps track of current chain chance
+	bool recastActive = false;
+	int recastNum = 0; // how many recasts
+	uint32_t fishAtStartOfRecast;
+	double catchNumAtStartOfRecast = 0;
+
+	std::unique_ptr<NumberWidget> numberWidget;
 };

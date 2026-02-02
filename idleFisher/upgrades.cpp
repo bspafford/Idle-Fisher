@@ -58,6 +58,10 @@ double Upgrades::Get(const StatContext& statCtx) {
 	} case Stat::YellowComboSize: {
 		FfishData& fishData = SaveData::data.fishData.at(statCtx.id);
 		return (Upgrades::GetBaseStat(statCtx.stat) + 1) / 100.f * (Upgrades::Get(Stat::Power) / fishData.yellowDifficulty) * (-0.1 * GetCharacter()->GetCombo() + 1.1);
+	} case Stat::RecastChainChance: {
+		return 50.0; // temp will change once added more upgrades
+	} case Stat::RecastFalloff: {
+		return 0.5; // temp will change once added more upgrades
 	} default:
 		return GetBaseStat(statCtx.stat);
 	}
@@ -173,13 +177,11 @@ void Upgrades::UpdateDirty() {
 }
 
 double Upgrades::Recalculate(Stat stat) {
-	double cachedValue = 0.0;
-	auto it = modifiersPerStat.find(stat);
-	if (it == modifiersPerStat.end()) {
-		std::cout << "Stat: '" << static_cast<int>(stat) << "' was not in ModifiersPerStat map\n";
-		return 0;
-	}
+	auto [it, inserted] = modifiersPerStat.emplace(stat, std::unordered_set<uint32_t>()); // adds empty
+	if (inserted) // debug
+		std::cout << "Stat: '" << static_cast<int>(stat) << "' was not in ModifiersPerStat map, but adding anyways\n";
 
+	double cachedValue = 0.0;
 	for (uint32_t upgradeId : it->second) { // recalculate all modifiers of stat
 		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
 		SaveEntry& saveProgressNode = SaveData::saveData.progressionData.at(mod.id);
