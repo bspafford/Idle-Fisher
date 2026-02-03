@@ -121,17 +121,17 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	star1->SetPivot({ 0.5f, 0.f });
 	star1Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star1Text->SetPivot({ 0.f, 1.f });
-	star1Text->setTextColor(85, 177, 241);
+	star1Text->setTextColor(glm::vec4(85.f / 255.f, 177.f / 255.f, 241.f / 255.f, 1.f));
 	star2 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star2->SetPivot({ 0.5f, 0.f });
 	star2Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star2Text->SetPivot({ 0.f, 1.f });
-	star2Text->setTextColor(85, 177, 241);
+	star2Text->setTextColor(glm::vec4(85.f / 255.f, 177.f / 255.f, 241.f / 255.f, 1.f));
 	star3 = std::make_unique<Image>("images/emptyStar.png", vector{ 0, 0 }, false);
 	star3->SetPivot({ 0.5f, 0.f });
 	star3Text = std::make_unique<text>(this, "0", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	star3Text->SetPivot({ 0.f, 1.f });
-	star3Text->setTextColor(85, 177, 241);
+	star3Text->setTextColor(glm::vec4(85.f / 255.f, 177.f / 255.f, 241.f / 255.f, 1.f));
 
 	setupLocs();
 	updatePages();

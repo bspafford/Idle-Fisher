@@ -79,7 +79,7 @@ Acharacter::Acharacter() {
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, true);
 	
 	anim = std::make_unique<animation>("character/characterSpriteSheet.png", 21, 49, animData, true, vector{ 0, 0 });
-	anim->setAnimation("idleSE", true);
+	anim->setAnimation("idleSE");
 	anim->addFinishedCallback(this, &Acharacter::animFinished);
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
 	anim->start();
@@ -117,26 +117,26 @@ Acharacter::Acharacter() {
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
-	recastAudio = std::make_unique<Audio>("G.wav");
+	recastAudio = std::make_unique<Audio>("recasts/G2.wav");
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 }
 
 void Acharacter::animFinished() {
 	if (anim->GetCurrAnim().find("cast") != std::string::npos) { // if not cast
 		// change to next animation
-		anim->setAnimation("idleFishingSE", true);
+		anim->setAnimation("idleFishingSE");
 		anim->start();
-		fishingRod->setAnimation("idleFishingSE", true);
+		fishingRod->setAnimation("idleFishingSE");
 		fishingRod->start();
 	} else if (anim->GetCurrAnim() == "transitionSE") {
-		anim->setAnimation("waitSE", true);
+		anim->setAnimation("waitSE");
 		anim->start();
-		fishingRod->setAnimation("waitSE", true);
+		fishingRod->setAnimation("waitSE");
 		fishingRod->start();
 	} else if (anim->GetCurrAnim() == "pullSE") {
-		anim->setAnimation("castSE", true);
+		anim->setAnimation("castSE");
 		anim->start();
-		fishingRod->setAnimation("castSE", true);
+		fishingRod->setAnimation("castSE");
 		fishingRod->start();
 	}
 }
@@ -213,8 +213,6 @@ void Acharacter::draw(Shader* shaderProgram) {
 		drawFishingLine(shaderProgram);
 	}
 
-	numberWidget->draw(shaderProgram);
-
 	vector animLoc = SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f;
 	anim->setLoc(animLoc);
 	anim->draw(shaderProgram);
@@ -225,6 +223,8 @@ void Acharacter::draw(Shader* shaderProgram) {
 
 	if (!bobberBehind)
 		drawFishingLine(shaderProgram);
+
+	numberWidget->draw(shaderProgram);
 }
 
 void Acharacter::DrawWidgets(Shader* shaderProgram) {
@@ -253,12 +253,12 @@ void Acharacter::Update(float deltaTime) {
 			float angle = atan2(moveDir.y, moveDir.x) * 180.f / M_PI;
 			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
 			if (anim->GetCurrAnim() != walkAnimList[y])
-				anim->setAnimation(walkAnimList[y], true);
+				anim->setAnimation(walkAnimList[y]);
 		} else {
 			float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
 			int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f))) + 3;
 			if (anim->GetCurrAnim() != idleAnimList[y])
-				anim->setAnimation(idleAnimList[y], true);
+				anim->setAnimation(idleAnimList[y]);
 		}
 	}
 }
@@ -295,9 +295,9 @@ void Acharacter::leftClick() {
 		catchFishAudio->Play();
 
 		// set animation
-		anim->setAnimation("pullSE", true);
+		anim->setAnimation("pullSE");
 		anim->start();
-		fishingRod->setAnimation("pullSE", true);
+		fishingRod->setAnimation("pullSE");
 		fishingRod->start();
 
 		// set fish image
@@ -334,11 +334,12 @@ void Acharacter::leftClick() {
 				saveFishData.numOwned[currFishQuality] += caught;
 				saveFishData.totalNumOwned[currFishQuality] += caught;
 				showFish = true;
+
+				numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * catchNum, NumberType::FishCaught);
 			}
 
 		} else { // if premium
-			SaveData::saveData.currencyList.at(1u).numOwned++;
-
+			SaveData::saveData.currencyList.at(50u).numOwned++;
 			// give the player buffs
 			// instance cash, instantly collect currency
 			// low long buff, get more fish on catch
@@ -359,7 +360,7 @@ void Acharacter::leftClick() {
 		Main::heldFishWidget->updateList();
 
 		// check if fishing rod is inside a fishSchool or not!
-		calcFishSchoolUpgrades();
+		calcFishSchool();
 
 		// start up fishing again
 		fishing();
@@ -378,9 +379,9 @@ void Acharacter::fishing() {
 
 	Main::fishComboWidget->SetFish(currFish, currFishQuality);
 
-	anim->setAnimation("transitionSE", true);
+	anim->setAnimation("transitionSE");
 	anim->start();
-	fishingRod->setAnimation("transitionSE", true);
+	fishingRod->setAnimation("transitionSE");
 	fishingRod->start();
 }
 
@@ -472,7 +473,7 @@ void Acharacter::StartFishing() {
 	bobberBobTimer->start(bobTime);
 
 	// check if fishing rod is inside a fishSchool or not!
-	calcFishSchoolUpgrades();
+	calcFishSchool();
 
 	// give upgrades
 		// decrease fish time
@@ -494,9 +495,9 @@ void Acharacter::StartFishing() {
 	showFishingLine = false;
 
 	if (anim->GetCurrAnim().find("cast") == std::string::npos) { // if not cast animation, from any direction
-		anim->setAnimation("castSE", true);
+		anim->setAnimation("castSE");
 		anim->start();
-		fishingRod->setAnimation("castSE", true);
+		fishingRod->setAnimation("castSE");
 		fishingRod->start();
 	}
 	//anim->setAnimation(idleAnimWheel[y], -1, true);
@@ -558,13 +559,22 @@ void Acharacter::premiumFishBuff() {
 		currencyStruct.numOwned += currency;
 		currencyStruct.totalNumOwned += currency;
 
+		numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), currency, NumberType::PremiumCash);
+
 		Main::currencyWidget->updateList();
 	} else if (rand <= lowLongBuffPercent) { // low long buff
-		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData.at(3u))); // low long
+		FgoldenFishStruct& premiumData = SaveData::data.goldenFishData.at(3u);
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, premiumData)); // low long
 		Main::UIWidget->setupLocs();
+
+		numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), premiumData.multiplier, NumberType::PremiumBuff);
+
 	} else { // high short buff
-		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, SaveData::data.goldenFishData.at(4u))); // high short
+		FgoldenFishStruct& premiumData = SaveData::data.goldenFishData.at(4u);
+		Main::premiumBuffList.push_back(std::make_unique<UpremiumBuffWidget>(nullptr, premiumData)); // high short
 		Main::UIWidget->setupLocs();
+
+		numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), premiumData.multiplier, NumberType::PremiumBuff);
 	}
 }
 
@@ -659,13 +669,11 @@ AfishSchool* Acharacter::bobberInFishSchool() {
 	return nullptr;
 }
 
-void Acharacter::calcFishSchoolUpgrades() {
+void Acharacter::calcFishSchool() {
 	if (currFishSchool)
 		currFishSchool->removeFishNum();
 
 	currFishSchool = bobberInFishSchool();
-	fishTimeMultiplier = currFishSchool ? .75f : 1.f;
-	fishSchoolMultiplier = currFishSchool ? 1.5f : 1.f;
 }
 
 bool Acharacter::canCatchWorldFish() {
@@ -736,8 +744,8 @@ double Acharacter::GetCombo() {
 	return comboNum;
 }
 
-float Acharacter::getFishSchoolMultiplier() {
-	return fishSchoolMultiplier;
+bool Acharacter::IsFishingInSchool() {
+	return currFishSchool != nullptr;
 }
 
 void Acharacter::IncreaseCombo(double comboChange) {
@@ -764,7 +772,7 @@ void Acharacter::Recast() {
 	fishData.numOwned[currFishQuality] += caught;
 	fishData.totalNumOwned[currFishQuality] += caught;
 
-	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), caught, NumberPrefix::Plus);
+	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), recastNum, NumberType::Recast);
 
 	Main::heldFishWidget->updateList();
 

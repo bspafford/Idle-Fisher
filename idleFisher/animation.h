@@ -47,7 +47,7 @@ public:
 	void start();
 	void stop();
 
-	void setAnimation(std::string name, bool instantUpdate = true);
+	void setAnimation(std::string name);
 
 	void animCallBack();
 

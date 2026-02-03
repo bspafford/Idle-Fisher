@@ -48,7 +48,7 @@ private:
 	std::unique_ptr<Ubutton> menuButton;
 	void openMenu();
 
-	std::unique_ptr<Image> level;
+	std::unique_ptr<Image> levelBar;
 
 	std::unique_ptr<text> levelText;
 	std::unique_ptr<text> maxText; // text show when player upgrades multi is MAX
@@ -68,4 +68,6 @@ private:
 	void setMultiMax();
 
 	std::vector<std::string> multi1Anim;
+
+	double upgradeCost = 0.0;
 };

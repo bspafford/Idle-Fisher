@@ -256,13 +256,13 @@ void UmechanicWidget::CheckTextColor() {
 
 	// power
 	if (SaveData::saveData.currencyList.at(53u).numOwned >= price)
-		buyFishTransporterPriceText->setTextColor(255, 255, 255);
+		buyFishTransporterPriceText->setTextColor(glm::vec4(1));
 	else
-		buyFishTransporterPriceText->setTextColor(255, 0, 0);
+		buyFishTransporterPriceText->setTextColor(glm::vec4(1, 0, 0, 1));
 
 	// speed
 	if (SaveData::saveData.currencyList.at(53u).numOwned >= price || saveMechanicStruct->level >= mechanicStruct->maxLevel)
-		upgradePriceText->setTextColor(255, 255, 255);
+		upgradePriceText->setTextColor(glm::vec4(1));
 	else
-		upgradePriceText->setTextColor(255, 0, 0);
+		upgradePriceText->setTextColor(glm::vec4(1, 0, 0, 1));
 }

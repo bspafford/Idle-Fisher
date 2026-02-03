@@ -36,16 +36,11 @@ AautoFisher::AautoFisher(uint32_t id) {
 		outlineSpriteSheet = std::make_shared<Image>("images/autoFisher/outline.png", vector{ 0, 0 }, true);
 
 	this->id = id;
-	SaveEntry& afProgData = SaveData::saveData.progressionData.at(id);
 	FautoFisherStruct& afData = SaveData::data.autoFisherData.at(id);
-	afProgData.level = true;
 	loc = { afData.xLoc, afData.yLoc };
-	level = &afProgData.level;
 
 	setupCollision();
 	
-	upgradeAnimIndex = *level / 10;
-
 	// auto fisher animation
 	float duration = 0.1f;
 	std::unordered_map<std::string, animDataStruct> autoFisherAnimData;
@@ -66,6 +61,8 @@ AautoFisher::AautoFisher(uint32_t id) {
 	anim->addAnimEvent(40, this, &AautoFisher::catchFish);
 	anim->setAnimation("1");
 	anim->start();
+	anim->SetCurrFrameLoc(vector(math::randRangeInt(0, 39), 0)); // give random frame, so it looks better
+
 
 	// outline animation
 	std::unordered_map<std::string, animDataStruct> outlineData;
@@ -78,9 +75,6 @@ AautoFisher::AautoFisher(uint32_t id) {
 	fishingLineData.insert({ "fishingLine", animDataStruct({0, 0}, {39, 0}, true) });
 	fishingLine = std::make_unique<animation>(fishingLineSpriteSheet, 138, 139, fishingLineData, true, loc + vector{ 13, -74 });
 	fishingLine->setAnimation("fishingLine");
-	fishingLine->start();
-
-	setStats();
 
 	autoFisherNum = world::currWorld->autoFisherList.size();
 
@@ -90,8 +84,10 @@ AautoFisher::AautoFisher(uint32_t id) {
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &AautoFisher::Recast);
-	recastAudio = std::make_unique<Audio>("G.wav", loc);
+	recastAudio = std::make_unique<Audio>("recasts/G2.wav", anim->getLoc() + vector(anim->GetCellSize().x / 2.f, 0));
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
+
+	setStats();
 }
 
 AautoFisher::~AautoFisher() {
@@ -116,15 +112,15 @@ void AautoFisher::draw(Shader* shaderProgram) {
 	if (UI && UI->visible)
 		UI->draw(shaderProgram);
 
-	if (numberWidget)
-		numberWidget->draw(shaderProgram);
-
 	if (anim)
 		anim->draw(shaderProgram);
 	if (fishingLine)
 		fishingLine->draw(shaderProgram);
 	if (bMouseOver && outline)
 		outline->draw(shaderProgram);
+
+	if (numberWidget)
+		numberWidget->draw(shaderProgram);
 }
 
 void AautoFisher::leftClick() {
@@ -159,10 +155,10 @@ void AautoFisher::calcMouseOver(bool& mouseOverPrev, bool mouseOver) {
 
 void AautoFisher::collectFish() {
 	double currency = calcCurrencyHeld();
-	for (int i = 0; i < heldFish.size(); i++) {
-		SaveData::saveData.fishData[heldFish[i].id].numOwned[0] += heldFish[i].numOwned[0];
-		SaveData::saveData.fishData[heldFish[i].id].totalNumOwned[0] += heldFish[i].numOwned[0];
-		heldFish[i].numOwned[0] = 0;
+	for (auto& [id, data] : heldFish) {
+		SaveData::saveData.fishData.at(id).numOwned[0] += data.numOwned[0];
+		SaveData::saveData.fishData.at(id).totalNumOwned[0] += data.numOwned[0];
+		data.numOwned[0] = 0;
 	}
 
 	Main::heldFishWidget->updateList();
@@ -178,11 +174,16 @@ void AautoFisher::collectFish() {
 // go through all fish and make sure the auto fisher can catch them
 // if cant then remove them from the probability list
 void AautoFisher::catchFish() {
-	FfishData currFish = calcFish();
+	FfishData currFish;
+	if (!calcFish(&currFish)) {
+		anim->stop();
+		return;
+	}
 
 	int catchNum = 1;
 
 	// if there is enough room for the fish
+	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
 	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * catchNum <= maxCurrency) {
 		if (catchNum > 0) {
 			double recast = Upgrades::Get(Stat::RecastProcChance);
@@ -193,6 +194,8 @@ void AautoFisher::catchFish() {
 			saveFishData.id = currFish.id;
 			saveFishData.numOwned[0] += catchNum;
 			saveFishData.totalNumOwned[0] += catchNum;
+
+			numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * catchNum, NumberType::FishCaught);
 		}
 
 		if (anim && calcCurrencyHeld() >= maxCurrency) {
@@ -206,25 +209,27 @@ void AautoFisher::catchFish() {
 		afMoreInfoUI->updateUI();
 }
 
-FfishData AautoFisher::calcFish() {
+bool AautoFisher::calcFish(FfishData* fishData) {
 	float rand = math::randRange(0.f, 1.f);
 	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData);
 
 	for (int i = 0; i < probList.size(); i++) {
-		if (rand <= probList[i].second)
-			return SaveData::data.fishData.at(probList[i].first);
+		if (rand <= probList[i].second) {
+			if (fishData)
+				*fishData = SaveData::data.fishData.at(probList[i].first);
+			return true;
+		}
 	}
 
-
-	// shouldn't hit this
-	return SaveData::data.fishData.begin()->second;
+	return false;
 }
 
 std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData, bool isCurrencyAFactor) {
+	double fishingPower = Upgrades::Get(StatContext(Stat::AutoFisherPower, id));
 
-	float totalProb = 0;// premiumChance;
-
+	float totalProb = 0;
 	double heldCurrency = calcCurrencyHeld();
+	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
 
 	// starts at 1 to skip premium
 	for (auto& [fishId, fData] : fishData) {
@@ -232,7 +237,7 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 			continue; // dont include premium here
 
 		// see if autofisher has enough fishing power, see if theres enough room for the fish
-		if (fData.fishingPower <= fishingPower && (fData.worldId == Scene::GetCurrWorldId() || fData.worldId == 1u)) {
+		if (fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId()) {
 			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor)
 				totalProb += float(fData.probability);
 		}
@@ -245,10 +250,10 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 		if (fishId == 1u)
 			continue; // dont include premium here
 
-		if (fData.fishingPower <= fishingPower && (fData.worldId == Scene::GetCurrWorldId() || fData.worldId == 1u)) {
+		if (fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId()) {
 			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor) {
 				test += fData.probability / totalProb;
-					probList.push_back(std::pair{ fishId, test});
+				probList.push_back(std::pair{ fishId, test});
 			}
 		}
 	}
@@ -270,18 +275,12 @@ void AautoFisher::calcIfPlayerInfront() {
 }
 
 void AautoFisher::setStats() {
-	// 1: .1, 100 = .01
-	// updates the animation speed
-	float y = -(1.f / 1100.f) * *level + 0.100909f;
+	UI->buttonText->setText(shortNumbers::convert2Short(Upgrades::GetPrice(id, upgradeAmount)));
 
-	if (anim)
-		anim->SetCurrAnimDuration(y);
+	double animSpeed = Upgrades::Get(StatContext(Stat::AutoFisherSpeed, id));
+	anim->SetCurrAnimDuration(animSpeed);
 
-	outline->SetCurrAnimDuration(y);
-	fishingLine->SetCurrAnimDuration(y);
-
-	// updates the max hold currency
-	maxCurrency = *level * 100;
+	SetUpgradeAnim();
 }
 
 // takes input if the list isn't heldFish
@@ -295,78 +294,18 @@ double AautoFisher::calcCurrencyHeld() {
 }
 
 void AautoFisher::upgrade() {
-	if (*level >= maxLevel)
+	if (!Upgrades::LevelUp(id, upgradeAmount))
 		return;
 
-	std::tuple<uint32_t, int, double> levelPrice = getUpgradeCost();
-	auto& [upgradeCurrencyId, upgradeLevel, upgradePrice] = levelPrice;
-
-	if (SaveData::saveData.currencyList.at(upgradeCurrencyId).numOwned < upgradePrice)
-		return;
-
-	// take currency
-	SaveData::saveData.currencyList.at(upgradeCurrencyId).numOwned -= upgradePrice;
-	*level += upgradeLevel;
-
-	Main::currencyWidget->updateList();
-
-	upgradeAnimIndex = floor(*level / 10);
-
-	// update the autofisher animation
 	setStats();
 
-	// see if can fish again
+	// if auto fisher was full, see if it now has enough space to start again
+	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
 	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
 		anim->start();
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
 		afMoreInfoUI->updateUI();
-}
-
-std::tuple<uint32_t, int, double> AautoFisher::getUpgradeCost() {
-	double currency = SaveData::saveData.currencyList.at(worldId).numOwned;
-
-	int tempLevel = *level;
-	if (multiplier != (int)INFINITY) {
-		double cost = 0;
-		for (int i = 0; i < multiplier; i++) {
-			if (tempLevel + 1 > maxLevel)
-				break;
-			cost += price(tempLevel);
-			tempLevel++;
-		}
-
-		if (UI)
-			UI->buttonText->setText(shortNumbers::convert2Short(cost));
-
-		return std::tuple(worldId, tempLevel - *level, cost);
-	} else {
-		double minPrice = price(*level);
-		// return 1 if don't have enough money for 1 upgrade
-		if (currency < minPrice) {
-			if (UI)
-				UI->buttonText->setText(shortNumbers::convert2Short(minPrice));
-			return std::tuple(worldId, 1, minPrice);
-		}
-
-		double cost = 0;
-		int num = 0;
-		
-		// if have enough money && isn't max level
-		while (cost + price(num + *level) <= currency && *level + num < maxLevel) {
-			cost += price(num + *level);
-			num++;
-		}
-
-		if (UI)
-			UI->buttonText->setText(shortNumbers::convert2Short(cost));
-		return std::tuple(worldId, num, cost);
-	}
-}
-
-double AautoFisher::price(int level) {
-	// 10 * 1.1^x
-	return 10 * pow(1.1, level);
 }
 
 float AautoFisher::getCatchTime() {
@@ -396,6 +335,7 @@ std::vector<std::pair<uint32_t, double>> AautoFisher::calcAutoFishList(int fishN
 		fishingRodId = 0;
 
 	// calc all fish in world
+	double fishingPower = Upgrades::Get(StatContext(Stat::AutoFisherPower, id));
 	for (auto& [key, value] : SaveData::data.fishData) {
 		if (value.worldId == Scene::GetCurrWorldId() && fishingPower >= value.fishingPower) {
 			fishList.insert({key, value});
@@ -430,6 +370,7 @@ std::unordered_map<uint32_t, float> AautoFisher::calcIdleFishChance(std::unorder
 }
 
 void AautoFisher::startFishing() {
+	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
 	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
 		anim->start();
 }
@@ -468,6 +409,13 @@ double AautoFisher::calcMPS() {
 void AautoFisher::OutlineUpdate(int frame) {
 	if (outline)
 		outline->SetCurrFrameLoc(vector(frame, 0));
+	if (fishingLine)
+		fishingLine->SetCurrFrameLoc(vector(frame, 0));
+}
+
+void AautoFisher::SetUpgradeAnim() {
+	std::string name = std::to_string(SaveData::saveData.progressionData.at(id).level / 10 + 1);
+	anim->setAnimation(name);
 }
 
 void AautoFisher::StartRecast(uint32_t fishId, double caughtNum) {
@@ -488,7 +436,7 @@ void AautoFisher::Recast() {
 	fishData.numOwned[0] += caught;
 	fishData.totalNumOwned[0] += caught;
 
-	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), caught, NumberPrefix::Plus);
+	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), recastNum, NumberType::Recast);
 
 	recastAudio->SetPitch(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
 	recastAudio->Play();

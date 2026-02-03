@@ -45,7 +45,7 @@ void UcurrencyConverterBox::setup() {
 	buyButton->addCallback(this, &UcurrencyConverterBox::buyUpgrade);
 
 	buttonPriceText = std::make_unique<text>(this, "Start", "straightDark", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
-	buttonPriceText->setTextColor(255, 0, 0);
+	buttonPriceText->setTextColor(glm::vec4(1, 0, 0, 1));
 
 	// if going
 	FcurrencyConversionStruct* currencyConversionStruct = &SaveData::saveData.currencyConversionList.at(currencyStruct->id);

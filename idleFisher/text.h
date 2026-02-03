@@ -38,7 +38,7 @@ public:
 	vector getSize();
 	std::string getString();
 	// 0-255
-	void setTextColor(int r, int g, int b);
+	void setTextColor(glm::vec4 color);
 	// 0-1
 	void SetAlpha(float alpha);
 	void setupLocs() override;

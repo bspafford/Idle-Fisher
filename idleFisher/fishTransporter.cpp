@@ -240,15 +240,15 @@ void AfishTransporter::setAnimation() {
 			y = 7;
 
 		if (npcAnim->GetCurrAnim() != walkAnimList[y]) {
-			npcAnim->setAnimation(walkAnimList[y], true);
-			fishPileAnim->setAnimation(fullnessString + walkAnimList[y], true);
+			npcAnim->setAnimation(walkAnimList[y]);
+			fishPileAnim->setAnimation(fullnessString + walkAnimList[y]);
 		}
 	} else {
 		float angle = atan2(prevMove.y, prevMove.x) * 180 / M_PI;
 		int y = round(1.f / 45.f * (angle + 45.f / 2.f)) + 3;
 		if (npcAnim->GetCurrAnim() != idleAnimList[y]) {
-			npcAnim->setAnimation(idleAnimList[y], true);
-			fishPileAnim->setAnimation(fullnessString + idleAnimList[y], true);
+			npcAnim->setAnimation(idleAnimList[y]);
+			fishPileAnim->setAnimation(fullnessString + idleAnimList[y]);
 		}
 	}
 }
@@ -452,15 +452,17 @@ void AfishTransporter::calcIdleProfits(float timeDiff) {
 		for (int i = world::currWorld->autoFisherList.size() - 1; i >= 0; i--) {
 			AautoFisher* currAutoFisher = world::currWorld->autoFisherList[i].get();
 			uint32_t fishId = 2; // temp, should be somewhat random, not just the first fish
-			if (remainingCurrency > currAutoFisher->maxCurrency - currAutoFisher->calcCurrencyHeld()) {
+
+			double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, currAutoFisher->id));
+			if (remainingCurrency > maxCurrency - currAutoFisher->calcCurrencyHeld()) {
 				// add fish to autofisher
 				FsaveFishData fish;
 				fish.id = fishId;
-				fish.numOwned[0] = currAutoFisher->maxCurrency;
+				fish.numOwned[0] = maxCurrency;
 				currAutoFisher->heldFish.insert({ fish.id, fish });
 				std::cout << "heldfish size: " << currAutoFisher->heldFish.size() << std::endl;
 				// remove from remaining currency
-				remainingCurrency -= currAutoFisher->maxCurrency;
+				remainingCurrency -= maxCurrency;
 			} else {
 				// add to autofisher
 				currAutoFisher->heldFish[fishId].numOwned[0] += remainingCurrency;

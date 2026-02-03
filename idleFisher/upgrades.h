@@ -12,7 +12,7 @@
 enum class Stat {
 	None = 0, // no stat
 
-// fish
+// Fish
 	FishPrice = 1, // how much fish sell for
 	
 // Recast
@@ -21,7 +21,7 @@ enum class Stat {
 	RecastFalloff = 23, // reduces the chainChance by (next chain chance = chaincChance * chainReduce)
 
 
-// fish combo widget
+// Fish Combo Widget
 	FishComboSpeed = 2, // how fast the fish moves back and forth
 
 	GreenComboSize = 3, // how big green zone is
@@ -36,20 +36,25 @@ enum class Stat {
 
 	ShouldResetCombo = 20, // whether the combo should reset on a miss
 	
-// fishing rod
+// Fishing Rod
 	Power = 11, // how strong the fishing rod is
 	CatchNum = 12, // how many fish the player catches per cast
 
-// Premium fish
+// Premium Fish
 	PremiumCatchChance = 13, // how common it is to catch the premium fish
 	PremiumCoolDownTime = 14, // how long it takes until you can catch another premium fish
 	PremiumBuff = 19, // calculates all active premium fish buffs
 
-// fish school
+// Auto Fisher
+	AutoFisherSpeed = 24,
+	AutoFisherMaxCapacity = 25,
+	AutoFisherPower = 26,
+
+// Fish School
 	MaxFishSchoolSpawnInterval = 15,
 	MinFishSchoolSpawnInterval = 16,
 
-// rain
+// Rain
 	MaxRainSpawnInterval = 17,
 	MinRainSpawnInterval = 18,
 };
@@ -106,11 +111,15 @@ public:
 	// removes currency
 	// and updates the cached value
 	// returns true if successfully upgraded, price is outputted through reference, can be null
-	static bool LevelUp(uint32_t upgradeId, int levels = 1);
-	static double GetPrice(uint32_t upgradeId);
-	static double GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1);
-
-	static double GetCached(Stat stat);
+	// leave null for levels = 1
+	// calculatedLevel returns the final upgrade level, so if levels == -1, calculatedLevel will be the actual upgrade level
+	static bool LevelUp(uint32_t upgradeId, int levels = 1, int* calculatedLevel = nullptr);
+	// calculatedLevel returns the final upgrade level, so if levels == -1, calculatedLevel will be the actual upgrade level
+	static double GetPrice(uint32_t upgradeId, int levels = 1, int* calculatedLevel = nullptr);
+	// can change the levels value if the max level is -1, will return the actual max levels the player can upgrade instead
+	// levels = nullptr for levels = 1
+	// calculatedLevel returns the final upgrade level, so if levels == -1, calculatedLevel will be the actual upgrade level
+	static double GetPrice(const ProgressionNode& upgrade, SaveEntry& saveUpgrade, int levels = 1, int* calculatedLevel = nullptr);
 
 	//static void AddModifier(Upgrade upgrade);
 	//static void RemoveModifier(Upgrade upgrade);
@@ -123,7 +132,13 @@ public:
 
 private:
 	static double Recalculate(Stat s);
+	// recalculates the price, then updates the cache
+	static double GetRecalculatedPrice(uint32_t upgradeId);
+	// recalculates the price, then updates the cache
+	static double GetRecalculatedPrice(const ProgressionNode& upgrade, const SaveEntry& saveUpgrade);
 	static bool IsModifierActive(const ModifierNode& modifier);
+
+	static double PriceEquation(ScalingFormula formula, int currLevel, int levelIncrease);
 
 	// only cached the values for the next level, not multiple levels
 	static inline std::unordered_map<uint32_t, double> cachedPrices;

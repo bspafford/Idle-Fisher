@@ -32,11 +32,10 @@ public:
 	void rightClick();
 	void collectFish();
 	void catchFish();
-	FfishData calcFish();
+	// returns false if the auto fisher had no fish to catch
+	//	happens when every fish is more expensive the the maxCapacity
+	bool calcFish(FfishData* fishData);
 	std::vector<std::pair<uint32_t, float>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>&, bool isCurrencyAFactor = true);
-	// returns id, level, price
-	std::tuple<uint32_t, int, double> getUpgradeCost();
-	double price(int level);
 	double calcCurrencyHeld();
 	// gets the autofisher to start fishing again once it is no longer full
 	void startFishing();
@@ -55,9 +54,6 @@ public:
 	double calcFPS();
 	double calcMPS();
 
-	// used to display the correct color of auto fisher
-	int upgradeAnimIndex;
-
 	bool bMouseOver = false;
 
 	std::unique_ptr<animation> anim;
@@ -73,19 +69,13 @@ public:
 	void calcIfPlayerInfront();
 	bool inFrontPlayer = false;
 
-	// world
-	int* level;
-	int maxLevel = 100;
-	int maxCurrency = 100;
-
 	std::unordered_map<uint32_t, FsaveFishData> heldFish;
 
 	std::unique_ptr<autoFisherUI> UI;
 
-	float fishingPower = 50;
-
-	// multiplier stuff
-	int multiplier = 1;
+	// how many levels the auto fisher will increase by when purchasing an upgrade
+	// -1 for max level
+	int upgradeAmount = 1;
 
 	int autoFisherNum = 0;
 
@@ -105,6 +95,8 @@ private:
 	static inline std::shared_ptr<Image> autoFisherSpriteSheet;
 	static inline std::shared_ptr<Image> fishingLineSpriteSheet;
 	static inline std::shared_ptr<Image> outlineSpriteSheet;
+
+	void SetUpgradeAnim();
 
 	// recasting
 	void StartRecast(uint32_t fishId, double caughtNum);

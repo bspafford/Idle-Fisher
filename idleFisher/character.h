@@ -33,7 +33,7 @@ public:
 	Fcollision* GetCollision();
 	vector GetMoveDir();
 	bool GetIsFishing();
-	float getFishSchoolMultiplier();
+	bool IsFishingInSchool();
 
 	double GetCombo();
 	// Can be a negative value
@@ -70,10 +70,8 @@ private:
 
 	friend Acharacter* GetCharacter(); // get a reference to the character
 
-	void calcFishSchoolUpgrades();
+	void calcFishSchool();
 	AfishSchool* bobberInFishSchool();
-	static inline float fishSchoolMultiplier = 1.f; // increases the fish caught
-	static inline float fishTimeMultiplier = 1.f; // reduces the catch time
 	AfishSchool* currFishSchool; // if cast in a fishSchool
 
 	// fish stuff

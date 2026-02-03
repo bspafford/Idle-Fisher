@@ -72,6 +72,8 @@ void buyAutoFisher::spawnAutoFisher() {
 
 	//vector loc = Main::autoFisherLocs[(int)Main::autoFisherList.size()];
 	std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(calcAutoFisherId()); // int(world::autoFisherList.size())
+	SaveData::saveData.progressionData.at(autoFisher->id).level++; // level should be 1 when purchased
+
 	world::currWorld->autoFisherList.push_back(std::move(autoFisher));
 
 	// need to update price after its leveled up

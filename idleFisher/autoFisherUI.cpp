@@ -10,6 +10,8 @@
 #include "animation.h"
 #include "button.h"
 #include "text.h"
+#include "upgrades.h"
+#include "Scene.h"
 
 #include "debugger.h"
 
@@ -37,13 +39,13 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	menuButton->addCallback(this, &autoFisherUI::openMenu);
 
 	// level
-	level = std::make_unique<Image>("images/autoFisher/UI/level1.png", UILoc, true);
+	levelBar = std::make_unique<Image>("images/autoFisher/UI/level1.png", UILoc, true);
 
-	levelText = std::make_unique<text>(this, std::to_string(*autoFisher->level), "tall", UILoc + vector{ 31.f, 67.f }, true, true, TEXT_ALIGN_RIGHT);
+	levelText = std::make_unique<text>(this, std::to_string(SaveData::saveData.progressionData.at(autoFisher->id).level), "tall", UILoc + vector{31.f, 67.f}, true, true, TEXT_ALIGN_RIGHT);
 	maxText = std::make_unique<text>(this, " ", "tall", UILoc + vector{ 31.f, 66.f }, true, true);
-	maxText->setTextColor(124, 127, 85);
+	maxText->setTextColor(glm::vec4(124.f / 255.f, 127.f / 255.f, 85.f / 255.f, 1.f));
 	buttonTextLoc = UILoc + vector{ 34.f, 23.f };
-	buttonText = std::make_unique<text>(this, shortNumbers::convert2Short(std::get<2>(autoFisher->getUpgradeCost())), "normal", buttonTextLoc, true, true, TEXT_ALIGN_RIGHT);
+	buttonText = std::make_unique<text>(this, shortNumbers::convert2Short(Upgrades::GetPrice(autoFisher->id)), "normal", buttonTextLoc, true, true, TEXT_ALIGN_RIGHT);
 
 	std::string levelBarPath = "images/autoFisher/UI/level";
 	for (int i = 0; i < 21; i++)
@@ -67,22 +69,25 @@ void autoFisherUI::draw(Shader* shaderProgram) {
 	if (closing || opening) {
 		openAnimation->draw(shaderProgram);
 	} else {
-		if (upgradeButton)
+		if (upgradeButton) {
 			upgradeButton->draw(shaderProgram);
-		level->draw(shaderProgram);
+			// if has enough currency to upgrade it
+			upgradeButton->enable(upgradeCost <= SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned);
+		}
+		levelBar->draw(shaderProgram);
 
 
-		if (pressTest && autoFisher->multiplier == 1)
+		if (pressTest && autoFisher->upgradeAmount == 1)
 			pressTest->draw(shaderProgram);
-		if (multiMax && autoFisher->multiplier != int(INFINITY))
+		if (multiMax && autoFisher->upgradeAmount != -1) // max
 			multiMax->draw(shaderProgram);
-		if (multi10 && autoFisher->multiplier != 10)
+		if (multi10 && autoFisher->upgradeAmount != 10)
 			multi10->draw(shaderProgram);
-		else if (pressTest && autoFisher->multiplier == 10)
+		else if (pressTest && autoFisher->upgradeAmount == 10)
 			pressTest->draw(shaderProgram);
-		if (multi1 && autoFisher->multiplier != 1)
+		if (multi1 && autoFisher->upgradeAmount != 1)
 			multi1->draw(shaderProgram);
-		if (pressTest && autoFisher->multiplier == int(INFINITY))
+		if (pressTest && autoFisher->upgradeAmount == -1) // max
 			pressTest->draw(shaderProgram);
 		
 			
@@ -91,8 +96,17 @@ void autoFisherUI::draw(Shader* shaderProgram) {
 
 		// text
 		levelText->draw(shaderProgram);
-		if (*autoFisher->level < autoFisher->maxLevel)
+		ProgressionNode& data = SaveData::data.progressionData.at(autoFisher->id);
+		int level = SaveData::saveData.progressionData.at(autoFisher->id).level;
+		int maxLevel = data.maxLevel;
+		if (level < maxLevel)
 			maxText->draw(shaderProgram);
+
+		if (Upgrades::GetPrice(autoFisher->id, autoFisher->upgradeAmount) <= SaveData::saveData.currencyList.at(data.worldId).numOwned)
+			buttonText->setTextColor(glm::vec4(1));
+		else
+			buttonText->setTextColor(glm::vec4(1, 0, 0, 1));
+
 		buttonText->draw(shaderProgram);
 	}
 }
@@ -118,20 +132,21 @@ void autoFisherUI::updateUI() {
 	if (!visible)
 		return;
 
-	auto [upgradeCurrencyId, upgradeLevel, upgradeCost] = autoFisher->getUpgradeCost();
+	ProgressionNode& data = SaveData::data.progressionData.at(autoFisher->id);
+	SaveEntry& saveData = SaveData::saveData.progressionData.at(autoFisher->id);
+	int calculatedUpgradeAmount;
+	upgradeCost = Upgrades::GetPrice(data, saveData, autoFisher->upgradeAmount, &calculatedUpgradeAmount);
 
-	// if has enough currency to upgrade it
-	if (upgradeButton)
-		upgradeButton->enable(upgradeCost <= SaveData::saveData.currencyList[upgradeCurrencyId].numOwned);
-
+	int level = SaveData::saveData.progressionData.at(autoFisher->id).level;
+	int maxLevel = SaveData::data.progressionData.at(autoFisher->id).maxLevel;
 
 	// update level num
-	levelText->setText(std::to_string(*autoFisher->level));
-	maxText->setText("+" + std::to_string(upgradeLevel));
+	levelText->setText(std::to_string(level));
+	maxText->setText("+" + std::to_string(calculatedUpgradeAmount));
 
 	maxText->setLoc(levelText->getLoc() - vector{ 0, maxText->getSize().y + 5.f });
 
-	if (*autoFisher->level < autoFisher->maxLevel)
+	if (level < maxLevel)
 		buttonText->setText(shortNumbers::convert2Short(upgradeCost));
 	else {
 		buttonText->setText("max");
@@ -139,8 +154,8 @@ void autoFisherUI::updateUI() {
 	}
 
 	// based on the level up the level bar
-	int levelIndex = static_cast<int>(floor((float(*autoFisher->level) / float(autoFisher->maxLevel)) * ((int)levelBarImgs.size() - 1)));
-	level = std::make_unique<Image>(levelBarImgs[levelIndex], UILoc, true);
+	int levelIndex = static_cast<int>(floor((float(level) / float(maxLevel)) * ((int)levelBarImgs.size() - 1)));
+	levelBar = std::make_unique<Image>(levelBarImgs[levelIndex], UILoc, true);
 }
 
 void autoFisherUI::openMenu() {
@@ -187,18 +202,18 @@ void autoFisherUI::closedUI() {
 }
 
 void autoFisherUI::setMultiplier(int multiplier) {
-	autoFisher->multiplier = multiplier;
+	autoFisher->upgradeAmount = multiplier;
 
 	std::string path = "images/autoFisher/UI/multipliers/multi";
 
 	std::string mult;
-	if (autoFisher->multiplier == 1) {
+	if (autoFisher->upgradeAmount == 1) {
 		mult = "1";
 		pressTest->setImage(path + "3.png");
-	} else if (autoFisher->multiplier == 10) {
+	} else if (autoFisher->upgradeAmount == 10) {
 		mult = "10";
 		pressTest->setImage(path + "12.png");
-	} else {
+	} else { // max
 		mult = "max";
 		pressTest->setImage(path + "Max3.png");
 	}
@@ -213,5 +228,5 @@ void autoFisherUI::setMulti10() {
 	setMultiplier(10);
 }
 void autoFisherUI::setMultiMax() {
-	setMultiplier(int(INFINITY));
+	setMultiplier(-1);
 }

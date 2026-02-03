@@ -3,12 +3,17 @@
 #include "timer.h"
 #include "shortNumbers.h"
 
-NumberData::NumberData(vector loc, double value, NumberPrefix prefix, NumberSuffix suffix, bool useWorldPos) {
-	vector randOffset = vector(math::randRange(-5.f, 5.f), math::randRange(-3.f, 4.f));
+NumberData::NumberData(vector loc, double value, NumberType type, bool useWorldPos) {
+	vector randOffset = vector(math::randRange(-7.f, 7.f), math::randRange(-5.f, 5.f));
 	startLoc = loc + randOffset;
 
-	std::string textString = CalcPrefix(prefix) + shortNumbers::convert2Short(value) + CalcSuffix(suffix);
-	number = std::make_unique<text>(nullptr, textString, "straight", startLoc, useWorldPos, false, TEXT_ALIGN_CENTER);
+	std::string textString, font;
+	glm::vec4 color;
+	MakeNumberString(value, type, textString, font, color);
+	number = std::make_unique<text>(nullptr, textString, font, startLoc, useWorldPos, false, TEXT_ALIGN_CENTER);
+	number->setTextColor(color);
+
+	// , NumberPrefix prefix, NumberSuffix suffix,
 
 	timer = CreateDeferred<Timer>();
 	timer->addUpdateCallback(this, &NumberData::UpdateCallback);
@@ -36,8 +41,8 @@ NumberWidget::NumberWidget(widget* parent, bool useWorldPos) : widget(parent) {
 	this->useWorldPos = useWorldPos;
 }
 
-void NumberWidget::Start(vector loc, double value, NumberPrefix prefix, NumberSuffix suffix) {
-	std::unique_ptr<NumberData> number = std::make_unique<NumberData>(loc, value, prefix, suffix, useWorldPos);
+void NumberWidget::Start(vector loc, double value, NumberType type) {
+	std::unique_ptr<NumberData> number = std::make_unique<NumberData>(loc, value, type, useWorldPos);
 	numbers.push_back(std::move(number));
 }
 
@@ -54,22 +59,27 @@ void NumberWidget::draw(Shader* shader) {
 	}
 }
 
-std::string NumberData::CalcPrefix(NumberPrefix prefix) {
-	switch (prefix) {
-	case NumberPrefix::Plus:
-		return "+";
-	case NumberPrefix::Times:
-		return "x";
-	default:
-		return "";
-	}
-}
-
-std::string NumberData::CalcSuffix(NumberSuffix suffix) {
-	switch (suffix) {
-	case NumberSuffix::Percent:
-		return "%";
-	default:
-		return "";
+void NumberData::MakeNumberString(double value, NumberType type, std::string& textString, std::string& font, glm::vec4& color) {
+	switch (type) {
+	case NumberType::FishCaught:
+		textString = "+" + shortNumbers::convert2Short(value);
+		font = "straight";
+		color = glm::vec4(56.f / 255.f, 1.f, 117.f / 255.f, 1.f); // green
+		break;
+	case NumberType::Recast:
+		textString = "x" + shortNumbers::convert2Short(value + 1);
+		font = "biggerStraight";
+		color = glm::vec4(1, 0.5, 0, 1); // orange
+		break;
+	case NumberType::PremiumCash:
+		textString = "+" + shortNumbers::convert2Short(value);
+		font = "biggerStraight";
+		color = glm::vec4(1, 1, 0, 1); // yellow
+		break;
+	case NumberType::PremiumBuff:
+		textString = "x" + shortNumbers::convert2Short(value) + "%";
+		font = "biggerStraight";
+		color = glm::vec4(1, 1, 0, 1); // yellow
+		break;
 	}
 }

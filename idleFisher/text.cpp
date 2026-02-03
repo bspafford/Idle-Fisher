@@ -67,8 +67,8 @@ void text::changeFont() {
 	}
 }
 
-void text::setTextColor(int r, int g, int b) {
-	colorMod = glm::vec4(r / 255.f, g / 255.f, b / 255.f, 1.f);
+void text::setTextColor(glm::vec4 color) {
+	colorMod = color;
 }
 
 void text::SetAlpha(float alpha) {

@@ -304,32 +304,35 @@ void UfishermanWidget::CheckTextColor() {
 
 	// power
 	if (currencyData.numOwned >= powerCost)
-		powerButtonPrice->setTextColor(255, 255, 255);
+		powerButtonPrice->setTextColor(glm::vec4(1));
 	else
-		powerButtonPrice->setTextColor(255, 0, 0);
+		powerButtonPrice->setTextColor(glm::vec4(1, 0, 0, 1));
 
 	// speed
 	if (currencyData.numOwned >= speedCost)
-		speedButtonPrice->setTextColor(255, 255, 255);
+		speedButtonPrice->setTextColor(glm::vec4(1));
 	else
-		speedButtonPrice->setTextColor(255, 0, 0);
+		speedButtonPrice->setTextColor(glm::vec4(1, 0, 0, 1));
 
 	// catch chance
 	if (currencyData.numOwned >= chanceCost)
-		catchChanceButtonPrice->setTextColor(255, 255, 255);
+		catchChanceButtonPrice->setTextColor(glm::vec4(1));
 	else
-		catchChanceButtonPrice->setTextColor(255, 0, 0);
+		catchChanceButtonPrice->setTextColor(glm::vec4(1, 0, 0, 1));
 }
 
 int UfishermanWidget::calcFishingRodIndex() {
-	return SaveData::saveData.progressionData.at(114u).level / 10;
+	int maxIndex = 5;
+	return std::min(SaveData::saveData.progressionData.at(114u).level / 10, maxIndex);
 }
 
 int UfishermanWidget::calcFishingLineIndex() {
-	return SaveData::saveData.progressionData.at(115u).level / 10;
+	int maxIndex = 5;
+
+	return std::min(SaveData::saveData.progressionData.at(115u).level / 10, maxIndex);
 }
 
 int UfishermanWidget::calcBobberIndex() {
-	return 1;//
-	return SaveData::saveData.progressionData.at(116u).level / 10;
+	int maxIndex = 5;
+	return std::min(SaveData::saveData.progressionData.at(116u).level / 10, maxIndex);
 }

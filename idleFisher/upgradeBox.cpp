@@ -86,7 +86,7 @@ void UupgradeBox::setup(uint32_t progressId) {
 	buyButton->SetPivot({ 1.f, 0.5f });
 
 	buttonPriceText = std::make_unique<text>(this, "0", "straightDark", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
-	buttonPriceText->setTextColor(255, 0, 0);
+	buttonPriceText->setTextColor(glm::vec4(1, 0, 0, 1));
 	buttonPriceText->SetPivot({ 0.f, 0.5f });
 
 	currencyImg = std::make_unique<Image>("images/currency/coin" + std::to_string(progressNode->worldId) + ".png", vector{ 0, 0 }, false);
@@ -113,9 +113,9 @@ void UupgradeBox::draw(Shader* shaderProgram) {
 
 	double price = Upgrades::GetPrice(progressNode->id);
 	if (price <= SaveData::saveData.currencyList.at(progressNode->worldId).numOwned || (saveProgressNode->level >= progressNode->maxLevel)) // can afford, or max level
-		buttonPriceText->setTextColor(255, 255, 255); // set to og color
+		buttonPriceText->setTextColor(glm::vec4(1)); // set to og color
 	else // cant afford
-		buttonPriceText->setTextColor(255, 0, 0); // set red
+		buttonPriceText->setTextColor(glm::vec4(1, 0, 0, 1)); // set red
 
 	buttonPriceText->draw(shaderProgram);
 

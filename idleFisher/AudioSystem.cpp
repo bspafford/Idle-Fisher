@@ -58,17 +58,30 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount) {
         if (audio->GetUseWorldPos()) {
             float distance = math::max(math::distance(SaveData::saveData.playerLoc, audio->GetLoc()), 1.f); // make sure volume doesn't get too lound
             volume *= dRef / distance;
-        }
+            vector direction = math::normalize(audio->GetLoc() - SaveData::saveData.playerLoc);
 
-        // simple stereo mix
-        if (audio->GetDecoder()->outputChannels == 1) {
-            for (ma_uint32 i = 0; i < framesRead; i++) {
-                out[i * 2 + 0] += temp[i] * volume;
-                out[i * 2 + 1] += temp[i] * volume;
+            float leftDirVolume = math::dot(vector(-1, 0), direction) * 0.175f + 0.825f; // [0.65, 1]
+            float rightDirVolume = math::dot(vector(1, 0), direction) * 0.175f + 0.825f; // [0.65, 1]
+            for (ma_uint32 i = 0; i < framesRead * 2; i++) {
+                if (i % 2 == 0) { // left
+                    out[i] += temp[i] * volume * leftDirVolume;
+                } else { // right
+                    out[i] += temp[i] * volume * rightDirVolume;
+                }
             }
+
         } else {
-            for (ma_uint32 i = 0; i < framesRead * 2; i++)
-                out[i] += temp[i] * volume;
+            // simple stereo mix
+            if (audio->GetDecoder()->outputChannels == 1) {
+                for (ma_uint32 i = 0; i < framesRead; i++) {
+                    out[i * 2 + 0] += temp[i] * volume;
+                    out[i * 2 + 1] += temp[i] * volume;
+                }
+            } else {
+                for (ma_uint32 i = 0; i < framesRead * 2; i++) {
+                    out[i] += temp[i] * volume;
+                }
+            }
         }
 
         // loop or remove finished audio

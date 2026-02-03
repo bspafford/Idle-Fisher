@@ -1,7 +1,7 @@
 id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 // upgrades,,,,,,,,
 1,53,100,Feed Fish,Upgrade The Sell Price Of Each Fish,1,0,10,1.5
-2,53,50,Recast,+0.5% chance to Recast,1000,0,1.5,1
+2,53,100,Recast,+0.1% chance to Recast,1000,0,1.5,1
 4,53,1,Unlock Combo,Collect More Fish Each Cast,500,0,1,1
 5,53,100,Increase Combo Max,Increases Max Combo by 10 Per Level,500,0,3,1
 23,53,1,Improve Auto Fisher,,1,0,240,1.5

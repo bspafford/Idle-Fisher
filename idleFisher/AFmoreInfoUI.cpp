@@ -6,6 +6,7 @@
 #include "shortNumbers.h"
 #include "AautoFisher.h"
 #include "math.h"
+#include "upgrades.h"
 
 // widgets
 #include "text.h"
@@ -78,14 +79,14 @@ void AFmoreInfoUI::updateUI() {
 	fpsText->setText(shortNumbers::convert2Short(autoFisher->calcFPS(), true) + "fps");
 	mpsText->setText(shortNumbers::convert2Short(autoFisher->calcMPS(), true) + "mps");
 
-	double level = *autoFisher->level;
-	double maxLevel = autoFisher->maxLevel;
-	int levelPercent = int(round(level / maxLevel * 100));
-	levelText->setText(std::to_string(*autoFisher->level));
+	int level = SaveData::saveData.progressionData.at(autoFisher->id).level;
+	int maxLevel = SaveData::data.progressionData.at(autoFisher->id).maxLevel;
+	int levelPercent = level / maxLevel * 100;
+	levelText->setText(std::to_string(level));
 	levelBar->setImage("images/autoFisher/moreUI/level/level" + std::to_string(levelPercent + 1) + ".png");
 
 	double fullness = autoFisher->calcCurrencyHeld();
-	double maxFullness = autoFisher->maxCurrency;
+	double maxFullness = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, autoFisher->id));
 	int fullnessPercent = int(math::clamp(roundf(fullness / maxFullness * 100.f), 0.f, 100.f));
 	fullnessText->setText(shortNumbers::convert2Short(fullness) + "/" + shortNumbers::convert2Short(maxFullness));
 	fullnessBar->setImage("images/autoFisher/moreUI/fullness/fullness" + std::to_string(fullnessPercent + 1) + ".png");

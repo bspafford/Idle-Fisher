@@ -41,5 +41,4 @@ private:
 	static inline std::vector<Audio*> audioList;
 	static inline std::vector<Audio*> pendingAdd;
 	static inline std::vector<Audio*> pendingRemove;
-	// pendAdd, pendingRemove, etc
 };

@@ -673,10 +673,23 @@ void processEntry(const std::string& folderPath, const std::filesystem::director
 		if (removeInputFolderPath) {
 			std::string newPath(filePath.string());
 			newPath.erase(0, folderPath.size() + 1); // folderPath + '\\'
+
+			for (char& ch : newPath) // '\\' to '/'
+				if (ch == '\\')
+					ch = '/';
+
 			paths.push_back(newPath);
-		} else
-			paths.push_back(filePath.string());
+		} else {
+			std::string newPath = filePath.string();
+			for (char& ch : newPath) // '\\' to '/'
+				if (ch == '\\')
+					ch = '/';
+
+			paths.push_back(newPath);
+		}
 	}
+
+	
 }
 
 std::vector<std::string> getFilesInPath(const std::string& folderPath, std::vector<std::string> extensions, bool recursive, bool removeInputFolderPath) {

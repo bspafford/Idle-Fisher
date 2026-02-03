@@ -16,19 +16,22 @@ int main() {
 
 void ReadCSV(Fdata& data, ForderedData& orderedData) {
 	readData(&data.progressionData, nullptr, "progressionDataTable");
+    readData(&data.modifierData, nullptr, "modifierDataTable");
+    
     readData(&data.fishData, &orderedData.fishData, "fishDataTable");
     readData(&data.currencyData, &orderedData.currencyData, "currencyDataTable");
     readData(&data.autoFisherData, &orderedData.autoFisherData, "autoFisherDataTable");
-    readData(&orderedData.worldData, "worldDataTable");
-    readData(&data.modifierData, &orderedData.fishingRodData, "fishingRodDataTable");
     readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
-    readData(&data.modifierData, &orderedData.baitData, "baitDataTable");
     readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
     readData(&data.mechanicStruct, &orderedData.mechanicStruct, "mechanicDataTable");
-    readData(&data.modifierData, &orderedData.petData, "petDataTable");
     readData(&data.rebirthData, &orderedData.rebirthData, "rebirthDataTable");
-    readData(&data.modifierData, &orderedData.upgradeData, "upgradeDataTable");
     readData(&data.vaultUnlockData, &orderedData.vaultUnlockData, "vaultUnlocksDataTable");
+
+    readData(&orderedData.worldData, "worldDataTable");
+    readData(&orderedData.fishingRodData, "fishingRodDataTable");
+    readData(&orderedData.baitData, "baitDataTable");
+    readData(&orderedData.petData, "petDataTable");
+    readData(&orderedData.upgradeData, "upgradeDataTable");
 }
 
 void OutputToJson(Fdata& data, ForderedData& orderedData) {
