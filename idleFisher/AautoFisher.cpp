@@ -277,10 +277,10 @@ void AautoFisher::calcIfPlayerInfront() {
 void AautoFisher::setStats() {
 	UI->buttonText->setText(shortNumbers::convert2Short(Upgrades::GetPrice(id, upgradeAmount)));
 
+	SetUpgradeAnim();
+
 	double animSpeed = Upgrades::Get(StatContext(Stat::AutoFisherSpeed, id));
 	anim->SetCurrAnimDuration(animSpeed);
-
-	SetUpgradeAnim();
 }
 
 // takes input if the list isn't heldFish

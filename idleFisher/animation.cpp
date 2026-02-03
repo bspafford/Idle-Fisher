@@ -53,7 +53,7 @@ void animation::start() {
 	bStopped = false;
 	bFinished = false;
 	if (animTimer)
-		animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
+		animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration, true);
 
 	// set source
 	spriteSheet->setSourceRect(std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y));
@@ -122,8 +122,9 @@ void animation::animCallBack() {
 
 	spriteSheet->setSourceRect(std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y));
 
-	if (!bFinished && animTimer)
-		animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
+	//if (!bFinished && animTimer) {
+		//animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
+	//}
 }
 
 void animation::addFinishedCallback(void (*callback) ()) {
@@ -203,6 +204,7 @@ void animation::SetAnimDuration(std::string animName, float duration) {
 
 void animation::SetCurrAnimDuration(float duration) {
 	animData[currAnim].duration = duration;
+	animTimer->SetTime(duration);
 }
 
 float animation::GetAnimDuration(std::string animName) {

@@ -16,9 +16,9 @@ void Timer::callUpdate(float deltaTime) {
 	DeferredPtr<Timer>::FlushDeferred();
 }
 
-void Timer::setFps(float fps) {
+void Timer::SetTime(float maxTime) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
-	maxTime = fps;
+	this->maxTime = maxTime;
 }
 
 void Timer::Update(float deltaTime) {
@@ -28,14 +28,28 @@ void Timer::Update(float deltaTime) {
 		return;
 
 	time += deltaTime;
-	time = math::clamp(time, 0, maxTime);
 	if (updateCallback_ && time <= maxTime)
 		updateCallback_();
 
 	if (time >= maxTime) {
 		// call callback function
-		stop();
-		bFinished = true;
+		if (loop) {
+			time -= maxTime; // subtract time like normal
+			float num = time / maxTime; // how many timers have passed since last frame
+			float remainder = num - floor(num); // how much time the last time is in to its time
+			for (int i = 0; i < floor(num); i++) {
+				if (callback_)
+					callback_();
+			}
+
+			time = remainder * maxTime;
+
+			start(maxTime, loop);
+		} else {
+			stop();
+			bFinished = true;
+		}
+
 		if (callback_)
 			callback_();
 	}
@@ -66,11 +80,11 @@ bool Timer::IsGoing() {
 	return bGoing;
 }
 
-void Timer::start(float maxTime) {
+void Timer::start(float maxTime, bool shouldLoop) {
 	std::lock_guard<std::recursive_mutex> lock(mutex);
 	bGoing = true;
 	bFinished = false;
+	loop = shouldLoop;
 
-	time = 0;
 	this->maxTime = maxTime;
 }

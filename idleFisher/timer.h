@@ -22,10 +22,11 @@ public:
 
 	void Update(float deltaTime);
 
-	void setFps(float fps);
+	// how long it takes for timer to finish in seconds
+	void SetTime(float maxTime);
 
 	// this starts the timer
-	void start(float maxTime);
+	void start(float maxTime, bool shouldLoop = false);
 	void stop() {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		bGoing = false;
@@ -65,6 +66,7 @@ private:
 	float maxTime;
 	bool bGoing = false;
 	bool bFinished = false;
+	bool loop = false;
 
 	std::function<void()> callback_ = nullptr;
 	std::function<void()> updateCallback_ = nullptr;

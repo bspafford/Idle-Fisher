@@ -365,8 +365,8 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_K))
 		SaveData::save();
 	if (Input::getKeyDown(GLFW_KEY_J)) {
-		SaveData::saveData.currencyList.at(53u).numOwned += 1000000;
-		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1000000;
+		SaveData::saveData.currencyList.at(53u).numOwned += 1e29;
+		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1e29;
 
 		for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
 			currencyData.numOwned += 1000;
