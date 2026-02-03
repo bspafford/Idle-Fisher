@@ -10,6 +10,8 @@ public:
 	Atree(vector loc, bool isTree);
 	void draw(Shader* shaderProgram);
 
+	bool calcIfPlayerInfront();
+
 	vector loc;
 private:
 	std::shared_ptr<animation> treeAnim;

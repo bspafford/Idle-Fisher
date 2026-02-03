@@ -2,26 +2,27 @@
 
 #include "animation.h"
 #include "Image.h"
+#include "character.h"
 
 Atree::Atree(vector loc, bool isTree) {
 	this->isTree = isTree;
-	this->loc = loc;
 
 	if (isTree) {
 		if (!treeSpriteSheet)
-			treeSpriteSheet = std::make_shared<Image>("images/landscape/tree.png", vector{ 0, 0 }, true);
+			treeSpriteSheet = std::make_shared<Image>("images/worlds/demo/tree.png", vector{ 0, 0 }, true);
 		if (!leafSpriteSheet)
 			leafSpriteSheet = std::make_shared<Image>("images/landscape/leafParticles.png", vector{ 0, 0 }, true);
 
 		std::unordered_map<std::string, animDataStruct> treeData;
-		treeData.insert({ "tree", animDataStruct({0, 0}, {29, 0}, true) });
-		loc = loc - vector{ 94 / 2, 122 };
-		treeAnim = std::make_shared<animation>(treeSpriteSheet, 94, 122, treeData, true, loc);
+		treeData.insert({ "tree", animDataStruct({0, 0}, {0, 0}, true) });
+		vector cellSize(74, 135);
+		this->loc = loc - vector{ cellSize.x / 2, cellSize.y };
+		treeAnim = std::make_shared<animation>(treeSpriteSheet, cellSize.x, cellSize.y, treeData, true, this->loc);
 		treeAnim->setAnimation("tree");
 		treeAnim->start();
 		std::unordered_map<std::string, animDataStruct> leafData;
 		leafData.insert({ "leaf", animDataStruct({0, 0}, {42, 0}, true) });
-		leafAnim = std::make_shared<animation>(leafSpriteSheet, 128, 69, leafData, true, loc + vector{ 24, 47 });
+		leafAnim = std::make_shared<animation>(leafSpriteSheet, 128, 69, leafData, true, this->loc + vector{ 24, 47 });
 		leafAnim->setAnimation("leaf");
 		leafAnim->start();
 
@@ -30,12 +31,13 @@ Atree::Atree(vector loc, bool isTree) {
 		leafAnim->SetCurrFrameLoc({ round(math::randRange(0.f, 42.f)), -1 });
 	} else {
 		if (!bushSpriteSheet)
-			bushSpriteSheet = std::make_shared<Image>("images/landscape/bush.png", vector{ 0, 0 }, true);
+			bushSpriteSheet = std::make_shared<Image>("images/worlds/demo/bush.png", vector{ 0, 0 }, true);
 
 		std::unordered_map<std::string, animDataStruct> bushData;
-		bushData.insert({ "bush", animDataStruct({0, 0}, {29, 0}, true) });
-		loc = loc - vector{ 37 / 2, 33 };
-		treeAnim = std::make_shared<animation>(bushSpriteSheet, 37, 33, bushData, true, loc);
+		bushData.insert({ "bush", animDataStruct({0, 0}, {0, 0}, true) });
+		vector cellSize(36, 34);
+		this->loc = loc - vector{ cellSize.x / 2, cellSize.y };
+		treeAnim = std::make_shared<animation>(bushSpriteSheet, cellSize.x, cellSize.y, bushData, true, this->loc);
 		treeAnim->setAnimation("bush");
 		treeAnim->start();
 
@@ -50,4 +52,10 @@ void Atree::draw(Shader* shaderProgram) {
 	treeAnim->draw(shaderProgram);
 	if (leafAnim && isTree)
 		leafAnim->draw(shaderProgram);
+}
+
+bool Atree::calcIfPlayerInfront() {
+	if (treeAnim)
+		return (GetCharacter()->getCharLoc().y < loc.y);
+	return false;
 }

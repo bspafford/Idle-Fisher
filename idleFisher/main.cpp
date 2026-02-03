@@ -350,14 +350,14 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_ESCAPE)) {
 		if (widget::getCurrWidget())
 			widget::getCurrWidget()->removeFromViewport();
-		else if (Scene::GetCurrWorldId() != 1u) // title screen
+		else if (Scene::GetCurrWorldId() != 50u) // title screen
 			pauseMenu->addToViewport(nullptr);
 	}
 
 	uint32_t currWorld = Scene::GetCurrWorldId();
-	if (Input::getKeyDown(GLFW_KEY_C) && currWorld != 1u) // title screen
+	if (Input::getKeyDown(GLFW_KEY_C) && currWorld != 50u) // title screen
 		achievementWidget->addToViewport(nullptr);
-	if (Input::getKeyDown(GLFW_KEY_V) && currWorld != 1u) // title screen
+	if (Input::getKeyDown(GLFW_KEY_V) && currWorld != 50u) // title screen
 		journal->addToViewport(nullptr);
 
 

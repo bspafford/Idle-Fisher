@@ -90,7 +90,6 @@ private:
 	int currFishSize;
 
 	static inline std::unique_ptr<Image> bobberImg;
-	static inline std::unique_ptr<Image> bobberWaterOverlay;
 	static inline std::unique_ptr<animation> bobberWaterAnimFront;
 	static inline std::unique_ptr<animation> bobberWaterAnimBack;
 

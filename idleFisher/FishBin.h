@@ -11,7 +11,7 @@ public:
 	FishBin(vector loc);
 	void sellFish();
 	void draw(Shader* shaderProgram);
-	
+	bool calcIfPlayerInfront();
 private:
 	std::unique_ptr<Ubutton> bin;
 };

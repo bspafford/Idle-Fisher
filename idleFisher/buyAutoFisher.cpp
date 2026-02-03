@@ -20,7 +20,7 @@ buyAutoFisher::buyAutoFisher(vector loc) {
 	std::unordered_map<std::string, animDataStruct> plusData;
 	plusData.insert({ "normal", animDataStruct({0, 0}, {7, 0}, true) });
 	plusData.insert({ "hover", animDataStruct({0, 1}, {7, 1}, true) });
-	plusAnim = std::make_unique<animation>("autoFisher/buyer/buyer.png", 26, 46, plusData, true);
+	plusAnim = std::make_unique<animation>("autoFisher/buyer.png", 26, 46, plusData, true);
 	plusAnim->setAnimation("normal");
 	plusAnim->start();
 

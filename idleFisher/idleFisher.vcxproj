@@ -264,10 +264,8 @@
     <ClCompile Include="map.cpp" />
     <ClCompile Include="math.cpp" />
     <ClCompile Include="mechanic.cpp" />
-    <ClCompile Include="mechanicHouse.cpp" />
     <ClCompile Include="mechanicWidget.cpp" />
     <ClCompile Include="merchant.cpp" />
-    <ClCompile Include="merchantShop.cpp" />
     <ClCompile Include="merchantWidget.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="model.cpp" />
@@ -282,7 +280,6 @@
     <ClCompile Include="pauseMenu.cpp" />
     <ClCompile Include="pet.cpp" />
     <ClCompile Include="petSeller.cpp" />
-    <ClCompile Include="petShop.cpp" />
     <ClCompile Include="placeable.cpp" />
     <ClCompile Include="premiumBuffWidget.cpp" />
     <ClCompile Include="progressBar.cpp" />
@@ -378,10 +375,8 @@
     <ClInclude Include="map.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="mechanic.h" />
-    <ClInclude Include="mechanicHouse.h" />
     <ClInclude Include="mechanicWidget.h" />
     <ClInclude Include="merchant.h" />
-    <ClInclude Include="merchantShop.h" />
     <ClInclude Include="merchantWidget.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
@@ -396,7 +391,6 @@
     <ClInclude Include="pauseMenu.h" />
     <ClInclude Include="pet.h" />
     <ClInclude Include="petSeller.h" />
-    <ClInclude Include="petShop.h" />
     <ClInclude Include="placeable.h" />
     <ClInclude Include="premiumBuffWidget.h" />
     <ClInclude Include="progressBar.h" />

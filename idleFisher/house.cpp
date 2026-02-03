@@ -3,12 +3,12 @@
 #include "button.h"
 #include "worlds.h"
 
-Ahouse::Ahouse(vector loc) : Abuilding(loc) {
+Ahouse::Ahouse(vector loc) : Abuilding("images/house.png", loc, vector(0, 0), vector(0, 0)) {
 	buildingImg = std::make_unique<Image>("images/house.png", loc, true);
 	door = std::make_unique<Ubutton>(nullptr, "houseDoor.png", 23, 62, 1, loc + vector{ 34, 19 }, true, true);
 	door->addCallback(this, &Ahouse::enterVault);
 
-	setupCollision({ loc + vector{3, 44}, loc + vector{91, 0}, loc + vector{175, 42}, loc + vector{77, 86} });
+	//setupCollision({ loc + vector{3, 44}, loc + vector{91, 0}, loc + vector{175, 42}, loc + vector{77, 86} });
 }
 
 Ahouse::~Ahouse() {

@@ -176,15 +176,6 @@
     <ClCompile Include="house.cpp">
       <Filter>Source Files\buildings</Filter>
     </ClCompile>
-    <ClCompile Include="mechanicHouse.cpp">
-      <Filter>Source Files\buildings</Filter>
-    </ClCompile>
-    <ClCompile Include="merchantShop.cpp">
-      <Filter>Source Files\buildings</Filter>
-    </ClCompile>
-    <ClCompile Include="petShop.cpp">
-      <Filter>Source Files\buildings</Filter>
-    </ClCompile>
     <ClCompile Include="Rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -533,15 +524,6 @@
       <Filter>Header Files\buildings</Filter>
     </ClInclude>
     <ClInclude Include="house.h">
-      <Filter>Header Files\buildings</Filter>
-    </ClInclude>
-    <ClInclude Include="mechanicHouse.h">
-      <Filter>Header Files\buildings</Filter>
-    </ClInclude>
-    <ClInclude Include="petShop.h">
-      <Filter>Header Files\buildings</Filter>
-    </ClInclude>
-    <ClInclude Include="merchantShop.h">
       <Filter>Header Files\buildings</Filter>
     </ClInclude>
     <ClInclude Include="Rectangle.h">

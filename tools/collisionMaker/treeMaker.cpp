@@ -110,7 +110,9 @@ void treeMaker::save() {
 		if (trees[i]->isTree) {
 			if (i != 0)
 				colFile << ",";
-			colFile << "{" << trees[i]->loc << "}";
+			vector size = vector(0, float(trees[i]->treeImg->h));
+			vector loc = vector{ trees[i]->loc.x, -trees[i]->loc.y } + size;
+			colFile << "{" << loc << "}";
 		}
 	}
 	colFile << "}" << std::endl << "{";
@@ -119,7 +121,9 @@ void treeMaker::save() {
 		if (!trees[i]->isTree) {
 			if (i != 0)
 				colFile << ",";
-			colFile << "{" << trees[i]->loc << "}";
+			vector size = vector(0, float(trees[i]->treeImg->h));
+			vector loc = vector{ trees[i]->loc.x, -trees[i]->loc.y } + size;
+			colFile << "{" << loc << "}";
 		}
 	}
 	colFile << "}";
@@ -129,6 +133,13 @@ void treeMaker::save() {
 void treeMaker::load() {
 
 	std::ifstream colFile("./data/trees.trees");
+
+	Atree* tree = new Atree(vector(0, 0), true);
+	vector treeSize = { tree->treeImg->w, tree->treeImg->h };
+	delete tree;
+	Atree* bush = new Atree(vector(0, 0), false);
+	vector bushSize = { bush->treeImg->w, bush->treeImg->h };
+	delete bush;
 
 	int lineNum = 0;
 	if (colFile.is_open()) {
@@ -165,7 +176,9 @@ void treeMaker::load() {
 				}
 
 				// Add the inner vector to the result vector
-				vector temp = { innerVector[0], innerVector[1] };
+				vector size = lineNum == 0 ? treeSize : bushSize;
+				vector temp = { innerVector[0], innerVector[1] - size.y };
+				temp = { temp.x, -temp.y };
 				Atree* tree = new Atree(temp, lineNum == 0);
 				trees.push_back(tree);
 			}

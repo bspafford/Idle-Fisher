@@ -33,9 +33,6 @@
 
 // npc buildings
 #include "house.h"
-#include "merchantShop.h"
-#include "mechanicHouse.h"
-#include "petShop.h"
 #include "rock.h"
 #include "rain.h"
 
@@ -137,10 +134,10 @@ void titleScreen::draw(Shader* shaderProgram) {
 	if (waterImg)
 		waterImg->draw(Scene::twoDWaterShader);
 
-	if (fishermanDock)
-		fishermanDock->draw(shaderProgram);
 	if (trees)
 		trees->draw(shaderProgram);
+	if (fishermanDock)
+		fishermanDock->draw(shaderProgram);
 	if (title)
 		title->draw(shaderProgram);
 	if (startButton)
@@ -417,7 +414,6 @@ std::vector<std::unique_ptr<AautoFisher>>& world::GetAutoFisherList() {
 
 void world::makeDrawLists() {
 	npcList.clear();
-	buildingList.clear();
 
 	// npcs
 	//npcList.push_back(sailor.get());
@@ -428,23 +424,6 @@ void world::makeDrawLists() {
 	npcList.push_back(merchant.get());
 	npcList.push_back(mechanic.get());
 	npcList.push_back(fishTransporter.get());
-
-	// buildings
-	//if (house)
-		//buildingList.push_back(house.get());
-	//if (merchantShop)
-		//buildingList.push_back(merchantShop.get());
-	//if (mechanicHouse)
-		//buildingList.push_back(mechanicHouse.get());
-	//if (petShop)
-		//buildingList.push_back(petShop.get());
-
-	std::vector<vector> rockLocs = {};// { { 1068, 699 }, { 1379, 689 } };
-	for (int i = 0; i < rockLocs.size(); i++) {
-		std::unique_ptr<Arock> rock = std::make_unique<Arock>(rockLocs[i]);
-		buildingList.push_back(rock.get());
-		rockList.push_back(std::move(rock));
-	}
 }
 
 void world::draw(Shader* shaderProgram) {
@@ -452,12 +431,6 @@ void world::draw(Shader* shaderProgram) {
 
 	for (int i = 0; i < fishSchoolList.size(); i++)
 		fishSchoolList[i]->draw(shaderProgram);
-
-	for (int i = 0; i < trees.size(); i++)
-		trees[i]->draw(shaderProgram);
-
-	if (fishBin)
-		fishBin->draw(shaderProgram);
 	
 	if (Scene::pet)
 		Scene::pet->draw(shaderProgram);
@@ -480,6 +453,9 @@ void world::draw(Shader* shaderProgram) {
 		widget::getCurrWidget()->draw(shaderProgram);
 
 	circleAnim->draw();
+
+	//for (auto& building : buildingList)
+		//building->DrawDebugLines();
 }
 
 void world::renderWater() {
@@ -520,6 +496,9 @@ void world::sortDraw(Shader* shaderProgram) {
 			autoFishersBehind.push_back(autoFisherList[i].get());
 	}
 
+	for (auto& tree : trees)
+		if (tree->calcIfPlayerInfront()) tree->draw(shaderProgram);
+
 	// calc npc
 	for (npc* _npc : npcList) {
 		if (!_npc)
@@ -530,23 +509,25 @@ void world::sortDraw(Shader* shaderProgram) {
 			npcInFront.push_back(_npc);
 	}
 
-	for (Abuilding* building : buildingList) {
+	for (auto& building : buildingList) {
 		if (building->calcInFront())
-			buildingInFront.push_back(building);
+			buildingInFront.push_back(building.get());
 		else
-			buildingBehind.push_back(building);
+			buildingBehind.push_back(building.get());
 	}
 
 	vector characterPos = GetCharacter()->getCharLoc();
 	for (std::unique_ptr<Image>& dockPole : poleList) {
-		// if pole is further down on screen than character && if x is within range, so I don't have problem with autoFisher string overlap
 		vector poleLoc = dockPole->getLoc();
-		if (poleLoc.y < characterPos.y && characterPos.x >= poleLoc.x - 10.f && characterPos.x <= poleLoc.x + 10.f)
+		if (poleLoc.y < characterPos.y)
 			dockPoleInFront.push_back(dockPole.get());
 		else
 			dockPoleBehind.push_back(dockPole.get());
 	}
 
+	bool fishBinInBehind = fishBin->calcIfPlayerInfront();
+	if (fishBin && fishBinInBehind)
+		fishBin->draw(shaderProgram);
 
 	for (int i = 0; i < buildingBehind.size(); i++)
 		buildingBehind[i]->draw(shaderProgram);
@@ -567,8 +548,11 @@ void world::sortDraw(Shader* shaderProgram) {
 
 	GetCharacter()->draw(shaderProgram);
 
-	if (buyer && buyer->inFrontPlayer)
-		buyer->draw(shaderProgram);
+	for (auto& tree : trees)
+		if (!tree->calcIfPlayerInfront()) tree->draw(shaderProgram);
+
+	if (fishBin && !fishBinInBehind)
+		fishBin->draw(shaderProgram);
 
 	for (int i = 0; i < buildingInFront.size(); i++)
 		buildingInFront[i]->draw(shaderProgram);
@@ -576,6 +560,9 @@ void world::sortDraw(Shader* shaderProgram) {
 	// draw npcs infront
 	for (int i = 0; i < npcInFront.size(); i++)
 		npcInFront[i]->draw(shaderProgram);
+
+	if (buyer && buyer->inFrontPlayer)
+		buyer->draw(shaderProgram);
 
 	for (Image* dockPole : dockPoleInFront)
 		dockPole->draw(shaderProgram);
@@ -631,32 +618,31 @@ world1::world1(WorldLoc worldChangeLoc) {
 	merchant = std::make_unique<Amerchant>(vector(905.f, 300.f));
 	mechanic = std::make_unique<Amechanic>(vector(1285.f, 578.f));
 	petSeller = std::make_unique<ApetSeller>(vector(1010.f, 772.f));
-	
 	//sailor = std::make_unique<Asailor>(vector{ 510, 544 });
 	//atm = std::make_unique<Aatm>(vector{ 775.f, 736.f });
 	//scuba = std::make_unique<Ascuba>(vector{ 749.f, 412.f });
 
-	// npc buildings
-	//house = std::make_unique<Ahouse>(vector{ 1157.f, 775.f });
-	//merchantShop = std::make_unique<AmerchantShop>(vector{ 998.f, 773.f });
-	//mechanicHouse = std::make_unique<AmechanicHouse>(vector{ 1130.f, 614.f });
-	//petShop = std::make_unique<ApetShop>(vector{ 930.f, 761.f });
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/fishermanHouse.png", vector(655, 486), vector(10, 34), vector(221, 72)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/canopyBoxes1.png", vector(599, 482), vector(0, 9), vector(62, 17)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/canopyBoxes2.png", vector(599, 482), vector(4, 18), vector(43, 24)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/canopyPole.png", vector(660, 472), vector(0, -2), vector(19, 7)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/mechanicShop.png", vector(1185, 631), vector(0, 26), vector(165, 46)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/picnicTable.png", vector(1284, 515), vector(0, 23), vector(97, 18)));
+	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/bridgePole.png", vector(801, 731), vector(0, 9), vector(20, 0)));
 
-	/*
+	std::vector<vector> rockLocs = {};// { { 1068, 699 }, { 1379, 689 } };
+	for (int i = 0; i < rockLocs.size(); i++)
+		buildingList.push_back(std::make_unique<Arock>(rockLocs[i]));
+
 	// make trees
-	std::vector<vector> treeLocs = { 
-		{ 1124.f, 1146.f }, { 1239.f, 1136.f }, { 1342.f, 1124.f }, { 1444.f, 1107.f }, { 729.f, 1102.f }, { 915.f, 1099.f },
-		{ 1025.f, 1099.f }, { 1601.f, 1082.f }, { 1163.f, 1076.f }, { 810.f, 1070.f }, { 614.f, 1055.f }, { 975.f, 1054.f }, 
-		{ 1273.f, 1048.f }, { 1074.f, 1047.f }, { 1512.f, 1047.f }, { 1369.f, 1044.f }, { 1209.f, 1031.f }, { 880.f, 1028.f }, 
-		{ 715.f, 1024.f }, { 1435.f, 1007.f }, { 1122.f, 1006.f }, { 1655.f, 994.f }, { 1303.f, 993.f }, { 1563.f, 990.f },
-		{ 1046.f, 989.f }, { 788.f, 971.f }, { 961.f, 960.f }, { 873.f, 954.f }, { 1369.f, 952.f }, { 1500.f, 945.f }, 
-		{ 731.f, 920.f }, { 831.f, 901.f }, { 1422.f, 901.f }, { 1488.f, 869.f }, { 1410.f, 846.f } 
-	};
+	std::vector<vector> treeLocs = { { 611, 1183 }, { 702, 1182 }, { 492, 1163 }, { 649, 1149 }, { 394, 1143 }, { 750, 1138 }, { 561, 1138 }, { 822, 1115 }, { 466, 1094 },
+									 { 690, 1092 }, { 303, 1085 }, { 600, 1073 }, { 782, 1071 }, { 896, 1047 }, { 379, 1043 }, { 702, 1035 }, { 525, 1032 }, { 218, 1026 },
+									 { 972, 1020 }, { 818, 1015 }, { 599, 1004 }, { 296, 995 }, { 424, 988 }, { 661, 984 }, { 876, 975 }, { 744, 970 }, { 507, 960 }, { 574, 933 },
+									 { 673, 912 }, { 1138, 908 }, { 1166, 887 }, { 1102, 880 }, { 1431, 760 } };
 
-	std::vector<vector> bushLocs = { 
-		{ 1236.f, 965.f }, { 666.f, 940.f }, { 1292.f, 923.f }, { 1028.f, 911.f }, { 1109.f, 900.f },
-		{ 908.f, 896.f }, { 766.f, 863.f }, { 1455.f, 770.f }
-	};
+	std::vector<vector> bushLocs = { {538, 1050},{857, 1028},{652, 1026},{468, 955},{1012, 946},{931, 933},{449, 895},{831, 886},{343, 879},{613, 848},{1210, 846},{1333, 796},
+									 {1372, 777},{1395, 756},{1354, 715},{1461, 709},{1492, 698},{1180, 695},{1519, 688},{1570, 668},{1590, 656},{1618, 646},{1484, 585},{1457, 571},
+									 {1337, 511},{1300, 510},{1318, 498} };
 
 	for (int i = 0; i < treeLocs.size(); i++)
 		trees.push_back(std::make_unique<Atree>(treeLocs[i], true));
@@ -665,7 +651,6 @@ world1::world1(WorldLoc worldChangeLoc) {
 		trees.push_back(std::make_unique<Atree>(bushLocs[i], false));
 
 	sortTreeList();
-	*/
 	makeDrawLists();
 
 	std::unordered_map<std::string, animDataStruct> beachData;
@@ -679,13 +664,19 @@ world1::world1(WorldLoc worldChangeLoc) {
 	waterImg = std::make_unique<Image>("images/worlds/demo/underwater.png", vector{ 0, 0 }, true);
 
 	// pole list
-	std::vector<vector> poleLocs = {};// { { 580, 478 }, { 622, 499 }, { 664, 520 }, { 706, 541 }, { 748, 562 }, { 790, 583 } };
+	std::vector<std::pair<std::string, vector>> poleLocs = { { "1", { 695, 428 } }, { "4", { 767, 463 } }, { "3", { 871, 513 } }, { "2", { 919, 537 } }, { "2", { 617, 455 } },
+															 { "1", { 560, 484 } }, { "1", { 550, 395 } }, { "2", { 465, 408 } }, { "2", { 457, 348 } }, { "1", { 356, 353 } },
+															 { "2", { 349, 293 } }, { "1", { 231, 290 } }, { "1", { 321, 246 } }, { "2", { 416, 256 } }, { "2", { 410, 202 } },
+															 { "1", { 495, 159 } }, { "1", { 495, 217 } }, { "2", { 621, 222 } }, { "1", { 594, 264 } }, { "2", { 705, 264 } },
+															 { "1", { 694, 314 } }, { "2", { 778, 299 } }, { "2", { 822, 278 } }, { "2", { 847, 290 } }, { "2", { 805, 347 } },
+															 { "1", { 866, 379 } } };
+	
 	for (int i = 0; i < poleLocs.size(); i++) {
-		std::unique_ptr<Image> poleImg = std::make_unique<Image>("images/worlds/world1/dockPole.png", poleLocs[i], true);
+		std::unique_ptr<Image> poleImg = std::make_unique<Image>("images/worlds/demo/dockPole" + poleLocs[i].first + ".png", poleLocs[i].second, true);
 		poleList.push_back(std::move(poleImg));
 	}
 
-	inFront = std::make_unique<Image>("images/worlds/demo/inFront.png", vector(929.f, 448.f), true);
+	inFront = std::make_unique<Image>("images/worlds/demo/inFront.png", vector(624.f, 448.f), true);
 }
 
 void world::finishedBeachAnim() {

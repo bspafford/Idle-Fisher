@@ -121,10 +121,6 @@ void animation::animCallBack() {
 		eventCallback_();
 
 	spriteSheet->setSourceRect(std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y));
-
-	//if (!bFinished && animTimer) {
-		//animTimer->start(animData[currAnim].duration == 0 ? stuff::animSpeed : animData[currAnim].duration);
-	//}
 }
 
 void animation::addFinishedCallback(void (*callback) ()) {

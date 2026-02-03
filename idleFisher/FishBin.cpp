@@ -44,3 +44,12 @@ void FishBin::sellFish() {
 	for (int i = 0; i < world::currWorld->autoFisherList.size(); i++)
 		world::currWorld->autoFisherList[i]->UI->updateUI();
 }
+
+bool FishBin::calcIfPlayerInfront() {
+	if (bin) {
+		vector charLoc = GetCharacter()->getCharLoc();
+		vector binLoc = bin->getLoc() + vector(0, 15);
+		return (charLoc.y < binLoc.y);
+	}
+	return false;
+}

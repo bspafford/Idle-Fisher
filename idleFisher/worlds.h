@@ -18,9 +18,6 @@
 #include "FishBin.h"
 #include "buyAutoFisher.h"
 #include "CircleLoad.h"
-#include "petShop.h"
-#include "mechanicHouse.h"
-#include "merchantShop.h"
 #include "house.h"
 #include "mechanic.h"
 #include "merchant.h"
@@ -166,12 +163,8 @@ public:
 	static inline std::unique_ptr<AfishTransporter> fishTransporter;
 
 	// npc buildings
-	std::vector<Abuilding*> buildingList; // list of all npcs in the world
+	std::vector<std::unique_ptr<Abuilding>> buildingList; // list of all npcs in the world
 	std::unique_ptr<Ahouse> house;
-	std::unique_ptr<AmerchantShop> merchantShop;
-	std::unique_ptr<AmechanicHouse> mechanicHouse;
-	std::unique_ptr<ApetShop> petShop;
-	std::vector<std::unique_ptr<Arock>> rockList;
 
 	// trees
 	std::vector<std::unique_ptr<Atree>> trees;

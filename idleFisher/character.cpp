@@ -93,16 +93,18 @@ Acharacter::Acharacter() {
 
 	bobberImg = std::make_unique<Image>("images/bobber.png", vector{ 100, 100 }, true);
 	bobberImg->SetPivot({ 0.5f, 0.5f });
-	bobberWaterOverlay = std::make_unique<Image>("images/bobberWaterOverlay.png", vector{ 0, 0 }, false);
 
 	std::unordered_map<std::string, animDataStruct> bobberData;
 	bobberData.insert({ "water", animDataStruct({0, 0}, {3, 0}, true, .3f) });
-	bobberWaterAnimFront = std::make_unique<animation>("bobberWaterAnimFront.png", 15, 12, bobberData, false, vector{ 0, 0 });
-	bobberWaterAnimBack = std::make_unique<animation>("bobberWaterAnimBack.png", 15, 12, bobberData, false, vector{ 0, 0 });
+	bobberWaterAnimFront = std::make_unique<animation>("bobberWaterAnimFront.png", 15, 12, bobberData, true, vector{ 0, 0 });
+	bobberWaterAnimFront->SetPivot({ 0.5f, 0.5f });
 	bobberWaterAnimFront->setAnimation("water");
-	bobberWaterAnimBack->setAnimation("water");
 	bobberWaterAnimFront->start();
+	bobberWaterAnimBack = std::make_unique<animation>("bobberWaterAnimBack.png", 15, 12, bobberData, true, vector{ 0, 0 });
+	bobberWaterAnimBack->SetPivot({ 0.5f, 0.5f });
+	bobberWaterAnimBack->setAnimation("water");
 	bobberWaterAnimBack->start();
+
 
 	setPlayerColPoints();
 
@@ -710,9 +712,8 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	delete rectangle;
 
 	bobberImg->setLoc(bobberLoc);
-	bobberWaterOverlay->setLoc(tempBobberLoc);
-	bobberWaterAnimBack->setLoc(tempBobberLoc - vector{ 4.f, 2.f });
-	bobberWaterAnimFront->setLoc(tempBobberLoc - vector{ 4.f, 2.f });
+	bobberWaterAnimBack->setLoc(tempBobberLoc);
+	bobberWaterAnimFront->setLoc(tempBobberLoc);
 	bobberWaterAnimBack->draw(shaderProgram);
 	bobberImg->draw(shaderProgram);
 	bobberWaterAnimFront->draw(shaderProgram);
