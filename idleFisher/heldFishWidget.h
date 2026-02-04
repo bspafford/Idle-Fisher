@@ -18,7 +18,7 @@ public:
 	UheldFishWidget(widget* parent);
 
 	// if fishList is empty it will use SaveData::data.fishData
-	void updateList(std::unordered_map<uint32_t, FsaveFishData> saveFishList = std::unordered_map<uint32_t, FsaveFishData>());
+	void updateList(bool useFishData, std::unordered_map<uint32_t, FsaveFishData> saveFishList = std::unordered_map<uint32_t, FsaveFishData>());
 
 	void draw(Shader* shaderProgram);
 

@@ -359,7 +359,7 @@ void Acharacter::leftClick() {
 		achievement::checkAchievements();
 
 		// updates held fish widget
-		Main::heldFishWidget->updateList();
+		Main::heldFishWidget->updateList(true);
 
 		// check if fishing rod is inside a fishSchool or not!
 		calcFishSchool();
@@ -775,7 +775,7 @@ void Acharacter::Recast() {
 
 	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), recastNum, NumberType::Recast);
 
-	Main::heldFishWidget->updateList();
+	Main::heldFishWidget->updateList(true);
 
 	// final fish num should be multiplied by recast num
 		// so it would be like (fishNum * combo * upgrades * etc) * recastNum

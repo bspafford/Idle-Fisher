@@ -242,7 +242,7 @@ void UupgradeBox::buyUpgrade() {
 	}
 	
 	update();
-	Main::heldFishWidget->updateList(); // update held fish widget, incase something like an upgrade affects it
+	Main::heldFishWidget->updateList(true); // update held fish widget, incase something like an upgrade affects it
 }
 
 void UupgradeBox::update() {
@@ -286,7 +286,7 @@ void UupgradeBox::spawnPet() {
 		Scene::pet.reset();
 	}
 
-	Main::heldFishWidget->updateList();
+	Main::heldFishWidget->updateList(true);
 }
 
 void UupgradeBox::equipBait() {

@@ -37,7 +37,7 @@ void FishBin::sellFish() {
 		}
 	}
 
-	Main::heldFishWidget->updateList();
+	Main::heldFishWidget->updateList(true);
 	Main::currencyWidget->updateList();
 
 	// updates UI max

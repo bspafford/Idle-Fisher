@@ -610,7 +610,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 
 	// npcs
 	if (SaveData::saveData.progressionData.at(90u).level)
-		fishTransporter = std::make_unique<AfishTransporter>(vector(1320.f, 630.f));
+		fishTransporter = std::make_unique<AfishTransporter>(vector(710, 470));
 
 	fisherman = std::make_unique<Afisherman>(vector(792, 533.f));
 	merchant = std::make_unique<Amerchant>(vector(905.f, 300.f));

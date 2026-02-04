@@ -331,6 +331,7 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 				saveCurrFish->numOwned[0] -= fishMax;
 			}
 		}
+		SaveData::saveData.autoFisherList.at(autoFisher->id).fullness = autoFisher->calcCurrencyHeld(); // update fullness for save data
 		autoFisher->startFishing();
 		autoFisher->afMoreInfoUI->updateUI();
 	} else { // sell fish

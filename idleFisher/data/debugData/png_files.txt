@@ -19,6 +19,7 @@ images/autofisher/autofisher.png|a
 images/autofisher/buyer.png
 images/autofisher/fishingline.png
 images/autofisher/outline.png
+images/autofisher/fullnessLight.png
 images/autofisher/moreui/ui.png
 images/autofisher/moreui/xbutton.png
 images/autofisher/moreui/fullness/fullness1.png

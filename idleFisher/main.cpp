@@ -231,7 +231,7 @@ void Main::setupWidgets() {
 	fishComboWidget = std::make_unique<UfishComboWidget>(nullptr);
 	heldFishWidget = std::make_unique<UheldFishWidget>(nullptr);
 	heldFishWidget->setLoc({ 6.f, -6.f });
-	heldFishWidget->updateList();
+	heldFishWidget->updateList(true);
 	currencyWidget = std::make_unique<UcurrencyWidget>(nullptr);
 	currencyWidget->updateList();
 	comboWidget = std::make_unique<UcomboWidget>(nullptr);
@@ -427,7 +427,7 @@ void Main::rebirth() {
 		widget::getCurrWidget()->removeFromViewport();
 	if (world::currWorld)
 		world::currWorld->autoFisherList.clear();
-	heldFishWidget->updateList();
+	heldFishWidget->updateList(true);
 	currencyWidget->updateList();
 	Scene::openLevel(53u, WORLD_SET_LOC_SAILOR, true);
 }

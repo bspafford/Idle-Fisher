@@ -26,8 +26,8 @@ UheldFishWidget::UheldFishWidget(widget* parent) : widget(parent) {
 	SetPivot({ 0.f, 1.f });
 }
 
-void UheldFishWidget::updateList(std::unordered_map<uint32_t, FsaveFishData> saveFishList) {
-	if (saveFishList.size() == 0)
+void UheldFishWidget::updateList(bool useFishData, std::unordered_map<uint32_t, FsaveFishData> saveFishList) {
+	if (useFishData)
 		saveFishList = SaveData::saveData.fishData;
 	fishList = saveFishList;
 
@@ -39,7 +39,12 @@ void UheldFishWidget::updateList(std::unordered_map<uint32_t, FsaveFishData> sav
 
 	float biggestSizeX = 0.f;
 	float yOffset = 1.f;
-	for (auto& [fishId, fishData] : fishList) { // loop through fish
+	for (uint32_t fishId : SaveData::orderedData.fishData) { // loop through fish
+		auto it = fishList.find(fishId);
+		if (it == fishList.end()) // fish wasn't in list
+			continue;
+
+		FsaveFishData& fishData = it->second;
 		for (int j = 0; j < fishData.numOwned.size(); j++) { // loop through fish qualities
 			if (fishData.numOwned[j] == 0) // if no fish of this quality, skip
 				continue;
@@ -56,7 +61,13 @@ void UheldFishWidget::updateList(std::unordered_map<uint32_t, FsaveFishData> sav
 	// setup currency
 	UpdateCurrencyMap();
 	currencyList.clear();
-	for (auto& [currencyId, currencyNum] : currency) {
+	for (uint32_t currencyId : SaveData::orderedData.currencyData) {
+		auto it = currency.find(currencyId);
+		if (it == currency.end()) // currency wasn't in list
+			continue;
+
+		double currencyNum = it->second;
+
 		std::unique_ptr<UfishNumWidget> widget = std::make_unique<UfishNumWidget>(this);
 		widget->setup(&SaveData::data.currencyData.at(currencyId), currencyNum);
 		biggestSizeX = math::max(biggestSizeX, widget->getSize().x);
@@ -64,7 +75,7 @@ void UheldFishWidget::updateList(std::unordered_map<uint32_t, FsaveFishData> sav
 		currencyList.push_back(std::move(widget));
 	}
 	
-	setSize({ biggestSizeX, vertBox->getOverflowSize() });
+	setSize({ biggestSizeX, size.y });
 	setupLocs();
 }
 
@@ -80,9 +91,9 @@ void UheldFishWidget::setupLocs() {
 	vertBox->changeChildHeight(fishScrollBox.get(), fishScrollBox->getSize().y);
 	currencyScrollBox->setSize({ size.x, currencyBoxY });
 	vertBox->changeChildHeight(currencyScrollBox.get(), currencyScrollBox->getSize().y);
-	setLoc(loc);
-	vertBox->setLocAndSize(absoluteLoc - size / 2.f, size);
 	setSize({ size.x, vertBox->getOverflowSize() });
+	setLoc(loc);
+	vertBox->setLocAndSize(absoluteLoc, size);
 }
 
 std::unordered_map<uint32_t, FsaveFishData> UheldFishWidget::removeUnneededFish() {

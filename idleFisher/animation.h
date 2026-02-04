@@ -105,7 +105,7 @@ private:
 	std::function<void(int)> frameCallback_ = NULL;
 
 	bool bFinished = false;
-	bool bStopped = false;
+	bool bStopped = true;
 
 	DeferredPtr<Timer> animTimer;
 

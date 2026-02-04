@@ -27,9 +27,9 @@ public:
 	vertChildComp GetChildAt(int index);
 	int GetChildrenCount();
 
-protected:
 	void UpdateChildren();
 
+protected:
 	std::vector<vertChildComp> childrenList;
 
 	// is the size of the components inside the widget
