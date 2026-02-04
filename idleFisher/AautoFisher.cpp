@@ -314,25 +314,9 @@ float AautoFisher::getCatchTime() {
 	return 4;
 }
 
-double AautoFisher::calcIdleProfits(double afkTime) {
-	double currencyNum = 0;
-	int numOfFishCatched = round(afkTime / getCatchTime());
-	std::vector<std::pair<uint32_t, double>> fishList = calcAutoFishList(numOfFishCatched);
-	for (int i = 0; i < fishList.size(); i++) {
-		FfishData* currFish = &SaveData::data.fishData.at(fishList[i].first);
-		currencyNum += fishList[i].second * Upgrades::Get(StatContext(Stat::FishPrice, currFish->id, 0));
-	}
-
-	return currencyNum;
-}
-
 std::vector<std::pair<uint32_t, double>> AautoFisher::calcAutoFishList(int fishNum) {
 	std::unordered_map<uint32_t, FfishData> fishList;
 	std::vector<std::pair<uint32_t, double>> fishNumList;
-
-	int fishingRodId = 0;
-	if (fishingRodId == -1)
-		fishingRodId = 0;
 
 	// calc all fish in world
 	double fishingPower = Upgrades::Get(StatContext(Stat::AutoFisherPower, id));
@@ -357,14 +341,11 @@ std::vector<std::pair<uint32_t, double>> AautoFisher::calcAutoFishList(int fishN
 std::unordered_map<uint32_t, float> AautoFisher::calcIdleFishChance(std::unordered_map<uint32_t, FfishData> fishList) {
 	std::unordered_map<uint32_t, float> probList;
 	float total = 0;
-
-	for (auto& [key, value] : fishList) {
+	for (auto& [key, value] : fishList)
 		total += value.probability;
-	}
 
-	for (auto& [key, value] : fishList) {
+	for (auto& [key, value] : fishList)
 		probList.insert({ key, value.probability / total });
-	}
 
 	return probList;
 }
@@ -375,13 +356,11 @@ void AautoFisher::startFishing() {
 		anim->start();
 }
 
-// fish per second
 double AautoFisher::calcFPS() {
 	// how fast it can catch fish
 	return 1 / math::max(getCatchTime(), 0.00001f);
 }
 
-// money per second
 double AautoFisher::calcMPS() {
 	// fps
 	// avg currency
@@ -447,4 +426,36 @@ void AautoFisher::Recast() {
 		recastNum++;
 	} else
 		recastActive = false;
+}
+
+void AautoFisher::FillWithRandomFish() {
+	heldFish.clear();
+
+	double fullness = SaveData::saveData.autoFisherList.at(id).fullness;
+
+	// loop throguh all auto fishers in world
+	// add up all their probabilities / total
+	std::unordered_map<uint32_t, float> probabilities;
+	float totalProb = 0.f;
+	std::vector<std::pair<uint32_t, float>> probability = calcFishProbability(SaveData::data.fishData, false);
+	for (auto& [id, prob] : probability) {
+		probabilities[id] += prob;
+		totalProb += prob;
+	}
+
+	// calculate fish
+	for (auto& [id, prob] : probabilities) {
+		double fishPrice = Upgrades::Get(StatContext(Stat::FishPrice, id));
+		float percent = prob / totalProb;
+		double fishNum = percent * (fullness / fishPrice);
+
+		if (fishNum < 1.0)
+			continue;
+
+		FsaveFishData saveFishData;
+		saveFishData.id = id;
+		saveFishData.numOwned[0] = fishNum;
+
+		heldFish.insert({ id, saveFishData });
+	}
 }

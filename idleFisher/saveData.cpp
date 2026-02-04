@@ -41,13 +41,13 @@ void SaveData::save() {
 }
 
 void SaveData::load() {
-	recalcLists();
 
 	const auto filename = GetSaveDataPath();
 
 	// if save file doesn't exist, make one and setup default values
 	if (!std::filesystem::exists(filename)) {
 		hasLoaded = true;
+		recalcLists();
 		save();
 		return;
 	}
@@ -61,7 +61,7 @@ void SaveData::load() {
 		nlohmann::json data = nlohmann::json::from_bson(file_contents);
 		// json to struct
 		SaveData::saveData = data.get<FsaveData>();
-
+		recalcLists();
 		is.close();
 	}
 
@@ -100,9 +100,7 @@ template <typename T1, typename T2> static void recalcList(std::unordered_map<ui
 	saveData.reserve(data.size());
 	for (auto& [id, d] : data) {
 		if (saveData.find(id) == saveData.end()) {
-			T2 temp{};
-			assignId(temp, id);
-			saveData.emplace(id, std::move(temp));
+			saveData[id].id = id;
 		}
 	}
 }

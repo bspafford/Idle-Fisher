@@ -46,12 +46,16 @@ public:
 
 	float getCatchTime();
 
-	double calcIdleProfits(double afkTime);
+	// called by calc idle profits
+	// fills held fish with random fish (currency comes from save data fullness), based on their probability
+	void FillWithRandomFish();
 	// fishId, fishNum
 	std::vector<std::pair<uint32_t, double>> calcAutoFishList(int fishNum);
 	std::unordered_map<uint32_t, float> calcIdleFishChance(std::unordered_map<uint32_t, FfishData> fishList);
 
+	// fish per second
 	double calcFPS();
+	// money per second
 	double calcMPS();
 
 	bool bMouseOver = false;

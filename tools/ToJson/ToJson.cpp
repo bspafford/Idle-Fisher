@@ -23,12 +23,12 @@ void ReadCSV(Fdata& data, ForderedData& orderedData) {
     readData(&data.autoFisherData, &orderedData.autoFisherData, "autoFisherDataTable");
     readData(&data.achievementData, &orderedData.achievementData, "achievementDataTable");
     readData(&data.goldenFishData, &orderedData.goldenFishData, "goldenFishDataTable");
-    readData(&data.mechanicStruct, &orderedData.mechanicStruct, "mechanicDataTable");
     readData(&data.rebirthData, &orderedData.rebirthData, "rebirthDataTable");
     readData(&data.vaultUnlockData, &orderedData.vaultUnlockData, "vaultUnlocksDataTable");
 
     readData(&orderedData.worldData, "worldDataTable");
     readData(&orderedData.fishingRodData, "fishingRodDataTable");
+    readData(&orderedData.mechanicStruct, "mechanicDataTable");
     readData(&orderedData.baitData, "baitDataTable");
     readData(&orderedData.petData, "petDataTable");
     readData(&orderedData.upgradeData, "upgradeDataTable");

@@ -400,7 +400,6 @@ struct Fdata {
     std::unordered_map<uint32_t, ModifierNode> modifierData;
 
     // npc upgrades
-    std::unordered_map<uint32_t, FmechanicStruct> mechanicStruct;
     std::unordered_map<uint32_t, FautoFisherStruct> autoFisherData;
     std::unordered_map<uint32_t, FvaultUnlocksStruct> vaultUnlockData;
     
@@ -408,7 +407,7 @@ struct Fdata {
     std::unordered_map<uint32_t, FachievementStruct> achievementData;
     std::unordered_map<uint32_t, FrebirthStruct> rebirthData;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, modifierData, mechanicStruct, autoFisherData, vaultUnlockData, achievementData, rebirthData);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Fdata, fishData, goldenFishData, currencyData, progressionData, modifierData, autoFisherData, vaultUnlockData, achievementData, rebirthData);
 };
 
 struct ForderedData {

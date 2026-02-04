@@ -5,7 +5,7 @@
 class Shader;
 
 struct Line {
-	const float verticalLineGradient = 1e5f;
+	const float verticalLineGradient = 1e1f; // 1e5f
 
 	float gradient;
 	float y_intercept;

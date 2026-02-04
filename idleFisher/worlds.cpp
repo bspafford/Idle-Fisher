@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "Rectangle.h"
 #include "CircleLoad.h"
+#include "IdleProfits.h"
 
 #include "button.h"
 #include "animation.h"
@@ -373,7 +374,7 @@ void world::loadIdleProfits() {
 	float timeDiff = static_cast<float>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
 
 	if (currWorld->fishTransporter)
-		currWorld->fishTransporter->calcIdleProfits(timeDiff);
+		IdleProfits::calcIdleProfits(timeDiff);
 	//if (currWorld->atm)
 	//	currWorld->atm->calcIdleProfits(timeDiff);
 }
@@ -551,11 +552,11 @@ void world::sortDraw(Shader* shaderProgram) {
 	for (auto& tree : trees)
 		if (!tree->calcIfPlayerInfront()) tree->draw(shaderProgram);
 
-	if (fishBin && !fishBinInBehind)
-		fishBin->draw(shaderProgram);
-
 	for (int i = 0; i < buildingInFront.size(); i++)
 		buildingInFront[i]->draw(shaderProgram);
+
+	if (fishBin && !fishBinInBehind)
+		fishBin->draw(shaderProgram);
 
 	// draw npcs infront
 	for (int i = 0; i < npcInFront.size(); i++)
@@ -599,7 +600,7 @@ void world::setWorldChangeLoc(WorldLoc worldChangeLoc) {
 world1::world1(WorldLoc worldChangeLoc) {
 	spawnLoc = { 557, 506 };
 	houseLoc = { 1670, -870 };
-	bankSellLoc = { 1000, 650 };
+	bankSellLoc = vector(710, 470);
 
 	setWorldChangeLoc(worldChangeLoc);
 

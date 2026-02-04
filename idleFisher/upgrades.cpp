@@ -16,7 +16,7 @@ void Upgrades::Init() {
 }
 
 double Upgrades::Get(const StatContext& statCtx) {
-	switch(statCtx.stat) {
+	switch (statCtx.stat) {
 	case Stat::None: {
 		std::cout << "someone called none\n";
 		abort();
@@ -96,6 +96,17 @@ double Upgrades::Get(const StatContext& statCtx) {
 
 	} case Stat::AutoFisherPower: {
 		return (SaveData::saveData.progressionData.at(statCtx.id).level / 10 + 1) * 10; // every ten levels increase power by 10
+
+	} case Stat::FishTransporterSpeed: {
+		int roundedLevel = (SaveData::saveData.progressionData.at(statCtx.id).level / 10) * 10; // only upgrade speed every 10 levels
+		return 2.0202f * roundedLevel + 47.9798f;
+
+	} case Stat::FishTransporterMaxCapacity: {
+		return SaveData::saveData.progressionData.at(statCtx.id).level * 100 + 100;
+
+	} case Stat::FishTransporterCollectSpeed: {
+		int roundedLevel = (SaveData::saveData.progressionData.at(statCtx.id).level / 10) * 10; // only upgrade speed every 10 levels
+		return -0.040404f * roundedLevel + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
 
 	} default:
 		return GetBaseStat(statCtx.stat);

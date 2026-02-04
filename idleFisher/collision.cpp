@@ -24,12 +24,12 @@ Fcollision::Fcollision(std::vector<vector> worldPoints, char identifier) {
 	for (int i = 0; i < worldPoints.size(); i++) {
 		if (points[i].x < minX)
 			minX = points[i].x;
-		else if (points[i].x > maxX)
+		if (points[i].x > maxX)
 			maxX = points[i].x;
 
 		if (points[i].y < minY)
 			minY = points[i].y;
-		else if (points[i].y > maxY)
+		if (points[i].y > maxY)
 			maxY = points[i].y;
 	}
 }
@@ -301,6 +301,21 @@ std::string collision::getIdentifier(std::string str) {
 	return identifier;
 }
 
+
+bool isCCW(const std::vector<vector>& pts) {
+	if (pts.size() < 3) return false; // not enough points
+
+	double area = 0.0;
+
+	for (size_t i = 0; i < pts.size(); ++i) {
+		const vector& p1 = pts[i];
+		const vector& p2 = pts[(i + 1) % pts.size()];
+		area += (p1.x * p2.y) - (p2.x * p1.y);
+	}
+
+	return area > 0; // true = CCW, false = CW
+}
+
 void collision::showCollisionBoxes(Shader* shaderProgram) {
 #ifdef _DEBUG // just really quickly made, temp code for testing
 	if (!GetCharacter() || !GetCharacter()->GetCollision())
@@ -319,6 +334,14 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 
 	for (int i = 0; i < allCollision.size(); i++) {
 		if (!allCollision[i]->isCircle) {
+
+			if (false) { // draw min and max rect for debug
+				vector min = { allCollision[i]->minX, allCollision[i]->minY };
+				vector max = { allCollision[i]->maxX, allCollision[i]->maxY };
+				URectangle rect(nullptr, vector(min), vector(max - min), true, glm::vec4(1, 1, 1, 0.5f));
+				rect.draw(Scene::twoDShader);
+			}
+
 			for (int j = 0; j < allCollision[i]->GetNumPoints(); j++) {
 				int point1 = j;
 				int point2 = (j + 1) % allCollision[i]->GetNumPoints();
@@ -346,6 +369,9 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
 				else // if else make blue
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
+
+				if (!isCCW(allCollision[i]->GetPoints()))
+					shaderProgram->setVec4("color", glm::vec4(1, 0, 0, 1.f));
 
 				glBindVertexArray(VAO);
 				glLineWidth(2.5f);
@@ -640,12 +666,12 @@ vector collision::TestSAT(Fcollision* playerCol) {
 	for (Fcollision* col : allCollision) {
 		vector normal = vector(0, 0);
 		float depth = 0;
-		//if (isCloseEnough(playerCol, col)) { // was causing problems
+		if (isCloseEnough(playerCol, col)) {
 			if ((col->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, col->points[0], col->radius, normal, depth)) || intersectCirclePolygon(playerCol->points[0], playerCol->radius, col->GetPoints(), normal, depth)) {
 				// pushes back player from collision
 				mtv += -normal * depth;
 			}
-		//}
+		}
 	}
 	return mtv;
 }

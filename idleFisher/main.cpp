@@ -368,11 +368,11 @@ void Main::checkInputs() {
 		SaveData::saveData.currencyList.at(53u).numOwned += 1e29;
 		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1e29;
 
-		for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
+		/*for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
 			currencyData.numOwned += 1000;
 			currencyData.totalNumOwned += 1000;
 			currencyData.unlocked = true;
-		}
+		}*/
 		currencyWidget->updateList();
 	}
 	if (Input::getKeyDown(GLFW_KEY_L)) {

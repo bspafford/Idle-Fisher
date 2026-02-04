@@ -23,7 +23,7 @@ UmechanicWidget::UmechanicWidget(widget* parent, npc* NPCParent) : widget(parent
 	uint32_t mechanicId = 0;
 	uint32_t currWorldId = Scene::GetCurrWorldId();
 	for (uint32_t id : SaveData::orderedData.mechanicStruct) {
-		if (currWorldId == SaveData::data.mechanicStruct.at(id).worldId) {
+		if (currWorldId == SaveData::data.progressionData.at(id).worldId) {
 			mechanicId = id;
 			break;
 		}
@@ -237,16 +237,21 @@ void UmechanicWidget::update() {
 
 	AfishTransporter* fishTransporter = world::GetFishTransporter();
 	if (fishTransporter) {
-		maxHoldValue->setText(shortNumbers::convert2Short(fishTransporter->getMaxHoldNum()));
-		speedValue->setText(shortNumbers::convert2Short(fishTransporter->getSpeed()));
-		collectSpeedValue->setText(shortNumbers::convert2Short(fishTransporter->getCollectionSpeed(), true));
+		uint32_t fishTransporterId = fishTransporter->GetId();
+		double maxCapacity = Upgrades::Get(StatContext(Stat::FishTransporterMaxCapacity, fishTransporterId));
+		double speed = Upgrades::Get(StatContext(Stat::FishTransporterSpeed, fishTransporterId));
+		double collectSpeed = Upgrades::Get(StatContext(Stat::FishTransporterCollectSpeed, fishTransporterId));
+
+		maxHoldValue->setText(shortNumbers::convert2Short(maxCapacity));
+		speedValue->setText(shortNumbers::convert2Short(speed));
+		collectSpeedValue->setText(shortNumbers::convert2Short(collectSpeed, true));
 	}
 }
 
 void UmechanicWidget::upgradeFishTransporter() {
 	if (Upgrades::LevelUp(mechanicStruct->id)) {
 		if (world::currWorld->fishTransporter)
-			world::currWorld->fishTransporter->upgrade(saveMechanicStruct);
+			world::currWorld->fishTransporter->SetStats();
 		update();
 	}
 }

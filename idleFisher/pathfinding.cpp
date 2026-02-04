@@ -71,9 +71,8 @@ std::vector<vector> pathfinding::simplifyPath(std::vector<node> path) {
 
 	for (int i = 1; i < path.size(); i++) {
 		vector directionNew = vector(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-		if (directionNew.x != directionOld.x || directionNew.y != directionOld.y) {
+		//if (directionNew.x != directionOld.x || directionNew.y != directionOld.y) 
 			waypoints.push_back(path[i].loc);
-		}
 		directionOld = directionNew;
 	}
 	return waypoints;

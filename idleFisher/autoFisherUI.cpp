@@ -102,7 +102,7 @@ void autoFisherUI::draw(Shader* shaderProgram) {
 		if (level < maxLevel)
 			maxText->draw(shaderProgram);
 
-		if (Upgrades::GetPrice(autoFisher->id, autoFisher->upgradeAmount) <= SaveData::saveData.currencyList.at(data.worldId).numOwned)
+		if (level >= maxLevel || Upgrades::GetPrice(autoFisher->id, autoFisher->upgradeAmount) <= SaveData::saveData.currencyList.at(data.worldId).numOwned)
 			buttonText->setTextColor(glm::vec4(1));
 		else
 			buttonText->setTextColor(glm::vec4(1, 0, 0, 1));

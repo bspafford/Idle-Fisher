@@ -50,6 +50,11 @@ enum class Stat {
 	AutoFisherMaxCapacity = 25,
 	AutoFisherPower = 26,
 
+// Mechanic Data
+	FishTransporterSpeed = 27,
+	FishTransporterMaxCapacity = 28,
+	FishTransporterCollectSpeed = 29,
+
 // Fish School
 	MaxFishSchoolSpawnInterval = 15,
 	MinFishSchoolSpawnInterval = 16,

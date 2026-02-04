@@ -364,6 +364,7 @@
     <ClInclude Include="house.h" />
     <ClInclude Include="Hoverable.h" />
     <ClInclude Include="hoverBox.h" />
+    <ClInclude Include="IdleProfits.h" />
     <ClInclude Include="idleProfitWidget.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Input.h" />

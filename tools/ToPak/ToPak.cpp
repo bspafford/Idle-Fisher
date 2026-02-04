@@ -108,12 +108,12 @@ struct Fcollision {
 		for (int i = 0; i < worldPoints.size(); i++) {
 			if (points[i].x < minX)
 				minX = points[i].x;
-			else if (points[i].x > maxX)
+			if (points[i].x > maxX)
 				maxX = points[i].x;
 
 			if (points[i].y < minY)
 				minY = points[i].y;
-			else if (points[i].y > maxY)
+			if (points[i].y > maxY)
 				maxY = points[i].y;
 		}
 	}

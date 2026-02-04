@@ -60,6 +60,7 @@ void AStar::Deconstructor() {
 }
 
 void AStar::drawBoard(Shader* shaderProgram) {
+#ifdef _DEBUG
 	if (path.get())
 		path.get()->draw(shaderProgram);
 
@@ -68,7 +69,7 @@ void AStar::drawBoard(Shader* shaderProgram) {
 		for (int x = 0; x < gridSize.x; x++) {
 			vector loc = grid[getIndex(x, y)].loc;
 			if (!grid[getIndex(x, y)].walkable) {
-				URectangle rect(nullptr, loc, vector(nodeSize, nodeSize), true, glm::vec4(255, 0, 0, 50));
+				URectangle rect(nullptr, loc, vector(nodeSize, nodeSize), true, glm::vec4(1, 0, 0, 0.2));
 				rect.draw(shaderProgram);
 			}
 		}
@@ -76,6 +77,7 @@ void AStar::drawBoard(Shader* shaderProgram) {
 
 	URectangle rect(nullptr, targetPos, vector(nodeSize, nodeSize), true, glm::vec4(1, 1, 0, 1));
 	rect.draw(shaderProgram);
+#endif
 }
 
 node* AStar::nodeFromWorldPoint(vector worldPos) {
