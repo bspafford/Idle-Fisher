@@ -30,7 +30,8 @@ public:
 
 	// fills held fish with random fish
 	// called from calc idle profits
-	void FillWithRandomFish(double currency);
+	// fillHeldFish will update the fish transporters held fish list, if false it wont touch it
+	std::unordered_map<uint32_t, FsaveFishData> FillWithRandomFish(double currency, bool fillHeldFish);
 
 private:
 	void setupCollision() override;

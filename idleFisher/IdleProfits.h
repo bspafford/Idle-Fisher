@@ -11,23 +11,16 @@ private:
 	// sets up things like the fish transporter location
 	// fills the fish transporter with currency left over from the calcIdleProfits
 	// refills the auto fishers based on their fullness
-	static void setup(vector fishTransporterLoc, double fishTransporterCurrency, double currencyMade) {
+	static void setup(double fishTransporterCurrency, double currencyMade) {
 		for (auto& autoFisher : world::currWorld->autoFisherList)
 			autoFisher->FillWithRandomFish();
 
 		if (world::currWorld->fishTransporter) {
-			world::currWorld->fishTransporter->setLoc(fishTransporterLoc);
-			world::currWorld->fishTransporter->FillWithRandomFish(fishTransporterCurrency);
-
+			world::currWorld->fishTransporter->FillWithRandomFish(fishTransporterCurrency, true);
 
 			// calculate random fish here based on fish the autofishers can catch
-			std::unordered_map<uint32_t, FsaveFishData> temp;
-			FsaveFishData saveFishData;
-			saveFishData.id = 2u;
-			saveFishData.numOwned[0] = currencyMade / Upgrades::Get(StatContext(Stat::FishPrice, saveFishData.id));
-			temp.insert({ saveFishData.id, saveFishData });
-
-			Main::idleProfitWidget->setup(temp);
+			std::unordered_map<uint32_t, FsaveFishData> fishList = world::currWorld->fishTransporter->FillWithRandomFish(currencyMade, false);
+			Main::idleProfitWidget->setup(fishList);
 		}
 	}
 	
@@ -50,7 +43,7 @@ public:
 				// clamp if made too much money
 				saveData.fullness = math::min(saveData.fullness + autoFisher->calcMPS() * timeDiff, Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId)));
 			}
-			setup(vector(0, 0), 0, 0);
+			setup(0, 0);
 			return;
 		}
 
@@ -154,6 +147,6 @@ public:
 			saveAutoFisherStruct.fullness = math::min(autoFisher->calcMPS() * (timeDiff - lastVisited[afId]), autoFisherMaxCapacity);
 		}
 
-		setup(destination, heldCurrency, currencyMade);
+		setup(heldCurrency, currencyMade);
 	}
 };

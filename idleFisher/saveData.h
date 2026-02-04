@@ -465,7 +465,7 @@ struct FsaveData {
     double totalRebirthCurrency = 0;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, progressionData, npcSave,
-        equippedPetId, vaultUnlockList, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
+        autoFisherList, equippedPetId, vaultUnlockList, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 
 struct FsettingsData {

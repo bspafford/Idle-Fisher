@@ -373,10 +373,7 @@ void world::loadIdleProfits() {
 	
 	float timeDiff = static_cast<float>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
 
-	if (currWorld->fishTransporter)
-		IdleProfits::calcIdleProfits(timeDiff);
-	//if (currWorld->atm)
-	//	currWorld->atm->calcIdleProfits(timeDiff);
+	IdleProfits::calcIdleProfits(timeDiff);
 }
 
 void world::spawnFishSchool() {

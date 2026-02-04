@@ -81,7 +81,7 @@ void UheldFishWidget::setupLocs() {
 	currencyScrollBox->setSize({ size.x, currencyBoxY });
 	vertBox->changeChildHeight(currencyScrollBox.get(), currencyScrollBox->getSize().y);
 	setLoc(loc);
-	vertBox->setLocAndSize(absoluteLoc, size);
+	vertBox->setLocAndSize(absoluteLoc - size / 2.f, size);
 	setSize({ size.x, vertBox->getOverflowSize() });
 }
 

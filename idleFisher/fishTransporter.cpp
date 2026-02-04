@@ -442,8 +442,8 @@ uint32_t AfishTransporter::GetId() {
 	return id;
 }
 
-void AfishTransporter::FillWithRandomFish(double currency) {
-	holding.clear();
+std::unordered_map<uint32_t, FsaveFishData> AfishTransporter::FillWithRandomFish(double currency, bool fillHeldFish) {
+	std::unordered_map<uint32_t, FsaveFishData> heldList;
 
 	// loop throguh all auto fishers in world
 	// add up all their probabilities / total
@@ -470,6 +470,10 @@ void AfishTransporter::FillWithRandomFish(double currency) {
 		saveFishData.id = id;
 		saveFishData.numOwned[0] = fishNum;
 
-		holding.insert({ id, saveFishData });
+		heldList.insert({ id, saveFishData });
 	}
+
+	if (fillHeldFish)
+		holding = heldList;
+	return heldList;
 }
