@@ -55,6 +55,8 @@ private:
 
 	void animFinished();
 	void setFishingTipLoc(int frame);
+	// returns SE, SW, NW, NE depending on where the bobber is relative to the character
+	std::string GetFishingDirection();
 
 	void comboOvertimeFinished();
 

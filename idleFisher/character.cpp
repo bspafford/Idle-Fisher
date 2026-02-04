@@ -62,19 +62,57 @@ Acharacter::Acharacter() {
 	animData.insert({ "idleSE", animDataStruct({14, 5}, {27, 5}, true, duration) });
 
 	// fishing
+	// SE
 	animData.insert({ "castSE", animDataStruct({0, 6}, {17, 6}, false) });
 	animData.insert({ "idleFishingSE", animDataStruct({18, 6}, {31, 6}, true) });
 	animData.insert({ "transitionSE", animDataStruct({0, 7}, {2, 7}, false) });
 	animData.insert({ "waitSE", animDataStruct({3, 7}, {6, 7}, true) });
 	animData.insert({ "pullSE", animDataStruct({7, 7}, {18, 7}, false) });
+	// SW
+	animData.insert({ "castSW", animDataStruct({0, 8}, {17, 8}, false) });
+	animData.insert({ "idleFishingSW", animDataStruct({18, 8}, {31, 8}, true) });
+	animData.insert({ "transitionSW", animDataStruct({0, 9}, {2, 9}, false) });
+	animData.insert({ "waitSW", animDataStruct({3, 9}, {6, 9}, true) });
+	animData.insert({ "pullSW", animDataStruct({7, 9}, {18, 9}, false) });
+	// NE
+	animData.insert({ "castNE", animDataStruct({0, 10}, {17, 10}, false) });
+	animData.insert({ "idleFishingNE", animDataStruct({18, 10}, {31, 10}, true) });
+	animData.insert({ "transitionNE", animDataStruct({0, 11}, {2, 11}, false) });
+	animData.insert({ "waitNE", animDataStruct({3, 11}, {6, 11}, true) });
+	animData.insert({ "pullNE", animDataStruct({7, 11}, {18, 11}, false) });
+	// NW
+	animData.insert({ "castNW", animDataStruct({0, 12}, {17, 12}, false) });
+	animData.insert({ "idleFishingNW", animDataStruct({18, 12}, {31, 12}, true) });
+	animData.insert({ "transitionNW", animDataStruct({0, 13}, {2, 13}, false) });
+	animData.insert({ "waitNW", animDataStruct({3, 13}, {6, 13}, true) });
+	animData.insert({ "pullNW", animDataStruct({7, 13}, {18, 13}, false) });
 
 	// fishing rod
 	std::unordered_map<std::string, animDataStruct> fishingRodData;
+	// SE
 	fishingRodData.insert({ "castSE", animDataStruct({0, 0}, {17, 0}, false) });
 	fishingRodData.insert({ "idleFishingSE", animDataStruct({18, 0}, {31, 0}, true) });
 	fishingRodData.insert({ "transitionSE", animDataStruct({32, 0}, {34, 0}, false) });
 	fishingRodData.insert({ "waitSE", animDataStruct({35, 0}, {38, 0}, true) });
 	fishingRodData.insert({ "pullSE", animDataStruct({39, 0}, {51, 0}, false) });
+	// SW
+	fishingRodData.insert({ "castSW", animDataStruct({0, 1}, {17, 1}, false) });
+	fishingRodData.insert({ "idleFishingSW", animDataStruct({18, 1}, {31, 1}, true) });
+	fishingRodData.insert({ "transitionSW", animDataStruct({32, 1}, {34, 1}, false) });
+	fishingRodData.insert({ "waitSW", animDataStruct({35, 1}, {38, 1}, true) });
+	fishingRodData.insert({ "pullSW", animDataStruct({39, 1}, {51, 1}, false) });
+	// NE
+	fishingRodData.insert({ "castNE", animDataStruct({0, 2}, {17, 2}, false) });
+	fishingRodData.insert({ "idleFishingNE", animDataStruct({18, 2}, {31, 2}, true) });
+	fishingRodData.insert({ "transitionNE", animDataStruct({32, 2}, {34, 2}, false) });
+	fishingRodData.insert({ "waitNE", animDataStruct({35, 2}, {38, 2}, true) });
+	fishingRodData.insert({ "pullNE", animDataStruct({39, 2}, {51, 2}, false) });
+	// NW
+	fishingRodData.insert({ "castNW", animDataStruct({0, 3}, {17, 3}, false) });
+	fishingRodData.insert({ "idleFishingNW", animDataStruct({18, 3}, {31, 3}, true) });
+	fishingRodData.insert({ "transitionNW", animDataStruct({32, 3}, {34, 3}, false) });
+	fishingRodData.insert({ "waitNW", animDataStruct({35, 3}, {38, 3}, true) });
+	fishingRodData.insert({ "pullNW", animDataStruct({39, 3}, {51, 3}, false) });
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, true);
 	
@@ -124,45 +162,59 @@ Acharacter::Acharacter() {
 }
 
 void Acharacter::animFinished() {
-	if (anim->GetCurrAnim().find("cast") != std::string::npos) { // if not cast
+	std::string dir = GetFishingDirection();
+	if (anim->GetCurrAnim().starts_with("cast")) { // if not cast
 		// change to next animation
-		anim->setAnimation("idleFishingSE");
+		anim->setAnimation("idleFishing" + dir);
 		anim->start();
-		fishingRod->setAnimation("idleFishingSE");
+		fishingRod->setAnimation("idleFishing" + dir);
 		fishingRod->start();
-	} else if (anim->GetCurrAnim() == "transitionSE") {
-		anim->setAnimation("waitSE");
+	} else if (anim->GetCurrAnim().starts_with("transition")) {
+		anim->setAnimation("wait" + dir);
 		anim->start();
-		fishingRod->setAnimation("waitSE");
+		fishingRod->setAnimation("wait" + dir);
 		fishingRod->start();
-	} else if (anim->GetCurrAnim() == "pullSE") {
-		anim->setAnimation("castSE");
+	} else if (anim->GetCurrAnim().starts_with("pull")) {
+		anim->setAnimation("cast" + dir);
 		anim->start();
-		fishingRod->setAnimation("castSE");
+		fishingRod->setAnimation("cast" + dir);
 		fishingRod->start();
 	}
 }
 
 void Acharacter::setFishingTipLoc(int frame) {
+	float fishingRodImgSize = fishingRod->GetCellSize().x;
+	bool onLeft = GetFishingDirection()[1] == 'W';
+
 	vector loc = anim->getAbsoluteLoc() - anim->GetCellSize() / 2.f + vector{ -34.f, 11.f };
-	if (anim->GetCurrAnim() == "castSE") {
-		fishingTipLoc = castAnimLocs[frame] + loc;
+	if (anim->GetCurrAnim().starts_with("cast")) {
+		fishingTipLoc = (onLeft ? vector(fishingRodImgSize - castAnimLocs[frame].x, castAnimLocs[frame].y) : castAnimLocs[frame]) + loc;
 		if (frame >= 11)
 			showFishingLine = true;
-	} else if (anim->GetCurrAnim() == "idleSE") {
-		fishingTipLoc = idleFishing[frame] + loc;
+	} else if (anim->GetCurrAnim().starts_with("idle")) {
+		fishingTipLoc = (onLeft ? vector(fishingRodImgSize - idleFishing[frame].x, idleFishing[frame].y) : idleFishing[frame]) + loc;
 		showFishingLine = true;
-	} else if (anim->GetCurrAnim() == "transitionSE") {
-		fishingTipLoc = transition[frame] + loc;
+	} else if (anim->GetCurrAnim().starts_with("transition")) {
+		fishingTipLoc = (onLeft ? vector(fishingRodImgSize - transition[frame].x, transition[frame].y) : transition[frame]) + loc;
 		showFishingLine = true;
-	} else if (anim->GetCurrAnim() == "waitSE") {
-		fishingTipLoc = pullAnim[frame] + loc;
+	} else if (anim->GetCurrAnim().starts_with("wait")) {
+		fishingTipLoc = (onLeft ? vector(fishingRodImgSize - pullAnim[frame].x, pullAnim[frame].y) : pullAnim[frame]) + loc;
 		showFishingLine = true;
-	} else if (anim->GetCurrAnim() == "pullSE") {
-		fishingTipLoc = catchAnim[frame] + loc;
+	} else if (anim->GetCurrAnim().starts_with("pull")) {
+		fishingTipLoc = (onLeft ? vector(fishingRodImgSize - catchAnim[frame].x, catchAnim[frame].y) : catchAnim[frame]) + loc;
 		if (frame >= 4)
 			showFishingLine = false;
 	}
+}
+
+std::string Acharacter::GetFishingDirection() {
+	std::vector<std::string> dirList = { "SW", "SE", "NE", "NW" };
+
+	vector dir = math::normalize(tempBobberLoc - getCharLoc());
+	float angle = atan2(dir.y, dir.x) * 180.f / M_PI;
+	int y = static_cast<int>(round(1.f / 90.f * (angle + 90.f / 2.f))) + 1;
+			
+	return dirList[y];
 }
 
 void Acharacter::move(float deltaTime) {
@@ -216,12 +268,20 @@ void Acharacter::draw(Shader* shaderProgram) {
 	}
 
 	vector animLoc = SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f;
+
+	std::string fishingDir = GetFishingDirection();
 	anim->setLoc(animLoc);
-	anim->draw(shaderProgram);
-	if (isFishing) {
-		fishingRod->setLoc(animLoc + vector{ -44.f, 0.f });
-		fishingRod->draw(shaderProgram);
-	}
+	fishingRod->setLoc(animLoc + vector{ -44.f, 0.f });
+	if (isFishing) { // draw fishing rod behind player if fishing north
+		if (fishingDir[0] == 'N') {
+			fishingRod->draw(shaderProgram);
+			anim->draw(shaderProgram);
+		} else {
+			anim->draw(shaderProgram);
+			fishingRod->draw(shaderProgram);
+		}
+	} else // just draw character if not fishing
+		anim->draw(shaderProgram);
 
 	if (!bobberBehind)
 		drawFishingLine(shaderProgram);
@@ -297,9 +357,10 @@ void Acharacter::leftClick() {
 		catchFishAudio->Play();
 
 		// set animation
-		anim->setAnimation("pullSE");
+		std::string fishingDir = GetFishingDirection();
+		anim->setAnimation("pull" + fishingDir);
 		anim->start();
-		fishingRod->setAnimation("pullSE");
+		fishingRod->setAnimation("pull" + fishingDir);
 		fishingRod->start();
 
 		// set fish image
@@ -381,9 +442,10 @@ void Acharacter::fishing() {
 
 	Main::fishComboWidget->SetFish(currFish, currFishQuality);
 
-	anim->setAnimation("transitionSE");
+	std::string fishingDir = GetFishingDirection();
+	anim->setAnimation("transition" + fishingDir);
 	anim->start();
-	fishingRod->setAnimation("transitionSE");
+	fishingRod->setAnimation("transition" + fishingDir);
 	fishingRod->start();
 }
 
@@ -477,10 +539,6 @@ void Acharacter::StartFishing() {
 	// check if fishing rod is inside a fishSchool or not!
 	calcFishSchool();
 
-	// give upgrades
-		// decrease fish time
-		// increase catch num?
-
 	Main::fishComboWidget->Start();
 
 	fishing();
@@ -492,17 +550,16 @@ void Acharacter::StartFishing() {
 	float angle = atan2(diff.y, diff.x) * 180.f / M_PI;
 	int y = static_cast<int>(floor(1.f / 45.f * (angle + 45.f / 2.f)) + 3.5f);
 
-	// set fishing anim
-	//if (anim->animList != idleAnimWheel[y])
 	showFishingLine = false;
 
-	if (anim->GetCurrAnim().find("cast") == std::string::npos) { // if not cast animation, from any direction
-		anim->setAnimation("castSE");
+	// set fishing anim
+	if (anim->GetCurrAnim().starts_with("cast")) {
+		std::string fishingDir = GetFishingDirection();
+		anim->setAnimation("cast" + fishingDir);
 		anim->start();
-		fishingRod->setAnimation("castSE");
+		fishingRod->setAnimation("cast" + fishingDir);
 		fishingRod->start();
 	}
-	//anim->setAnimation(idleAnimWheel[y], -1, true);
 }
 
 void Acharacter::stopFishing() {
