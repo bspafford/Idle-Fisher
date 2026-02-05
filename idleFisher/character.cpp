@@ -19,7 +19,7 @@
 #include "fishComboWidget.h"
 #include "comboWidget.h"
 #include "currencyWidget.h"
-#include "fishUnlocked.h"
+#include "achievementUnlockWidget.h"
 #include "heldFishWidget.h"
 #include "premiumBuffWidget.h"
 #include "UIWidget.h"
@@ -354,7 +354,6 @@ void Acharacter::leftClick() {
 		comboNum = round(comboNum);
 		Main::comboWidget->spawnComboNumber();
 
-		catchFishAudio->Play();
 
 		// set animation
 		std::string fishingDir = GetFishingDirection();
@@ -372,31 +371,37 @@ void Acharacter::leftClick() {
 
 		// add fish
 		if (currFish.id != 1u) { // if not premium
-			FsaveFishData& saveFishData = SaveData::saveData.fishData[currFish.id];
-			if (!saveFishData.unlocked)
-				Main::fishUnlocked->start(currFish);
-
-			if (saveFishData.biggestSizeCaught < currFishSize) {
-				saveFishData.biggestSizeCaught = currFishSize;
-				if (saveFishData.unlocked)
-					Main::newRecordWidget->start(currFishSize);
-			}
-
 			double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0; // 387 / 100 = 3.87
 			double caught = floor(catchNum); // guarenteed caught // 3
 			double remainder = catchNum - caught; // percent remainder // 3.87 - 3 = 0.87
 			if (math::randRange(0.0, 1.0) < remainder) // random check to see if player got rolled over value
 				caught++;
 
+			SaveData::saveData.clicks++;
+			Achievements::CheckGroup(AchievementTrigger::Click);
+
 			if (caught > 0) { // can catch no fish
+				FsaveFishData& saveFishData = SaveData::saveData.fishData[currFish.id];
+
+				// fish size
+				if (saveFishData.biggestSizeCaught < currFishSize) {
+					saveFishData.biggestSizeCaught = currFishSize;
+					if (saveFishData.unlocked)
+						Main::newRecordWidget->start(currFishSize);
+				}
+				if (saveFishData.smallestSizeCaught > currFishSize)
+					saveFishData.smallestSizeCaught = currFishSize;
+
 				double recast = Upgrades::Get(Stat::RecastProcChance);
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
+				catchFishAudio->Play();
 				saveFishData.unlocked = true;
 				saveFishData.numOwned[currFishQuality] += caught;
 				saveFishData.totalNumOwned[currFishQuality] += caught;
 				showFish = true;
+				Achievements::CheckGroup(AchievementTrigger::FishCaught);
 
 				numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * catchNum, NumberType::FishCaught);
 			}
@@ -412,12 +417,11 @@ void Acharacter::leftClick() {
 			premiumCatchTimer->start(Upgrades::Get(Stat::PremiumCoolDownTime));
 			canCatchPremium = false;
 
+			Achievements::CheckGroup(AchievementTrigger::FishCaught);
 			Main::currencyWidget->updateList();
 
 			showFish = true;
 		}
-
-		achievement::checkAchievements();
 
 		// updates held fish widget
 		Main::heldFishWidget->updateList(true);
@@ -635,6 +639,8 @@ void Acharacter::premiumFishBuff() {
 
 		numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), premiumData.multiplier, NumberType::PremiumBuff);
 	}
+
+	Achievements::CheckGroup(AchievementTrigger::PremiumBuffs);
 }
 
 // tries to set canmove but will not work if something like a widget is active
@@ -722,15 +728,18 @@ AfishSchool* Acharacter::bobberInFishSchool() {
 		// check if bobber is inside of fish school
 		// if it is then return true
 		// otherwise keep looking
-		if (fishSchool->pointInSchool(math::screenToWorld(bobberLoc)))
+		if (fishSchool->pointInSchool(bobberLoc))
 			return fishSchool.get();
 	}
 	return nullptr;
 }
 
 void Acharacter::calcFishSchool() {
-	if (currFishSchool)
+	if (currFishSchool) {
 		currFishSchool->removeFishNum();
+		SaveData::saveData.fishFromSchools++;
+		Achievements::CheckGroup(AchievementTrigger::FishSchool);
+	}
 
 	currFishSchool = bobberInFishSchool();
 }

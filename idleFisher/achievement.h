@@ -1,47 +1,38 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <functional>
-#include <string>
-#include <map>
+#include <unordered_map>
+#include <unordered_set>
 
-#include "main.h"
-#include "saveData.h"
-#include "fishUnlocked.h"
-#include "achievementWidget.h"
+enum class AchievementTrigger {
+    Click = 1,
+    FishCaught = 2,
+    PetPurchased = 3,
+    CurrencyEarned = 4,
+    CurrencyPerSecond = 5,
+    PurchaseAutoFisher = 6,
+    UpgradeAutoFisher = 7,
+    FishSchool = 8,
+    BaitPurchased = 9,
+    PremiumBuffs = 10,
+    FishTransporter = 11,
+};
 
 // achievement Class
-class achievement {
+class Achievements {
 private:
-    FachievementStruct* achievementData;
-    SaveEntry* saveAchievementData;
-    std::function<bool()> condition; // Condition as a lambda function
-    static inline std::vector<std::unique_ptr<achievement>> achievements;
+    static inline std::unordered_map<uint32_t, std::function<bool()>> achievements;
+    static inline std::unordered_map<AchievementTrigger, std::unordered_set<uint32_t>> achievementsPerTrigger;
 
+    static void NotifyPlayer(uint32_t id);
+
+    static void AddAchievement(uint32_t id, std::function<bool()> condition);
+
+    static double CalcMoneyPerSecond();
+    static bool CheckQuality(double caughtNum, int quality);
+    static bool CaughtSpecialFish(double caughtNum);
+    
 public:
-    achievement(uint32_t id, std::function<bool()> cond)
-        : achievementData(&SaveData::data.achievementData.at(id)), saveAchievementData(&SaveData::saveData.achievementList.at(id)), condition(cond) {}
-
-    void checkUnlock() {
-        if (!saveAchievementData->level && condition()) {
-            saveAchievementData->level = true;
-
-            // updates the achievement widget icon for specific achievement
-            Main::achievementWidget->updateAchievementIcon(saveAchievementData->id);
-
-            notifyPlayer();
-        }
-    }
-
-    void notifyPlayer() const {
-        Main::fishUnlocked->start(achievementData);
-    }
-
-    bool isUnlocked() const { return saveAchievementData->level; }
-
-    FachievementStruct* getAchievementData() const { return achievementData; }
-
-    static void createAchievementList();
-    static void checkAchievements();
+    static void Init();
+    static void CheckGroup(AchievementTrigger trigger);
 };

@@ -12,6 +12,7 @@
 #include "character.h"
 #include "autoFisherUI.h"
 #include "upgrades.h"
+#include "achievement.h"
 
 // widget
 #include "heldFishWidget.h"
@@ -319,6 +320,9 @@ void AautoFisher::upgrade() {
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
 		afMoreInfoUI->updateUI();
+
+	Achievements::CheckGroup(AchievementTrigger::CurrencyPerSecond);
+	Achievements::CheckGroup(AchievementTrigger::UpgradeAutoFisher);
 }
 
 float AautoFisher::getCatchTime() {
@@ -480,8 +484,8 @@ void AautoFisher::FillWithRandomFish() {
 	// see if the auto fisher has enough room to start fishing
 	SetFullnessIndex();
 	if (calcFish(nullptr)) {
-		anim->SetCurrFrameLoc(vector(math::randRangeInt(0, 39), anim->GetCurrFrameLoc().y)); // give random frame, so it looks better
 		startFishing();
+		anim->SetCurrFrameLoc(vector(math::randRangeInt(0, 39), anim->GetCurrFrameLoc().y)); // give random frame, so it looks better
 	}
 }
 

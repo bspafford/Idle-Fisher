@@ -70,7 +70,7 @@ void animation::stop() {
 		animTimer->stop();
 }
 
-void animation::setAnimation(std::string name) {
+void animation::setAnimation(const std::string& name) {
 	int frameNum = calcFrameDistance(true);
 
 	currAnim = name;

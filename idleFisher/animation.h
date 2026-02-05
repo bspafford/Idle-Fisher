@@ -47,7 +47,7 @@ public:
 	void start();
 	void stop();
 
-	void setAnimation(std::string name);
+	void setAnimation(const std::string& name);
 
 	void animCallBack();
 

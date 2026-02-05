@@ -1,501 +1,92 @@
-id,name,description,stat,weight
-1,Catch your first fish!,catch your fisher fish,1,1
-2,catch 100 dirt fish,do i really need to explain this,1,1
-3,catch 10000 dirt fish,description,1,1
-4,catch 1000000 dirt fish,description,1,1
-5,collect your first dollar,description,1,1
-6,get 100 money,description,1,1
-7,get 10000 money,description,1,1
-8,get 1000000 money,description,1,1
-9,erty,description,1,1
-10,rtyu,description,1,1
-11,tyui,description,1,1
-12,asdf,description,1,1
-13,sdfg,description,1,1
-14,dfgh,description,1,1
-15,fghj,description,1,1
-16,ghjk,description,1,1
-17,hjkl,description,1,1
-18,qwer,description,1,1
-19,wert,description,1,1
-20,erty,description,1,1
-21,rtyu,description,1,1
-22,tyui,description,1,1
-23,asdf,description,1,1
-24,sdfg,description,1,1
-25,dfgh,description,1,1
-26,fghj,description,1,1
-27,ghjk,description,1,1
-28,hjkl,description,1,1
-29,qwer,description,1,1
-30,wert,description,1,1
-31,erty,description,1,1
-32,rtyu,description,1,1
-33,tyui,description,1,1
-34,asdf,description,1,1
-35,sdfg,description,1,1
-36,dfgh,description,1,1
-37,fghj,description,1,1
-38,ghjk,description,1,1
-39,hjkl,description,1,1
-40,qwer,description,1,1
-41,wert,description,1,1
-42,erty,description,1,1
-43,rtyu,description,1,1
-44,tyui,description,1,1
-45,asdf,description,1,1
-46,sdfg,description,1,1
-47,dfgh,description,1,1
-48,fghj,description,1,1
-49,ghjk,description,1,1
-50,hjkl,description,1,1
-51,qwer,description,1,1
-52,wert,description,1,1
-53,erty,description,1,1
-54,rtyu,description,1,1
-55,tyui,description,1,1
-56,asdf,description,1,1
-57,sdfg,description,1,1
-58,dfgh,description,1,1
-59,fghj,description,1,1
-60,ghjk,description,1,1
-61,hjkl,description,1,1
-62,qwer,description,1,1
-63,wert,description,1,1
-64,erty,description,1,1
-65,rtyu,description,1,1
-66,tyui,description,1,1
-67,asdf,description,1,1
-68,sdfg,description,1,1
-69,dfgh,description,1,1
-70,fghj,description,1,1
-71,ghjk,description,1,1
-72,hjkl,description,1,1
-73,qwer,description,1,1
-74,wert,description,1,1
-75,erty,description,1,1
-76,rtyu,description,1,1
-77,tyui,description,1,1
-78,asdf,description,1,1
-79,sdfg,description,1,1
-80,dfgh,description,1,1
-81,fghj,description,1,1
-82,ghjk,description,1,1
-83,hjkl,description,1,1
-84,qwer,description,1,1
-85,wert,description,1,1
-86,erty,description,1,1
-87,rtyu,description,1,1
-88,tyui,description,1,1
-89,asdf,description,1,1
-90,sdfg,description,1,1
-91,dfgh,description,1,1
-92,fghj,description,1,1
-93,ghjk,description,1,1
-94,hjkl,description,1,1
-95,qwer,description,1,1
-96,wert,description,1,1
-97,erty,description,1,1
-98,rtyu,description,1,1
-99,tyui,description,1,1
-100,asdf,description,1,1
-101,sdfg,description,1,1
-102,dfgh,description,1,1
-103,fghj,description,1,1
-104,ghjk,description,1,1
-105,hjkl,description,1,1
-106,qwer,description,1,1
-107,wert,description,1,1
-108,erty,description,1,1
-109,rtyu,description,1,1
-110,tyui,description,1,1
-111,asdf,description,1,1
-112,sdfg,description,1,1
-113,dfgh,description,1,1
-114,fghj,description,1,1
-115,ghjk,description,1,1
-116,hjkl,description,1,1
-117,qwer,description,1,1
-118,wert,description,1,1
-119,erty,description,1,1
-120,rtyu,description,1,1
-121,tyui,description,1,1
-122,asdf,description,1,1
-123,sdfg,description,1,1
-124,dfgh,description,1,1
-125,fghj,description,1,1
-126,ghjk,description,1,1
-127,hjkl,description,1,1
-128,qwer,description,1,1
-129,wert,description,1,1
-130,erty,description,1,1
-131,rtyu,description,1,1
-132,tyui,description,1,1
-133,asdf,description,1,1
-134,sdfg,description,1,1
-135,dfgh,description,1,1
-136,fghj,description,1,1
-137,ghjk,description,1,1
-138,hjkl,description,1,1
-139,qwer,description,1,1
-140,wert,description,1,1
-141,erty,description,1,1
-142,rtyu,description,1,1
-143,tyui,description,1,1
-144,asdf,description,1,1
-145,sdfg,description,1,1
-146,dfgh,description,1,1
-147,fghj,description,1,1
-148,ghjk,description,1,1
-149,hjkl,description,1,1
-150,qwer,description,1,1
-151,wert,description,1,1
-152,erty,description,1,1
-153,rtyu,description,1,1
-154,tyui,description,1,1
-155,asdf,description,1,1
-156,sdfg,description,1,1
-157,dfgh,description,1,1
-158,fghj,description,1,1
-159,ghjk,description,1,1
-160,hjkl,description,1,1
-161,qwer,description,1,1
-162,wert,description,1,1
-163,erty,description,1,1
-164,rtyu,description,1,1
-165,tyui,description,1,1
-166,asdf,description,1,1
-167,sdfg,description,1,1
-168,dfgh,description,1,1
-169,fghj,description,1,1
-170,ghjk,description,1,1
-171,hjkl,description,1,1
-172,qwer,description,1,1
-173,wert,description,1,1
-174,erty,description,1,1
-175,rtyu,description,1,1
-176,tyui,description,1,1
-177,asdf,description,1,1
-178,sdfg,description,1,1
-179,dfgh,description,1,1
-180,fghj,description,1,1
-181,ghjk,description,1,1
-182,hjkl,description,1,1
-183,qwer,description,1,1
-184,wert,description,1,1
-185,erty,description,1,1
-186,rtyu,description,1,1
-187,tyui,description,1,1
-188,asdf,description,1,1
-189,sdfg,description,1,1
-190,dfgh,description,1,1
-191,fghj,description,1,1
-192,ghjk,description,1,1
-193,hjkl,description,1,1
-194,qwer,description,1,1
-195,wert,description,1,1
-196,erty,description,1,1
-197,rtyu,description,1,1
-198,tyui,description,1,1
-199,asdf,description,1,1
-200,sdfg,description,1,1
-201,dfgh,description,1,1
-202,fghj,description,1,1
-203,ghjk,description,1,1
-204,hjkl,description,1,1
-205,qwer,description,1,1
-206,wert,description,1,1
-207,erty,description,1,1
-208,rtyu,description,1,1
-209,tyui,description,1,1
-210,asdf,description,1,1
-211,sdfg,description,1,1
-212,dfgh,description,1,1
-213,fghj,description,1,1
-214,ghjk,description,1,1
-215,hjkl,description,1,1
-216,qwer,description,1,1
-217,wert,description,1,1
-218,erty,description,1,1
-219,rtyu,description,1,1
-220,tyui,description,1,1
-221,asdf,description,1,1
-222,sdfg,description,1,1
-223,dfgh,description,1,1
-224,fghj,description,1,1
-225,ghjk,description,1,1
-226,hjkl,description,1,1
-227,qwer,description,1,1
-228,wert,description,1,1
-229,erty,description,1,1
-230,rtyu,description,1,1
-231,tyui,description,1,1
-232,asdf,description,1,1
-233,sdfg,description,1,1
-234,dfgh,description,1,1
-235,fghj,description,1,1
-236,ghjk,description,1,1
-237,hjkl,description,1,1
-238,qwer,description,1,1
-239,wert,description,1,1
-240,erty,description,1,1
-241,rtyu,description,1,1
-242,tyui,description,1,1
-243,asdf,description,1,1
-244,sdfg,description,1,1
-245,dfgh,description,1,1
-246,fghj,description,1,1
-247,ghjk,description,1,1
-248,hjkl,description,1,1
-249,qwer,description,1,1
-250,wert,description,1,1
-251,erty,description,1,1
-252,rtyu,description,1,1
-253,tyui,description,1,1
-254,asdf,description,1,1
-255,sdfg,description,1,1
-256,dfgh,description,1,1
-257,fghj,description,1,1
-258,ghjk,description,1,1
-259,hjkl,description,1,1
-260,qwer,description,1,1
-261,wert,description,1,1
-262,erty,description,1,1
-263,rtyu,description,1,1
-264,tyui,description,1,1
-265,asdf,description,1,1
-266,sdfg,description,1,1
-267,dfgh,description,1,1
-268,fghj,description,1,1
-269,ghjk,description,1,1
-270,hjkl,description,1,1
-271,qwer,description,1,1
-272,wert,description,1,1
-273,erty,description,1,1
-274,rtyu,description,1,1
-275,tyui,description,1,1
-276,asdf,description,1,1
-277,sdfg,description,1,1
-278,dfgh,description,1,1
-279,fghj,description,1,1
-280,ghjk,description,1,1
-281,hjkl,description,1,1
-282,qwer,description,1,1
-283,wert,description,1,1
-284,erty,description,1,1
-285,rtyu,description,1,1
-286,tyui,description,1,1
-287,asdf,description,1,1
-288,sdfg,description,1,1
-289,dfgh,description,1,1
-290,fghj,description,1,1
-291,ghjk,description,1,1
-292,hjkl,description,1,1
-293,qwer,description,1,1
-294,wert,description,1,1
-295,erty,description,1,1
-296,rtyu,description,1,1
-297,tyui,description,1,1
-298,asdf,description,1,1
-299,sdfg,description,1,1
-300,dfgh,description,1,1
-301,fghj,description,1,1
-302,ghjk,description,1,1
-303,hjkl,description,1,1
-304,qwer,description,1,1
-305,wert,description,1,1
-306,erty,description,1,1
-307,rtyu,description,1,1
-308,tyui,description,1,1
-309,asdf,description,1,1
-310,sdfg,description,1,1
-311,dfgh,description,1,1
-312,fghj,description,1,1
-313,ghjk,description,1,1
-314,hjkl,description,1,1
-315,qwer,description,1,1
-316,wert,description,1,1
-317,erty,description,1,1
-318,rtyu,description,1,1
-319,tyui,description,1,1
-320,asdf,description,1,1
-321,sdfg,description,1,1
-322,dfgh,description,1,1
-323,fghj,description,1,1
-324,ghjk,description,1,1
-325,hjkl,description,1,1
-326,qwer,description,1,1
-327,wert,description,1,1
-328,erty,description,1,1
-329,rtyu,description,1,1
-330,tyui,description,1,1
-331,asdf,description,1,1
-332,sdfg,description,1,1
-333,dfgh,description,1,1
-334,fghj,description,1,1
-335,ghjk,description,1,1
-336,hjkl,description,1,1
-337,qwer,description,1,1
-338,wert,description,1,1
-339,erty,description,1,1
-340,rtyu,description,1,1
-341,tyui,description,1,1
-342,asdf,description,1,1
-343,sdfg,description,1,1
-344,dfgh,description,1,1
-345,fghj,description,1,1
-346,ghjk,description,1,1
-347,hjkl,description,1,1
-348,qwer,description,1,1
-349,wert,description,1,1
-350,erty,description,1,1
-351,rtyu,description,1,1
-352,tyui,description,1,1
-353,asdf,description,1,1
-354,sdfg,description,1,1
-355,dfgh,description,1,1
-356,fghj,description,1,1
-357,ghjk,description,1,1
-358,hjkl,description,1,1
-359,qwer,description,1,1
-360,wert,description,1,1
-361,erty,description,1,1
-362,rtyu,description,1,1
-363,tyui,description,1,1
-364,asdf,description,1,1
-365,sdfg,description,1,1
-366,dfgh,description,1,1
-367,fghj,description,1,1
-368,ghjk,description,1,1
-369,hjkl,description,1,1
-370,qwer,description,1,1
-371,wert,description,1,1
-372,erty,description,1,1
-373,rtyu,description,1,1
-374,tyui,description,1,1
-375,asdf,description,1,1
-376,sdfg,description,1,1
-377,dfgh,description,1,1
-378,fghj,description,1,1
-379,ghjk,description,1,1
-380,hjkl,description,1,1
-381,qwer,description,1,1
-382,wert,description,1,1
-383,erty,description,1,1
-384,rtyu,description,1,1
-385,tyui,description,1,1
-386,asdf,description,1,1
-387,sdfg,description,1,1
-388,dfgh,description,1,1
-389,fghj,description,1,1
-390,ghjk,description,1,1
-391,hjkl,description,1,1
-392,qwer,description,1,1
-393,wert,description,1,1
-394,erty,description,1,1
-395,rtyu,description,1,1
-396,tyui,description,1,1
-397,asdf,description,1,1
-398,sdfg,description,1,1
-399,dfgh,description,1,1
-400,fghj,description,1,1
-401,ghjk,description,1,1
-402,hjkl,description,1,1
-403,qwer,description,1,1
-404,wert,description,1,1
-405,erty,description,1,1
-406,rtyu,description,1,1
-407,tyui,description,1,1
-408,asdf,description,1,1
-409,sdfg,description,1,1
-410,dfgh,description,1,1
-411,fghj,description,1,1
-412,ghjk,description,1,1
-413,hjkl,description,1,1
-414,qwer,description,1,1
-415,wert,description,1,1
-416,erty,description,1,1
-417,rtyu,description,1,1
-418,tyui,description,1,1
-419,asdf,description,1,1
-420,sdfg,description,1,1
-421,dfgh,description,1,1
-422,fghj,description,1,1
-423,ghjk,description,1,1
-424,hjkl,description,1,1
-425,qwer,description,1,1
-426,wert,description,1,1
-427,erty,description,1,1
-428,rtyu,description,1,1
-429,tyui,description,1,1
-430,asdf,description,1,1
-431,sdfg,description,1,1
-432,dfgh,description,1,1
-433,fghj,description,1,1
-434,ghjk,description,1,1
-435,hjkl,description,1,1
-436,qwer,description,1,1
-437,wert,description,1,1
-438,erty,description,1,1
-439,rtyu,description,1,1
-440,tyui,description,1,1
-441,asdf,description,1,1
-442,sdfg,description,1,1
-443,dfgh,description,1,1
-444,fghj,description,1,1
-445,ghjk,description,1,1
-446,hjkl,description,1,1
-447,qwer,description,1,1
-448,wert,description,1,1
-449,erty,description,1,1
-450,rtyu,description,1,1
-451,tyui,description,1,1
-452,asdf,description,1,1
-453,sdfg,description,1,1
-454,dfgh,description,1,1
-455,fghj,description,1,1
-456,ghjk,description,1,1
-457,hjkl,description,1,1
-458,qwer,description,1,1
-459,wert,description,1,1
-460,erty,description,1,1
-461,rtyu,description,1,1
-462,tyui,description,1,1
-463,asdf,description,1,1
-464,sdfg,description,1,1
-465,dfgh,description,1,1
-466,fghj,description,1,1
-467,ghjk,description,1,1
-468,hjkl,description,1,1
-469,qwer,description,1,1
-470,wert,description,1,1
-471,erty,description,1,1
-472,rtyu,description,1,1
-473,tyui,description,1,1
-474,asdf,description,1,1
-475,sdfg,description,1,1
-476,dfgh,description,1,1
-477,fghj,description,1,1
-478,ghjk,description,1,1
-479,hjkl,description,1,1
-480,qwer,description,1,1
-481,wert,description,1,1
-482,erty,description,1,1
-483,rtyu,description,1,1
-484,tyui,description,1,1
-485,asdf,description,1,1
-486,sdfg,description,1,1
-487,dfgh,description,1,1
-488,fghj,description,1,1
-489,ghjk,description,1,1
-490,hjkl,description,1,1
-491,qwer,description,1,1
-492,wert,description,1,1
-493,erty,description,1,1
-494,rtyu,description,1,1
-495,tyui,description,1,1
-496,asdf,description,1,1
-497,sdfg,description,1,1
-498,dfgh,description,1,1
-499,fghj,description,1,1
-500,ghjk,description,1,1
+id,name,description,trigger
+117,Fish,Caught Your First Fish!,2
+118,,"Cast 1,000 Time",1
+119,,"Cast 10,000 Time",1
+120,,"Cast 100,000 Time",1
+121,Thats a Whole lot of Clicking,Reel In 1 Million Fish,1
+122,,Catch 100 Dirt Fish,2
+123,,"Catch 10,000 Dirt Fish",2
+124,,Catch 1 Million Dirt Fish,2
+125,Its Just A Leaf,Catch Your First Leaf Fish,2
+126,,Catch 200 Leaf Fish,2
+127,,"Catch 20,000 Leaf Fish",2
+128,,Catch 2 Million Leaf Fish,2
+129,,Catch a Rock Fish,2
+130,,Catch 300 Rock Fish,2
+131,,"Catch 30,000 Rock Fish",2
+132,,Catch 3 Million Rock Fish,2
+133,,Catch a Stick Fish,2
+134,,Catch 400 Stick Fish,2
+135,,"Catch 40,000 Stick Fish",2
+136,,Catch 4 Million Stick Fish,2
+137,How did I Catch That?,Catch a Tree Fish,2
+138,,Catch 500 Tree Fish,2
+139,,"Catch 50,000 Tree Fish",2
+140,,Catch 5 Million Tree Fish,2
+141,,special fish 1,2
+142,,special fish 2,2
+143,,special fish 3,2
+144,,Catch a Special Fish,2
+145,,Catch 100 Special Fish,2
+146,,"Catch 1,000 Special Fish",2
+147,,"Catch 10,000 Special Fish",2
+148,,"Catch 100,000 Special Fish",2
+149,Ooh Shiney,Catch a Golden Fish,2
+150,,Catch 10 Golden Fish,2
+151,,Catch 100 Golden Fish,2
+152,,"Catch 1,000 Golden Fish",2
+153,,"Catch 10,000 Golden Fish",2
+154,,Catch All the Fish in the Forest,2
+155,,Catch All the Special Fish in The Forest,2
+156,,Catch All Fish Qualities on All Fish in The Forest,2
+157,,Have 2 Premium Buffs Active at the Same Time,10
+158,,Have 3 Premium Buffs Active at the Same Time,10
+159,,Get All Three Stars on a Single Fish,2
+160,,Get All Three Stars on a Single Special Fish,2
+161,,Catch a Bronze Quality Fish,2
+162,,Catch 100 Bronze Quality Fish,2
+163,,"Catch 10,000 Bronze Quality Fish",2
+164,,"Catch 50,000 Bronze Quality Fish",2
+165,,"Catch 150,000 Bronze Quality Fish",2
+166,,Catch a Silver Quality Fish,2
+167,,Catch 100 Silver Quality Fish,2
+168,,"Catch 1,000 Silver Quality Fish",2
+169,,"Catch 10,000 Silver Quality Fish",2
+170,,"Catch 60,000 Silver Quality Fish",2
+171,,Catch a Gold Quality Fish,2
+172,,Catch 10 Gold Quality Fish,2
+173,,Catch 100 Gold Quality Fish,2
+174,,"Catch 1,000 Gold Quality Fish",2
+175,,"Catch 10,000 Gold Quality Fish",2
+176,Woah Thats A Big Fish,Catch the Biggest Size of a Fish,2
+177,,Catch the Smallest Size of a Fish,2
+178,,Catch the Biggest Size of All Fish in the Forest,2
+179,,Max Out a Singular Fish (Max Size and All Qualities),2
+180,,Catch Max Size and All Qualities of All Fish in the Forest,2
+181,,"Make 1,000 Money",4
+182,,"Make 100,000 Money",4
+183,,Make 1 Million Money,4
+184,,Make 100 Million Money,4
+185,,Make 1 Billion Money,4
+186,,Make 100 Billion Money,4
+187,,Make 1 Trillion Money,4
+188,Passive Income,Make 1 Money Per Second,5
+189,Time To Retire,Make 10 Money Per Second,5
+190,,Make 100 Money Per Second,5
+191,,"Make 1,000 Money Per Second",5
+192,Financial Freedom,"Make 10,000 Money Per Second",5
+193,Automation!,Purchase Your First Auto Fisher,6
+194,,Purchase 5 Auto Fishers,6
+195,,Purchase All Auto Fishers in the Forest,6
+196,,Max Upgrade an Auto Fisher,7
+197,,Max Upgrade 5 Auto Fishers,7
+198,,Max Upgrade All Auto Fishers in the Forest,7
+199,Hey I'm Learnin' Here,Fish in a Fish School,8
+200,,Fish in 500 Fish Schools,8
+201,,"Fish in 10,000 Fish Schools",8
+202,How was I catching Fish Before?,Purchase Your First Bait,9
+203,Master of All Baits,Purchase All Baits,9
+204,Doggy!,Unlock A Pet,3
+205,Lots of Doggies!,Buy All Pets,3
+206,Hello! My Name is George!,Hire Fish Transporter,11
+207,,Max Upgrade Fish Transporter,11

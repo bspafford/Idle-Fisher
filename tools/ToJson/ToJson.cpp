@@ -83,10 +83,10 @@ template <typename T> void readData(std::unordered_map<uint32_t, T>* a, std::vec
             bool pOpen = false;
             std::string listString = "";
             while (std::getline(s, word, ',')) {
-                if (word.size() >= 3 && word[0] == '"' && word[1] == '(') { // makes sure string looks like '"(1'
+                if (word.size() >= 3 && word[0] == '"') { // makes sure string looks like '"(1'
                     pOpen = true;
                     listString.append(word + ",");
-                } else if (word.size() >= 3 && word[word.size() - 1] == '"' && word[word.size() - 2] == ')') { // makes sure string looks like '1)"'
+                } else if (!word.empty() && word[word.size() - 1] == '"') { // makes sure string looks like '1)"'
                     pOpen = false;
                     listString.append(word);
                     // remove first and last char because they are "

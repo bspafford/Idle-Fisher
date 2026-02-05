@@ -27,7 +27,7 @@
 #include "comboWidget.h"
 #include "achievementWidget.h"
 #include "journal.h"
-#include "fishUnlocked.h"
+#include "achievementUnlockWidget.h"
 #include "UIWidget.h"
 #include "idleProfitWidget.h"
 #include "newRecordWidget.h"
@@ -237,7 +237,7 @@ void Main::setupWidgets() {
 	comboWidget = std::make_unique<UcomboWidget>(nullptr);
 	achievementWidget = std::make_unique<UachievementWidget>(nullptr);
 	journal = std::make_unique<Ujournal>(nullptr);
-	fishUnlocked = std::make_unique<UfishUnlocked>(nullptr);
+	achievementUnlocked = std::make_unique<UachievementUnlockWidget>(nullptr);
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
 	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
@@ -329,8 +329,8 @@ void Main::draw(Shader* shaderProgram) {
 	shaderProgram->Activate();
 	Scene::draw(shaderProgram);
 
-	if (fishUnlocked)
-		fishUnlocked->draw(shaderProgram);
+	if (achievementUnlocked)
+		achievementUnlocked->draw(shaderProgram);
 
 	// draw collision
 	//collision::showCollisionBoxes(Scene::lineShader);
@@ -365,8 +365,8 @@ void Main::checkInputs() {
 	if (Input::getKeyDown(GLFW_KEY_K))
 		SaveData::save();
 	if (Input::getKeyDown(GLFW_KEY_J)) {
-		SaveData::saveData.currencyList.at(53u).numOwned += 1e29;
-		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1e29;
+		SaveData::saveData.currencyList.at(53u).numOwned += 1e100;
+		SaveData::saveData.currencyList.at(53u).totalNumOwned += 1e100;
 
 		/*for (auto& [currencyId, currencyData] : SaveData::saveData.currencyList) {
 			currencyData.numOwned += 1000;

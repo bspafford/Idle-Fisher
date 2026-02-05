@@ -9,6 +9,7 @@
 #include "animation.h"
 #include "collision.h"
 #include "fishTransporter.h"
+#include "achievement.h"
 
 // widget
 #include "currencyWidget.h"
@@ -72,8 +73,8 @@ void buyAutoFisher::spawnAutoFisher() {
 
 	//vector loc = Main::autoFisherLocs[(int)Main::autoFisherList.size()];
 	std::unique_ptr<AautoFisher> autoFisher = std::make_unique<AautoFisher>(calcAutoFisherId()); // int(world::autoFisherList.size())
-	autoFisher->startFishing();
 	SaveData::saveData.progressionData.at(autoFisher->id).level++; // level should be 1 when purchased
+	autoFisher->startFishing();
 
 	world::currWorld->autoFisherList.push_back(std::move(autoFisher));
 
@@ -88,6 +89,8 @@ void buyAutoFisher::spawnAutoFisher() {
 		std::cout << "max autofishers" << std::endl;
 		collision::removeCollisionObject(collision.get());
 	}
+
+	Achievements::CheckGroup(AchievementTrigger::PurchaseAutoFisher);
 }
 
 uint32_t buyAutoFisher::calcAutoFisherId() {

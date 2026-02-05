@@ -13,6 +13,7 @@
 #include "idleProfitWidget.h"
 #include "text.h"
 #include "shortNumbers.h"
+#include "achievement.h"
 
 #include "debugger.h"
 
@@ -336,9 +337,14 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 		autoFisher->afMoreInfoUI->updateUI();
 	} else { // sell fish
 		// give player currency
-		SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned += calcCurrencyHeld();
-		SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).totalNumOwned += calcCurrencyHeld();
+		FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
+		double currencyHeld = calcCurrencyHeld();
+		currencyData.numOwned += currencyHeld;
+		currencyData.totalNumOwned += currencyHeld;
 		holding.clear();
+
+		Achievements::CheckGroup(AchievementTrigger::CurrencyEarned);
+
 		Main::currencyWidget->updateList();
 		// update the ui so the upgrade button enables if have enough money
 		for (int i = 0; i < world::currWorld->autoFisherList.size(); i++)

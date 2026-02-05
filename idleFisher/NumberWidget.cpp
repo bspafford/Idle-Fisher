@@ -82,4 +82,7 @@ void NumberData::MakeNumberString(double value, NumberType type, std::string& te
 		color = glm::vec4(1, 1, 0, 1); // yellow
 		break;
 	}
+
+	if (value == 0)
+		color = glm::vec4(0.5, 0.5, 0.5, 1);
 }

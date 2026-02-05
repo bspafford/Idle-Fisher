@@ -268,26 +268,35 @@ double Upgrades::Recalculate(Stat stat) {
 	if (inserted) // debug
 		std::cout << "Stat: '" << static_cast<int>(stat) << "' was not in ModifiersPerStat map, but adding anyways\n";
 
-	double cachedValue = 0.0;
+	double sum = 0.0;
+	double product = 1.0;
 	for (uint32_t upgradeId : it->second) { // recalculate all modifiers of stat
 		ModifierNode& mod = SaveData::data.modifierData.at(upgradeId);
-		SaveEntry& saveProgressNode = SaveData::saveData.progressionData.at(mod.id);
+
+		// if id is not in progression map, then check achievement map
+		auto it = SaveData::saveData.progressionData.find(mod.id);
+		SaveEntry& saveEntry = it != SaveData::saveData.progressionData.end() ? it->second : SaveData::saveData.achievementList.at(mod.id);
 
 		if (!IsModifierActive(mod))
 			continue; // continue if modifier is not active
 
 		ModData& modData = mod.stats.at(stat);
 
-		double value = std::pow((modData.effect.base + modData.effect.add * saveProgressNode.level) * std::pow(modData.effect.mul, saveProgressNode.level), modData.effect.exp);
+		double value = std::pow((modData.effect.base + modData.effect.add * saveEntry.level) * std::pow(modData.effect.mul, saveEntry.level), modData.effect.exp);
 
-		if (modData.buffType == ModifierType::Buff)
-			cachedValue += value;
-		else if (modData.buffType == ModifierType::Debuff)
-			cachedValue -= value;
+		if (modData.applyType == ApplyType::Add) {
+			if (modData.buffType == ModifierType::Buff)
+				sum += value;
+			else if (modData.buffType == ModifierType::Debuff)
+				sum -= value;
+		} else if (modData.applyType == ApplyType::Multiply) {
+			product *= value;
+		}
 	}
 
-	cachedValues[stat] = cachedValue; // add updated value to cache
-	return cachedValue;
+	double final = sum * product;
+	cachedValues[stat] = final; // add updated value to cache
+	return final;
 }
 
 double Upgrades::GetRecalculatedPrice(uint32_t upgradeId) {

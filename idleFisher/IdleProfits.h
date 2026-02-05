@@ -5,6 +5,7 @@
 #include "fishTransporter.h"
 #include "AautoFisher.h"
 #include "main.h"
+#include "achievement.h"
 
 class IdleProfits {
 private:
@@ -22,6 +23,8 @@ private:
 			std::unordered_map<uint32_t, FsaveFishData> fishList = world::currWorld->fishTransporter->FillWithRandomFish(currencyMade, false);
 			Main::idleProfitWidget->setup(fishList);
 		}
+
+		Achievements::CheckGroup(AchievementTrigger::CurrencyEarned);
 	}
 	
 public:

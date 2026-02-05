@@ -9,7 +9,7 @@
 Apet::Apet(ModifierNode* pet, vector loc) {
 	this->pet = pet;
 	EquipPet(pet);
-	img = std::make_unique<Image>("images/pets/" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
+	img = std::make_unique<Image>("images/pets/pet" + std::to_string(pet->id) + ".png", vector{ 0, 0 }, false);
 	setLoc(loc);
 
 	Astar = std::make_unique<AStar>();

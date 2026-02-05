@@ -8,7 +8,9 @@
 
 enum class Stat;
 enum class ModifierType;
+enum class ApplyType;
 enum class ModifierActivation;
+enum class AchievementTrigger;
 
 enum Resolution {
     RES_NATIVE,
@@ -62,9 +64,10 @@ struct ProgressionNode {
 struct ModData {
     Stat stat;
     ModifierType buffType;
+    ApplyType applyType;
     ScalingFormula effect;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ModData, stat, buffType, effect);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ModData, stat, buffType, applyType, effect);
 
     static std::unordered_map<Stat, ModData> ParseData(const std::string& input) {
         std::unordered_map<Stat, ModData> stats;
@@ -95,16 +98,18 @@ struct ModData {
             std::stringstream ss(tuple);
             ModData m;
 
-            int stat, type;
+            int stat, buffType, applyType;
             ss >> stat; ss.ignore(1);
-            ss >> type; ss.ignore(1);
+            ss >> buffType; ss.ignore(1);
+            ss >> applyType; ss.ignore(1);
             ss >> m.effect.base; ss.ignore(1);
             ss >> m.effect.add;  ss.ignore(1);
             ss >> m.effect.mul;  ss.ignore(1);
             ss >> m.effect.exp;
 
             m.stat = static_cast<Stat>(stat);
-            m.buffType = static_cast<ModifierType>(type);
+            m.buffType = static_cast<ModifierType>(buffType);
+            m.applyType = static_cast<ApplyType>(applyType);
 
             stats.insert({ m.stat, m });
         }
@@ -173,8 +178,9 @@ struct FsaveFishData {
     // 0 = normal, 1 = bronze, 2 = silver, 3 = gold
     std::vector<double> totalNumOwned = std::vector<double>(4);
     int biggestSizeCaught = 0;
+    int smallestSizeCaught = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishData, id, unlocked, numOwned, totalNumOwned, biggestSizeCaught);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveFishData, id, unlocked, numOwned, totalNumOwned, biggestSizeCaught, smallestSizeCaught);
 
     double calcTotalCaughtFish() {
         double total = 0;
@@ -235,21 +241,19 @@ struct FsaveAutoFisherStruct {
 };
 
 struct FachievementStruct {
-    uint32_t id;
+    uint32_t id; // progression/overall id (not in progression list tho)
     std::string name;
     std::string description;
-    Stat stat; // what they buff
-	double weight; // how much they buff
+    AchievementTrigger trigger; // what action would trigger this achievment to be unlocked
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
-		stat = static_cast<Stat>(std::stoi(row[3]));
-		weight = std::stod(row[4]);
+        trigger = static_cast<AchievementTrigger>(std::stoi(row[3]));
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FachievementStruct, id, name, description, stat, weight);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FachievementStruct, id, name, description, trigger);
 };
 
 struct FrebirthStruct {
@@ -422,7 +426,7 @@ struct ForderedData {
     std::vector<uint32_t> vaultUnlockData;
 	std::vector<uint32_t> fishingRodData;   // progression ids
     std::vector<uint32_t> baitData;         // progression ids
-    std::vector<uint32_t> achievementData;
+    std::vector<uint32_t> achievementData;  // progression id
     std::vector<uint32_t> rebirthData;
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ForderedData, fishData, goldenFishData, currencyData, upgradeData, worldData, mechanicStruct, autoFisherData, petData, vaultUnlockData, fishingRodData, baitData, achievementData, rebirthData);
@@ -432,6 +436,9 @@ struct FsaveData {
     // stored in milliseconds
     long long startTime;
     long long lastPlayed;
+
+    unsigned long long clicks = 0; // how many times the player has clicked to catch a fish
+    unsigned long long fishFromSchools = 0; // how many fish from fish schools the player has caught
 
     // player loc
     vector playerLoc = { 730, 490 };
@@ -464,7 +471,7 @@ struct FsaveData {
     double rebirthCurrency = 0;
     double totalRebirthCurrency = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, progressionData, npcSave,
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsaveData, startTime, lastPlayed, clicks, fishFromSchools, playerLoc, currWorld, prevWorld, fishData, currencyList, currencyConversionList, progressionData, npcSave,
         autoFisherList, equippedPetId, vaultUnlockList, equippedBaitId, achievementList, rebirthList, rebirthCurrency, totalRebirthCurrency);
 };
 

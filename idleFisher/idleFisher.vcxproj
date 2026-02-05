@@ -234,7 +234,7 @@
     <ClCompile Include="fishNumWidget.cpp" />
     <ClCompile Include="fishSchool.cpp" />
     <ClCompile Include="fishTransporter.cpp" />
-    <ClCompile Include="fishUnlocked.cpp" />
+    <ClCompile Include="achievementUnlockWidget.cpp" />
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
     <ClInclude Include="Anchor.h" />
@@ -357,7 +357,7 @@
     <ClInclude Include="fishNumWidget.h" />
     <ClInclude Include="fishSchool.h" />
     <ClInclude Include="fishTransporter.h" />
-    <ClInclude Include="fishUnlocked.h" />
+    <ClInclude Include="achievementUnlockWidget.h" />
     <ClInclude Include="fps.h" />
     <ClInclude Include="heldFishWidget.h" />
     <ClInclude Include="horizontalBox.h" />

@@ -10,14 +10,13 @@ class Image;
 struct FachievementStruct;
 class text;
 
-class UfishUnlocked : public widget {
+class UachievementUnlockWidget : public widget {
 public:
-	UfishUnlocked(widget* parent);
-	~UfishUnlocked();
+	UachievementUnlockWidget(widget* parent);
+	~UachievementUnlockWidget();
 	void draw(Shader* shaderProgram);
 
-	void start(FfishData fish);
-	void start(FachievementStruct* achievement);
+	void start(const FachievementStruct& achievement);
 	void setupLocs() override;
 
 private:

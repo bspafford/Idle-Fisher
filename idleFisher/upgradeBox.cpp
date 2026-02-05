@@ -14,6 +14,7 @@
 #include "verticalBox.h"
 #include "merchantWidget.h"
 #include "fishermanWidget.h"
+#include "achievement.h"
 
 #include "debugger.h"
 
@@ -190,6 +191,8 @@ void UupgradeBox::buyUpgrade() {
 	if (saveProgressNode->level < progressNode->maxLevel && !Upgrades::LevelUp(progressNode->id)) // if not max level, and don't have enough currency
 		return; // didn't have enough money to purchase upgrade
 
+	Achievements::CheckGroup(AchievementTrigger::CurrencyPerSecond);
+
 	// will equip the item or object once the layer has unlocked it, instead of needing to click twice
 	if (savePetStruct && !savePetStruct->level)
 		spawnPet();
@@ -201,6 +204,8 @@ void UupgradeBox::buyUpgrade() {
 			callback();
 
 		if (petStruct) {
+			Achievements::CheckGroup(AchievementTrigger::PetPurchased);
+
 			// since happening after function its gotta be reversed
 			if (Scene::pet.get() && petStruct == Scene::pet->getPetStruct()) {
 				NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
@@ -216,6 +221,8 @@ void UupgradeBox::buyUpgrade() {
 				buttonPriceText->setText("equip");
 			}
 		} else if (baitStruct) {
+			Achievements::CheckGroup(AchievementTrigger::BaitPurchased);
+
 			// since happening after function its gotta be reversed
 			if (baitStruct->id == SaveData::saveData.equippedBaitId) {
 				UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);

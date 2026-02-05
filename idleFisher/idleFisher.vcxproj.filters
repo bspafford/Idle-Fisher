@@ -236,7 +236,7 @@
     <ClCompile Include="heldFishWidget.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="fishUnlocked.cpp">
+    <ClCompile Include="achievementUnlockWidget.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
     <ClCompile Include="fishNumWidget.cpp">
@@ -586,7 +586,7 @@
     <ClInclude Include="heldFishWidget.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="fishUnlocked.h">
+    <ClInclude Include="achievementUnlockWidget.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
     <ClInclude Include="fishNumWidget.h">

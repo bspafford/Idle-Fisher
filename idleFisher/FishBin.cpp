@@ -7,6 +7,7 @@
 #include "AautoFisher.h"
 #include "autoFisherUI.h"
 #include "upgrades.h"
+#include "achievement.h"
 
 // widget
 #include "heldFishWidget.h"
@@ -27,15 +28,19 @@ void FishBin::sellFish() {
 	for (auto& [fishId, currSaveFish] : SaveData::saveData.fishData) {
 		FfishData* currFish = &SaveData::data.fishData.at(fishId);
 
+		FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(currFish->worldId);
 		for (int j = 0; j < currSaveFish.numOwned.size(); j++) {
 			double currencyGained = currSaveFish.numOwned[j] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, j));
 			if (currencyGained > 0)
-				SaveData::saveData.currencyList[currFish->worldId].unlocked = true;
-			SaveData::saveData.currencyList[currFish->worldId].numOwned += currencyGained;
-			SaveData::saveData.currencyList[currFish->worldId].totalNumOwned += currencyGained;
+				currencyData.unlocked = true;
+			currencyData.numOwned += currencyGained;
+			currencyData.totalNumOwned += currencyGained;
 			currSaveFish.numOwned[j] = 0;
 		}
 	}
+
+	Achievements::CheckGroup(AchievementTrigger::CurrencyEarned);
+
 
 	Main::heldFishWidget->updateList(true);
 	Main::currencyWidget->updateList();

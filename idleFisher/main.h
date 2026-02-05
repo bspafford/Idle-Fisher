@@ -28,7 +28,7 @@
 #include "comboWidget.h"
 #include "achievementWidget.h"
 #include "journal.h"
-#include "fishUnlocked.h"
+#include "achievementUnlockWidget.h"
 #include "UIWidget.h"
 #include "idleProfitWidget.h"
 #include "newRecordWidget.h"
@@ -65,7 +65,7 @@ public:
 	static inline std::unique_ptr<UcomboWidget> comboWidget;
 	static inline std::unique_ptr<UachievementWidget> achievementWidget;
 	static inline std::unique_ptr<Ujournal> journal;
-	static inline std::unique_ptr<UfishUnlocked> fishUnlocked;
+	static inline std::unique_ptr<UachievementUnlockWidget> achievementUnlocked;
 	static inline std::unique_ptr<UUIWidget> UIWidget;
 	static inline std::unique_ptr<UidleProfitWidget> idleProfitWidget;
 	static inline std::unique_ptr<UnewRecordWidget> newRecordWidget;

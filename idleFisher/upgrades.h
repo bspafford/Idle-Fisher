@@ -74,6 +74,11 @@ enum class ModifierActivation {
 	Equipped = 2,
 };
 
+enum class ApplyType {
+	Add = 1, // flat values
+	Multiply = 2, // percent based
+};
+
 struct StatContext {
 	Stat stat = Stat::None;
 	uint32_t id = 0; // id of the context, fish id, bait id, pet id, upgrade id, vault unlock id

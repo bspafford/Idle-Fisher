@@ -13,6 +13,7 @@
 #include "worlds.h"
 #include "fishTransporter.h"
 #include "upgrades.h"
+#include "achievement.h"
 
 #include "debugger.h"
 
@@ -209,15 +210,14 @@ void UmechanicWidget::setupLocs() {
 }
 
 void UmechanicWidget::buyFishTransporter() {
-
 	if (Upgrades::LevelUp(mechanicStruct->id)) {
-
 		// spawn the fish transproter
 		world::currWorld->spawnFishTransporter();
 		fishTransporterImg->setColorMod(glm::vec4(1));
 
 		// update the widget
 		update();
+		Achievements::CheckGroup(AchievementTrigger::FishTransporter);
 	}
 }
 
@@ -253,6 +253,7 @@ void UmechanicWidget::upgradeFishTransporter() {
 		if (world::currWorld->fishTransporter)
 			world::currWorld->fishTransporter->SetStats();
 		update();
+		Achievements::CheckGroup(AchievementTrigger::FishTransporter);
 	}
 }
 
