@@ -62,6 +62,7 @@ public:
 	static inline Shader* blurShader;
 	static inline Shader* fishingLineShader;
 	static inline Shader* lineShader;
+	static inline Shader* grassShader;
 
 private:
 	static void CreateShaders();

@@ -93,6 +93,8 @@
     <None Include="lineShader.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="grass.vert" />
+    <None Include="grass.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">

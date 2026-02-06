@@ -184,6 +184,8 @@
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="fishingLineShader.frag" />
+    <None Include="grass.frag" />
+    <None Include="grass.vert" />
     <None Include="lineShader.frag" />
     <None Include="lineShader.vert" />
     <None Include="shadowMap.frag" />

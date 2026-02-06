@@ -34,6 +34,7 @@ void Scene::Destructor() {
 	delete blurShader;
 	delete fishingLineShader;
 	delete lineShader;
+	delete grassShader;
 }
 
 void Scene::openLevel(uint32_t worldId, WorldLoc _worldChangeLoc, bool _overrideIfInWorld, bool _isStartup) {
@@ -238,6 +239,7 @@ void Scene::CreateShaders() {
 	blurShader = new Shader("blurShader.vert", "blurShader.frag");
 	fishingLineShader = new Shader("2dShader.vert", "fishingLineShader.frag");
 	lineShader = new Shader("lineShader.vert", "lineShader.frag");
+	grassShader = new Shader("grass.vert", "grass.frag");
 
 	Shader::CleanUp();
 
