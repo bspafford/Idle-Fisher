@@ -290,6 +290,8 @@ double Upgrades::Recalculate(Stat stat) {
 			else if (modData.buffType == ModifierType::Debuff)
 				sum -= value;
 		} else if (modData.applyType == ApplyType::Multiply) {
+			if (value == 0) // don't multiply by 0, can happen when achievement level == 0
+				continue;
 			product *= value;
 		}
 	}

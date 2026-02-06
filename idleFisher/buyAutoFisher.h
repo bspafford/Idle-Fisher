@@ -41,4 +41,6 @@ private:
 	std::unique_ptr<Fcollision> collision;
 
 	uint32_t calcAutoFisherId();
+
+	void AnimUpdate(int frame);
 };

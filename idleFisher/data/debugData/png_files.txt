@@ -1069,8 +1069,8 @@ images/worlds/demo/canopyPole.png
 images/worlds/demo/mechanicShop.png
 images/worlds/demo/picnicTable.png
 images/worlds/demo/bridgePole.png
-images/worlds/demo/tree.png
-images/worlds/demo/bush.png
+images/worlds/demo/treeSpriteSheet.png
+images/worlds/demo/bushSpriteSheet.png
 images/worlds/demo/reflections.png|b
 images/worlds/demo/underwater.png|b
 images/worlds/demo/depthmap.png|b

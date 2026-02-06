@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widget.h"
+#include "shake.h"
 
 class text;
 
@@ -8,12 +9,6 @@ class UcomboWidget : public widget {
 public:
 	UcomboWidget(widget* parent);
 	~UcomboWidget();
-
-	void setupLocs() override;
-
-	void tempIncrease();
-	void tempSame();
-	void tempBreak();
 
 	void spawnComboNumber();
 
@@ -30,4 +25,5 @@ public:
 	void draw(Shader* shaderProgram);
 
 	std::unique_ptr<text> comboText;
+	std::unique_ptr<Eshake> shake;
 };

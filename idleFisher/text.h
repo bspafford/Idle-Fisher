@@ -49,8 +49,6 @@ public:
 
 	void setLocAndSize(vector loc, vector size) override;
 	void setLoc(vector loc) override;
-	// anchor::...
-	void setAnchor(Anchor xAnchor, Anchor yAnchor);
 
 	// used when changing the font from pixel to normal or vice versa
 	static void changeFontAll();
@@ -94,10 +92,6 @@ private:
 	glm::vec4 colorMod = glm::vec4(1.f);
 
 	std::unique_ptr<FBO> fbo;
-
-	vector absoluteLoc;
-	Anchor xAnchor = ANCHOR_LEFT;
-	Anchor yAnchor = ANCHOR_TOP;
 
 	bool hasDropChar = false;
 

@@ -16,7 +16,7 @@ Apet::Apet(ModifierNode* pet, vector loc) {
 }
 
 Apet::~Apet() {
-	SaveData::saveData.equippedPetId = 0;
+	
 }
 
 void Apet::update(float deltaTime) {

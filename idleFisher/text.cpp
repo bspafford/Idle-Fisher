@@ -313,17 +313,6 @@ void text::setLoc(vector loc) {
 	absoluteLoc = textAlignOffset - pivotLoc;
 }
 
-void text::setAnchor(Anchor xAnchor, Anchor yAnchor) {
-	if (useWorldPos) {
-		std::cout << "This is a world object, it doesn't work";
-		return;
-	}
-
-	this->xAnchor = xAnchor;
-	this->yAnchor = yAnchor;
-	setLoc(loc);
-}
-
 vector text::getSize() {
 	return fbo ? fbo->GetSize() : getFBOSize();
 }

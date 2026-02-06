@@ -206,55 +206,36 @@ void UupgradeBox::buyUpgrade() {
 		if (petStruct) {
 			Achievements::CheckGroup(AchievementTrigger::PetPurchased);
 
-			// since happening after function its gotta be reversed
-			if (Scene::pet.get() && petStruct == Scene::pet->getPetStruct()) {
-				NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
-				if (npcWidget)
-					for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
-						widget* child = npcWidget->upgradeHolder->GetChildAt(i).child;
-						UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
-						if (upgradeBox && upgradeBox->savePetStruct->level)
-							upgradeBox->buttonPriceText->setText("equip");
-					}
-				buttonPriceText->setText("remove");
-			} else {
-				buttonPriceText->setText("equip");
-			}
+			NPCwidget* npcWidget = dynamic_cast<NPCwidget*>(NPCWidget);
+			if (npcWidget)
+				for (int i = 0; i < npcWidget->upgradeHolder->GetChildrenCount(); i++) {
+					widget* child = npcWidget->upgradeHolder->GetChildAt(i).child;
+					UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
+					if (upgradeBox && upgradeBox->savePetStruct->level)
+						upgradeBox->buttonPriceText->setText("equip");
+				}
+			buttonPriceText->setText("remove");
 		} else if (baitStruct) {
 			Achievements::CheckGroup(AchievementTrigger::BaitPurchased);
 
-			// since happening after function its gotta be reversed
-			if (baitStruct->id == SaveData::saveData.equippedBaitId) {
-				UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);
-				if (fishermanWidget) {
-					for (int i = 0; i < fishermanWidget->baitHolderList->GetChildrenCount(); i++) {
-						widget* child = fishermanWidget->baitHolderList->GetChildAt(i).child;
-						UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
-						if (upgradeBox && upgradeBox->saveBaitStruct->level)
-							upgradeBox->buttonPriceText->setText("equip");
-					}
+			UfishermanWidget* fishermanWidget = dynamic_cast<UfishermanWidget*>(NPCWidget);
+			if (fishermanWidget) {
+				for (int i = 0; i < fishermanWidget->baitHolderList->GetChildrenCount(); i++) {
+					widget* child = fishermanWidget->baitHolderList->GetChildAt(i).child;
+					UupgradeBox* upgradeBox = dynamic_cast<UupgradeBox*>(child);
+					if (upgradeBox && upgradeBox->saveBaitStruct->level)
+						upgradeBox->buttonPriceText->setText("equip");
 				}
-				buttonPriceText->setText("remove");
-				// then remove pet
-			} else {
-
-				//buttonPriceText->setText("equip");
 			}
-
-		} else {
-			//buyButton->enable(false);
-			//buttonPriceText->setText("Max");
-			//setupLocs(); // updates the locks of the button and the upgrade text
+			buttonPriceText->setText("remove");
 		}
 	}
-	
+
 	update();
 	Main::heldFishWidget->updateList(true); // update held fish widget, incase something like an upgrade affects it
 }
 
 void UupgradeBox::update() {
-	
-
 	if (upgradeText)
 		upgradeText->setText(std::to_string(saveProgressNode->level) + "/" + std::to_string(progressNode->maxLevel));
 
@@ -287,10 +268,12 @@ void UupgradeBox::openWorld() {
 void UupgradeBox::spawnPet() {
 	// remove already existing pet
 	// set pet
-	if (!Scene::pet.get() || Scene::pet && petStruct->id != Scene::pet->getPetStruct()->id) {
+	if (!Scene::pet.get() || (Scene::pet && petStruct->id != Scene::pet->getPetStruct()->id)) {
+		SaveData::saveData.equippedPetId = petStruct->id;
 		Scene::pet = std::make_unique<Apet>(petStruct, vector{ 400, -200 });
 	} else if (Scene::pet && petStruct->id == Scene::pet->getPetStruct()->id) {
 		Scene::pet.reset();
+		SaveData::saveData.equippedPetId = 0;
 	}
 
 	Main::heldFishWidget->updateList(true);

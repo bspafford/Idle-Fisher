@@ -22,11 +22,13 @@ buyAutoFisher::buyAutoFisher(vector loc) {
 	plusData.insert({ "normal", animDataStruct({0, 0}, {7, 0}, true) });
 	plusData.insert({ "hover", animDataStruct({0, 1}, {7, 1}, true) });
 	plusAnim = std::make_unique<animation>("autoFisher/buyer.png", 26, 46, plusData, true);
+	plusAnim->addFrameCallback(this, &buyAutoFisher::AnimUpdate);
 	plusAnim->setAnimation("normal");
 	plusAnim->start();
 
 	price = calcPrice();
 	priceText = std::make_unique<text>(nullptr, shortNumbers::convert2Short(price), "bold", loc, true, true);
+	priceText->SetPivot(vector(0.5f, 0.f));
 
 	updateLoc();
 	setupCollision();
@@ -56,6 +58,12 @@ void buyAutoFisher::draw(Shader* shaderProgram) {
 
 	calcIfPlayerInFront();
 	plusAnim->draw(shaderProgram);
+
+	if (SaveData::saveData.currencyList.at(53u).numOwned >= calcPrice())
+		priceText->setTextColor(glm::vec4(1));
+	else
+		priceText->setTextColor(glm::vec4(1, 0, 0, 1));
+
 	priceText->draw(shaderProgram);
 }
 
@@ -111,8 +119,7 @@ uint32_t buyAutoFisher::calcAutoFisherId() {
 }
 
 double buyAutoFisher::calcPrice() {
-	// 10 * 1.6^x
-	return 10 * pow(1.6, (int)world::currWorld->autoFisherList.size());
+	return (1000 + 500 * world::currWorld->autoFisherList.size()) * pow(3, (int)world::currWorld->autoFisherList.size());
 }
 
 bool buyAutoFisher::hasCurrency() {
@@ -142,7 +149,7 @@ void buyAutoFisher::updateLoc() {
 
 		FautoFisherStruct& afData = SaveData::data.autoFisherData.at(nextAfId);
 		plusAnim->setLoc(vector(afData.xLoc, afData.yLoc));
-		priceText->setLoc(plusAnim->getLoc() + vector(0, plusAnim->GetCellSize().y - 6.f));
+		AnimUpdate(plusAnim->GetCurrFrameLoc().x);
 	}
 
 
@@ -186,4 +193,12 @@ bool buyAutoFisher::calcMaxAutoFishers() {
 	}
 
 	return world::currWorld->autoFisherList.size()  >= maxAutoFishers;
+}
+
+void buyAutoFisher::AnimUpdate(int frame) {
+	if (!priceText)
+		return;
+
+	std::vector<float> y{ 0, 2, 3, 2, 0, -2, -3, -2 };
+	priceText->setLoc(plusAnim->getLoc() + vector(15.f, 13.f + y[frame]));
 }
