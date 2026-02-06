@@ -34,14 +34,17 @@ vec2 rand2(inout uint state) {
 	return vec2(rand(state), rand(state));
 }   
 
-mat2 rotation2D(float a) {
+vec2 rotation2D(vec2 p, float a) {
+	vec2 pivot = vec2(0.5, 0);
+	p -= pivot;
 	float s = sin(a);
-	float c = cos(a);
-
-	return mat2(
-		c, -s,
-		s,  c
-	);
+    float c = cos(a);
+    vec2 rotated = vec2(
+        c * p.x - s * p.y,
+        s * p.x + c * p.y
+    );
+	rotated += pivot;
+	return rotated;
 }
 
 void main() {
@@ -49,41 +52,61 @@ void main() {
 
 	uint seed = initRNG(id);
 
-	vec2 tempSize = vec2(22, 21);
+	int grassNum = 2;
+	vec2 grassSize = vec2(22, 21);
 
-	float randVal = rand(seed);
-	tempSize.y *= mix(0.75, 1.25, randVal);
-	if (randVal >= 0.99f)
-		isAccent = 1;
-
-
-	float radius = 150.f;
 	vec2 randLoc = rand2(seed) * screenSize;
-	float windRot = sin(randLoc.x + time / 1000.f) / 10.f;
-	vec2 windPos = rotation2D(windRot) * aPos;
-	vec2 newLoc = windPos * tempSize * pixelSize + randLoc - playerPos;
-	float xDist = distance(randLoc.x - playerPos.x, screenSize.x / 2.f);
-	float yDist = distance(randLoc.y - playerPos.y, screenSize.y / 2.f) * 2.f;
-	if (xDist*xDist + yDist*yDist < radius*radius) {
-		float newYSize = 0;
-		if (randLoc.y - playerPos.y < screenSize.y / 2.f)
-			newYSize = tempSize.y * mix(0.75, 1.f, yDist / radius); // if player below, it should stretch, otherwise getsmaller
-		else
-			newYSize = tempSize.y * mix(1.25f, 1.f, yDist / radius); // if player below, it should stretch, otherwise getsmaller
 
-		tempSize = mix(vec2(tempSize.x, newYSize), tempSize, xDist / radius);
+	float maxYScale = 0.25f;
+	float maxRotX = 1.f;
+	float radius = 150.f;
 
-		vec2 rotPos = vec2(0, 0);
-		if (randLoc.x - playerPos.x < screenSize.x / 2.f)
-			rotPos = rotation2D(xDist / radius-1) * aPos;
-		else
-			rotPos = rotation2D(1-xDist / radius) * aPos;
-		rotPos = mix(rotPos, windPos, yDist / radius);
+	vec2 grassLoc = randLoc - playerPos;
+	vec2 charLoc = screenSize / 2.f;
+    vec2 delta = grassLoc - charLoc;
 
-		newLoc = rotPos * tempSize * pixelSize + randLoc - playerPos; // make this only effect x dir
-	}
+    // Isometric scaling
+    delta.y *= 2.f;
 
-	gl_Position = projection * vec4(newLoc, 1 - randLoc.y / screenSize.y, 1.0);
-	texCoord = aTexCoord;
+    float dist = length(delta);
+    float fade = 1.0 - clamp(dist / radius, 0.0, 1.0); // how strong the effect should be at this distance
+
+	// how far from center
+    float ax = abs(delta.x);
+    float ay = abs(delta.y);
+
+    float verticalMask   = ay / (ax + ay + 1e-5); // up/down, [0,1] how vertical is this direction compared to horizontal, above and below = 1, left and right = 0
+    float horizontalMask = 1.0 - verticalMask;    // left/right, inverse of vertical mask
+
+    // Apply deformation
+    vec2 pos = vec2(aPos);
+
+    // X-axis rotation (stronger above/below)
+    float rotX = maxRotX * verticalMask * fade; // max stretch * how up or down * how close to center
+	rotX *= charLoc.x < grassLoc.x ? -1 : 1; // invert rotation is character is on left
+
+	// wind
+	float fps = 3.f;
+	float roundedTime = floor((time + rand(seed)) * fps) / fps; // rand for a random offset so all grass isn't on the same update time, so it doesn't look laggy
+	float windRot = sin(randLoc.x + roundedTime) / 10.f;
+
+	pos = rotation2D(pos, windRot + rotX);
+
+    // Y-axis stretch (stronger left/right)
+    float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
+    pos.y *= charLoc.y < grassLoc.y ? (1 + yScale) : (1 - yScale);
+
+	// accents
+	if (rand(seed) >= 0.99f) {
+		isAccent = 1;
+		pos.y *= 1.25f;
+		texCoord = vec2(aTexCoord.x * (1.f / grassNum) + (1.f / grassNum), aTexCoord.y);
+	} else
+		texCoord = vec2(aTexCoord.x * (1.f / grassNum), aTexCoord.y);
+
+    // Final position
+	gl_Position = projection * vec4(pos* pixelSize * grassSize + randLoc - playerPos, 1.f - randLoc.y / screenSize.y, 1.0);
+
+	//texCoord = vec2(aTexCoord.x * (1.f / grassNum) + round(rand(seed)) * (1.f / grassNum), aTexCoord.y);
 	loc = randLoc;
 }

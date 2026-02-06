@@ -152,13 +152,14 @@ int Main::createWindow() {
 		{
 			auto currentTime = std::chrono::steady_clock::now();
 			float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+			lastTime = currentTime;
 
 			Input::pollEvents();
 
 			checkInputs();
 			Update(deltaTime);
 
-			float speed = 0.25;
+			float speed = 100;
 			if (Input::getKeyHeld(GLFW_KEY_W))
 				pos.y += speed * deltaTime;
 			if (Input::getKeyHeld(GLFW_KEY_S))
@@ -178,7 +179,7 @@ int Main::createWindow() {
 			vao->Bind();
 			Scene::grassShader->setInt("grass", 1);
 			
-			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 10000);
+			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 10000); // 10000
 
 			glfwSwapBuffers(window);
 			GLenum err;
