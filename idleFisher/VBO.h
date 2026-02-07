@@ -22,7 +22,7 @@ public:
 	// Constructor that generates a Vertex Buffer Object and links it to vertices
 	VBO(std::vector<Vertex>& vertices);
 	VBO(std::vector<float>& vertices);
-	VBO(float vertices[], unsigned int size);
+	VBO(void* vertices, unsigned int size);
 
 	// Binds the VBO
 	void Bind();

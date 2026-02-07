@@ -4,6 +4,9 @@
 layout(location = 0) in vec2 aPos;  // Object vertex position
 layout(location = 1) in vec2 aTexCoord;
 
+layout(location = 2) in vec2 iOffset;
+layout(location = 3) in vec3 iColor;
+
 uniform mat4 projection;
 uniform vec2 playerPos;
 uniform float pixelSize;
@@ -15,7 +18,7 @@ out vec2 texCoord;
 out vec2 loc;
 out flat int isAccent;
 out flat float rot;
-out flat vec2 temp;
+out flat vec3 color;
 
 uint initRNG(uint id) {
 	uint seed = id * 1973u;
@@ -58,7 +61,7 @@ void main() {
 
 	uint seed = initRNG(id);
 
-	temp = vec2(id / 5000.f, 0);
+	color = iColor;
 
 	vec2 grassSize = vec2(22, 21);
 
@@ -68,16 +71,13 @@ void main() {
 		return;
 	}
 
-	vec2 randLoc = rand2(seed) * screenSize;// + vec2(100, 100);
-
 	float maxYScale = 0.25f;
 	float maxRotX = 1.f;
 	float radius = 50.f;
 
-	vec2 grassLoc = randLoc;
 	vec2 charLoc = playerPos / pixelSize + (screenSize - radius) / 2.f + vec2(10, -5);
 
-	vec2 delta = grassLoc - charLoc;
+	vec2 delta = iOffset - charLoc;
 
 	// Isometric scaling
 	delta.y *= 2.f;
@@ -97,19 +97,19 @@ void main() {
 
 	// X-axis rotation (stronger above/below)
 	float rotX = maxRotX * verticalMask * fade; // max stretch * how up or down * how close to center
-	rotX *= charLoc.x < grassLoc.x ? -1 : 1; // invert rotation is character is on left
+	rotX *= charLoc.x < iOffset.x ? -1 : 1; // invert rotation is character is on left
 
 	// wind
 	float fps = 5.f;
 	float roundedTime = floor((time + rand(seed)) * fps) / fps; // rand for a random offset so all grass isn't on the same update time, so it doesn't look laggy
-	float windRot = sin(randLoc.x + roundedTime) / 10.f;
+	float windRot = sin(iOffset.x + roundedTime) / 10.f;
 
 	rot = windRot + rotX;
 	pos = rotation2D(pos, rot);
 
 	// Y-axis stretch (stronger left/right)
 	float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
-	pos.y *= charLoc.y < grassLoc.y ? (1 + yScale) : (1 - yScale);
+	pos.y *= charLoc.y < iOffset.y ? (1 + yScale) : (1 - yScale);
 
 	// accents
 	if (rand(seed) >= 0.99f) {
@@ -119,7 +119,7 @@ void main() {
 		isAccent = 0;
 
 	// Final position
-	gl_Position = projection * vec4((pos * grassSize + randLoc) * pixelSize - playerPos, 1.f - grassLoc.y / mapHeight, 1.0); // 1.f - grassLoc.y / mapHeight
+	gl_Position = projection * vec4((pos * grassSize + iOffset) * pixelSize - playerPos, 1.f - iOffset.y / mapHeight, 1.0); // 1.f - iOffset.y / mapHeight
 	texCoord = aTexCoord;
-	loc = randLoc;
+	loc = iOffset;
 }

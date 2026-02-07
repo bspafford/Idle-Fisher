@@ -8,6 +8,7 @@ in vec2 loc;
 in flat int isAccent;
 in flat float rot;
 in flat vec2 temp;
+in flat vec3 color;
 
 uniform sampler2D grass;
 uniform sampler2D tallGrass;
@@ -129,7 +130,7 @@ void main() {
 	if (isDepthPass == 1)
 		return;
 
-	vec3 color = getGrassColor(vec2(loc.x, loc.y*2.f)/300.0, grassColor1, grassColor2, grassColor3);
+	//vec3 color = ;//getGrassColor(vec2(loc.x, loc.y*2.f)/300.0, grassColor1, grassColor2, grassColor3);
 
 	uint seed = initRNG(uvec2(loc));
 	vec3 grassColor = isAccent == 1 ? mix(grassHighlight1, grassHighlight2, round(rand(seed))) : color;

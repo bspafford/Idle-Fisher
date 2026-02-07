@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "FBO.h"
 
@@ -23,4 +24,8 @@ private:
 	std::unique_ptr<EBO> ebo;
 
 	std::unique_ptr<FBO> fbo;
+
+	// used for locs and color data
+	std::unique_ptr<VBO> grassDataVBO;
+	int grassNum = 0;
 };
