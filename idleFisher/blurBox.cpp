@@ -10,7 +10,7 @@ BlurBox::BlurBox(widget* parent, vector loc, vector size, int blurStrength) : wi
 
 	this->blurStrength = blurStrength;
 	
-	texture = std::make_unique<Texture>(size * stuff::pixelSize);
+	texture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Color, true);
 
 	setLocAndSize(loc, size);
 }
@@ -36,10 +36,8 @@ void BlurBox::draw() {
 	Scene::blurShader->Activate();
 	Scene::blurShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
 	Scene::blurShader->setInt("radius", blurStrength);
-
 	// need to render everything first
 	textureManager::ForceGPUUpload();
-
 	GenerateSubTexture(texture.get());
 	textureManager::DrawImage(Scene::blurShader, loc, size, { 0.f, 0.f, 1.f, 1.f }, useWorldPos, glm::vec4(1), texture->GetHandle());
 }
@@ -52,7 +50,7 @@ void BlurBox::GenerateSubTexture(Texture* texture) {
 }
 
 void BlurBox::Init() {
-	sceneFBO = std::make_unique<FBO>(stuff::screenSize / stuff::pixelSize, false);
+	sceneFBO = std::make_unique<FBO>(stuff::screenSize / stuff::pixelSize, false, FBOType::ColorAndDepth);
 }
 
 void BlurBox::DrawFinal(Shader* shader) {

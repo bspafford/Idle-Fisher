@@ -8,11 +8,16 @@
 
 class textureStruct;
 
+enum class TextureFormat {
+	Color,
+	Depth,
+};
+
 class Texture {
 public:
 	// For textures assigned to things like FBOs with render queuing
 	// { 0, 0 } will fill up the whole screen
-	Texture(vector size);
+	Texture(vector size, TextureFormat format, bool isBindless);
 	// Works for shaders that require multiple textures
 	Texture(const std::string& imgPath);
 
@@ -32,8 +37,7 @@ public:
 	void Delete();
 
 	GLuint64 GetHandle();
-	GLuint64 GetID();
-
+	GLuint GetID();
 
 	static inline std::vector<std::unique_ptr<Texture>> textureCache;
 
@@ -42,9 +46,10 @@ public:
 	static void bindTextureToShader(std::vector<Shader*> shaderPrograms, const char* path, const char* uniform);
 	static void deleteCache();
 
-	static GLuint takeOpenSlot();
-	static void releaseSlot(GLuint slot);
 private:
+	static GLuint takeOpenSlot();
+	static void releaseSlot(GLuint& slot);
+
 	// false means slot isn't used, true means slot is currently being used
 	static inline std::vector<bool> usedSlots;
 
@@ -56,4 +61,6 @@ private:
 	int functionIdx = -1;
 	textureStruct* texData;
 	vector size;
+	TextureFormat format;
+	bool isBindless;
 };

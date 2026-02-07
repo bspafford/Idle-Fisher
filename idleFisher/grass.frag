@@ -10,67 +10,13 @@ in flat float rot;
 
 uniform sampler2D grass;
 uniform sampler2D tallGrass;
-
-vec2 fade(vec2 t) {
-	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-}
-
-vec2 grad2(float hash) {
-	float a = hash * 6.2831853;
-	return vec2(cos(a), sin(a));
-}
-
-float hash(float n) {
-	return fract(sin(n) * 43758.5453123);
-}
-
-float perlin(vec2 p, float seed) {
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-
-	vec2 u = fade(f);
-
-	float h00 = hash(dot(i + vec2(0.0, 0.0), vec2(127.1, 311.7)) + seed);
-	float h10 = hash(dot(i + vec2(1.0, 0.0), vec2(127.1, 311.7)) + seed);
-	float h01 = hash(dot(i + vec2(0.0, 1.0), vec2(127.1, 311.7)) + seed);
-	float h11 = hash(dot(i + vec2(1.0, 1.0), vec2(127.1, 311.7)) + seed);
-
-	float n00 = dot(grad2(h00), f - vec2(0.0, 0.0));
-	float n10 = dot(grad2(h10), f - vec2(1.0, 0.0));
-	float n01 = dot(grad2(h01), f - vec2(0.0, 1.0));
-	float n11 = dot(grad2(h11), f - vec2(1.0, 1.0));
-
-	float nx0 = mix(n00, n10, u.x);
-	float nx1 = mix(n01, n11, u.x);
-	float nxy = mix(nx0, nx1, u.y);
-
-	return nxy;
-}
-
-vec3 rgbPerlin(vec2 uv) {
-	return vec3(
-		perlin(uv, 10.1),
-		perlin(uv, 20.2),
-		perlin(uv, 30.3)
-	) * 0.5 + 0.5;
-}
-
-vec3 rgbPerlinColored(vec2 uv, float colorPower) {
-	vec3 n = vec3(0.0);
-	float amp = 1.0;
-	float freq = 1.0;
-	float norm = 0.0;
-
-	for (int i = 0; i < 5; i++) {
-		n += rgbPerlin(uv * freq) * amp;
-		norm += amp;
-
-		freq *= 2.0;
-		amp *= pow(0.5, colorPower);
-	}
-
-	return n / norm;
-}
+uniform vec2 screenSize;
+uniform int isGround;
+uniform vec3 grassColor1;
+uniform vec3 grassColor2;
+uniform vec3 grassColor3;
+uniform vec3 grassHighlight1;
+uniform vec3 grassHighlight2;
 
 vec3 pickPaletteColor(vec3 noise, vec3 c0, vec3 c1, vec3 c2) {
 	vec3 mask = step(noise.gbr, noise.rgb) * step(noise.brg, noise.rgb);
@@ -95,31 +41,67 @@ float rand(inout uint state) {
 }
 
 vec2 rotation2D(vec2 p, float a) {
-    float s = sin(a);
-    float c = cos(a);
-    return vec2(
-        c * p.x - s * p.y,
-        s * p.x + c * p.y
-    );
+	float s = sin(a);
+	float c = cos(a);
+	return vec2(
+		c * p.x - s * p.y,
+		s * p.x + c * p.y
+	);
+}
+
+// Simple and fast 2D noise
+float hash(vec2 p) {
+	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+// 2D Perlin-style noise
+float noise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+
+	// Smooth interpolation
+	vec2 u = f*f*(3.0-2.0*f);
+
+	// Mix 4 corners
+	float a = hash(i + vec2(0.0, 0.0));
+	float b = hash(i + vec2(1.0, 0.0));
+	float c = hash(i + vec2(0.0, 1.0));
+	float d = hash(i + vec2(1.0, 1.0));
+
+	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+
+// Fractal / turbulence for more organic look
+float fbm(vec2 p) {
+	float f = 0.0;
+	f += 0.5000 * noise(p);
+	f += 0.2500 * noise(p*2.0);
+	f += 0.1250 * noise(p*4.0);
+	f += 0.0625 * noise(p*8.0);
+	return f;
+}
+
+// Usage in fragment shader for 3-color blending
+vec3 getGrassColor(vec2 uv, vec3 grassColor1, vec3 grassColor2, vec3 grassColor3) {
+	float n = fbm(uv * 5.0);  // scale noise
+	float n1 = fbm((uv + 100.0) * 5.0); // different input for variation
+
+	vec3 color;
+	if (n > 0.55) color = grassColor1;
+	else if (n1 > 0.55) color = grassColor2;
+	else color = grassColor3;
+
+	return color;
 }
 
 void main() {
+	if (isGround == 1) {
+		vec3 color = getGrassColor(vec2(texCoord.x, (1.f - texCoord.y) * 2.f) * screenSize / 300.0, grassColor1, grassColor2, grassColor3);
+		FragColor = vec4(color, 1.f);
+		return;
+	}
+
 	vec2 grassSize = vec2(22, 21);
-
-	vec3 noise = rgbPerlinColored(vec2(loc.x, loc.y*2.f)/300.0, 1.2);
-
-	vec3 grassColor1 = vec3(68.0/255.0, 113.0/255.0, 25.0/255.0);
-	vec3 grassColor2 = vec3(83.0/255.0, 120.0/255.0, 23.0/255.0);
-	vec3 grassColor3 = vec3(56.0/255.0, 107.0/255.0, 4.0/255.0);
-
-	vec3 grassColor4 = vec3(57.0/255.0, 99.0/255.0, 5.0/255.0);
-	vec3 grassColor5 = vec3(96.0/255.0, 136.0/255.0, 9.0/255.0);
-
-	vec3 color = pickPaletteColor(noise, grassColor1, grassColor2, grassColor3);
-
-	uint seed = initRNG(uvec2(loc));
-
-	vec3 grassColor = isAccent == 1 ? mix(grassColor4, grassColor5, round(rand(seed))) : color;
 
 	// rotate in frag shader for pixelated look
 	// rotates in the vert shader for geometry
@@ -134,9 +116,15 @@ void main() {
 	p = rotation2D(p, rot);
 	p += pivot;
 
-	bool outOfBounds = any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)));
 	vec4 tex = isAccent == 1 ? texture(tallGrass, p) : texture(grass, p);
+	bool outOfBounds = any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)));
+	if (tex.a < 0.5 || outOfBounds) discard; // allows transparency with depth testing
+
+	vec3 color = getGrassColor(vec2(loc.x, loc.y*2.f)/300.0, grassColor1, grassColor2, grassColor3);
+
+	uint seed = initRNG(uvec2(loc));
+	vec3 grassColor = isAccent == 1 ? mix(grassHighlight1, grassHighlight2, round(rand(seed))) : color;
+
 	vec4 final = tex * vec4(grassColor, 1.f);
-	if (final.a < 0.5 || outOfBounds) discard; // allows transparency with depth testing
 	FragColor = final;
 }

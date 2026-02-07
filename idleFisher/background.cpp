@@ -36,7 +36,7 @@ void Background::setSize(vector size) {
 	widget::setSize(size);
 
 	if (!fbo)
-		fbo = std::make_unique<FBO>(size, false);
+		fbo = std::make_unique<FBO>(size, false, FBOType::ColorOnly);
 	else
 		fbo->ResizeTexture(size);
 

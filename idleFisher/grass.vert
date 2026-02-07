@@ -9,6 +9,7 @@ uniform vec2 playerPos;
 uniform float pixelSize;
 uniform vec2 screenSize;
 uniform float time;
+uniform int isGround;
 
 out vec2 texCoord;
 out vec2 loc;
@@ -39,17 +40,18 @@ vec2 rotation2D(vec2 p, float a) {
 	vec2 pivot = vec2(0.5, 0);
 	p -= pivot;
 	float s = sin(a);
-    float c = cos(a);
-    vec2 rotated = vec2(
-        c * p.x - s * p.y,
-        s * p.x + c * p.y
-    );
+	float c = cos(a);
+	vec2 rotated = vec2(
+		c * p.x - s * p.y,
+		s * p.x + c * p.y
+	);
 	rotated += pivot;
 	return rotated;
 }
 
 void main() {
-    float mapHeight = 1185;
+
+	float mapHeight = 1185;
 
 	int id = gl_InstanceID;
 
@@ -57,7 +59,13 @@ void main() {
 
 	vec2 grassSize = vec2(22, 21);
 
-	vec2 randLoc = rand2(seed) * screenSize + vec2(100, 100);
+	if (isGround == 1) {
+		gl_Position = projection * vec4((aPos * screenSize) * pixelSize - playerPos, 0.0, 1.0); // 1.f - grassLoc.y / mapHeight
+		texCoord = aTexCoord;
+		return;
+	}
+
+	vec2 randLoc = rand2(seed) * screenSize;// + vec2(100, 100);
 
 	float maxYScale = 0.25f;
 	float maxRotX = 1.f;
@@ -66,26 +74,26 @@ void main() {
 	vec2 grassLoc = randLoc;
 	vec2 charLoc = playerPos / pixelSize + (screenSize - radius) / 2.f + vec2(10, -5);
 
-    vec2 delta = grassLoc - charLoc;
+	vec2 delta = grassLoc - charLoc;
 
-    // Isometric scaling
-    delta.y *= 2.f;
+	// Isometric scaling
+	delta.y *= 2.f;
 
-    float dist = length(delta);
-    float fade = 1.0 - clamp(dist / radius, 0.0, 1.0); // how strong the effect should be at this distance
+	float dist = length(delta);
+	float fade = 1.0 - clamp(dist / radius, 0.0, 1.0); // how strong the effect should be at this distance
 
 	// how far from center
-    float ax = abs(delta.x);
-    float ay = abs(delta.y);
+	float ax = abs(delta.x);
+	float ay = abs(delta.y);
 
-    float verticalMask   = ay / (ax + ay + 1e-5); // up/down, [0,1] how vertical is this direction compared to horizontal, above and below = 1, left and right = 0
-    float horizontalMask = 1.0 - verticalMask;    // left/right, inverse of vertical mask
+	float verticalMask   = ay / (ax + ay + 1e-5); // up/down, [0,1] how vertical is this direction compared to horizontal, above and below = 1, left and right = 0
+	float horizontalMask = 1.0 - verticalMask;    // left/right, inverse of vertical mask
 
-    // Apply deformation
-    vec2 pos = vec2(aPos);
+	// Apply deformation
+	vec2 pos = vec2(aPos);
 
-    // X-axis rotation (stronger above/below)
-    float rotX = maxRotX * verticalMask * fade; // max stretch * how up or down * how close to center
+	// X-axis rotation (stronger above/below)
+	float rotX = maxRotX * verticalMask * fade; // max stretch * how up or down * how close to center
 	rotX *= charLoc.x < grassLoc.x ? -1 : 1; // invert rotation is character is on left
 
 	// wind
@@ -96,9 +104,9 @@ void main() {
 	rot = windRot + rotX;
 	pos = rotation2D(pos, rot);
 
-    // Y-axis stretch (stronger left/right)
-    float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
-    pos.y *= charLoc.y < grassLoc.y ? (1 + yScale) : (1 - yScale);
+	// Y-axis stretch (stronger left/right)
+	float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
+	pos.y *= charLoc.y < grassLoc.y ? (1 + yScale) : (1 - yScale);
 
 	// accents
 	if (rand(seed) >= 0.99f) {
@@ -106,7 +114,7 @@ void main() {
 		pos.y *= 1.25f;
 	}
 
-    // Final position
+	// Final position
 	gl_Position = projection * vec4((pos * grassSize + randLoc) * pixelSize - playerPos, 1.f - grassLoc.y / mapHeight, 1.0); // 1.f - grassLoc.y / mapHeight
 
 	texCoord = aTexCoord;

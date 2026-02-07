@@ -7,17 +7,32 @@
 #include "camera.h"
 #include "Scene.h"
 
-FBO::FBO(vector size, bool useWorldPos) {
+FBO::FBO(vector size, bool useWorldPos, FBOType type) {
 	this->size = size;
+	this->type = type;
 
 	// Create FBO
 	glCreateFramebuffers(1, &ID);
 
-	texture = std::make_unique<Texture>(size * stuff::pixelSize);
+	// Color Texture
+	if (type == FBOType::ColorOnly || type == FBOType::ColorAndDepth) {
+		texture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Color, true);
+		glNamedFramebufferTexture(ID, GL_COLOR_ATTACHMENT0, texture->GetID(), 0);
 
-	glNamedFramebufferTexture(ID, GL_COLOR_ATTACHMENT0, texture->GetID(), 0);
-	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
-	glNamedFramebufferDrawBuffers(ID, 1, drawBuffers);
+		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+		glNamedFramebufferDrawBuffers(ID, 1, drawBuffers);
+	}
+
+	// Depth texture
+	if (type == FBOType::DepthOnly || type == FBOType::ColorAndDepth) {
+		depthTexture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Depth, false);
+		glNamedFramebufferTexture(ID, GL_DEPTH_ATTACHMENT, depthTexture->GetID(), 0);
+	}
+
+	if (type == FBOType::DepthOnly) {
+		glNamedFramebufferDrawBuffers(ID, 0, nullptr);
+		glNamedFramebufferReadBuffer(ID, GL_NONE);
+	}
 
 	if (glCheckNamedFramebufferStatus(ID, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "FBO is incomplete!" << std::endl;
@@ -40,10 +55,15 @@ void FBO::ResizeTexture(vector size) {
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	texture = std::make_unique<Texture>(size * stuff::pixelSize);
-	texture->Bind();
+	if (type == FBOType::DepthOnly || type == FBOType::ColorAndDepth) {
+		texture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Color, true);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
+	}
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
+	if (type == FBOType::DepthOnly || type == FBOType::ColorAndDepth) {
+		depthTexture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Depth, false);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture->GetID(), 0);
+	}
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "FBO is incomplete!" << std::endl;
@@ -68,7 +88,7 @@ void FBO::Bind(glm::vec4 clearColor) {
 	glScissor(0, 0, size.x * stuff::pixelSize, size.y * stuff::pixelSize);
 
 	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// set projection
 	Scene::twoDShader->Activate();
@@ -93,6 +113,14 @@ void FBO::Unbind() {
 	// set back projection
 	Scene::twoDShader->Activate();
 	Scene::twoDShader->setMat4("projection", GetMainCamera()->getProjectionMat());
+}
+
+Texture* FBO::GetColorTexture() {
+	return texture.get();
+}
+
+Texture* FBO::GetDepthTexture() {
+	return depthTexture.get();
 }
 
 FBOData FBO::GetCurrFBO() {

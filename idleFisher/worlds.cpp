@@ -461,8 +461,8 @@ void world::draw(Shader* shaderProgram) {
 }
 
 void world::renderWater() {
-	//if (waterImg)
-	//	waterImg->draw(Scene::twoDWaterShader);
+	if (waterImg)
+		waterImg->draw(Scene::twoDWaterShader);
 
 	Scene::twoDShader->Activate();
 
@@ -473,10 +473,11 @@ void world::renderWater() {
 	//if (beachAnim)
 		//beachAnim->draw(Scene::twoDShader);
 
-	//if (mapImg)
-	//	mapImg->draw(Scene::twoDShader);
+	if (mapImg)
+		mapImg->draw(Scene::twoDShader);
 
-	if (grass) grass->Draw(Scene::grassShader);
+	if (grass)
+		grass->Draw();
 }
 
 void world::sortDraw(Shader* shaderProgram) {

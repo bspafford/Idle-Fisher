@@ -5,8 +5,10 @@
 
 #include "debugger.h"
 
-Texture::Texture(vector size) {
+Texture::Texture(vector size, TextureFormat format, bool isBindless) {
 	this->size = size;
+	this->format = format;
+	this->isBindless = isBindless;
 
 	functionIdx = 0;
 	GPULoadCollector::add(this);
@@ -33,9 +35,16 @@ Texture::Texture(const std::string& imgPath) {
 void Texture::LoadGPU() {
 	if (functionIdx == 0) {
 		glCreateTextures(GL_TEXTURE_2D, 1, &id);
-		glTextureStorage2D(id, 1, GL_RGBA8, size.x, size.y);
-		handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());
-		glMakeTextureHandleResidentARB(handle);
+
+		if (format == TextureFormat::Color)
+			glTextureStorage2D(id, 1, GL_RGBA8, size.x, size.y);
+		else if (format == TextureFormat::Depth)
+			glTextureStorage2D(id, 1, GL_DEPTH_COMPONENT24, size.x, size.y);
+
+		if (isBindless) {
+			handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());
+			glMakeTextureHandleResidentARB(handle);
+		}
 	} else if (functionIdx == 1) {
 		if (usedSlots.size() == 0) {
 			GLint maxCombined;
@@ -45,10 +54,6 @@ void Texture::LoadGPU() {
 		}
 
 		unit = takeOpenSlot();
-		if (unit == -1) {
-			std::cout << "slots are full!\n";
-			abort();
-		}
 
 		id = texData->id;
 		glActiveTexture(GL_TEXTURE0 + unit);
@@ -81,10 +86,15 @@ void Texture::Resize(vector size) {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 
-	glTextureStorage2D(id, 1, GL_RGBA8, size.x, size.y);
+	if (format == TextureFormat::Color)
+		glTextureStorage2D(id, 1, GL_RGBA8, size.x, size.y);
+	else if (format == TextureFormat::Depth)
+		glTextureStorage2D(id, 1, GL_DEPTH_COMPONENT24, size.x, size.y);
 
-	handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());
-	glMakeTextureHandleResidentARB(handle);
+	if (isBindless) {
+		handle = glGetTextureSamplerHandleARB(id, textureManager::GetSamplerID());
+		glMakeTextureHandleResidentARB(handle);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -96,6 +106,8 @@ void Texture::texUnit(Shader* shader, const char* uniform) {
 }
 
 void Texture::Bind() {
+	if (!handle && unit == 0) // only give slot to binding textures
+		unit = takeOpenSlot();
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, id);
 }
@@ -111,7 +123,7 @@ void Texture::Delete() {
 	glDeleteTextures(1, &id);
 }
 
-GLuint64 Texture::GetID() {
+GLuint Texture::GetID() {
 	return id;
 }
 
@@ -153,13 +165,18 @@ GLuint Texture::takeOpenSlot() {
 			return i;
 		}
 	}
-	return -1;
+
+	std::cout << "slots are full!\n";
+	abort();
+	return 0;
 }
 
-void Texture::releaseSlot(GLuint slot) {
+void Texture::releaseSlot(GLuint& slot) {
 	if (slot == 0 || usedSlots.size() <= slot)
 		return;
 
 	if (Main::IsRunning())
 		usedSlots[slot] = false;
+
+	slot = 0;
 }

@@ -124,8 +124,8 @@ int Main::createWindow() {
 
 		lastTime = currentTime;
 
-		//fps::showFPS(true);
-		//fps::update(deltaTime);
+		fps::showFPS(true);
+		fps::update(deltaTime);
 
 		// process input
 		Input::pollEvents();

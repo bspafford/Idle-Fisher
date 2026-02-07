@@ -5,10 +5,19 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
+#include "FBO.h"
+#include "Rectangle.h"
 
 Grass::Grass() {
 	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/grass.png", "grass");
 	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/tallGrass.png", "tallGrass");
+
+	Scene::grassShader->Activate();
+	Scene::grassShader->setVec3("grassColor1", glm::vec3(68.0 / 255.0, 113.0 / 255.0, 25.0 / 255.0));
+	Scene::grassShader->setVec3("grassColor2", glm::vec3(83.0 / 255.0, 120.0 / 255.0, 23.0 / 255.0));
+	Scene::grassShader->setVec3("grassColor3", glm::vec3(56.0 / 255.0, 107.0 / 255.0, 4.0 / 255.0));
+	Scene::grassShader->setVec3("grassHighlight1", glm::vec3(57.0 / 255.0, 99.0 / 255.0, 5.0 / 255.0));
+	Scene::grassShader->setVec3("grassHighlight2", glm::vec3(96.0 / 255.0, 136.0 / 255.0, 9.0 / 255.0));
 
 	float vertices[] = {
 		// positions       // texture coordinates
@@ -34,92 +43,47 @@ Grass::Grass() {
 	glVertexAttribDivisor(0, 0);
 	glVertexAttribDivisor(1, 0);
 
-	// depth
-	glGenTextures(1, &depthTex);
-	glBindTexture(GL_TEXTURE_2D, depthTex);
-
-	glTexImage2D(
-		GL_TEXTURE_2D,
-		0,
-		GL_DEPTH_COMPONENT24,
-		1920,
-		1080,
-		0,
-		GL_DEPTH_COMPONENT,
-		GL_FLOAT,
-		nullptr
-	);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	// Attach depth texture
-	glFramebufferTexture2D(
-		GL_FRAMEBUFFER,
-		GL_DEPTH_ATTACHMENT,
-		GL_TEXTURE_2D,
-		depthTex,
-		0
-	);
-
-	// No color output
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-
-	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-	slot = Texture::takeOpenSlot();
-}
-
-Grass::~Grass() {
-	Texture::releaseSlot(slot);
+	fbo = std::make_unique<FBO>(stuff::screenSize, true, FBOType::DepthOnly);
 }
 
 void Grass::DrawDepth() {
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glViewport(0, 0, 1920, 1080);
-
-	glClearDepth(0.5);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	fbo->Bind();
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);   // WRITE depth
 
-	// shader
 	Scene::grassShader->Activate();
 
 	// draw grass
 	vao->Bind();
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 10000);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 5000);
 
 	// unbind fbo
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// reset viewport
-	glViewport(0, 0, 1920, 1080);
+	fbo->Unbind();
 }
 
-void Grass::Draw(Shader* shader) {
+void Grass::Draw() {
 	DrawDepth();
-
-	glEnable(GL_DEPTH_TEST);
 
 	Scene::grassShader->Activate();
 	// draw grass
 	vao->Bind();
-	//glBindTexture(GL_TEXTURE_2D, 360);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 10000);
+	
+	glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
+	//glDepthMask(GL_TRUE);
+
+	Scene::grassShader->setInt("isGround", 1);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	Scene::grassShader->setInt("isGround", 0);
+
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 5000);
 
 	glDisable(GL_DEPTH_TEST);
 
 	Scene::twoDShader->Activate();
-	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D, depthTex);
-	Scene::twoDShader->setInt("grassDepthTex", slot);
+	Texture* tex = fbo->GetDepthTexture();
+	tex->Bind();
+	tex->texUnit(Scene::twoDShader, "grassDepthTex");
 }

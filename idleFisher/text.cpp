@@ -237,7 +237,7 @@ void text::makeTextTexture() {
 
 	absoluteLoc = absoluteLoc.floor();
 
-	fbo = std::make_unique<FBO>(fboSize, useWorldPos);
+	fbo = std::make_unique<FBO>(fboSize, useWorldPos, FBOType::ColorOnly);
 	fbo->Bind();
 	
 	int colorIndex = -1; // keeps track of what color the text is on
