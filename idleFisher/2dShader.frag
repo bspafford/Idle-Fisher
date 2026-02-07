@@ -30,13 +30,10 @@ void main() {
 
 	float grassDepth = texture(grassDepthTex, fragUV).r;
 	float sceneDepth = gl_FragCoord.z; 
-	if (data.useWorldPos == 1 && sceneDepth >= grassDepth)
-		discard;
+	if (data.useWorldPos == 1 && sceneDepth >= grassDepth) discard;
 
 	vec4 textureColor = vec4(1);
 	if (data.hasTexture != 0)
 		textureColor = texture(data.tex, vec2(TexCoord.x, 1 - TexCoord.y));
 	FragColor = textureColor * data.color;
-	if (FragColor.a == 0.f)
-		discard;
 }

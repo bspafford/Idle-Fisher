@@ -15,6 +15,7 @@ out vec2 texCoord;
 out vec2 loc;
 out flat int isAccent;
 out flat float rot;
+out flat vec2 temp;
 
 uint initRNG(uint id) {
 	uint seed = id * 1973u;
@@ -57,10 +58,12 @@ void main() {
 
 	uint seed = initRNG(id);
 
+	temp = vec2(id / 5000.f, 0);
+
 	vec2 grassSize = vec2(22, 21);
 
 	if (isGround == 1) {
-		gl_Position = projection * vec4((aPos * screenSize) * pixelSize - playerPos, 0.0, 1.0); // 1.f - grassLoc.y / mapHeight
+		gl_Position = projection * vec4((aPos * screenSize) * pixelSize - playerPos, 0.0, 1.0);
 		texCoord = aTexCoord;
 		return;
 	}
@@ -112,11 +115,11 @@ void main() {
 	if (rand(seed) >= 0.99f) {
 		isAccent = 1;
 		pos.y *= 1.25f;
-	}
+	} else
+		isAccent = 0;
 
 	// Final position
 	gl_Position = projection * vec4((pos * grassSize + randLoc) * pixelSize - playerPos, 1.f - grassLoc.y / mapHeight, 1.0); // 1.f - grassLoc.y / mapHeight
-
 	texCoord = aTexCoord;
 	loc = randLoc;
 }

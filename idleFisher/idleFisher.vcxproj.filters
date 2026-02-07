@@ -95,8 +95,6 @@
     </None>
     <None Include="grass.vert" />
     <None Include="grass.frag" />
-    <None Include="temp.vert" />
-    <None Include="temp.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">

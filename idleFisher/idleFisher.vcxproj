@@ -190,8 +190,6 @@
     <None Include="lineShader.vert" />
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
-    <None Include="temp.frag" />
-    <None Include="temp.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AautoFisher.cpp" />

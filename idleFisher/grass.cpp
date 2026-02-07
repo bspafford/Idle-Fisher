@@ -54,6 +54,7 @@ void Grass::DrawDepth() {
 	glDepthMask(GL_TRUE);   // WRITE depth
 
 	Scene::grassShader->Activate();
+	Scene::grassShader->setInt("isDepthPass", 1);
 
 	// draw grass
 	vao->Bind();
@@ -67,12 +68,11 @@ void Grass::Draw() {
 	DrawDepth();
 
 	Scene::grassShader->Activate();
+	Scene::grassShader->setInt("isDepthPass", 0);
 	// draw grass
 	vao->Bind();
 	
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
-	//glDepthMask(GL_TRUE);
 
 	Scene::grassShader->setInt("isGround", 1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
