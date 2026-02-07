@@ -277,6 +277,8 @@ void Scene::updateShaders(float deltaTime) {
 	twoDShader->setMat4("projection", camProj);
 	twoDShader->setVec2("playerPos", camPos);
 	twoDShader->setFloat("pixelSize", stuff::pixelSize);
+	twoDShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
+	twoDShader->setFloat("mapHeight", 1185.f);
 
 	fishingLineShader->Activate();
 	fishingLineShader->setMat4("projection", camProj);
@@ -300,7 +302,8 @@ void Scene::updateShaders(float deltaTime) {
 	grassShader->setFloat("pixelSize", stuff::pixelSize);
 	grassShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y) / stuff::pixelSize);
 	grassWindTime += deltaTime;
-	Scene::grassShader->setFloat("time", grassWindTime);
+	grassShader->setFloat("time", grassWindTime);
+	grassShader->setFloat("mapHeight", 1185.f);
 }
 
 std::vector<uint32_t> Scene::GetWorldsList() {

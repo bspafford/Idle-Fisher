@@ -301,7 +301,7 @@ std::string collision::getIdentifier(std::string str) {
 	return identifier;
 }
 
-
+#ifdef _DEBUG // just really quickly made, temp code for testing
 bool isCCW(const std::vector<vector>& pts) {
 	if (pts.size() < 3) return false; // not enough points
 
@@ -315,6 +315,7 @@ bool isCCW(const std::vector<vector>& pts) {
 
 	return area > 0; // true = CCW, false = CW
 }
+#endif
 
 void collision::showCollisionBoxes(Shader* shaderProgram) {
 #ifdef _DEBUG // just really quickly made, temp code for testing

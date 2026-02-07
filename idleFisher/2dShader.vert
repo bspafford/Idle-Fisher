@@ -10,6 +10,7 @@ flat out uint instanceIndex;
 uniform mat4 projection;
 uniform vec2 playerPos;
 uniform float pixelSize;
+uniform float mapHeight;
 
 struct InstanceData {
     vec4 color;
@@ -27,12 +28,11 @@ struct InstanceData {
 layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
 
 void main() {
-    float mapHeight = 1185;
-
     instanceIndex = gl_InstanceID;
     InstanceData data = instances[instanceIndex];
 
-    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 1.f - data.position.y / mapHeight, 1.0); // 1.f - data.position.y / mapHeight
+    float depth = data.useWorldPos == 1 ? 1.f - data.position.y / mapHeight : 1.f;
+    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), depth, 1.0); // 1.f - data.position.y / mapHeight
 
     // if source size is 0
     if (data.source.z == 0 || data.source.w == 0)

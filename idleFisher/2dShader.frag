@@ -7,6 +7,7 @@ in vec2 TexCoord;
 flat in uint instanceIndex;
 
 uniform sampler2D grassDepthTex;
+uniform vec2 screenSize;
 
 struct InstanceData {
 	vec4 color;
@@ -25,8 +26,7 @@ layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
 void main() {
 	InstanceData data = instances[instanceIndex];
 	
-	// assume size (1920, 1080)
-	vec2 fragUV = gl_FragCoord.xy / vec2(1920.0, 1080.0);
+	vec2 fragUV = gl_FragCoord.xy / screenSize;
 
 	float grassDepth = texture(grassDepthTex, fragUV).r;
 	float sceneDepth = gl_FragCoord.z; 

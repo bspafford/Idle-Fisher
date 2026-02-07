@@ -9,11 +9,11 @@ in flat int isAccent;
 in flat float rot;
 in flat vec2 temp;
 in flat vec3 color;
+in flat vec2 size;
 
 uniform sampler2D grass;
 uniform sampler2D tallGrass;
 uniform vec2 screenSize;
-uniform int isGround;
 uniform int isDepthPass;
 uniform vec3 grassColor1;
 uniform vec3 grassColor2;
@@ -101,26 +101,17 @@ vec3 getGrassColor(vec2 uv, vec3 grassColor1, vec3 grassColor2, vec3 grassColor3
 	// send in like a ssbo or vbo with like vec3 loc, int colorIndex (0-5)
 
 void main() {
-	if (isGround == 1) {
-		vec2 pixelCoords = floor(texCoord * screenSize) / screenSize;
-		vec3 color = getGrassColor(vec2(pixelCoords.x, (1.f - pixelCoords.y) * 2.f) * screenSize / 300.0, grassColor1, grassColor2, grassColor3);
-		FragColor = vec4(color, 1.f);
-		return;
-	}
-
-	vec2 grassSize = vec2(22, 21);
-
 	// rotate in frag shader for pixelated look
 	// rotates in the vert shader for geometry
 	// rotates back, pixelates the coords, then rotates back
-	vec2 pivot = vec2(0.5, 1.0);
+	vec2 pivot = vec2(0.5, 0.0);
 	vec2 p = texCoord;
 	p -= pivot;
-	p = rotation2D(p, -rot);
-	p += pivot;
-	p = floor(p * grassSize) / grassSize;
-	p -= pivot;
 	p = rotation2D(p, rot);
+	p += pivot;
+	p = floor(p * size) / size;
+	p -= pivot;
+	p = rotation2D(p, -rot);
 	p += pivot;
 
 	vec4 tex = isAccent == 1 ? texture(tallGrass, p) : texture(grass, p);
@@ -129,8 +120,6 @@ void main() {
 
 	if (isDepthPass == 1)
 		return;
-
-	//vec3 color = ;//getGrassColor(vec2(loc.x, loc.y*2.f)/300.0, grassColor1, grassColor2, grassColor3);
 
 	uint seed = initRNG(uvec2(loc));
 	vec3 grassColor = isAccent == 1 ? mix(grassHighlight1, grassHighlight2, round(rand(seed))) : color;

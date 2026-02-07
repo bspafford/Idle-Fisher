@@ -633,7 +633,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/picnicTable.png", vector(1284, 515), vector(0, 23), vector(97, 18)));
 	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/bridgePole.png", vector(801, 731), vector(0, 9), vector(20, 0)));
 
-	std::vector<vector> rockLocs = {};// { { 1068, 699 }, { 1379, 689 } };
+	std::vector<vector> rockLocs = {};
 	for (int i = 0; i < rockLocs.size(); i++)
 		buildingList.push_back(std::make_unique<Arock>(rockLocs[i]));
 

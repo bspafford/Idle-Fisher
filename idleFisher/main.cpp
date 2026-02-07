@@ -341,6 +341,8 @@ void Main::windowSizeCallback(GLFWwindow* window, int width, int height) {
 
 	widget::resizeScreen();
 	BlurBox::ResizeScreen();
+	if (world::currWorld && world::currWorld->grass)
+		world::currWorld->grass->ResizeScreen();
 }
 void Main::checkInputs() {
 	if (Scene::isLoading())

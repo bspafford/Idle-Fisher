@@ -18,6 +18,8 @@ public:
 
 	void DrawDepth();
 	void Draw();
+	void ResizeScreen();
+
 private:
 	std::unique_ptr<VAO> vao;
 	std::unique_ptr<VBO> vbo;

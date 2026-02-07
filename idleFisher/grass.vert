@@ -12,13 +12,16 @@ uniform vec2 playerPos;
 uniform float pixelSize;
 uniform vec2 screenSize;
 uniform float time;
-uniform int isGround;
+uniform vec2 grassSize;
+uniform vec2 tallGrassSize;
+uniform float mapHeight;
 
 out vec2 texCoord;
 out vec2 loc;
 out flat int isAccent;
 out flat float rot;
 out flat vec3 color;
+out flat vec2 size;
 
 uint initRNG(uint id) {
 	uint seed = id * 1973u;
@@ -54,28 +57,15 @@ vec2 rotation2D(vec2 p, float a) {
 }
 
 void main() {
-
-	float mapHeight = 1185;
-
 	int id = gl_InstanceID;
 
 	uint seed = initRNG(id);
 
-	color = iColor;
-
-	vec2 grassSize = vec2(22, 21);
-
-	if (isGround == 1) {
-		gl_Position = projection * vec4((aPos * screenSize) * pixelSize - playerPos, 0.0, 1.0);
-		texCoord = aTexCoord;
-		return;
-	}
-
 	float maxYScale = 0.25f;
-	float maxRotX = 1.f;
+	float maxRotX = 0.75f;
 	float radius = 50.f;
 
-	vec2 charLoc = playerPos / pixelSize + (screenSize - radius) / 2.f + vec2(10, -5);
+	vec2 charLoc = playerPos / pixelSize + (screenSize - radius) / 2.f + vec2(radius / 2.f, 0);
 
 	vec2 delta = iOffset - charLoc;
 
@@ -96,7 +86,7 @@ void main() {
 	vec2 pos = vec2(aPos);
 
 	// X-axis rotation (stronger above/below)
-	float rotX = maxRotX * verticalMask * fade; // max stretch * how up or down * how close to center
+	float rotX = maxRotX * horizontalMask * fade; // max stretch * how up or down * how close to center
 	rotX *= charLoc.x < iOffset.x ? -1 : 1; // invert rotation is character is on left
 
 	// wind
@@ -108,18 +98,22 @@ void main() {
 	pos = rotation2D(pos, rot);
 
 	// Y-axis stretch (stronger left/right)
-	float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
+	float yScale = maxYScale * verticalMask * fade; // max scale * how left or right * how close to center
 	pos.y *= charLoc.y < iOffset.y ? (1 + yScale) : (1 - yScale);
 
 	// accents
 	if (rand(seed) >= 0.99f) {
 		isAccent = 1;
-		pos.y *= 1.25f;
-	} else
+		size = tallGrassSize;
+	} else {
 		isAccent = 0;
+		size = grassSize;
+	}
 
 	// Final position
-	gl_Position = projection * vec4((pos * grassSize + iOffset) * pixelSize - playerPos, 1.f - iOffset.y / mapHeight, 1.0); // 1.f - iOffset.y / mapHeight
-	texCoord = aTexCoord;
+	gl_Position = projection * vec4((pos * size + vec2(iOffset.x - size.x / 2.f, iOffset.y)) * pixelSize - playerPos, 1.f - iOffset.y / mapHeight, 1.0); // 1.f - iOffset.y / mapHeight
+
+	texCoord = vec2(aTexCoord.x, 1.f - aTexCoord.y);
 	loc = iOffset;
+	color = iColor;
 }
