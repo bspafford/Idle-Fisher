@@ -9,6 +9,7 @@ in flat int isAccent;
 in flat float rot;
 in flat vec2 temp;
 in flat vec3 color;
+in flat float inShadow;
 in flat vec2 size;
 
 uniform sampler2D grass;
@@ -124,6 +125,7 @@ void main() {
 	uint seed = initRNG(uvec2(loc));
 	vec3 grassColor = isAccent == 1 ? mix(grassHighlight1, grassHighlight2, round(rand(seed))) : color;
 
-	vec4 final = tex * vec4(grassColor, 1.f);
+	float shadow = inShadow == 1.f ? 0.7f : 1.f;
+	vec4 final = tex * vec4(grassColor * shadow, 1.f);
 	FragColor = final;
 }

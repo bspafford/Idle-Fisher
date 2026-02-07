@@ -6,8 +6,6 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "FBO.h"
-#include "Rectangle.h"
-
 
 // Simple and fast 2D noise
 float hash(glm::vec2 p) {
@@ -76,14 +74,152 @@ bool isPointInsidePolygon(const std::vector<glm::vec2>& polygon, const glm::vec2
 	return count % 2 == 1;
 }
 
-
-
-struct GrassInstanceData {
-	glm::vec2 position;
-	glm::vec3 color;
-};
-
 Grass::Grass() {
+	std::vector<std::vector<glm::vec2>> grassPolygons = GetGrassPolygons();
+	std::vector<std::vector<glm::vec2>> shadowPolygons = GetShadowPolygons();
+
+	// find min and max
+	float minX = INFINITY;
+	float maxX = -INFINITY;
+	float minY = INFINITY;
+	float maxY = -INFINITY;
+	for (auto& polygon : grassPolygons) {
+		for (glm::vec2 point : polygon) {
+			if (point.x < minX)
+				minX = point.x;
+			if (point.x > maxX)
+				maxX = point.x;
+			if (point.y < minY)
+				minY = point.y;
+			if (point.y > maxY)
+				maxY = point.y;
+		}
+	}
+
+	float cellSize = 5.f;
+	glm::vec2 size = glm::vec2(maxX - minX, maxY - minY) / cellSize;
+
+	for (int y = 0; y < size.y; y++) {
+		for (int x = 0; x < size.x; x++) {
+			glm::vec2 jitter(math::randRange(0, cellSize), math::randRange(0, cellSize));
+			glm::vec2 loc = glm::vec2(x * cellSize + minX, y * cellSize + minY) + jitter;
+			bool inside = false;
+			for (auto& polygon : grassPolygons) {
+				if (isPointInsidePolygon(polygon, loc)) {
+					inside = true;
+					break;
+				}
+			}
+
+			if (inside) {
+				bool inShadow = false;
+				for (auto& polygon : shadowPolygons) {
+					if (isPointInsidePolygon(polygon, loc)) {
+						inShadow = true;
+						break;
+					}
+				}
+				grassData.push_back(GrassInstanceData(loc, getGrassColor(glm::vec2(loc.x, loc.y * 2.f) / glm::vec2(300.0), grassColor1, grassColor2, grassColor3), inShadow));
+			}
+		}
+	}
+
+	grassNum = grassData.size();
+}
+
+void Grass::LoadGPU() {
+	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/grass.png", "grass");
+	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/tallGrass.png", "tallGrass");
+
+	Scene::grassShader->Activate();
+	Scene::grassShader->setVec3("grassColor1", grassColor1);
+	Scene::grassShader->setVec3("grassColor2", grassColor2);
+	Scene::grassShader->setVec3("grassColor3", grassColor3);
+	Scene::grassShader->setVec3("grassHighlight1", grassHighlight1);
+	Scene::grassShader->setVec3("grassHighlight2", grassHighlight2);
+	glm::vec2 grassSize = glm::vec2(20, 9);
+	Scene::grassShader->setVec2("grassSize", grassSize);
+	Scene::grassShader->setVec2("tallGrassSize", glm::vec2(10, 14));
+
+	float vertices[] = {
+		// positions       // texture coordinates
+		0.0f, 1.0f,      0.0f, 0.0f,  // top-left
+		0.0f, 0.0f,      0.0f, 1.0f,  // bottom-left
+		1.0f, 0.0f,      1.0f, 1.0f,  // bottom-right
+		1.0f, 1.0f,      1.0f, 0.0f   // top-right
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	vao = std::make_unique<VAO>();
+	vao->Bind();
+	vbo = std::make_unique<VBO>(vertices, sizeof(vertices));
+	ebo = std::make_unique<EBO>(indices, sizeof(indices));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribDivisor(0, 0);
+	glVertexAttribDivisor(1, 0);
+
+	grassDataVBO = std::make_unique<VBO>(grassData.data(), grassData.size() * sizeof(GrassInstanceData));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float)));
+	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(5 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+	glVertexAttribDivisor(2, 1);
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+
+	fbo = std::make_unique<FBO>(stuff::screenSize, true, FBOType::DepthOnly);
+}
+
+void Grass::DrawDepth() {
+	fbo->Bind();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+
+	Scene::grassShader->Activate();
+	Scene::grassShader->setInt("isDepthPass", 1);
+
+	// draw grass
+	vao->Bind();
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassNum);
+
+	// unbind fbo
+	fbo->Unbind();
+}
+
+void Grass::Draw() {
+	DrawDepth();
+
+	Scene::grassShader->Activate();
+	Scene::grassShader->setInt("isDepthPass", 0);
+	// draw grass
+	vao->Bind();
+	glEnable(GL_DEPTH_TEST);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassNum);
+	glDisable(GL_DEPTH_TEST);
+
+	// bind texture for 2dShader to use
+	Scene::twoDShader->Activate();
+	Texture* tex = fbo->GetDepthTexture();
+	tex->Bind();
+	tex->texUnit(Scene::twoDShader, "grassDepthTex");
+}
+
+void Grass::ResizeScreen() {
+	fbo->ResizeTexture(stuff::screenSize);
+}
+
+std::vector<std::vector<glm::vec2>> Grass::GetGrassPolygons() {
 	std::vector<glm::vec2> polygon = {
 		glm::vec2(871,765) , glm::vec2(880,755) , glm::vec2(904,695) , glm::vec2(936,656)
 		, glm::vec2(947,643) , glm::vec2(978,635) , glm::vec2(1090,635) , glm::vec2(1153,623)
@@ -147,140 +283,102 @@ Grass::Grass() {
 		, glm::vec2(561,1116) , glm::vec2(170,898) , glm::vec2(237,850) , glm::vec2(317,825)
 	};
 
-	std::vector<std::vector<glm::vec2>> polygons = { polygon, polygon1, polygon2, polygon3, polygon4, polygon5 };
+	return { polygon, polygon1, polygon2, polygon3, polygon4, polygon5 };
+}
 
-	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/grass.png", "grass");
-	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/tallGrass.png", "tallGrass");
-
-	glm::vec3 grassColor1 = glm::vec3(114.0 / 255.0, 145.0 / 255.0, 40.0 / 255.0);
-	glm::vec3 grassColor2 = glm::vec3(107.0 / 255.0, 132.0 / 255.0, 45.0 / 255.0);
-	glm::vec3 grassColor3 = glm::vec3(97.0 / 255.0, 122.0 / 255.0, 44.0 / 255.0);
-	glm::vec3 grassHighlight1 = glm::vec3(120.0 / 255.0, 158.0 / 255.0, 36.0 / 255.0);
-	glm::vec3 grassHighlight2 = glm::vec3(88.0 / 255.0, 113.0 / 255.0, 44.0 / 255.0);
-
-	Scene::grassShader->Activate();
-	Scene::grassShader->setVec3("grassColor1", grassColor1);
-	Scene::grassShader->setVec3("grassColor2", grassColor2);
-	Scene::grassShader->setVec3("grassColor3", grassColor3);
-	Scene::grassShader->setVec3("grassHighlight1", grassHighlight1);
-	Scene::grassShader->setVec3("grassHighlight2", grassHighlight2);
-	glm::vec2 grassSize = glm::vec2(20, 9);
-	Scene::grassShader->setVec2("grassSize", grassSize);
-	Scene::grassShader->setVec2("tallGrassSize", glm::vec2(10, 14));
-
-	float vertices[] = {
-		// positions       // texture coordinates
-		0.0f, 1.0f,      0.0f, 0.0f,  // top-left
-		0.0f, 0.0f,      0.0f, 1.0f,  // bottom-left
-		1.0f, 0.0f,      1.0f, 1.0f,  // bottom-right
-		1.0f, 1.0f,      1.0f, 0.0f   // top-right
+std::vector<std::vector<glm::vec2>> Grass::GetShadowPolygons() {
+	std::vector<glm::vec2> shadowPolygon = {
+		glm::vec2(1026,684) , glm::vec2(1077,658) , glm::vec2(1097,658) , glm::vec2(1151,630)
+		, glm::vec2(1238,630) , glm::vec2(1191,726) , glm::vec2(1037,726) , glm::vec2(1013,713)
 	};
 
-	unsigned int indices[] = {
-		0, 1, 2,
-		0, 2, 3
+	std::vector<glm::vec2> shadowPolygon1 = {
+		glm::vec2(1026,684) , glm::vec2(1077,658) , glm::vec2(1097,658) , glm::vec2(1151,630)
+		, glm::vec2(1238,630) , glm::vec2(1191,726) , glm::vec2(1037,726) , glm::vec2(1013,713)
+		, glm::vec2(1300,623) , glm::vec2(1306,620) , glm::vec2(1313,619) , glm::vec2(1319,611)
+		, glm::vec2(1322,610) , glm::vec2(1331,608) , glm::vec2(1337,609) , glm::vec2(1351,601)
+		, glm::vec2(1358,601) , glm::vec2(1386,603) , glm::vec2(1393,609) , glm::vec2(1399,624)
+		, glm::vec2(1432,625) , glm::vec2(1431,630) , glm::vec2(1402,630) , glm::vec2(1406,638)
+		, glm::vec2(1405,645) , glm::vec2(1389,650) , glm::vec2(1379,647) , glm::vec2(1372,645)
+		, glm::vec2(1364,647) , glm::vec2(1345,651) , glm::vec2(1325,645) , glm::vec2(1323,639)
+		, glm::vec2(1314,639) , glm::vec2(1305,636) , glm::vec2(1300,631) , glm::vec2(1299,626)
 	};
 
-	vao = std::make_unique<VAO>();
-	vao->Bind();
-	vbo = std::make_unique<VBO>(vertices, sizeof(vertices));
-	ebo = std::make_unique<EBO>(indices, sizeof(indices));
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 0);
+	std::vector<glm::vec2> shadowPolygon2 = { // bench
+		glm::vec2(1287,556) , glm::vec2(1267,542) , glm::vec2(1274,539) , glm::vec2(1266,535)
+		, glm::vec2(1319,507) , glm::vec2(1335,517) , glm::vec2(1326,538) , glm::vec2(1294,558)
+	};
 
-	// find min and max
-	float minX = INFINITY;
-	float maxX = -INFINITY;
-	float minY = INFINITY;
-	float maxY = -INFINITY;
-	for (auto& polygon : polygons) {
-		for (glm::vec2 point : polygon) {
-			if (point.x < minX)
-				minX = point.x;
-			if (point.x > maxX)
-				maxX = point.x;
-			if (point.y < minY)
-				minY = point.y;
-			if (point.y > maxY)
-				maxY = point.y;
-		}
-	}
+	std::vector<glm::vec2> shadowPolygon3 = {
+		glm::vec2(1440,555) , glm::vec2(1426,549) , glm::vec2(1424,541) , glm::vec2(1436,531)
+		, glm::vec2(1453,535) , glm::vec2(1462,557)
+	};
 
-	std::vector<GrassInstanceData> grassData;
+	std::vector<glm::vec2> shadowPolygon4 = {
+		glm::vec2(1555,652) , glm::vec2(1540,648) , glm::vec2(1536,642) , glm::vec2(1538,634)
+		, glm::vec2(1545,631) , glm::vec2(1556,631) , glm::vec2(1558,623) , glm::vec2(1566,618)
+		, glm::vec2(1584,620) , glm::vec2(1587,612) , glm::vec2(1598,608) , glm::vec2(1620,613)
+		, glm::vec2(1628,623) , glm::vec2(1569,654)
+	};
 
-	float cellSize = 5.f;
-	glm::vec2 size = glm::vec2(maxX - minX, maxY - minY) / cellSize;
+	std::vector<glm::vec2> shadowPolygon5 = {
+		glm::vec2(1363,764) , glm::vec2(1345,756) , glm::vec2(1341,747) , glm::vec2(1348,740)
+		, glm::vec2(1384,748) , glm::vec2(1386,743) , glm::vec2(1367,736) , glm::vec2(1361,729)
+		, glm::vec2(1362,724) , glm::vec2(1369,720) , glm::vec2(1392,721) , glm::vec2(1424,735)
+		, glm::vec2(1452,699) , glm::vec2(1429,687) , glm::vec2(1431,673) , glm::vec2(1444,669)
+		, glm::vec2(1458,671) , glm::vec2(1466,662) , glm::vec2(1484,662) , glm::vec2(1490,654)
+		, glm::vec2(1496,651) , glm::vec2(1508,651) , glm::vec2(1525,657) , glm::vec2(1500,720)
+	};
 
-	for (int y = 0; y < size.y; y++) {
-		for (int x = 0; x < size.x; x++) {
-			glm::vec2 jitter(math::randRange(0, cellSize), math::randRange(0, cellSize));
-			glm::vec2 loc = glm::vec2(x * cellSize + minX, y * cellSize + minY) + jitter;
-			bool inside = false;
-			for (auto& polygon : polygons) {
-				if (isPointInsidePolygon(polygon, loc)) {
-					inside = true;
-					break;
-				}
-			}
+	std::vector<glm::vec2> shadowPolygon6 = {
+		glm::vec2(1165,757) , glm::vec2(1138,756) , glm::vec2(1141,774) , glm::vec2(1121,780)
+		, glm::vec2(1116,789) , glm::vec2(1098,795) , glm::vec2(1083,790) , glm::vec2(1063,797)
+		, glm::vec2(1052,799) , glm::vec2(1035,795) , glm::vec2(1030,789) , glm::vec2(1016,785)
+		, glm::vec2(1011,781) , glm::vec2(1004,772) , glm::vec2(992,761) , glm::vec2(978,756)
+		, glm::vec2(974,752) , glm::vec2(971,744) , glm::vec2(985,738) , glm::vec2(993,730)
+		, glm::vec2(997,729) , glm::vec2(1012,728) , glm::vec2(1021,722) , glm::vec2(1035,719)
+		, glm::vec2(1059,724) , glm::vec2(1065,733) , glm::vec2(1073,736) , glm::vec2(1085,728)
+		, glm::vec2(1091,728) , glm::vec2(1121,730) , glm::vec2(1128,737) , glm::vec2(1134,751)
+		, glm::vec2(1136,751) , glm::vec2(1168,752)
+	};
 
-			if (inside)
-				grassData.push_back(GrassInstanceData(loc, getGrassColor(glm::vec2(loc.x, loc.y * 2.f) / glm::vec2(300.0), grassColor1, grassColor2, grassColor3)));
-		}
-	}
+	// forest trees
+	std::vector<glm::vec2> shadowPolygon7 = {
+		glm::vec2(970,890) , glm::vec2(945,891) , glm::vec2(943,905) , glm::vec2(919,909)
+		, glm::vec2(903,910) , glm::vec2(895,920) , glm::vec2(855,928) , glm::vec2(835,942)
+		, glm::vec2(816,944) , glm::vec2(780,942) , glm::vec2(772,930) , glm::vec2(781,909)
+		, glm::vec2(791,904) , glm::vec2(812,896) , glm::vec2(842,898) , glm::vec2(879,907)
+		, glm::vec2(869,899) , glm::vec2(855,884) , glm::vec2(861,871) , glm::vec2(885,868)
+		, glm::vec2(890,863) , glm::vec2(926,864) , glm::vec2(940,885) , glm::vec2(973,885)
+	};
 
-	grassNum = grassData.size();
+	std::vector<glm::vec2> shadowPolygon8 = {
+		glm::vec2(876,845) , glm::vec2(847,844) , glm::vec2(849,861) , glm::vec2(821,864)
+		, glm::vec2(807,863) , glm::vec2(779,866) , glm::vec2(786,879) , glm::vec2(820,881)
+		, glm::vec2(818,887) , glm::vec2(789,885) , glm::vec2(790,902) , glm::vec2(768,905)
+		, glm::vec2(743,907) , glm::vec2(710,897) , glm::vec2(686,888) , glm::vec2(687,864)
+		, glm::vec2(672,864) , glm::vec2(639,853) , glm::vec2(622,848) , glm::vec2(619,834)
+		, glm::vec2(625,828) , glm::vec2(636,821) , glm::vec2(660,819) , glm::vec2(710,828)
+		, glm::vec2(711,834) , glm::vec2(743,836) , glm::vec2(746,841) , glm::vec2(716,841)
+		, glm::vec2(718,847) , glm::vec2(715,856) , glm::vec2(697,863) , glm::vec2(704,869)
+		, glm::vec2(713,866) , glm::vec2(738,858) , glm::vec2(769,859) , glm::vec2(763,854)
+		, glm::vec2(753,851) , glm::vec2(745,845) , glm::vec2(747,837) , glm::vec2(758,835)
+		, glm::vec2(763,830) , glm::vec2(777,823) , glm::vec2(828,818) , glm::vec2(844,839)
+		, glm::vec2(877,840)
+	};
 
-	grassDataVBO = std::make_unique<VBO>(grassData.data(), grassData.size() * sizeof(GrassInstanceData));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glVertexAttribDivisor(2, 1);
-	glVertexAttribDivisor(3, 1);
+	std::vector<glm::vec2> shadowPolygon9 = {
+		glm::vec2(673,783) , glm::vec2(645,782) , glm::vec2(641,799) , glm::vec2(627,803)
+		, glm::vec2(618,800) , glm::vec2(586,804) , glm::vec2(546,803) , glm::vec2(549,819)
+		, glm::vec2(535,823) , glm::vec2(517,820) , glm::vec2(508,830) , glm::vec2(478,830)
+		, glm::vec2(481,847) , glm::vec2(461,851) , glm::vec2(449,846) , glm::vec2(423,851)
+		, glm::vec2(413,850) , glm::vec2(399,843) , glm::vec2(383,837) , glm::vec2(376,826)
+		, glm::vec2(380,822) , glm::vec2(397,813) , glm::vec2(416,809) , glm::vec2(428,803)
+		, glm::vec2(441,802) , glm::vec2(464,785) , glm::vec2(500,775) , glm::vec2(530,777)
+		, glm::vec2(541,798) , glm::vec2(568,798) , glm::vec2(562,792) , glm::vec2(548,789)
+		, glm::vec2(542,782) , glm::vec2(546,776) , glm::vec2(570,762) , glm::vec2(603,755)
+		, glm::vec2(614,756) , glm::vec2(636,762) , glm::vec2(641,777) , glm::vec2(676,778)
+	};
 
-	fbo = std::make_unique<FBO>(stuff::screenSize, true, FBOType::DepthOnly);
-}
-
-void Grass::DrawDepth() {
-	fbo->Bind();
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
-
-	Scene::grassShader->Activate();
-	Scene::grassShader->setInt("isDepthPass", 1);
-
-	// draw grass
-	vao->Bind();
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassNum);
-
-	// unbind fbo
-	fbo->Unbind();
-}
-
-void Grass::Draw() {
-	DrawDepth();
-
-	Scene::grassShader->Activate();
-	Scene::grassShader->setInt("isDepthPass", 0);
-	// draw grass
-	vao->Bind();
-	glEnable(GL_DEPTH_TEST);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassNum);
-	glDisable(GL_DEPTH_TEST);
-
-	// bind texture for 2dShader to use
-	Scene::twoDShader->Activate();
-	Texture* tex = fbo->GetDepthTexture();
-	tex->Bind();
-	tex->texUnit(Scene::twoDShader, "grassDepthTex");
-}
-
-void Grass::ResizeScreen() {
-	fbo->ResizeTexture(stuff::screenSize);
+	return { shadowPolygon, shadowPolygon1, shadowPolygon2, shadowPolygon3, shadowPolygon4, shadowPolygon5, shadowPolygon6, shadowPolygon7, shadowPolygon8, shadowPolygon9 };
 }

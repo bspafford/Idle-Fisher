@@ -363,7 +363,7 @@ void world::start() {
 
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
 
-	grass = std::make_unique<Grass>();
+	grass->LoadGPU();
 
 	circleAnim->Start();
 
@@ -680,6 +680,8 @@ world1::world1(WorldLoc worldChangeLoc) {
 	}
 
 	inFront = std::make_unique<Image>("images/worlds/demo/inFront.png", vector(624.f, 448.f), true);
+
+	grass = std::make_unique<Grass>();
 }
 
 void world::finishedBeachAnim() {

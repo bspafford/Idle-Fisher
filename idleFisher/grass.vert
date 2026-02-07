@@ -6,6 +6,7 @@ layout(location = 1) in vec2 aTexCoord;
 
 layout(location = 2) in vec2 iOffset;
 layout(location = 3) in vec3 iColor;
+layout(location = 4) in float iInShadow;
 
 uniform mat4 projection;
 uniform vec2 playerPos;
@@ -21,6 +22,7 @@ out vec2 loc;
 out flat int isAccent;
 out flat float rot;
 out flat vec3 color;
+out flat float inShadow;
 out flat vec2 size;
 
 uint initRNG(uint id) {
@@ -116,4 +118,5 @@ void main() {
 	texCoord = vec2(aTexCoord.x, 1.f - aTexCoord.y);
 	loc = iOffset;
 	color = iColor;
+	inShadow = iInShadow;
 }
