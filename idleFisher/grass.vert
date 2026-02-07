@@ -13,6 +13,7 @@ uniform float time;
 out vec2 texCoord;
 out vec2 loc;
 out flat int isAccent;
+out flat float rot;
 
 uint initRNG(uint id) {
 	uint seed = id * 1973u;
@@ -48,21 +49,23 @@ vec2 rotation2D(vec2 p, float a) {
 }
 
 void main() {
+    float mapHeight = 1185;
+
 	int id = gl_InstanceID;
 
 	uint seed = initRNG(id);
 
-	int grassNum = 2;
 	vec2 grassSize = vec2(22, 21);
 
-	vec2 randLoc = rand2(seed) * screenSize;
+	vec2 randLoc = rand2(seed) * screenSize + vec2(100, 100);
 
 	float maxYScale = 0.25f;
 	float maxRotX = 1.f;
-	float radius = 150.f;
+	float radius = 50.f;
 
-	vec2 grassLoc = randLoc - playerPos;
-	vec2 charLoc = screenSize / 2.f;
+	vec2 grassLoc = randLoc;
+	vec2 charLoc = playerPos / pixelSize + (screenSize - radius) / 2.f + vec2(10, -5);
+
     vec2 delta = grassLoc - charLoc;
 
     // Isometric scaling
@@ -86,11 +89,12 @@ void main() {
 	rotX *= charLoc.x < grassLoc.x ? -1 : 1; // invert rotation is character is on left
 
 	// wind
-	float fps = 3.f;
+	float fps = 5.f;
 	float roundedTime = floor((time + rand(seed)) * fps) / fps; // rand for a random offset so all grass isn't on the same update time, so it doesn't look laggy
 	float windRot = sin(randLoc.x + roundedTime) / 10.f;
 
-	pos = rotation2D(pos, windRot + rotX);
+	rot = windRot + rotX;
+	pos = rotation2D(pos, rot);
 
     // Y-axis stretch (stronger left/right)
     float yScale = maxYScale * horizontalMask * fade; // max scale * how left or right * how close to center
@@ -100,13 +104,11 @@ void main() {
 	if (rand(seed) >= 0.99f) {
 		isAccent = 1;
 		pos.y *= 1.25f;
-		texCoord = vec2(aTexCoord.x * (1.f / grassNum) + (1.f / grassNum), aTexCoord.y);
-	} else
-		texCoord = vec2(aTexCoord.x * (1.f / grassNum), aTexCoord.y);
+	}
 
     // Final position
-	gl_Position = projection * vec4(pos* pixelSize * grassSize + randLoc - playerPos, 1.f - randLoc.y / screenSize.y, 1.0);
+	gl_Position = projection * vec4((pos * grassSize + randLoc) * pixelSize - playerPos, 1.f - grassLoc.y / mapHeight, 1.0); // 1.f - grassLoc.y / mapHeight
 
-	//texCoord = vec2(aTexCoord.x * (1.f / grassNum) + round(rand(seed)) * (1.f / grassNum), aTexCoord.y);
+	texCoord = aTexCoord;
 	loc = randLoc;
 }

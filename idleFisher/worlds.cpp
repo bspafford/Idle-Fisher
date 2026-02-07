@@ -132,6 +132,8 @@ void titleScreen::exit() {
 }
 
 void titleScreen::draw(Shader* shaderProgram) {
+	glDisable(GL_DEPTH_TEST);
+
 	if (waterImg)
 		waterImg->draw(Scene::twoDWaterShader);
 
@@ -361,6 +363,8 @@ void world::start() {
 
 	buyer = std::make_unique<buyAutoFisher>(vector{ 295, -170 });
 
+	grass = std::make_unique<Grass>();
+
 	circleAnim->Start();
 
 	if (fishTransporter)
@@ -457,12 +461,9 @@ void world::draw(Shader* shaderProgram) {
 }
 
 void world::renderWater() {
-	if (waterImg)
-		waterImg->draw(Scene::twoDWaterShader);
+	//if (waterImg)
+	//	waterImg->draw(Scene::twoDWaterShader);
 
-	glDisable(GL_DEPTH_TEST);
-
-	// ==== DRAW 2D STUFF ====
 	Scene::twoDShader->Activate();
 
 	// draws ship inbetween water and dock
@@ -471,8 +472,11 @@ void world::renderWater() {
 	
 	//if (beachAnim)
 		//beachAnim->draw(Scene::twoDShader);
-	if (mapImg)
-		mapImg->draw(Scene::twoDShader);
+
+	//if (mapImg)
+	//	mapImg->draw(Scene::twoDShader);
+
+	if (grass) grass->Draw(Scene::grassShader);
 }
 
 void world::sortDraw(Shader* shaderProgram) {

@@ -242,7 +242,7 @@ void Acharacter::move(float deltaTime) {
 		return;
 
 	// if should use collision // debugging
-	if (true)
+	if (false)
 		collision::TestCollision(col.get(), moveDir, deltaTime);
 	else {
 		vector normDir = math::normalize(moveDir);

@@ -113,82 +113,9 @@ int Main::createWindow() {
 	Start();
 
 	auto lastTime = std::chrono::steady_clock::now();
-
-
-
-	float vertices[] = {
-		// positions       // texture coordinates
-		0.0f, 1.0f,      0.0f, 0.0f,  // top-left
-		0.0f, 0.0f,      0.0f, 1.0f,  // bottom-left
-		1.0f, 0.0f,      1.0f, 1.0f,  // bottom-right
-		1.0f, 1.0f,      1.0f, 0.0f   // top-right
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	std::unique_ptr<VAO> vao = std::make_unique<VAO>();
-	vao->Bind();
-	std::unique_ptr<VBO> vbo = std::make_unique<VBO>(vertices, sizeof(vertices));
-	std::unique_ptr<EBO> ebo = std::make_unique<EBO>(indices, sizeof(indices));
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 0);
-	Texture::bindTextureToShader(Scene::grassShader, "images/worlds/demo/grass.png", "grass");
-	Scene::grassShader->setMat4("projection", GetMainCamera()->getProjectionMat());
-	Scene::grassShader->setFloat("pixelSize", stuff::pixelSize);
-	Scene::grassShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y));
-	glEnable(GL_DEPTH_TEST);
-	glm::vec2 pos(0, 0);
-	float time = 0;
-
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
-		{
-			auto currentTime = std::chrono::steady_clock::now();
-			float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-			lastTime = currentTime;
-
-			Input::pollEvents();
-
-			checkInputs();
-			Update(deltaTime);
-
-			float speed = 100;
-			if (Input::getKeyHeld(GLFW_KEY_W))
-				pos.y += speed * deltaTime;
-			if (Input::getKeyHeld(GLFW_KEY_S))
-				pos.y -= speed * deltaTime;
-			if (Input::getKeyHeld(GLFW_KEY_D))
-				pos.x += speed * deltaTime;
-			if (Input::getKeyHeld(GLFW_KEY_A))
-				pos.x -= speed * deltaTime;
-
-			glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			Scene::grassShader->Activate();
-			Scene::grassShader->setVec2("playerPos", pos);
-			time += deltaTime;
-			Scene::grassShader->setFloat("time", time);
-			vao->Bind();
-			Scene::grassShader->setInt("grass", 1);
-			
-			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 10000); // 10000
-
-			glfwSwapBuffers(window);
-			GLenum err;
-			while ((err = glGetError()) != GL_NO_ERROR)
-				std::cout << "OpenGL Error: " << err << std::endl;
-			continue;
-		}
-
-
 		auto currentTime = std::chrono::steady_clock::now();
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 
@@ -210,14 +137,13 @@ int Main::createWindow() {
 
 		glClearColor(18.f / 255.f, 11.f / 255.f, 22.f / 255.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		// ==== DRAW 2D STUFF ====
 		Scene::twoDShader->Activate();
 
 		BlurBox::BindFramebuffer();
 		draw(Scene::twoDShader);
 		BlurBox::UnbindFramebuffer();
-
 		BlurBox::DrawFinal(Scene::twoDShader);
 
 		textureManager::EndFrame();
@@ -355,7 +281,7 @@ void Main::ShadowSetup() {
 void Main::DrawShadows() {
 	return; // to do
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	// Compute full light-space matrix
 	float size = 300.f; // 100.f;// 35
@@ -391,7 +317,7 @@ void Main::DrawShadows() {
 	Scene::shaderProgram->setInt("shadowOnly", 1);
 	draw3D(Scene::shaderProgram);
 
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 }
 
 void Main::draw3D(Shader* shaderProgram) {

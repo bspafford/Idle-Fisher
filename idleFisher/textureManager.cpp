@@ -266,6 +266,8 @@ bool textureManager::GetTexturesLoaded() {
 }
 
 void textureManager::SetInterpMethod(int method) {
+	return; // to do
+
 	// Step 0: Make old handles non-resident
 	for (auto& texture : textureMap) {
 		if (texture.second->handle != 0) {

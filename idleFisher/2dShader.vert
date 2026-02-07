@@ -27,10 +27,12 @@ struct InstanceData {
 layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
 
 void main() {
+    float mapHeight = 1185;
+
     instanceIndex = gl_InstanceID;
     InstanceData data = instances[instanceIndex];
 
-    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 0.0, 1.0);
+    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), 1.f - data.position.y / mapHeight, 1.0); // 1.f - data.position.y / mapHeight
 
     // if source size is 0
     if (data.source.z == 0 || data.source.w == 0)

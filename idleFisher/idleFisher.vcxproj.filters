@@ -95,6 +95,8 @@
     </None>
     <None Include="grass.vert" />
     <None Include="grass.frag" />
+    <None Include="temp.vert" />
+    <None Include="temp.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">
@@ -447,6 +449,9 @@
     </ClCompile>
     <ClCompile Include="AudioSystem.cpp">
       <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="grass.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -820,6 +825,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IdleProfits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="grass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

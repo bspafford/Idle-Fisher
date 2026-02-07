@@ -27,8 +27,8 @@
 #include "fisherman.h"
 #include "ship.h"
 #include "sailor.h"
-#include "rock.h"
 #include "fishSchool.h"
+#include "grass.h"
 
 class animation;
 class Timer;
@@ -204,6 +204,8 @@ public:
 	void finishedBeachAnim();
 	std::unique_ptr<Image> waterImg;
 	std::unique_ptr<animation> beachAnim;
+
+	std::unique_ptr<Grass> grass;
 
 	// pole list
 	std::vector<std::unique_ptr<Image>> poleList;

@@ -45,7 +45,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -53,7 +53,7 @@
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -190,6 +190,8 @@
     <None Include="lineShader.vert" />
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
+    <None Include="temp.frag" />
+    <None Include="temp.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AautoFisher.cpp" />
@@ -251,6 +253,7 @@
     <ClInclude Include="GPULoadCollector.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClCompile Include="grass.cpp" />
     <ClCompile Include="heldFishWidget.cpp" />
     <ClCompile Include="horizontalBox.cpp" />
     <ClCompile Include="house.cpp" />
@@ -361,6 +364,7 @@
     <ClInclude Include="fishTransporter.h" />
     <ClInclude Include="achievementUnlockWidget.h" />
     <ClInclude Include="fps.h" />
+    <ClInclude Include="grass.h" />
     <ClInclude Include="heldFishWidget.h" />
     <ClInclude Include="horizontalBox.h" />
     <ClInclude Include="house.h" />

@@ -1072,6 +1072,7 @@ images/worlds/demo/bridgePole.png
 images/worlds/demo/treeSpriteSheet.png
 images/worlds/demo/bushSpriteSheet.png
 images/worlds/demo/grass.png|b
+images/worlds/demo/tallGrass.png|b
 images/worlds/demo/reflections.png|b
 images/worlds/demo/underwater.png|b
 images/worlds/demo/depthmap.png|b

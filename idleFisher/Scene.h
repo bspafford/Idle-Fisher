@@ -100,6 +100,7 @@ private:
 	// water stuff
 	static inline float waveSpeed = 0.03f;
 	static inline float waveFactor = 0;
+	static inline float grassWindTime = 0.0;
 
 	// player stuff
 	static inline std::unique_ptr<Acharacter> character;

@@ -6,10 +6,10 @@ out vec4 FragColor;
 in vec2 texCoord;
 in vec2 loc;
 in flat int isAccent;
+in flat float rot;
 
 uniform sampler2D grass;
-uniform float pixelSize;
-uniform vec2 screenSize;
+uniform sampler2D tallGrass;
 
 vec2 fade(vec2 t) {
 	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
@@ -94,7 +94,18 @@ float rand(inout uint state) {
 	return float(pcg(state)) * (1.0 / 4294967296.0);
 }
 
+vec2 rotation2D(vec2 p, float a) {
+    float s = sin(a);
+    float c = cos(a);
+    return vec2(
+        c * p.x - s * p.y,
+        s * p.x + c * p.y
+    );
+}
+
 void main() {
+	vec2 grassSize = vec2(22, 21);
+
 	vec3 noise = rgbPerlinColored(vec2(loc.x, loc.y*2.f)/300.0, 1.2);
 
 	vec3 grassColor1 = vec3(68.0/255.0, 113.0/255.0, 25.0/255.0);
@@ -108,8 +119,24 @@ void main() {
 
 	uint seed = initRNG(uvec2(loc));
 
-	if (texture(grass, texCoord).a < 0.5) discard; // allows transparency with depth testing
-
 	vec3 grassColor = isAccent == 1 ? mix(grassColor4, grassColor5, round(rand(seed))) : color;
-	FragColor = texture(grass, texCoord) * vec4(grassColor, 1.f);
+
+	// rotate in frag shader for pixelated look
+	// rotates in the vert shader for geometry
+	// rotates back, pixelates the coords, then rotates back
+	vec2 pivot = vec2(0.5, 1.0);
+	vec2 p = texCoord;
+	p -= pivot;
+	p = rotation2D(p, -rot);
+	p += pivot;
+	p = floor(p * grassSize) / grassSize;
+	p -= pivot;
+	p = rotation2D(p, rot);
+	p += pivot;
+
+	bool outOfBounds = any(lessThan(p, vec2(0.0))) || any(greaterThan(p, vec2(1.0)));
+	vec4 tex = isAccent == 1 ? texture(tallGrass, p) : texture(grass, p);
+	vec4 final = tex * vec4(grassColor, 1.f);
+	if (final.a < 0.5 || outOfBounds) discard; // allows transparency with depth testing
+	FragColor = final;
 }

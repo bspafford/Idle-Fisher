@@ -42,11 +42,11 @@ public:
 	static void bindTextureToShader(std::vector<Shader*> shaderPrograms, const char* path, const char* uniform);
 	static void deleteCache();
 
+	static GLuint takeOpenSlot();
+	static void releaseSlot(GLuint slot);
 private:
 	// false means slot isn't used, true means slot is currently being used
 	static inline std::vector<bool> usedSlots;
-	static GLuint takeOpenSlot();
-	static void releaseSlot(GLuint slot);
 
 	GLuint id = 0;
 	GLuint unit = 0;

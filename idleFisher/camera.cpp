@@ -27,5 +27,5 @@ glm::mat4 Camera::getProjectionMat(vector frameSize) {
 		frameSize = stuff::screenSize;
 	
 	float left = 0, right = frameSize.x, bottom = 0, top = frameSize.y;
-	return glm::ortho(left, right, bottom, top, -1.f, 5000.0f);
+	return glm::ortho(left, right, bottom, top, -1.f, 1.f);
 }

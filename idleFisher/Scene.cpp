@@ -293,6 +293,14 @@ void Scene::updateShaders(float deltaTime) {
 	blurShader->setMat4("projection", GetMainCamera()->getProjectionMat());
 	blurShader->setVec2("playerPos", camPos);
 	blurShader->setFloat("pixelSize", stuff::pixelSize);
+
+	grassShader->Activate();
+	grassShader->setMat4("projection", GetMainCamera()->getProjectionMat());
+	grassShader->setVec2("playerPos", camPos);
+	grassShader->setFloat("pixelSize", stuff::pixelSize);
+	grassShader->setVec2("screenSize", glm::vec2(stuff::screenSize.x, stuff::screenSize.y) / stuff::pixelSize);
+	grassWindTime += deltaTime;
+	Scene::grassShader->setFloat("time", grassWindTime);
 }
 
 std::vector<uint32_t> Scene::GetWorldsList() {
