@@ -92,7 +92,7 @@ AautoFisher::AautoFisher(uint32_t id) {
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &AautoFisher::Recast);
-	recastAudio = std::make_unique<Audio>("recasts/G2.wav", anim->getLoc() + vector(anim->GetCellSize().x / 2.f, 0));
+	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX, anim->getLoc() + vector(anim->GetCellSize().x / 2.f, 0));
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 
 	setStats();

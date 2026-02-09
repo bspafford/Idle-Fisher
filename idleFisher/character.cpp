@@ -153,11 +153,11 @@ Acharacter::Acharacter() {
 	comboOvertimeWidget->addFinishedCallback(this, &Acharacter::comboOvertimeFinished);
 
 	// Audio
-	catchFishAudio = std::make_unique<Audio>("pop.wav");
+	catchFishAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX);
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
-	recastAudio = std::make_unique<Audio>("recasts/G2.wav");
+	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX);
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 }
 
@@ -242,7 +242,7 @@ void Acharacter::move(float deltaTime) {
 		return;
 
 	// if should use collision // debugging
-	if (false)
+	if (true)
 		collision::TestCollision(col.get(), moveDir, deltaTime);
 	else {
 		vector normDir = math::normalize(moveDir);

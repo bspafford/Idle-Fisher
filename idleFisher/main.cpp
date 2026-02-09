@@ -124,8 +124,8 @@ int Main::createWindow() {
 
 		lastTime = currentTime;
 
-		fps::showFPS(true);
-		fps::update(deltaTime);
+		//fps::showFPS(true);
+		//fps::update(deltaTime);
 
 		// process input
 		Input::pollEvents();
@@ -199,6 +199,9 @@ void Main::Start() {
 	ShadowSetup();
 
 	collision::Init();
+
+	backgroundMusic = std::make_unique<Audio>("music.wav", AudioType::Music);
+	backgroundMusic->Play(true);
 }
 
 void Main::Update(float deltaTime) {

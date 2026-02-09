@@ -3,58 +3,69 @@
 
 #include <iostream>
 
-Audio::Audio(std::string path) {
-    std::lock_guard lock(mutex);
+Audio::Audio(std::string path, AudioType type) {
+	std::lock_guard lock(mutex);
 
-    this->path = path;
+	this->path = path;
+	this->type = type;
 
-    std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);
-    if (ma_decoder_init_memory(buffer->data(), buffer->size(), AudioSystem::GetDecoderConfig(), &decoder) != MA_SUCCESS) {
-        std::cerr << "Failed to init decoder\n";
-        return;
-    }
+	std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);
+	if (ma_decoder_init_memory(buffer->data(), buffer->size(), AudioSystem::GetDecoderConfig(), &decoder) != MA_SUCCESS) {
+		std::cerr << "Failed to init decoder\n";
+		return;
+	}
 }
 
-Audio::Audio(std::string path, vector loc) {
-    std::lock_guard lock(mutex);
-    
-    useWorldPos = true;
-    this->loc = loc;
+Audio::Audio(std::string path, AudioType type, vector loc) {
+	std::lock_guard lock(mutex);
+	
+	useWorldPos = true;
+	this->loc = loc;
 
-    this->path = path;
+	this->path = path;
+	this->type = type;
 
-    std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);
-    if (ma_decoder_init_memory(buffer->data(), buffer->size(), AudioSystem::GetDecoderConfig(), &decoder) != MA_SUCCESS) {
-        std::cerr << "Failed to init decoder\n";
-        return;
-    }
+	std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);
+	if (ma_decoder_init_memory(buffer->data(), buffer->size(), AudioSystem::GetDecoderConfig(), &decoder) != MA_SUCCESS) {
+		std::cerr << "Failed to init decoder\n";
+		return;
+	}
 }
 
 Audio::~Audio() {
-    ma_decoder_uninit(&decoder);
+	ma_decoder_uninit(&decoder);
 }
 
-void Audio::Play() {
-    pendingStart = true;
-    AudioSystem::Add(this);
+void Audio::Play(bool loop) {
+	this->loop = loop;
+	pendingStart = true;
+	AudioSystem::Add(this);
 }
 
 void Audio::Stop() {
-    AudioSystem::Remove(this);
+	AudioSystem::Remove(this);
 }
 
 void Audio::SetPitch(float pitch) {
-    //ma_sound_set_pitch(&sound, pitch);
+	//ma_sound_set_pitch(&sound, pitch);
 }
 
 ma_decoder* Audio::GetDecoder() {
-    return &decoder;
+	return &decoder;
 }
 
 vector Audio::GetLoc() {
-    return loc;
+	return loc;
 }
 
 bool Audio::GetUseWorldPos() {
-    return useWorldPos;
+	return useWorldPos;
+}
+
+AudioType Audio::GetType() {
+	return type;
+}
+
+bool Audio::ShouldLoop() {
+	return loop;
 }

@@ -71,6 +71,14 @@ void animation::stop() {
 }
 
 void animation::setAnimation(const std::string& name) {
+	auto it = animData.find(name);
+	if (it == animData.end()) {
+		std::cout << "Invalid Animation: \"" << name << "\"\n";
+		abort();
+	}
+
+	animTimer->SetTime(it->second.duration == 0 ? stuff::animSpeed : it->second.duration);
+
 	int frameNum = calcFrameDistance(true);
 
 	currAnim = name;
