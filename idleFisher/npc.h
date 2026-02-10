@@ -10,6 +10,7 @@
 #include "NPCwidget.h"
 #include "animation.h"
 #include "collision.h"
+#include "Audio.h"
 
 class Shader;
 class Image;
@@ -43,14 +44,15 @@ protected:
 	std::vector<vector> collisionPoints;
 
 	std::unique_ptr<animation> npcAnim;
-
 	std::unique_ptr<NPCwidget> widget;
-
 	std::unique_ptr<animation> exclamationPointAnim;
+	std::unique_ptr<Audio> openAudio;
+	std::unique_ptr<Audio> npcAudio;
 
 	bool* discovered = nullptr;
 	// when there is no saveData value to put for discovered, will fall back to pointing to this value
 	bool discoveredFallback = true;
+
 private:
 	// gets the offset for collision based on charImg;
 	vector getOffset();

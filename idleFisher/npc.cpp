@@ -16,6 +16,9 @@ npc::npc(vector loc) {
 	exclamationPointAnim = std::make_unique<animation>("widget/npcButtons/exclamationPoint.png", 5, 13, exclamationPointAnimData, true, loc);
 	exclamationPointAnim->setAnimation("anim");
 	exclamationPointAnim->start();
+
+	openAudio = std::make_unique<Audio>("temp/openUI.mp3", AudioType::SFX);
+	npcAudio = std::make_unique<Audio>("npc1.wav", AudioType::SFX);
 }
 
 npc::~npc() {
@@ -81,6 +84,8 @@ void npc::setLoc(vector loc) {
 
 void npc::click() {
 	widget->addToViewport(nullptr);
+	openAudio->Play();
+	npcAudio->Play();
 }
 
 bool npc::isDiscovered() {

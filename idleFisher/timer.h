@@ -60,7 +60,8 @@ public:
 
 private:
 	// recursive incase Update() or callbacks create a timer and lock mutex while its already locked
-	static inline std::recursive_mutex mutex;
+	std::recursive_mutex mutex;
+	static inline std::mutex staticMutex;
 
 	float time = 0;
 	float maxTime;

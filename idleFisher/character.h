@@ -146,6 +146,9 @@ private:
 	std::unique_ptr<Audio> catchFishAudio;
 	std::unique_ptr<Audio> catchPremiumAudio;
 	std::unique_ptr<Audio> walkSFX;
+	std::unique_ptr<Audio> castAudio;
+	std::unique_ptr<Audio> tightRopeAudio;
+
 	// Called when the animation frame that either foot has hit the floor
 	void FootHitFloor();
 

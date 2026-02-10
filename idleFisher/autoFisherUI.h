@@ -1,6 +1,7 @@
 #pragma once
 
 #include "widget.h"
+#include "Audio.h"
 
 class AautoFisher;
 class AFmoreInfoUI;
@@ -56,7 +57,8 @@ public:
 	std::unique_ptr<text> buttonText;
 private:
 	std::vector<std::string> levelBarImgs;
-	// std::vector<std::string> fullnessBarImgs;
+
+	std::unique_ptr<Audio> openAudio;
 
 	vector UILoc;
 

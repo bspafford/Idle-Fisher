@@ -159,6 +159,9 @@ Acharacter::Acharacter() {
 	catchFishAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX);
 	catchPremiumAudio = std::make_unique<Audio>("holy.wav", AudioType::SFX);
 	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX);
+	castAudio = std::make_unique<Audio>("temp/fishing/castFishingRod.wav", AudioType::SFX);
+	tightRopeAudio = std::make_unique<Audio>("temp/fishing/tightRope.wav", AudioType::SFX);
+
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
@@ -549,6 +552,9 @@ void Acharacter::StartFishing() {
 
 	bobberBobTimer->start(bobTime);
 
+	castAudio->Play();
+	tightRopeAudio->Play(true);
+
 	// check if fishing rod is inside a fishSchool or not!
 	calcFishSchool();
 
@@ -583,6 +589,7 @@ void Acharacter::stopFishing() {
 	isFishing = false;
 
 	bobberBobTimer->stop();
+	tightRopeAudio->Stop();
 
 	if (comboNum > 1) {
 		comboOvertimeWidget->Start(1.f);
@@ -884,8 +891,6 @@ void Acharacter::FootHitFloor() {
 			}
 		}
 
-		//std::string audioPath = math::randRange(0.f, 1.f) < 0.5f ? "temp/grass1.mp3" : "temp/grass2.mp3";
-		//std::string audioPath = math::randRange(0.f, 1.f) < 0.5f ? "temp/dirt1.wav" : "temp/dirt2.wav";
 		walkSFX->SetSpeed(math::randRange(0.9f, 1.1f));
 		walkSFX->SetAudio(audioPath);
 		walkSFX->Play();

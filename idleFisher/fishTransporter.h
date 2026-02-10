@@ -4,6 +4,7 @@
 #include "math.h"
 #include "AStar.h"
 #include "path.h"
+#include "Audio.h"
 
 class AautoFisher;
 class Timer;
@@ -51,6 +52,9 @@ private:
 
 	bool calcIfPlayerInfront() override;
 
+	// Called when the animation frame that either foot has hit the floor
+	void FootHitFloor();
+
 	std::unique_ptr<AStar> Astar;
 
 	std::unique_ptr<UprogressBar> progressBar;
@@ -64,16 +68,9 @@ private:
 	DeferredPtr<Timer> collectTimer;
 	std::unique_ptr<text> fullnessText;
 
+	std::unique_ptr<Audio> walkSFX;
+
 	std::unordered_map<uint32_t, FsaveFishData> holding;
-
-	// animations
-	std::vector<std::vector<std::string>> walkAnimWheel;
-	std::vector<std::string> currAnim;
-	std::vector<std::string> walkE, walkNE, walkN, walkNW, walkW, walkSW, walkS, walkSE;
-
-	// idle
-	std::vector<std::string> idleE, idleNE, idleN, idleNW, idleW, idleSW, idleS, idleSE;
-	std::vector<std::vector<std::string>> idleAnimWheel;
 
 	std::string fullnessString = "empty";
 

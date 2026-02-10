@@ -7,7 +7,7 @@
 
 // calls update function to all instances of object
 void Timer::callUpdate(float deltaTime) {
-	std::lock_guard<std::recursive_mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(staticMutex);
 	// get value instead of reference so Timers / size aren't updating during the loop
 	std::vector<Timer*> instances = DeferredPtr<Timer>::GetInstanceListVal();
 	for (auto& instance : instances)

@@ -56,6 +56,8 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	openData.insert({ "close", animDataStruct({0, 1}, {3, 1}, false) });
 	openAnimation = std::make_unique<animation>("autoFisher/UI/openUI/openUI.png", 36, 66, openData, true, UILoc);
 	openAnimation->setAnimation("open");
+
+	openAudio = std::make_unique<Audio>("temp/openUI.mp3", AudioType::SFX);
 }
 
 autoFisherUI::~autoFisherUI() {
@@ -173,6 +175,8 @@ void autoFisherUI::openUI() {
 
 	visible = true;
 	updateUI();
+
+	openAudio->Play();
 
 	// do open animation
 	closing = false;

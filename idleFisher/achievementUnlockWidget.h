@@ -2,6 +2,7 @@
 
 #include "widget.h"
 #include "deferredPtr.h"
+#include "Audio.h"
 
 class Timer;
 class animation;
@@ -29,4 +30,5 @@ private:
 	std::unique_ptr<text> name;
 
 	DeferredPtr<Timer> finishedTimer;
+	std::unique_ptr<Audio> unlockAudio;
 };

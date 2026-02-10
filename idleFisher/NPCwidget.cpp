@@ -85,7 +85,7 @@ void NPCwidget::setupLocs() {
 	upgradeBackground->setLoc(center + vector{ 1.f, 1.f });
 
 	if (npcImg)
-		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, 3.f});
+		npcImg->setLoc(npcBackground->getAbsoluteLoc() + vector{ npcBackground->getSize().x / 2.f, -3.f});
 
 	vector upgradeHolderPos = (upgradeBackground->getAbsoluteLoc() + vector{ 4, 3 }).floor();
 	upgradeHolder->setLocAndSize(upgradeHolderPos, upgradeBackground->getSize() - vector{ 8.f, 6.f });

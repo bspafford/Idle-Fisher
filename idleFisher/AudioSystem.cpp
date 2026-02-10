@@ -3,6 +3,7 @@
 #include "Audio.h"
 #include "saveData.h"
 #include "character.h"
+#include "main.h"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
@@ -36,6 +37,7 @@ void AudioSystem::LoadData() {
 }
 
 void AudioSystem::Shutdown() {
+	ma_device_stop(&device);
 	ma_device_uninit(&device);
 }
 
@@ -51,6 +53,9 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount32) {
 		charLoc = character->getCharLoc();
 
 	for (Audio* audio : audioList) {
+		if (audio->deleted.load())
+			continue;
+
 		if (audio->pendingStart) { // set back to beginning
 			ma_decoder_seek_to_pcm_frame(audio->GetDecoder(), 0);
 			ma_resampler_reset(audio->GetResampler());

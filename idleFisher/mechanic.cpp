@@ -9,6 +9,7 @@ Amechanic::Amechanic(vector loc) : npc(loc) {
 	mechanicWidget = std::make_unique<UmechanicWidget>(nullptr, this);
 
 	discovered = &SaveData::saveData.npcSave[Scene::GetCurrWorldId()].mechanicDiscovered;
+	npcAudio = std::make_unique<Audio>("npc1.wav", AudioType::SFX);
 }
 
 Amechanic::~Amechanic() {
@@ -18,4 +19,6 @@ Amechanic::~Amechanic() {
 void Amechanic::click() {
 	*discovered = true;
 	mechanicWidget->addToViewport(nullptr);
+	openAudio->Play();
+	npcAudio->Play();
 }

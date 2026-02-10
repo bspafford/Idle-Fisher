@@ -30,6 +30,8 @@ UachievementUnlockWidget::UachievementUnlockWidget(widget* parent) : widget(pare
 	finishedTimer->addCallback(this, &UachievementUnlockWidget::reverse);
 
 	visible = false;
+
+	unlockAudio = std::make_unique<Audio>("achievement.wav", AudioType::SFX);
 }
 
 UachievementUnlockWidget::~UachievementUnlockWidget() {
@@ -62,6 +64,8 @@ void UachievementUnlockWidget::start(const FachievementStruct& achievementData) 
 	anim->setAnimation("normal");
 	anim->stop();
 	anim->start();
+
+	unlockAudio->Play();
 }
 
 void UachievementUnlockWidget::setupLocs() {

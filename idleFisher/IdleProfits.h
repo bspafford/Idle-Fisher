@@ -43,8 +43,8 @@ public:
 				uint32_t afId = autoFisher->id;
 				FsaveAutoFisherStruct& saveData = SaveData::saveData.autoFisherList.at(afId);
 				
-				// clamp if made too much money
-				saveData.fullness = math::min(saveData.fullness + autoFisher->calcMPS() * timeDiff, Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId)));
+				double currency = saveData.fullness + autoFisher->calcMPS(saveData.fullness) * timeDiff; // previously held + how much money per second * how many seconds since last save
+				saveData.fullness = math::min(currency, Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId))); // clamp at capacity
 			}
 			setup(0, 0);
 			return;

@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 #include <mutex>
 
 #include "vector.h"
@@ -25,6 +24,7 @@ public:
 	void Play(bool loop = false);
 	void Stop();
 
+	std::string GetPath();
 	void SetAudio(const std::string& path);
 
 	// 1 is default, 2 doubles making it an octave higher, 0.5 halves it making it one octave lower
@@ -34,6 +34,7 @@ public:
 	ma_resampler* GetResampler();
 
 	vector GetLoc();
+	void SetLoc(vector loc);
 	bool GetUseWorldPos();
 
 	AudioType GetType();
@@ -48,13 +49,15 @@ public:
 	// called when the audio has finished playing
 	void Finished();
 
+	std::atomic<bool> deleted = false;
+
 private:
 	static inline std::recursive_mutex mutex;
 
 	// audio stuff
 	std::string path;
-	ma_decoder decoder;
-	ma_resampler resampler;
+	ma_decoder* decoder;
+	ma_resampler* resampler;
 	AudioType type;
 
 	// world stuff

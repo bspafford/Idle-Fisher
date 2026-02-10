@@ -1,6 +1,7 @@
 #include "button.h"
 #include "Input.h"
 #include "animation.h"
+#include "Audio.h"
 
 #include "debugger.h"
 
@@ -20,6 +21,8 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 	buttonAnim = std::make_shared<animation>(spriteSheetPath, cellWidth, cellHeight, animData, useWorldLoc, loc);
 	buttonAnim->setAnimation("click");
 
+	clickAudio = std::make_unique<Audio>("click.wav", AudioType::SFX);
+
 	hasHover = buttonAnim->GetCellNum().y >= 2;
 	hasDisabled = buttonAnim->GetCellNum().y >= 3;
 
@@ -30,10 +33,6 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 	this->useWorldLoc = useWorldLoc;
 
 	setSize({ static_cast<float>(cellWidth), static_cast<float>(cellHeight) });
-}
-
-Ubutton::~Ubutton() {
-
 }
 
 void Ubutton::addCallback(void (*callback) ()) {
@@ -83,7 +82,7 @@ void Ubutton::onClick() {
 		buttonAnim->start();
 	}
 
-	// Mix_PlayChannel(-1, sounds::buttonClick, 0);
+	clickAudio->Play();
 
 	if (callback_)
 		callback_();
@@ -109,4 +108,8 @@ vector Ubutton::getSize() {
 void Ubutton::SetColorMod(glm::vec4 colorMod) {
 	if (buttonAnim)
 		buttonAnim->SetColorMod(colorMod);
+}
+
+void Ubutton::SetClickAudio(std::string path) {
+	clickAudio->SetAudio(path);
 }

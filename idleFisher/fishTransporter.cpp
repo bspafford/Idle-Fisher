@@ -30,30 +30,6 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 		}
 	}
 
-	// walk
-	std::string walkAnimPath = "images/npc/fishTransporter/";
-	walkE = std::vector<std::string>{ walkAnimPath + "walkE1.png", walkAnimPath + "walkE2.png", walkAnimPath + "walkE3.png", walkAnimPath + "walkE4.png", walkAnimPath + "walkE5.png", walkAnimPath + "walkE6.png" };
-	walkNE = std::vector<std::string>{ walkAnimPath + "walkNE1.png", walkAnimPath + "walkNE2.png", walkAnimPath + "walkNE3.png", walkAnimPath + "walkNE4.png", walkAnimPath + "walkNE5.png", walkAnimPath + "walkNE6.png" };
-	walkN = std::vector<std::string>{ walkAnimPath + "walkN1.png", walkAnimPath + "walkN2.png", walkAnimPath + "walkN3.png", walkAnimPath + "walkN4.png", walkAnimPath + "walkN5.png", walkAnimPath + "walkN6.png" };
-	walkNW = std::vector<std::string>{ walkAnimPath + "walkNW1.png", walkAnimPath + "walkNW2.png", walkAnimPath + "walkNW3.png", walkAnimPath + "walkNW4.png", walkAnimPath + "walkNW5.png", walkAnimPath + "walkNW6.png" };
-	walkW = std::vector<std::string>{ walkAnimPath + "walkW1.png", walkAnimPath + "walkW2.png", walkAnimPath + "walkW3.png", walkAnimPath + "walkW4.png", walkAnimPath + "walkW5.png", walkAnimPath + "walkW6.png" };
-	walkSW = std::vector<std::string>{ walkAnimPath + "walkSW1.png", walkAnimPath + "walkSW2.png", walkAnimPath + "walkSW3.png", walkAnimPath + "walkSW4.png", walkAnimPath + "walkSW5.png", walkAnimPath + "walkSW6.png" };
-	walkS = std::vector<std::string>{ walkAnimPath + "walkS1.png", walkAnimPath + "walkS2.png", walkAnimPath + "walkS3.png", walkAnimPath + "walkS4.png", walkAnimPath + "walkS5.png", walkAnimPath + "walkS6.png" };
-	walkSE = std::vector<std::string>{ walkAnimPath + "walkSE1.png", walkAnimPath + "walkSE2.png", walkAnimPath + "walkSE3.png", walkAnimPath + "walkSE4.png", walkAnimPath + "walkSE5.png", walkAnimPath + "walkSE6.png" };
-	walkAnimWheel = std::vector<std::vector<std::string>>{ walkNW, walkN, walkNE, walkE, walkSE, walkS, walkSW, walkW };
-
-	// idle
-	std::string idleAnimPath = "images/character/animation/idle/";
-	idleE = std::vector<std::string>{ idleAnimPath + "idleE.png" };
-	idleNE = std::vector<std::string>{ idleAnimPath + "idleNE.png" };
-	idleN = std::vector<std::string>{ idleAnimPath + "idleN.png" };
-	idleNW = std::vector<std::string>{ idleAnimPath + "idleNW.png" };
-	idleW = std::vector<std::string>{ idleAnimPath + "idleW.png" };
-	idleSW = std::vector<std::string>{ idleAnimPath + "idleSW.png" };
-	idleS = std::vector<std::string>{ idleAnimPath + "idleS.png" };
-	idleSE = std::vector<std::string>{ idleAnimPath + "idleSE.png" };
-	idleAnimWheel = std::vector<std::vector<std::string>>{ idleNW, idleN, idleNE, idleE, idleSE, idleS, idleSW, idleW };
-
 	float duration = 0.13f;
 	std::unordered_map<std::string, animDataStruct> animData;
 
@@ -81,6 +57,8 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	npcAnim->SetUseAlpha(true);
 	npcAnim->setAnimation("idleSE");
 	npcAnim->start();
+	npcAnim->addAnimEvent(2, this, &AfishTransporter::FootHitFloor);
+	npcAnim->addAnimEvent(5, this, &AfishTransporter::FootHitFloor);
 
 	std::unordered_map<std::string, animDataStruct> fishPileData;
 
@@ -170,6 +148,8 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 
 	progressBar = std::make_unique<UprogressBar>(nullptr, vector{ 25, 3 }, true);
 	progressBar->setVisibility(false);
+
+	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX, loc);
 
 	setLoc(loc);
 	setupCollision();
@@ -483,4 +463,32 @@ std::unordered_map<uint32_t, FsaveFishData> AfishTransporter::FillWithRandomFish
 	if (fillHeldFish)
 		holding = heldList;
 	return heldList;
+}
+
+void AfishTransporter::FootHitFloor() {
+	if (npcAnim->GetCurrAnim().starts_with("walk")) {
+
+		vector loc = npcAnim->getLoc() + vector(npcAnim->GetCellSize().x / 2.f, 0.f);
+
+		std::string audioPath = "temp/dirt1.wav";
+		for (Fcollision* col : collision::GetGroundCollision()) {
+			if (collision::IsPointInsidePolygon(col, loc)) {
+				float rand = math::randRange(0.f, 1.f) < 0.5f;
+				if (col->identifier == 'g') // grass
+					audioPath = rand ? "temp/grass1.mp3" : "temp/grass2.mp3";
+				else if (col->identifier == 'o') // wood
+					audioPath = rand ? "temp/wood1.wav" : "temp/wood2.wav";
+				else if (col->identifier == 'm') // metal
+					audioPath = "temp/metal1.wav";
+				else // dirt
+					audioPath = rand ? "temp/dirt1.wav" : "temp/dirt2.wav";
+				break;
+			}
+		}
+
+		walkSFX->SetLoc(loc);
+		walkSFX->SetSpeed(math::randRange(0.9f, 1.1f));
+		walkSFX->SetAudio(audioPath);
+		walkSFX->Play();
+	}
 }

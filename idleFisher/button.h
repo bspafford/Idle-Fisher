@@ -9,13 +9,13 @@
 #include "widget.h"
 #include "Hoverable.h"
 #include "math.h"
+#include "audio.h"
 
 class animation;
 
 class Ubutton : public widget, public IHoverable {
 public:
 	Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int cellHeight, int numberOfFrames, vector loc, bool useWorldLoc, bool useAlpha);
-	~Ubutton();
 
 	// non static
 	template <class T> void addCallback(T* const object, void (T::* const callback) ()) {
@@ -39,6 +39,8 @@ public:
 
 	void SetColorMod(glm::vec4 colorMod);
 
+	void SetClickAudio(std::string path);
+
 private:
 	// parent
 	widget* widgetClass;
@@ -59,6 +61,8 @@ private:
 	//
 	bool hasHover;
 	bool hasDisabled;
+
+	std::unique_ptr<Audio> clickAudio;
 
 public:
 	std::shared_ptr<animation> buttonAnim;
