@@ -121,6 +121,8 @@ Acharacter::Acharacter() {
 	anim->addFinishedCallback(this, &Acharacter::animFinished);
 	anim->addFrameCallback(this, &Acharacter::setFishingTipLoc);
 	anim->start();
+	anim->addAnimEvent(2, this, &Acharacter::FootHitFloor);
+	anim->addAnimEvent(5, this, &Acharacter::FootHitFloor);
 
 	bobberCatchTimer = CreateDeferred<Timer>();
 	bobberCatchTimer->addCallback(this, &Acharacter::bobberCatchAnim);
@@ -154,6 +156,8 @@ Acharacter::Acharacter() {
 
 	// Audio
 	catchFishAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX);
+	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX);
+
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
@@ -219,7 +223,7 @@ std::string Acharacter::GetFishingDirection() {
 
 void Acharacter::move(float deltaTime) {
 	// Handles key inputs
-	moveDir = { 0 , 0 };
+	moveDir = { 0, 0 };
 	if (Input::getKeyHeld(GLFW_KEY_W))
 		moveDir += vector{ 0, 1 };
 	if (Input::getKeyHeld(GLFW_KEY_A))
@@ -294,7 +298,9 @@ void Acharacter::DrawWidgets(Shader* shaderProgram) {
 }
 
 vector Acharacter::getCharLoc() {
-	return SaveData::saveData.playerLoc - vector{ 0.f, anim->GetCellSize().y / 2.f };
+	if (anim)
+		return SaveData::saveData.playerLoc - vector{ 0.f, anim->GetCellSize().y / 2.f };
+	return vector(0, 0);
 }
 
 void Acharacter::Update(float deltaTime) {
@@ -396,6 +402,7 @@ void Acharacter::leftClick() {
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
+				catchFishAudio->SetAudio("pop.wav");
 				catchFishAudio->Play();
 				saveFishData.unlocked = true;
 				saveFishData.numOwned[currFishQuality] += caught;
@@ -403,7 +410,7 @@ void Acharacter::leftClick() {
 				showFish = true;
 				Achievements::CheckGroup(AchievementTrigger::FishCaught);
 
-				numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * catchNum, NumberType::FishCaught);
+				numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * caught, NumberType::FishCaught);
 			}
 
 		} else { // if premium
@@ -416,6 +423,9 @@ void Acharacter::leftClick() {
 			// start premium fish cooldown
 			premiumCatchTimer->start(Upgrades::Get(Stat::PremiumCoolDownTime));
 			canCatchPremium = false;
+
+			catchFishAudio->SetAudio("holy.wav");
+			catchFishAudio->Play();
 
 			Achievements::CheckGroup(AchievementTrigger::FishCaught);
 			Main::currencyWidget->updateList();
@@ -491,7 +501,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	// then add the premium chance at the end
 	std::vector<float> petBuff = { 1, 1, 1, 1, 1 }; // petBuffs::increaseChanceOfHigherFish();
 
-	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
+	double premiumChance = 100.f;// canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
 	float totalProb = 0; // premiumChance;
 	int index = 0;
 	for (auto [key, value] : fishData) {
@@ -846,7 +856,7 @@ void Acharacter::Recast() {
 	// final fish num should be multiplied by recast num
 		// so it would be like (fishNum * combo * upgrades * etc) * recastNum
 
-	recastAudio->SetPitch(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->SetSpeed(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
 	recastAudio->Play();
 
 	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain
@@ -855,4 +865,31 @@ void Acharacter::Recast() {
 		recastNum++;
 	} else
 		recastActive = false;
+}
+
+void Acharacter::FootHitFloor() {
+	if (anim->GetCurrAnim().starts_with("walk")) {
+
+		std::string audioPath = "temp/dirt1.wav";
+		for (Fcollision* col : collision::GetGroundCollision()) {
+			if (collision::IsPointInsidePolygon(col, getCharLoc())) {
+				float rand = math::randRange(0.f, 1.f) < 0.5f;
+				if (col->identifier == 'g') // grass
+					audioPath = rand ? "temp/grass1.mp3" : "temp/grass2.mp3";
+				else if (col->identifier == 'o') // wood
+					audioPath = rand ? "temp/wood1.wav" : "temp/wood2.wav";
+				else if (col->identifier == 'm') // metal
+					audioPath = "temp/metal1.wav";
+				else // dirt
+					audioPath = rand ? "temp/dirt1.wav" : "temp/dirt2.wav";
+				break;
+			}
+		}
+
+		//std::string audioPath = math::randRange(0.f, 1.f) < 0.5f ? "temp/grass1.mp3" : "temp/grass2.mp3";
+		//std::string audioPath = math::randRange(0.f, 1.f) < 0.5f ? "temp/dirt1.wav" : "temp/dirt2.wav";
+		walkSFX->SetSpeed(math::randRange(0.9f, 1.1f));
+		walkSFX->SetAudio(audioPath);
+		walkSFX->Play();
+	}
 }

@@ -202,6 +202,8 @@ void Main::Start() {
 
 	backgroundMusic = std::make_unique<Audio>("music.wav", AudioType::Music);
 	backgroundMusic->Play(true);
+	ambientAudio = std::make_unique<Audio>("temp/beachAmbience.mp3", AudioType::Ambient);
+	ambientAudio->Play(true);
 }
 
 void Main::Update(float deltaTime) {

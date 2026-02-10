@@ -47,13 +47,13 @@ public:
 	static std::string getIdentifier(std::string str);
 
 	// circles vs polygons
-	static bool intersectCirclePolygon(vector circleCenter, float circleRadius, std::vector<vector> vertices, vector& normal, float& depth);
-	static int findClosestPointOnPolygon(vector circleCenter, std::vector<vector> vertices);
+	static bool intersectCirclePolygon(vector circleCenter, float circleRadius, const std::vector<vector>& vertices, vector& normal, float& depth);
+	static int findClosestPointOnPolygon(vector circleCenter, const std::vector<vector>& vertices);
 	static void projectCircle(vector center, float radius, vector axis, float& min, float& max);
 
 	// polygons vs polygons
-	static bool intersectPolygons(std::vector<vector> verticesA, std::vector<vector> verticesB, vector& normal, float& depth);
-	static void projectVertices(std::vector<vector> vertices, vector axis, float& min, float& max);
+	static bool intersectPolygons(const std::vector<vector>& verticesA, const std::vector<vector>& verticesB, vector& normal, float& depth);
+	static void projectVertices(const std::vector<vector>& vertices, vector axis, float& min, float& max);
 
 	// circles vs circles
 	static bool intersectCircles(vector centerA, float radiusA, vector centerB, float radiusB, vector& normal, float& depth);
@@ -64,7 +64,7 @@ public:
 
 	static bool isCloseEnough(const Fcollision* a, const Fcollision* col);
 
-	static vector findArithmeticMean(std::vector<vector> vertices);
+	static vector findArithmeticMean(const std::vector<vector>& vertices);
 
 	// CCD
 	static bool sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector edgeEnd, float radius, float& toiOut, vector& normalOut);
@@ -79,6 +79,12 @@ public:
 	static std::vector<Fcollision*>& getCollisionList();
 	static void addCollisionObject(Fcollision* col);
 	static void replaceCollisionObject(Fcollision* oldCol, Fcollision* newCol);
+
+	static const std::vector<Fcollision*>& GetGroundCollision();
+
+	static bool IsPointInsidePolygon(Fcollision* col, const vector& point);
+	static bool IsPointInsidePolygon(const std::vector<vector>& polygon, const vector& point);
+
 private:
 	// used for low fps, just clamps move dir
 	static float TestCCD(Fcollision* playerCol, vector move);
@@ -89,6 +95,7 @@ private:
 
 	static inline std::vector<Fcollision*> allCollision;
 	static inline std::vector<Fcollision*> stairCollision;
+	static inline std::vector<Fcollision*> groundCollision;
 	// holds unique_ptr for allCollision
 	//static inline std::vector<std::unique_ptr<Fcollision>> collisionStorage;
 	static inline std::unordered_map<uint32_t, std::unique_ptr<std::vector<Fcollision>>> colMap;

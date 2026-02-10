@@ -14,6 +14,12 @@ Audio::Audio(std::string path, AudioType type) {
 		std::cerr << "Failed to init decoder\n";
 		return;
 	}
+
+	ma_resampler_config resamplerConfig = ma_resampler_config_init(decoder.outputFormat, decoder.outputChannels, decoder.outputSampleRate, decoder.outputSampleRate, ma_resample_algorithm_linear); // start at 1.0x
+	if (ma_resampler_init(&resamplerConfig, nullptr, &resampler) != MA_SUCCESS) {
+		std::cerr << "Failed to init resampler\n";
+		return;
+	}
 }
 
 Audio::Audio(std::string path, AudioType type, vector loc) {
@@ -30,10 +36,17 @@ Audio::Audio(std::string path, AudioType type, vector loc) {
 		std::cerr << "Failed to init decoder\n";
 		return;
 	}
+
+	ma_resampler_config resamplerConfig = ma_resampler_config_init(decoder.outputFormat, decoder.outputChannels, decoder.outputSampleRate, decoder.outputSampleRate, ma_resample_algorithm_linear); // start at 1.0x
+	if (ma_resampler_init(&resamplerConfig, nullptr, &resampler) != MA_SUCCESS) {
+		std::cerr << "Failed to init resampler\n";
+		return;
+	}
 }
 
 Audio::~Audio() {
 	ma_decoder_uninit(&decoder);
+	ma_resampler_uninit(&resampler, nullptr);
 }
 
 void Audio::Play(bool loop) {
@@ -43,15 +56,39 @@ void Audio::Play(bool loop) {
 }
 
 void Audio::Stop() {
+	stopped = true;
 	AudioSystem::Remove(this);
 }
 
-void Audio::SetPitch(float pitch) {
-	//ma_sound_set_pitch(&sound, pitch);
+void Audio::SetAudio(const std::string& path) {
+	if (this->path == path) // return if same path
+		return;
+
+	this->path = path;
+
+	std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);
+	ma_decoder_uninit(&decoder);
+	if (ma_decoder_init_memory(buffer->data(), buffer->size(), AudioSystem::GetDecoderConfig(), &decoder) != MA_SUCCESS) {
+		std::cerr << "Failed to init decoder\n";
+		return;
+	}
+}
+
+void Audio::SetSpeed(float speed) {
+	ma_uint32 baseRate = decoder.outputSampleRate;
+
+	ma_uint32 inRate = baseRate;
+	ma_uint32 outRate = (ma_uint32)(baseRate * speed + 0.5f);
+
+	ma_resampler_set_rate(&resampler, inRate, outRate);
 }
 
 ma_decoder* Audio::GetDecoder() {
 	return &decoder;
+}
+
+ma_resampler* Audio::GetResampler() {
+	return &resampler;
 }
 
 vector Audio::GetLoc() {

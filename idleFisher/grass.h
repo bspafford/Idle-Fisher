@@ -28,7 +28,7 @@ public:
 
 private:
 	std::vector<std::vector<glm::vec2>> GetGrassPolygons();
-	std::vector<std::vector<glm::vec2>> GetShadowPolygons();
+	std::vector<std::vector<vector>> GetShadowPolygons();
 
 	std::vector<GrassInstanceData> grassData;
 

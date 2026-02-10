@@ -16,9 +16,6 @@ uniform sampler2D grass;
 uniform sampler2D tallGrass;
 uniform vec2 screenSize;
 uniform int isDepthPass;
-uniform vec3 grassColor1;
-uniform vec3 grassColor2;
-uniform vec3 grassColor3;
 uniform vec3 grassHighlight1;
 uniform vec3 grassHighlight2;
 

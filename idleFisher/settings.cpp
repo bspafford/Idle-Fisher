@@ -83,18 +83,18 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	sfxVolume->bindValue(&SaveData::settingsData.sfxVolume);
 	sfxVolume->setTitleLength(titleSliderLength);
 
-	dialogVolume = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0, 100);
-	dialogVolume->setForegroundColor(sliderForegroundColor);
-	dialogVolume->setBackgroundColor(sliderBackgroundColor);
-	dialogVolume->setSliderTitle("     Dialog");
-	dialogVolume->bindValue(&SaveData::settingsData.dialogVolume);
-	dialogVolume->setTitleLength(titleSliderLength);
+	ambientVolume = std::make_unique<Uslider>(this, false, vector{ length, sliderHeight }, 0, 100);
+	ambientVolume->setForegroundColor(sliderForegroundColor);
+	ambientVolume->setBackgroundColor(sliderBackgroundColor);
+	ambientVolume->setSliderTitle("     Ambient");
+	ambientVolume->bindValue(&SaveData::settingsData.ambientVolume);
+	ambientVolume->setTitleLength(titleSliderLength);
 
 	float sliderPadding = 17;
 	scrollBox->addChild(masterVolumeSlider.get(), masterVolumeSlider->getSize().y + sliderPadding);
 	scrollBox->addChild(musicVolume.get(), musicVolume->getSize().y + sliderPadding);
 	scrollBox->addChild(sfxVolume.get(), sfxVolume->getSize().y + sliderPadding);
-	scrollBox->addChild(dialogVolume.get(), dialogVolume->getSize().y + sliderPadding);
+	scrollBox->addChild(ambientVolume.get(), ambientVolume->getSize().y + sliderPadding);
 	scrollBox->addChild(nullptr, 5);
 
 // graphics
@@ -201,7 +201,7 @@ void Usettings::UpdateData() {
 	masterVolumeSlider->UpdateValue();
 	musicVolume->UpdateValue();
 	sfxVolume->UpdateValue();
-	dialogVolume->UpdateValue();
+	ambientVolume->UpdateValue();
 
 	// graphics
 	fullScreenBlock->UpdateValue();

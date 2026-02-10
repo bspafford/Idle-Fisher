@@ -59,12 +59,16 @@ void collision::LoadWorldsCollision(uint32_t worldId) {
 
 	allCollision.clear();
 	stairCollision.clear();
+	groundCollision.clear();
 	allCollision.reserve(it->second->size());
 	for (int i = 0; i < it->second->size(); ++i) {
-		if (it->second->at(i).identifier == 's') // stairs
-			stairCollision.push_back(&it->second->at(i));
+		Fcollision& col = it->second->at(i);
+		if (col.identifier == 's') // stairs
+			stairCollision.push_back(&col);
+		else if (col.identifier == 'g' || col.identifier == 'd' || col.identifier == 'o' || col.identifier == 'm') // grass, dirt, wood, or metal
+			groundCollision.push_back(&col);
 		else
-			allCollision.push_back(&it->second->at(i));
+			allCollision.push_back(&col);
 	}
 }
 
@@ -80,7 +84,7 @@ void collision::removeCollisionObject(Fcollision* collision) {
 	}
 }
 
-bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, std::vector<vector> vertices, vector& normal, float& depth) {
+bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, const std::vector<vector>& vertices, vector& normal, float& depth) {
 	normal = vector(0, 0);
 	depth = std::numeric_limits<float>::max();
 
@@ -137,13 +141,12 @@ bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, 
 	return true;
 }
 
-int collision::findClosestPointOnPolygon(vector circleCenter, std::vector<vector> vertices) {
+int collision::findClosestPointOnPolygon(vector circleCenter, const std::vector<vector>& vertices) {
 	int result = -1;
 	float minDistance = INFINITY;
 
 	for (int i = 0; i < vertices.size(); i++) {
-		vector v = vertices[i];
-		float distance = math::distance(v, circleCenter);
+		float distance = math::distance(vertices[i], circleCenter);
 
 		if (distance < minDistance) {
 			minDistance = distance;
@@ -172,7 +175,7 @@ void collision::projectCircle(vector center, float radius, vector axis, float& m
 	}
 }
 
-bool collision::intersectPolygons(std::vector<vector> verticesA, std::vector<vector> verticesB, vector& normal, float& depth) {
+bool collision::intersectPolygons(const std::vector<vector>& verticesA, const std::vector<vector>& verticesB, vector& normal, float& depth) {
 	normal = { 0, 0 };
 	depth = INFINITY;
 
@@ -235,11 +238,11 @@ bool collision::intersectPolygons(std::vector<vector> verticesA, std::vector<vec
 	return true;
 }
 
-void collision::projectVertices(std::vector<vector> vertices, vector axis, float& min, float& max) {
+void collision::projectVertices(const std::vector<vector>& vertices, vector axis, float& min, float& max) {
 	min = std::numeric_limits<float>::max();
 	max = -std::numeric_limits<float>::max();
 
-	for (vector& v : vertices) {
+	for (const vector& v : vertices) {
 		float proj = math::dot(v, axis);
 
 		if (proj < min) { min = proj; }
@@ -247,11 +250,11 @@ void collision::projectVertices(std::vector<vector> vertices, vector axis, float
 	}
 }
 
-vector collision::findArithmeticMean(std::vector<vector> vertices) {
+vector collision::findArithmeticMean(const std::vector<vector>& vertices) {
 	float sumX = 0;
 	float sumY = 0;
 
-	for (vector& v : vertices) {
+	for (const vector& v : vertices) {
 		sumX += v.x;
 		sumY += v.y;
 	}
@@ -368,7 +371,7 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 				// Draw line
 				if (allCollision[i]->identifier == 'w') // if water make blue
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
-				else // if else make blue
+				else
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
 
 				if (!isCCW(allCollision[i]->GetPoints()))
@@ -582,11 +585,11 @@ void collision::TestCollision(Fcollision* playerCol, vector move, float deltaTim
 			vector normal;
 			float depth;
 			Fcollision* charCol = GetCharacter()->GetCollision();
-			if (intersectCirclePolygon(charCol->GetPoints()[0], charCol->radius, stairCollision[i]->GetPoints(), normal, depth)) {
+			if (intersectCirclePolygon(charCol->points[0], charCol->radius, stairCollision[i]->GetPoints(), normal, depth)) {
 
 				// assume [0] is always top left and [3] is always bottom left
 				// if top is left of bottom, then stairs are moving up and to the left
-				float stairDir = stairCollision[i]->GetPoints()[0].x < stairCollision[i]->GetPoints()[3].x ? 1.f : -1.f;
+				float stairDir = stairCollision[i]->points[0].x < stairCollision[i]->points[3].x ? 1.f : -1.f;
 				move.y += (move.x > 0 ? -1 : 1) * stairDir;
 			}
 		}
@@ -774,4 +777,48 @@ void collision::replaceCollisionObject(Fcollision* oldCol, Fcollision* newCol) {
 		int index = static_cast<int>(it - allCollision.begin());
 		allCollision[index] = newCol;
 	}
+}
+
+const std::vector<Fcollision*>& collision::GetGroundCollision() {
+	return groundCollision;
+}
+
+bool collision::IsPointInsidePolygon(Fcollision* col, const vector& point) {
+	int n = col->GetNumPoints();
+	int count = 0;
+	for (int i = 0; i < n; ++i) {
+		vector p1 = col->points[i];
+		vector p2 = col->points[(i + 1) % n];  // Wrap around to first vertex
+
+		// Check if the point is inside the y-range of the edge (i.e., y-value of point is between p1.y and p2.y)
+		if ((point.y > p1.y && point.y <= p2.y) || (point.y > p2.y && point.y <= p1.y)) {
+			// Compute the x-coordinate of the intersection of the edge with the horizontal ray
+			float intersectX = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+			if (intersectX > point.x) {
+				count++;  // Point is to the left of the edge, increment count
+			}
+		}
+	}
+	// If the count is odd, the point is inside the polygon
+	return count % 2 == 1;
+}
+
+bool collision::IsPointInsidePolygon(const std::vector<vector>& polygon, const vector& point) {
+	int n = polygon.size();
+	int count = 0;
+	for (int i = 0; i < n; ++i) {
+		vector p1 = polygon[i];
+		vector p2 = polygon[(i + 1) % n];  // Wrap around to first vertex
+
+		// Check if the point is inside the y-range of the edge (i.e., y-value of point is between p1.y and p2.y)
+		if ((point.y > p1.y && point.y <= p2.y) || (point.y > p2.y && point.y <= p1.y)) {
+			// Compute the x-coordinate of the intersection of the edge with the horizontal ray
+			float intersectX = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+			if (intersectX > point.x) {
+				count++;  // Point is to the left of the edge, increment count
+			}
+		}
+	}
+	// If the count is odd, the point is inside the polygon
+	return count % 2 == 1;
 }

@@ -142,6 +142,9 @@ private:
 	std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWidget;
 
 	std::unique_ptr<Audio> catchFishAudio;
+	std::unique_ptr<Audio> walkSFX;
+	// Called when the animation frame that either foot has hit the floor
+	void FootHitFloor();
 
 	// recasting
 	void StartRecast(uint32_t fishId, double caughtNum);

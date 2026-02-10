@@ -52,8 +52,7 @@ public:
 	void animCallBack();
 
 	template <class T> void addAnimEvent(int frameNum, T* const object, void (T::* const callback) ()) {
-		eventFrameNum = frameNum;
-		eventCallback_ = std::bind_front(callback, object);
+		eventCallbacks.push_back(std::pair(frameNum, std::bind_front(callback, object)));
 	}
 
 	// not static
@@ -99,8 +98,8 @@ private:
 	vector cellSize;
 	vector cellNum;
 
-	int eventFrameNum;
-	std::function<void()> eventCallback_ = NULL;
+	// frame num, callback function
+	std::vector<std::pair<int, std::function<void()>>> eventCallbacks;
 	std::function<void()> finishedCallback_ = NULL;
 	std::function<void(int)> frameCallback_ = NULL;
 

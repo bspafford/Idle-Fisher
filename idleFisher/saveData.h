@@ -480,7 +480,7 @@ struct FsettingsData {
     float masterVolume = 50;
     float musicVolume = 100;
     float sfxVolume = 100;
-    float dialogVolume = 100;
+    float ambientVolume = 100;
 
     // graphics
     int monitorIdx = 0; // 0 = primary
@@ -498,7 +498,7 @@ struct FsettingsData {
     int movement = 0; // isometric (slowed y) vs normal
     int interpMethod = 0;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, dialogVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor, movement, interpMethod);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FsettingsData, masterVolume, musicVolume, sfxVolume, ambientVolume, monitorIdx, fullScreen, resolution, vsync, fpsLimit, pixelFont, shortNumbers, showPets, showRain, cursor, movement, interpMethod);
 
     // compares the struct byte by byte, so i don't have to manually update it
     bool operator==(const FsettingsData other) {

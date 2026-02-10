@@ -90,10 +90,21 @@ AautoFisher::AautoFisher(uint32_t id) {
 
 	afMoreInfoUI = std::make_unique<AFmoreInfoUI>(nullptr, this);
 
+	vector soundLoc = anim->getLoc() + vector(anim->GetCellSize().x / 2.f, 0);
+
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &AautoFisher::Recast);
-	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX, anim->getLoc() + vector(anim->GetCellSize().x / 2.f, 0));
+	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX, soundLoc);
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
+
+	castAudio = std::make_unique<Audio>("temp/autoFisher/whoosh.wav", AudioType::SFX, soundLoc);
+	steamAudio = std::make_unique<Audio>("temp/autoFisher/steam.wav", AudioType::SFX, soundLoc);
+	splashAudio = std::make_unique<Audio>("temp/autoFisher/splash.wav", AudioType::SFX, soundLoc);
+	reelAudio = std::make_unique<Audio>("temp/autoFisher/reel.wav", AudioType::SFX, soundLoc);
+	machineAudio = std::make_unique<Audio>("temp/autoFisher/machineNoise.wav", AudioType::SFX, soundLoc);
+	drawerAudio = std::make_unique<Audio>("temp/autoFisher/drawer.wav", AudioType::SFX, soundLoc);
+	catchAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX, soundLoc);
+	machineAudio->Play(true);
 
 	setStats();
 }
@@ -412,6 +423,21 @@ void AautoFisher::OutlineUpdate(int frame) {
 		fishingLine->SetCurrFrameLoc(vector(frame, 0));
 	if (fullnessLight)
 		fullnessLight->SetCurrFrameLoc(vector(frame, fullnessIndex));
+
+	if (frame == 6)
+		steamAudio->Play();
+	else if (frame == 8)
+		castAudio->Play();
+	else if (frame == 26) {
+		drawerAudio->Play();
+		reelAudio->Play();
+	}
+	else if (frame == 29)
+		splashAudio->Play();
+	else if (frame == 37)
+		drawerAudio->Play();
+	else if (frame == 40)
+		catchAudio->Play();
 }
 
 void AautoFisher::SetUpgradeAnim() {
@@ -439,7 +465,7 @@ void AautoFisher::Recast() {
 
 	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), recastNum, NumberType::Recast);
 
-	recastAudio->SetPitch(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->SetSpeed(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
 	recastAudio->Play();
 
 	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain

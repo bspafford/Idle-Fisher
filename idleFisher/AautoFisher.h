@@ -120,4 +120,12 @@ private:
 	void SetFullnessIndex();
 	// 0 = green, 1 = orange, 2 = red
 	int fullnessIndex;
+
+	std::unique_ptr<Audio> castAudio;
+	std::unique_ptr<Audio> steamAudio;
+	std::unique_ptr<Audio> splashAudio;
+	std::unique_ptr<Audio> reelAudio;
+	std::unique_ptr<Audio> machineAudio;
+	std::unique_ptr<Audio> drawerAudio;
+	std::unique_ptr<Audio> catchAudio;
 };

@@ -38,7 +38,7 @@ animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int c
 
 animation::~animation() {
 	stop();
-	eventCallback_ = nullptr;
+	eventCallbacks.clear();
 	finishedCallback_ = nullptr;
 	frameCallback_ = nullptr;
 }
@@ -125,8 +125,11 @@ void animation::animCallBack() {
 		//frameCallback_(frameNum % animList.size());
 	}
 
-	if (eventCallback_ && calcFrameDistance(true) == eventFrameNum - 1)
-		eventCallback_();
+	int frameDist = calcFrameDistance(true);
+	for (auto& [frameNum, callback] : eventCallbacks) {
+		if (frameDist == frameNum - 1)
+			callback();
+	}
 
 	spriteSheet->setSourceRect(std::make_shared<Rect>(currFrameLoc.x * cellSize.x, currFrameLoc.y * cellSize.y, cellSize.x, cellSize.y));
 }

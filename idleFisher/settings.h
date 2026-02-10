@@ -68,7 +68,7 @@ private:
 	std::unique_ptr<Uslider> masterVolumeSlider;
 	std::unique_ptr<Uslider> musicVolume;
 	std::unique_ptr<Uslider> sfxVolume;
-	std::unique_ptr<Uslider> dialogVolume;
+	std::unique_ptr<Uslider> ambientVolume;
 
 
 	// graphics
