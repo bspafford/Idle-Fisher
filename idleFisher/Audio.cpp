@@ -56,8 +56,19 @@ void Audio::Play(bool loop) {
 }
 
 void Audio::Stop() {
-	stopped = true;
 	AudioSystem::Remove(this);
+}
+
+bool Audio::IsPlaying() {
+	return isPlaying;
+}
+
+void Audio::Started() {
+	isPlaying = true;
+}
+
+void Audio::Finished() {
+	isPlaying = false;
 }
 
 void Audio::SetAudio(const std::string& path) {

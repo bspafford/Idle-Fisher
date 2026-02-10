@@ -9,6 +9,7 @@
 #include "comboOvertimeWidget.h"
 #include "Audio.h"
 #include "NumberWidget.h"
+#include "Rectangle.h"
 
 class saveData;
 class collision;
@@ -121,6 +122,7 @@ private:
 	// fishing line stuff
 	static inline vector fishingTipLoc = { 69, 60 };
 	static inline bool showFishingLine = false;
+	std::unique_ptr<URectangle> fishingLineRect;
 
 	// if going can't catch golden fihs
 	DeferredPtr<Timer> premiumCatchTimer;
@@ -142,6 +144,7 @@ private:
 	std::unique_ptr<UcomboOvertimeWidget> comboOvertimeWidget;
 
 	std::unique_ptr<Audio> catchFishAudio;
+	std::unique_ptr<Audio> catchPremiumAudio;
 	std::unique_ptr<Audio> walkSFX;
 	// Called when the animation frame that either foot has hit the floor
 	void FootHitFloor();

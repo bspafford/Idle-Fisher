@@ -145,6 +145,7 @@ Acharacter::Acharacter() {
 	bobberWaterAnimBack->setAnimation("water");
 	bobberWaterAnimBack->start();
 
+	fishingLineRect = std::make_unique<URectangle>(nullptr, vector(0, 0), vector(1, 1), false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
 
 	setPlayerColPoints();
 
@@ -156,8 +157,8 @@ Acharacter::Acharacter() {
 
 	// Audio
 	catchFishAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX);
+	catchPremiumAudio = std::make_unique<Audio>("holy.wav", AudioType::SFX);
 	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX);
-
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
@@ -402,7 +403,6 @@ void Acharacter::leftClick() {
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
-				catchFishAudio->SetAudio("pop.wav");
 				catchFishAudio->Play();
 				saveFishData.unlocked = true;
 				saveFishData.numOwned[currFishQuality] += caught;
@@ -424,8 +424,7 @@ void Acharacter::leftClick() {
 			premiumCatchTimer->start(Upgrades::Get(Stat::PremiumCoolDownTime));
 			canCatchPremium = false;
 
-			catchFishAudio->SetAudio("holy.wav");
-			catchFishAudio->Play();
+			catchPremiumAudio->Play();
 
 			Achievements::CheckGroup(AchievementTrigger::FishCaught);
 			Main::currencyWidget->updateList();
@@ -501,7 +500,7 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	// then add the premium chance at the end
 	std::vector<float> petBuff = { 1, 1, 1, 1, 1 }; // petBuffs::increaseChanceOfHigherFish();
 
-	double premiumChance = 100.f;// canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
+	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
 	float totalProb = 0; // premiumChance;
 	int index = 0;
 	for (auto [key, value] : fishData) {
@@ -776,7 +775,6 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	vector max = vector::max(start, end);
 	vector size = max - min;
 
-	URectangle* rectangle = new URectangle(nullptr, min, size, false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
 	Scene::fishingLineShader->Activate();
 
 	Scene::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));
@@ -784,8 +782,8 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	bool tight = anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos;
 	Scene::fishingLineShader->setInt("tight", tight);
 
-	rectangle->draw(Scene::fishingLineShader);
-	delete rectangle;
+	fishingLineRect->setLocAndSize(min, size);
+	fishingLineRect->draw(Scene::fishingLineShader);
 
 	bobberImg->setLoc(bobberLoc);
 	bobberWaterAnimBack->setLoc(tempBobberLoc);

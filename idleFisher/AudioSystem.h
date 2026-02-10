@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include <unordered_set>
 #include <miniaudio.h>
 
 class Audio;
@@ -38,7 +39,7 @@ private:
 	static inline float phase = 0.0f;
 
 	static void ApplyPendingChanges();
-	static inline std::vector<Audio*> audioList;
-	static inline std::vector<Audio*> pendingAdd;
-	static inline std::vector<Audio*> pendingRemove;
+	static inline std::unordered_set<Audio*> audioList;
+	static inline std::unordered_set<Audio*> pendingAdd;
+	static inline std::unordered_set<Audio*> pendingRemove;
 };

@@ -55,8 +55,9 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount32) {
 			ma_decoder_seek_to_pcm_frame(audio->GetDecoder(), 0);
 			ma_resampler_reset(audio->GetResampler());
 			audio->pendingStart = false;
+			audio->Started();
 		}
-		
+
 		ma_uint64 inFramesNeeded;
 		ma_resampler_get_required_input_frame_count(audio->GetResampler(), frameCount, &inFramesNeeded);
 
@@ -66,30 +67,24 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount32) {
 		ma_uint64 framesRead = 0;
 		// Read from decoder (source frames)
 		ma_decoder_read_pcm_frames(audio->GetDecoder(), pFramesIn.data(), inFramesNeeded, &framesRead);
-		// Resample into output buffer
-		
+
 		// loop or remove finished audio
-		if (framesRead < inFramesNeeded && audio->ShouldLoop()) {
+		if (framesRead < inFramesNeeded) { // audio has finished
 			ma_decoder_seek_to_pcm_frame(audio->GetDecoder(), 0);
 			ma_resampler_reset(audio->GetResampler());
-
-			ma_uint64 moreRead = 0;
-			ma_decoder_read_pcm_frames(
-				audio->GetDecoder(),
-				pFramesIn.data() + framesRead * audio->GetDecoder()->outputChannels,
-				inFramesNeeded - framesRead,
-				&moreRead
-			);
-
-			framesRead += moreRead;
-		} else if (framesRead == 0) {
 			if (audio->ShouldLoop()) {
-				ma_decoder_seek_to_pcm_frame(audio->GetDecoder(), 0);
-				ma_resampler_reset(audio->GetResampler());
-			} else {
+				ma_uint64 moreRead = 0;
+				ma_decoder_read_pcm_frames(
+					audio->GetDecoder(),
+					pFramesIn.data() + framesRead * audio->GetDecoder()->outputChannels,
+					inFramesNeeded - framesRead,
+					&moreRead
+				);
+
+				framesRead += moreRead;
+			} else { // don't loop
+				audio->Finished();
 				audio->Stop();
-				ma_decoder_seek_to_pcm_frame(audio->GetDecoder(), 0);
-				ma_resampler_reset(audio->GetResampler());
 				continue;
 			}
 		}
@@ -104,10 +99,10 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount32) {
 			volume *= SaveData::settingsData.sfxVolume / 100.f;
 		else if (audio->GetType() == AudioType::Ambient)
 			volume *= SaveData::settingsData.ambientVolume / 100.f;
-		
+
 		if (audio->GetUseWorldPos()) {
 			float distance = math::distance(charLoc, audio->GetLoc());
-			volume *= 10.f / distance;
+			volume *= 30.f / distance;
 			vector direction = math::normalize(audio->GetLoc() - SaveData::saveData.playerLoc);
 
 			float leftDirVolume = math::dot(vector(-1, 0), direction) * 0.175f + 0.825f; // [0.65, 1]
@@ -156,26 +151,22 @@ std::vector<uint8_t>* AudioSystem::GetAudioData(const std::string& path) {
 }
 
 void AudioSystem::ApplyPendingChanges() {
-	for (Audio* audio : pendingAdd) {
-		audioList.push_back(audio);
-	}
+	for (Audio* audio : pendingAdd)
+		audioList.insert(audio);
 
-	for (Audio* audio : pendingRemove) {
-		auto it = std::find(audioList.begin(), audioList.end(), audio);
-		if (it != audioList.end())
-			audioList.erase(it);
-	}
+	for (Audio* audio : pendingRemove)
+		audioList.erase(audio);
 
 	pendingAdd.clear();
 	pendingRemove.clear();
 }
 
 void AudioSystem::Add(Audio* audio) {
-	pendingAdd.push_back(audio);
+	pendingAdd.insert(audio);
 }
 
 void AudioSystem::Remove(Audio* audio) {
-	pendingRemove.push_back(audio);
+	pendingRemove.insert(audio);
 }
 
 ma_device* AudioSystem::GetDevice() {

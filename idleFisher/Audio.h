@@ -41,6 +41,13 @@ public:
 
 	bool pendingStart = false;
 
+	bool IsPlaying();
+
+	// called when the audio first starts playing
+	void Started();
+	// called when the audio has finished playing
+	void Finished();
+
 private:
 	static inline std::recursive_mutex mutex;
 
@@ -54,4 +61,6 @@ private:
 	vector loc;
 	bool useWorldPos = false;
 	bool loop;
+
+	bool isPlaying = false;
 };
