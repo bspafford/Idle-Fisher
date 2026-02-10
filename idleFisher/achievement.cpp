@@ -88,7 +88,8 @@ void Achievements::Init() {
 
 	// get all quality on a single fish
 	AddAchievement(159u, []() { // get all three stars on a single fish
-		for (auto& [id, saveData] : SaveData::saveData.fishData) {
+		for (auto& [id, data] : SaveData::data.fishData) {
+			FsaveFishData& saveData = SaveData::saveData.fishData.at(id);
 			bool allCaught = true;
 			for (double caught : saveData.totalNumOwned) {
 				if (caught == 0) {
@@ -102,8 +103,9 @@ void Achievements::Init() {
 		return false;
 	});
 	AddAchievement(160u, []() {  // get all three stars on a single special fish
-		for (auto& [id, saveData] : SaveData::saveData.fishData) {
-			if (!SaveData::data.fishData.at(id).isRareFish)
+		for (auto& [id, data] : SaveData::data.fishData) {
+			FsaveFishData& saveData = SaveData::saveData.fishData.at(id);
+			if (!data.isRareFish)
 				continue;
 
 			bool allCaught = true;
@@ -164,7 +166,9 @@ void Achievements::Init() {
 
 	// max forest
 	AddAchievement(179u, []() { // max out a singular fish (max size size and all qualities)
-		for (auto& [id, saveData] : SaveData::saveData.fishData) {
+		for (auto& [id, data] : SaveData::data.fishData) {
+			FsaveFishData& saveData = SaveData::saveData.fishData.at(id);
+
 			bool allCaught = true;
 			for (double caught : saveData.totalNumOwned) {
 				if (caught == 0) {
@@ -172,13 +176,15 @@ void Achievements::Init() {
 					break;
 				}
 			}
-			if (allCaught && saveData.biggestSizeCaught >= SaveData::data.fishData.at(id).maxSize)
+			if (allCaught && saveData.biggestSizeCaught >= data.maxSize)
 				return true;
 		}
 		return false;
 	});
 	AddAchievement(180u, []() { // catch max size and max quality of all fish in the forest
-		for (auto& [id, saveData] : SaveData::saveData.fishData) {
+		for (auto& [id, data] : SaveData::data.fishData) {
+			FsaveFishData& saveData = SaveData::saveData.fishData.at(id);
+
 			bool allCaught = true;
 			for (double caught : saveData.totalNumOwned) {
 				if (caught == 0) {
@@ -186,7 +192,7 @@ void Achievements::Init() {
 					break;
 				}
 			}
-			if (!allCaught || saveData.biggestSizeCaught < SaveData::data.fishData.at(id).maxSize)
+			if (!allCaught || saveData.biggestSizeCaught < data.maxSize)
 				return false;
 		}
 		return true;
@@ -290,7 +296,6 @@ void Achievements::CheckGroup(AchievementTrigger trigger) {
 			saveData.level = 1; // unlock the data
 			Upgrades::MarkDirty(modifierData.stats); // make the stat dirty
 			NotifyPlayer(id);
-			std::cout << "you have unlocked achievement!\n";
 		}
 	}
 }
@@ -319,7 +324,9 @@ double Achievements::CalcMoneyPerSecond() {
 
 bool Achievements::CheckQuality(double caughtNum, int quality) {
 	double total = 0.0;
-	for (auto& [id, saveData] : SaveData::saveData.fishData) {
+	for (auto& [id, data] : SaveData::data.fishData) {
+		FsaveFishData& saveData = SaveData::saveData.fishData.at(id);
+
 		total += saveData.totalNumOwned[quality];
 		if (total > caughtNum)
 			return true;

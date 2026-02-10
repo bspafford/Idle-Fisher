@@ -15,9 +15,7 @@ UfishBox::UfishBox(Ujournal* parent, FfishData* fishData, FsaveFishData* saveFis
 	this->fishData = fishData;
 	this->saveFishData = saveFishData;
 	
-	std::string fishThumbnail = fishData->thumbnail;
-	fishThumbnail.erase(0, 7); // removes 'images/'
-	fishButton = std::make_unique<Ubutton>(this, fishThumbnail, 16, 16, 1, vector{ 0, 0 }, false, false);
+	fishButton = std::make_unique<Ubutton>(this, "fish/" + std::to_string(fishData->id) + ".png", 16, 16, 1, vector{ 0, 0 }, false, false);
 	fishButton->SetPivot({ 0.5f, 0.f });
 	fishButton->addCallback(this, &UfishBox::openFishPage);
 	name = std::make_unique<text>(this, fishData->name, "straightDark", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);

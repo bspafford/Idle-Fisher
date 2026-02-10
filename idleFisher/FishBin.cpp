@@ -26,10 +26,11 @@ void FishBin::draw(Shader* shaderProgram) {
 }
 
 void FishBin::sellFish() {
-	for (auto& [fishId, currSaveFish] : SaveData::saveData.fishData) {
-		FfishData* currFish = &SaveData::data.fishData.at(fishId);
+	for (uint32_t fishId : SaveData::orderedData.fishData) {
+		FsaveFishData& currSaveFish = SaveData::saveData.fishData.at(fishId);
+		FfishData& currFish = SaveData::data.fishData.at(fishId);
 
-		FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(currFish->worldId);
+		FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(currFish.worldId);
 		for (int j = 0; j < currSaveFish.numOwned.size(); j++) {
 			double currencyGained = currSaveFish.numOwned[j] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, j));
 			if (currencyGained > 0)

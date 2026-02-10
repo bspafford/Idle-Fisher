@@ -2,18 +2,11 @@
 #include "Input.h"
 #include "animation.h"
 #include "Audio.h"
+#include "background.h"
 
 #include "debugger.h"
 
-// only give NON NULL values to overriding widgets ONLY
 Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int cellHeight, int numberOfFrames, vector loc, bool useWorldLoc, bool useAlpha) : widget(parent) {
-	// buttons will have a sprite sheet with click anim on top, and hover right below it, and prolly also a disabled one too
-	// needs:
-	// sprite sheet path, cell size, number of frames
-
-	widgetClass = parent;
-	this->loc = loc;
-
 	std::unordered_map<std::string, animDataStruct> animData;
 	animData.insert({ "click", animDataStruct({ 0, 0 }, { float(numberOfFrames - 1), 0 }, false) });
 	animData.insert({ "hover", animDataStruct({ 0, 1 }, { float(numberOfFrames - 1), 1 }, false) });
@@ -33,6 +26,17 @@ Ubutton::Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int
 	this->useWorldLoc = useWorldLoc;
 
 	setSize({ static_cast<float>(cellWidth), static_cast<float>(cellHeight) });
+	setLoc(loc);
+}
+
+Ubutton::Ubutton(widget* parent, vector size) : widget(parent) {
+	clickAudio = std::make_unique<Audio>("click.wav", AudioType::SFX);
+	background = std::make_unique<Background>(this, "widget/background/button", glm::vec4(242.0 / 255.0, 233.0 / 255.0, 211.0 / 255.0, 1.0));
+	background->setSize(size);
+	this->useAlpha = false;
+	this->useWorldLoc = false;
+	setSize(size);
+	setLoc(vector(0, 0));
 }
 
 void Ubutton::addCallback(void (*callback) ()) {
@@ -46,6 +50,10 @@ void Ubutton::draw(Shader* shaderProgram) {
 void Ubutton::onHover(Shader* shaderProgram) {
 	if (buttonAnim)
 		buttonAnim->draw(shaderProgram);
+	else if (background) {
+		background->setSize(size);
+		background->draw(shaderProgram);
+	}
 
 	prevMouseOver = mouseOver;
 	mouseOver = isMouseOver();
@@ -61,16 +69,20 @@ void Ubutton::onHover(Shader* shaderProgram) {
 }
 
 bool Ubutton::isMouseOver() {
-	if (!buttonAnim)
-		return false;
-	return buttonAnim->IsMouseOver(useAlpha);
+	if (buttonAnim)
+		return buttonAnim->IsMouseOver(useAlpha);
+	else if (background)
+		return background->mouseOver();
 }
 
 void Ubutton::setLoc(vector loc) {
 	loc = loc.floor();
 	__super::setLoc(loc);
 	
-	buttonAnim->setLoc(absoluteLoc);
+	if (buttonAnim)
+		buttonAnim->setLoc(absoluteLoc);
+	else if (background)
+		background->setLoc(absoluteLoc);
 }
 
 void Ubutton::onClick() {
@@ -90,6 +102,8 @@ void Ubutton::onClick() {
 
 void Ubutton::enable(bool enabled) {
 	isEnabled = enabled;
+	if (!buttonAnim)
+		return;
 
 	if (isEnabled) {
 		IHoverable::setCursorHoverIcon(CURSOR_POINT);
@@ -102,7 +116,11 @@ void Ubutton::enable(bool enabled) {
 }
 
 vector Ubutton::getSize() {
-	return buttonAnim->GetCellSize();
+	if (buttonAnim)
+		return buttonAnim->GetCellSize();
+	else if (background)
+		return background->getSize();
+	return vector(0, 0);
 }
 
 void Ubutton::SetColorMod(glm::vec4 colorMod) {

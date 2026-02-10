@@ -30,7 +30,6 @@
 #include "achievementUnlockWidget.h"
 #include "UIWidget.h"
 #include "idleProfitWidget.h"
-#include "newRecordWidget.h"
 #include "blurBox.h"
 #include "settings.h"
 #include "AudioSystem.h"
@@ -244,7 +243,6 @@ void Main::setupWidgets() {
 	achievementUnlocked = std::make_unique<UachievementUnlockWidget>(nullptr);
 	UIWidget = std::make_unique<UUIWidget>(nullptr);
 	idleProfitWidget = std::make_unique<UidleProfitWidget>(nullptr);
-	newRecordWidget = std::make_unique<UnewRecordWidget>(nullptr);
 	if (!settingsWidget)
 		settingsWidget = std::make_unique<Usettings>(nullptr);
 }
@@ -402,7 +400,6 @@ void Main::drawWidgets(Shader* shaderProgram) {
 	comboWidget->draw(shaderProgram);
 	UIWidget->draw(shaderProgram);
 	GetCharacter()->DrawWidgets(shaderProgram);
-	newRecordWidget->draw(shaderProgram);
 }
 
 void Main::rebirth() {

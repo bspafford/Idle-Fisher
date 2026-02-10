@@ -290,9 +290,14 @@ void Usettings::getAllMonitors() {
 	int count;
 	GLFWmonitor** monitors = glfwGetMonitors(&count);
 	for (int i = 0; i < count; i++) {
-		const char* monitorName = glfwGetMonitorName(monitors[i]);
-		std::string primaryString = i == 0 ? " (primary)" : "";
-		monitorBlock->AddOption(std::string(monitorName) + primaryString);
+		if (i == 0)
+			monitorBlock->AddOption("Primary");
+		else {
+			std::string monitorName = glfwGetMonitorName(monitors[i]);
+			if (monitorName.size() > 10)
+				monitorName = monitorName.substr(0, 7) + "...";
+			monitorBlock->AddOption(monitorName);
+		}
 	}
 
 	monitorBlock->UpdateValue();

@@ -36,7 +36,7 @@ public:
 	inline static std::vector<std::string> collisionIdentifier;
 	inline static std::vector<std::string> collisionWorld;
 
-	static inline std::string currWorld = "world1";
+	static inline std::string currWorld = "53";
 
 	static inline bool leftMouseButtonDown = false;
 

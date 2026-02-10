@@ -198,22 +198,27 @@ void AautoFisher::catchFish() {
 
 	SetFullnessIndex();
 
-	int catchNum = 1;
+	double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0;
+	double caught = floor(catchNum); // guarenteed caught
+	double remainder = catchNum - caught; // percent remainder
+	if (math::randRange(0.0, 1.0) < remainder) // random check to see if player got rolled over value
+		caught++;
 
+	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * caught, NumberType::FishCaught);
+	
 	// if there is enough room for the fish
 	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
-	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * catchNum <= maxCurrency) {
-		if (catchNum > 0) {
+	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * caught <= maxCurrency) {
+		if (caught > 0) {
 			double recast = Upgrades::Get(Stat::RecastProcChance);
 			if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
-				StartRecast(currFish.id, catchNum);
+				StartRecast(currFish.id, caught);
 
 			FsaveFishData& saveFishData = heldFish[currFish.id];
 			saveFishData.id = currFish.id;
-			saveFishData.numOwned[0] += catchNum;
-			saveFishData.totalNumOwned[0] += catchNum;
+			saveFishData.numOwned[0] += caught;
+			saveFishData.totalNumOwned[0] += caught;
 
-			numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * catchNum, NumberType::FishCaught);
 		}
 
 		double currencyHeld = calcCurrencyHeld();
@@ -388,8 +393,8 @@ void AautoFisher::startFishing() {
 }
 
 double AautoFisher::calcFPS() {
-	// how fast it can catch fish
-	return 1 / math::max(getCatchTime(), 0.00001f);
+	double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0;
+	return 1 / math::max(getCatchTime(), 0.00001f) * catchNum;
 }
 
 double AautoFisher::calcMPS(double customCurrency) {

@@ -371,6 +371,8 @@ void collision::showCollisionBoxes(Shader* shaderProgram) {
 				// Draw line
 				if (allCollision[i]->identifier == 'w') // if water make blue
 					shaderProgram->setVec4("color", glm::vec4(0.f, 0.f, 1.f, 1.f));
+				if (allCollision[i]->identifier == 'r') // if water make blue
+					shaderProgram->setVec4("color", glm::vec4(0.f, 1.f, 1.f, 1.f));
 				else
 					shaderProgram->setVec4("color", glm::vec4(glm::vec3(0.f), 1.f));
 
@@ -722,12 +724,11 @@ bool collision::testMouse(vector mousePos) {
 	vector worldPos = math::screenToWorld(mousePos);
 
 	for (int i = 0; i < allCollision.size(); i++) {
-		vector normal;
-		if (allCollision[i]->identifier == 'w') {
-			if (pointInQuad(worldPos, allCollision[i])) {
-				Cursor::setMouseOverWater(true);
-				return true;
-			}
+		bool inRiver = allCollision[i]->identifier == 'r';
+		if ((allCollision[i]->identifier == 'w' || inRiver) && pointInQuad(worldPos, allCollision[i])) {
+			Cursor::SetMouseOverRiver(inRiver);
+			Cursor::setMouseOverWater(true);
+			return true;
 		}
 	}
 

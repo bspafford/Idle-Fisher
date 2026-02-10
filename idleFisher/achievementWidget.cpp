@@ -88,7 +88,8 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 
 void UachievementWidget::addedToViewport() {
 	float achievementsUnlocked = 0.f;
-	for (auto& [id, achievement] : SaveData::saveData.achievementList) {
+	for (uint32_t id : SaveData::orderedData.achievementData) {
+		SaveEntry& achievement = SaveData::saveData.achievementList.at(id);
 		if (achievement.level)
 			achievementsUnlocked++;
 	}

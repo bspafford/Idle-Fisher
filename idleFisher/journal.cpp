@@ -64,6 +64,9 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	}
 
 	for (auto& [fishId, fishData] : SaveData::data.fishData) {
+		if (fishId == 1)
+			continue; // skip premium
+
 		FsaveFishData* saveFishData = &SaveData::saveData.fishData.at(fishId);
 
 		std::unique_ptr<UfishBox> fishBox = std::make_unique<UfishBox>(this, &fishData, saveFishData);
@@ -72,7 +75,7 @@ Ujournal::Ujournal(widget* parent) : widget(parent) {
 	}
 
 	// selected fish page
-	fishThumbnail = std::make_unique<Image>("images/fish/dirtFish.png", vector{ 0, 0 }, false);
+	fishThumbnail = std::make_unique<Image>("images/fish/2.png", vector{ 0, 0 }, false);
 	fishThumbnail->SetPivot({ 0.5f, 0.5f });
 	notesBackground = std::make_unique<Image>("images/widget/journalNotes.png", vector{ 0, 0 }, false);
 	notesBackground->SetPivot({ 0.5f, 0.f });
@@ -162,14 +165,14 @@ void Ujournal::draw(Shader* shaderProgram) {
 			fishBoxList[i]->draw(shaderProgram);
 	}
 
-	if (backButton && pageNum != 0)
+	if (backButton && pageNum == -1)
 		backButton->draw(shaderProgram);
 	if (xButton)
 		xButton->draw(shaderProgram);
 
 	if (pageNum != -1) {
-		if (forwardButton && pageNum != SaveData::orderedData.worldData.size() - 1)
-			forwardButton->draw(shaderProgram);
+		//if (forwardButton && pageNum != SaveData::orderedData.worldData.size() - 1)
+		//	forwardButton->draw(shaderProgram);
 		worldName1->draw(shaderProgram);
 		worldName2->draw(shaderProgram);
 
@@ -279,17 +282,15 @@ void Ujournal::updatePages() {
 		vector firstFish = center + vector{ -98.f, 30.f };
 		vector increment = vector{ 64.f, -48.f };
 		vector secondpageDist = { 130, 0 };
-		fishBoxList[pageNum * 10 + 1]->setLoc(firstFish);
-		fishBoxList[pageNum * 10 + 2]->setLoc(firstFish + vector{ increment.x, 0.f });
-		fishBoxList[pageNum * 10 + 3]->setLoc(firstFish + vector{ 0.f, increment.y });
-		fishBoxList[pageNum * 10 + 4]->setLoc(firstFish + vector{ increment.x, increment.y });
-		fishBoxList[pageNum * 10 + 5]->setLoc(firstFish + vector{ increment.x / 2.f, increment.y * 2.f });
+		fishBoxList[pageNum * 10 + 0]->setLoc(firstFish);
+		fishBoxList[pageNum * 10 + 1]->setLoc(firstFish + vector{ increment.x, 0.f });
+		fishBoxList[pageNum * 10 + 2]->setLoc(firstFish + vector{ 0.f, increment.y });
+		fishBoxList[pageNum * 10 + 3]->setLoc(firstFish + vector{ increment.x, increment.y });
+		fishBoxList[pageNum * 10 + 4]->setLoc(firstFish + vector{ increment.x / 2.f, increment.y * 2.f });
 
-		fishBoxList[pageNum * 10 + 6]->setLoc(firstFish + secondpageDist);
-		fishBoxList[pageNum * 10 + 7]->setLoc(firstFish + vector{ increment.x, 0.f } + secondpageDist);
-		fishBoxList[pageNum * 10 + 8]->setLoc(firstFish + vector{ 0.f, increment.y } + secondpageDist);
-		fishBoxList[pageNum * 10 + 9]->setLoc(firstFish + vector{ increment.x, increment.y } + secondpageDist);
-		fishBoxList[pageNum * 10 + 10]->setLoc(firstFish + vector{ increment.x / 2.f, increment.y * 2.f } + secondpageDist);
+		fishBoxList[pageNum * 10 + 5]->setLoc(firstFish + secondpageDist);
+		fishBoxList[pageNum * 10 + 6]->setLoc(firstFish + vector{ increment.x, 0.f } + secondpageDist);
+		fishBoxList[pageNum * 10 + 7]->setLoc(firstFish + vector{ 0.f, increment.y } + secondpageDist);
 	} else {
 		vector center = stuff::screenSize / (stuff::pixelSize * 2.f);
 
@@ -340,7 +341,7 @@ void Ujournal::openFishPage(FfishData* fishData, FsaveFishData* saveFishData) {
 	selectedFish = fishData;
 	selectedSaveFish = saveFishData;
 
-	fishThumbnail->setImage(fishData->thumbnail);
+	fishThumbnail->setImage("images/fish/" + std::to_string(fishData->id) + ".png");
 	selectedFishName->setText(fishData->name);
 	selectedFishDescription->setText(fishData->description);
 

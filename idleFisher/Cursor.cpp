@@ -62,6 +62,14 @@ void Cursor::setMouseOverWater(bool overWater) {
 	mouseOverWater = overWater;
 }
 
+bool Cursor::GetMouseOverRiver() {
+	return mouseOverRiver;
+}
+
+void Cursor::SetMouseOverRiver(bool overRiver) {
+	mouseOverRiver = overRiver;
+}
+
 void Cursor::toggleCursor() {
 	glfwSetCursor(Main::GetWindow(), NULL);
 }

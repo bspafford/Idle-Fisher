@@ -76,7 +76,7 @@ void collision::saveCollision(std::vector<SDL_Point*>& allCollision, std::vector
 	std::string currWorldName = worldName[0];
 	colFile << "!" << worldName[0] << std::endl;
 	for (int i = 0; i < allCollision.size(); i++) {
-		if (worldName[i] != "world1")
+		if (worldName[i] != "53")
 			continue;
 
 			if (worldName[i] != currWorldName)
@@ -141,6 +141,8 @@ void collision::showCollisionBoxes(SDL_Renderer* renderer, std::vector<SDL_Point
 					SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 				else if (collisionIdentifier[i] == "w") // water
 					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+				else if (collisionIdentifier[i] == "r") // river
+					SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
 				else if (collisionIdentifier[i] == "s") // stair
 					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 				else if (collisionIdentifier[i] == "g") // grass
@@ -429,8 +431,8 @@ void collision::changeIdentifier() {
 		return;
 
 	// list
-	// "" default, "w" water, "s" stairs, "g" grass, "d" dirt, "o" wood, "m" metal
-	std::vector<std::string> identifiers = { "", "w", "s", "g", "d", "o", "m" };
+	// "" default, "w" water, "r" river, "s" stairs, "g" grass, "d" dirt, "o" wood, "m" metal
+	std::vector<std::string> identifiers = { "", "w", "r", "s", "g", "d", "o", "m"};
 
 	// get current index of current identifier
 	auto it = std::find(identifiers.begin(), identifiers.end(), Main::collisionIdentifier[mouseOver]);
@@ -471,5 +473,5 @@ void collision::addCollisionBox() {
 
 	Main::allCollision.push_back(points);
 	Main::collisionIdentifier.push_back("");
-	Main::collisionWorld.push_back("world1");
+	Main::collisionWorld.push_back("53");
 }

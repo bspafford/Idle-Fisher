@@ -272,7 +272,6 @@
     <ClCompile Include="merchantWidget.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="model.cpp" />
-    <ClCompile Include="newRecordWidget.cpp" />
     <ClCompile Include="node.cpp" />
     <ClCompile Include="npc.cpp" />
     <ClCompile Include="NPCwidget.cpp" />
@@ -385,7 +384,6 @@
     <ClInclude Include="merchantWidget.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
-    <ClInclude Include="newRecordWidget.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="npc.h" />
     <ClInclude Include="NPCwidget.h" />
@@ -400,6 +398,7 @@
     <ClInclude Include="premiumBuffWidget.h" />
     <ClInclude Include="progressBar.h" />
     <ClInclude Include="rain.h" />
+    <ClInclude Include="RareFish.h" />
     <ClInclude Include="rebirthExit.h" />
     <ClInclude Include="rebirthUnlock.h" />
     <ClInclude Include="rebirthWidget.h" />

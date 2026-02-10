@@ -14,6 +14,7 @@ public:
 	void draw(Shader* shaderProgram);
 	void start();
 	void stop();
+	bool IsRaining();
 private:
 	void updateRain();
 	void removeAnimList();
@@ -29,4 +30,5 @@ private:
 	std::vector<float> deathLoc; // what y the raindrop hits the ground
 
 	bool isStopped = false;
+	bool raining = false;
 };

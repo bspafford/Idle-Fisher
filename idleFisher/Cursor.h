@@ -23,6 +23,8 @@ public:
 
 	static bool getMouseOverWater();
 	static void setMouseOverWater(bool overWater);
+	static bool GetMouseOverRiver();
+	static void SetMouseOverRiver(bool overRiver);
 
 	static void toggleCursor();
 
@@ -34,6 +36,7 @@ private:
 
 	// if mouse is over water
 	static inline bool mouseOverWater = false;
+	static inline bool mouseOverRiver = false;
 
 	static inline std::unordered_map<CursorType, GLuint> cursorLookup{
 		{ CURSOR_DEFAULT,  GLFW_ARROW_CURSOR },

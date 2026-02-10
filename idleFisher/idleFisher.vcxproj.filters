@@ -211,9 +211,6 @@
     <ClCompile Include="pauseMenu.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="newRecordWidget.cpp">
-      <Filter>Source Files\widgets</Filter>
-    </ClCompile>
     <ClCompile Include="merchantWidget.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
@@ -564,9 +561,6 @@
     <ClInclude Include="pauseMenu.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="newRecordWidget.h">
-      <Filter>Header Files\widgets</Filter>
-    </ClInclude>
     <ClInclude Include="merchantWidget.h">
       <Filter>Header Files\widgets</Filter>
     </ClInclude>
@@ -826,6 +820,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="grass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RareFish.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

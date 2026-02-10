@@ -13,7 +13,7 @@ UsettingsBlock::UsettingsBlock(widget* parent, std::string optionsName, int leng
 	setSize({ float(length), 20.f });
 
 	optionsTitle = std::make_unique<text>(this, optionsName, "straight", vector{ 0, 0 });
-	optionsButton = std::make_unique<Ubutton>(this, "widget/upgradeButton.png", 37, 16, 1, vector{ 0, 0 }, false, false);
+	optionsButton = std::make_unique<Ubutton>(this, vector(56, 18));
 	optionsButton->addCallback(this, &UsettingsBlock::toggleOption);
 	selectedOptionText = std::make_unique<text>(this, options.size() > 0 ? options[currOptionsIdx] : "", "straightDark", vector{0, 0}, false, false, TEXT_ALIGN_CENTER);
 	selectedOptionText->SetPivot({ 0.f, 0.5f });

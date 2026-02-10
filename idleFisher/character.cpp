@@ -14,18 +14,16 @@
 #include "fishSchool.h"
 #include "upgrades.h"
 #include "achievement.h"
+#include "RareFish.h"
 
 // widget
 #include "fishComboWidget.h"
 #include "comboWidget.h"
 #include "currencyWidget.h"
-#include "achievementUnlockWidget.h"
 #include "heldFishWidget.h"
 #include "premiumBuffWidget.h"
 #include "UIWidget.h"
 #include "comboOvertimeWidget.h"
-#include "achievementWidget.h"
-#include "newRecordWidget.h"
 #include "NumberWidget.h"
 
 #include "debugger.h"
@@ -374,10 +372,10 @@ void Acharacter::leftClick() {
 
 		// set fish image
 		if (!fishImg) {
-			fishImg = std::make_unique<Image>(currFish.thumbnail.c_str(), bobberLoc, true);
+			fishImg = std::make_unique<Image>("images/fish/" + std::to_string(currFish.id) + ".png", bobberLoc, true);
 			fishImg->SetPivot({ 0.5f, 0.5f });
 		} else
-			fishImg->setImage(currFish.thumbnail.c_str());
+			fishImg->setImage("images/fish/" + std::to_string(currFish.id) + ".png");
 
 		// add fish
 		if (currFish.id != 1u) { // if not premium
@@ -389,6 +387,8 @@ void Acharacter::leftClick() {
 
 			SaveData::saveData.clicks++;
 			Achievements::CheckGroup(AchievementTrigger::Click);
+				
+			numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * caught, NumberType::FishCaught);
 
 			if (caught > 0) { // can catch no fish
 				FsaveFishData& saveFishData = SaveData::saveData.fishData[currFish.id];
@@ -397,7 +397,7 @@ void Acharacter::leftClick() {
 				if (saveFishData.biggestSizeCaught < currFishSize) {
 					saveFishData.biggestSizeCaught = currFishSize;
 					if (saveFishData.unlocked)
-						Main::newRecordWidget->start(currFishSize);
+						numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), currFishSize, NumberType::Size);
 				}
 				if (saveFishData.smallestSizeCaught > currFishSize)
 					saveFishData.smallestSizeCaught = currFishSize;
@@ -406,14 +406,13 @@ void Acharacter::leftClick() {
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
+				catchFishAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 				catchFishAudio->Play();
 				saveFishData.unlocked = true;
 				saveFishData.numOwned[currFishQuality] += caught;
 				saveFishData.totalNumOwned[currFishQuality] += caught;
 				showFish = true;
 				Achievements::CheckGroup(AchievementTrigger::FishCaught);
-
-				numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * caught, NumberType::FishCaught);
 			}
 
 		} else { // if premium
@@ -501,37 +500,34 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 	// then do (100 - premium chance) / 100
 	// calc fish chance and multuply by that number
 	// then add the premium chance at the end
-	std::vector<float> petBuff = { 1, 1, 1, 1, 1 }; // petBuffs::increaseChanceOfHigherFish();
-
 	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
 	float totalProb = 0; // premiumChance;
-	int index = 0;
-	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
-			float val = value.probability;
-			if (index < petBuff.size())
-				val *= petBuff[index];
+	for (auto [id, fishData] : fishData) {
+		// (fishing power is enough && in the same world) || premium
+		bool baseRequirements = fishData.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (fishData.worldId == Scene::GetCurrWorldId() || fishData.worldId == 1u);
+		// if rare fish, need to check the other requiremetns, returns true if not a rare fish
+		bool rareRequirements = RareFish::MetRequirements(fishData);
+
+		if (baseRequirements && rareRequirements) {
+			float val = fishData.probability;
 			totalProb += val;
 		}
-
-		++index;
 	}
 
 	double multiplier = (1.0 - (premiumChance / 100.0));
 
 	std::vector<std::pair<uint32_t, double>> probList;
 	double percent = 0.0;
-	int index1 = 0;
-	for (auto [key, value] : fishData) {
-		if (value.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (value.worldId == Scene::GetCurrWorldId() || value.worldId == 1u)) {
-			double multi = 1.0;
-			if (index1 < petBuff.size())
-				multi = petBuff[index1];
-			percent += value.probability / totalProb * multiplier * multi;
-			probList.push_back(std::pair<uint32_t, double>{value.id, percent});
-		}
+	for (auto [id, fishData] : fishData) {
+		// (fishing power is enough && in the same world) || premium
+		bool baseRequirements = fishData.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (fishData.worldId == Scene::GetCurrWorldId() || fishData.worldId == 1u);
+		// if rare fish, need to check the other requiremetns, returns true if not a rare fish
+		bool rareRequirements = RareFish::MetRequirements(fishData);
 
-		++index1;
+		if (baseRequirements && rareRequirements) {
+			percent += fishData.probability / totalProb * multiplier;
+			probList.push_back(std::pair<uint32_t, double>{fishData.id, percent});
+		}
 	}
 
 	if (canCatchPremium)
@@ -551,6 +547,8 @@ void Acharacter::StartFishing() {
 	tempBobberLoc = bobberLoc;
 
 	bobberBobTimer->start(bobTime);
+
+	isBobberInRiver = Cursor::GetMouseOverRiver();
 
 	castAudio->Play();
 	tightRopeAudio->Play(true);
@@ -895,4 +893,8 @@ void Acharacter::FootHitFloor() {
 		walkSFX->SetAudio(audioPath);
 		walkSFX->Play();
 	}
+}
+
+bool Acharacter::IsBobberInRiver() {
+	return isBobberInRiver;
 }

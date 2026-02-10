@@ -42,6 +42,8 @@ public:
 
 	void equipBait(uint32_t baitId);
 
+	bool IsBobberInRiver();
+
 private:
 	void drawFishingLine(Shader* shaderProgram);
 	void leftClick();
@@ -164,6 +166,8 @@ private:
 	double catchNumAtStartOfRecast = 0;
 
 	std::unique_ptr<NumberWidget> numberWidget;
+
+	bool isBobberInRiver = false;
 };
 
 Acharacter* GetCharacter();

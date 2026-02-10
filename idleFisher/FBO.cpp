@@ -55,7 +55,7 @@ void FBO::ResizeTexture(vector size) {
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
-	if (type == FBOType::DepthOnly || type == FBOType::ColorAndDepth) {
+	if (type == FBOType::ColorOnly || type == FBOType::ColorAndDepth) {
 		texture = std::make_unique<Texture>(size * stuff::pixelSize, TextureFormat::Color, true);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetID(), 0);
 	}

@@ -20,7 +20,7 @@ void UfishNumWidget::setup(FfishData* fish, FsaveFishData* saveFish, int fishQua
 	this->saveFish = saveFish;
 	this->fishQuality = fishQuality;
 
-	thumbnail = std::make_unique<Image>(fish->thumbnail, vector{ 0, 0 }, false);
+	thumbnail = std::make_unique<Image>("images/fish/" + std::to_string(fish->id) + ".png", vector{0, 0}, false);
 	
 	if (fishQuality == 1)
 		star = std::make_unique<Image>("images/widget/tinyBronzeStar.png", vector{ 0, 0 }, false);

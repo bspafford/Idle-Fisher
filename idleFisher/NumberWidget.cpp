@@ -81,8 +81,12 @@ void NumberData::MakeNumberString(double value, NumberType type, std::string& te
 		font = "biggerStraight";
 		color = glm::vec4(1, 1, 0, 1); // yellow
 		break;
+	case NumberType::Size:
+		textString = "New Record: " + shortNumbers::convert2Short(value) + "in!";
+		font = "straight";
+		color = glm::vec4(0, 1, 1, 1); // cyan
 	}
 
 	if (value == 0)
-		color = glm::vec4(0.5, 0.5, 0.5, 1);
+		color = glm::vec4(0.75, 0.75, 0.75, 1);
 }

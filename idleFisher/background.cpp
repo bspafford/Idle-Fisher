@@ -2,16 +2,20 @@
 #include "Rectangle.h"
 #include "Scene.h"
 #include "ScissorTest.h"
+#include "GPULoadCollector.h"
 
 Background::Background(widget* parent, std::string path, glm::vec4 fillColor) : widget(parent) {
+	assert(GPULoadCollector::isOnMainThread());
+
 	this->path = path;
 
 	// load images
-	std::string edgeNames[] = { "Top", "Right", "Bottom", "Left" };
-	std::string cornerNames[] = { "TopLeft", "TopRight", "BottomRight", "BottomLeft" };
+	std::string edgeNames[] = { "T", "R", "B", "L" };
+	std::string cornerNames[] = { "TL", "TR", "BR", "BL" };
 	for (int i = 0; i < 4; i++) {
-		edges.push_back(std::make_unique<Image>("images/" + path + "/edge" + edgeNames[i] + ".png", vector{0.f, 0.f}, false));
-		corners.push_back(std::make_unique<Image>("images/" + path + "/corner" + cornerNames[i] + ".png", vector{0.f, 0.f}, false));
+		// images/ + "widget/background/background" + TL.png
+		edges.push_back(std::make_unique<Image>("images/" + path + edgeNames[i] + ".png", vector{0.f, 0.f}, false));
+		corners.push_back(std::make_unique<Image>("images/" + path + cornerNames[i] + ".png", vector{0.f, 0.f}, false));
 	}
 
 	fillRect = std::make_unique<URectangle>(this, vector{ 0.f, 0.f }, vector{ 0.f, 0.f }, false, fillColor);
@@ -43,15 +47,15 @@ void Background::setSize(vector size) {
 	fbo->Bind();
 
 	// set locs
-	corners[0]->setLoc(vector{ 0.f, size.y - corners[0]->getSize().y });	// top left
-	corners[1]->setLoc( size - corners[1]->getSize());						// top right
-	corners[2]->setLoc(vector{ size.x - corners[2]->getSize().x, 0.f });	// bottom right
-	corners[3]->setLoc({ 0, 0 });													// bottom left
+	corners[0]->setLoc(vector(0.f, size.y - corners[0]->getSize().y));	// top left
+	corners[1]->setLoc( size - corners[1]->getSize());					// top right
+	corners[2]->setLoc(vector(size.x - corners[2]->getSize().x, 0.f));	// bottom right
+	corners[3]->setLoc({ 0, 0 });											// bottom left
 
-	edges[0]->setLoc(vector{ corners[0]->getSize().x, size.y - edges[0]->getSize().y });	// top
-	edges[1]->setLoc(vector{ size.x - edges[1]->getSize().x, corners[2]->getSize().y });	// right
-	edges[2]->setLoc(vector{ corners[3]->getSize().x, 0.f });								// bottom
-	edges[3]->setLoc(vector{ 0.f, corners[3]->getSize().y });								// left
+	edges[0]->setLoc(vector(corners[0]->getSize().x, size.y - edges[0]->getSize().y));	// top
+	edges[1]->setLoc(vector(size.x - edges[1]->getSize().x, corners[2]->getSize().y));	// right
+	edges[2]->setLoc(vector(corners[3]->getSize().x, 0.f));								// bottom
+	edges[3]->setLoc(vector(0.f, corners[3]->getSize().y));								// left
 	
 	Rect topEdge = { edges[0]->getAbsoluteLoc().x, edges[0]->getAbsoluteLoc().y, corners[1]->getAbsoluteLoc().x - (corners[0]->getAbsoluteLoc().x + corners[0]->getSize().x), edges[0]->getSize().y};	// top
 	Rect rightEdge= { edges[1]->getAbsoluteLoc().x, edges[1]->getAbsoluteLoc().y, edges[1]->getSize().x, corners[1]->getAbsoluteLoc().y - (corners[2]->getAbsoluteLoc().y + corners[2]->getSize().y) };	// right
@@ -68,7 +72,7 @@ void Background::setSize(vector size) {
 	fillRect->draw(Scene::twoDShader);
 	for (int i = 0; i < 4; i++) {
 		corners[i]->draw(Scene::twoDShader);
-		
+
 		// draw multiple of each edge to span across the gap
 		// scissor test to stop drawing past bounds
 		ScissorTest::Enable(rectList[i]);
@@ -80,6 +84,9 @@ void Background::setSize(vector size) {
 			edges[i]->draw(Scene::twoDShader);
 		}
 		ScissorTest::Disable();
+
+		// since an fbo is bound, and a scissor test is disabled, the scissor test resets to the other active scissor test, not to the more recent fbo size
+		glScissor(0, 0, size.x * stuff::pixelSize, size.y * stuff::pixelSize);
 	}
 
 	fbo->Unbind();

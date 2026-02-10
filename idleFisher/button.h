@@ -12,10 +12,14 @@
 #include "audio.h"
 
 class animation;
+class Background;
 
 class Ubutton : public widget, public IHoverable {
 public:
+	// uses custom sprites
 	Ubutton(widget* parent, std::string spriteSheetPath, int cellWidth, int cellHeight, int numberOfFrames, vector loc, bool useWorldLoc, bool useAlpha);
+	// uses a background component that can be resized
+	Ubutton(widget* parent, vector size);
 
 	// non static
 	template <class T> void addCallback(T* const object, void (T::* const callback) ()) {
@@ -42,9 +46,6 @@ public:
 	void SetClickAudio(std::string path);
 
 private:
-	// parent
-	widget* widgetClass;
-
 	std::function<void()> callback_;
 
 	bool mouseOver = false;
@@ -63,6 +64,7 @@ private:
 	bool hasDisabled;
 
 	std::unique_ptr<Audio> clickAudio;
+	std::unique_ptr<Background> background;
 
 public:
 	std::shared_ptr<animation> buttonAnim;

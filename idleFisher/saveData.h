@@ -133,38 +133,36 @@ struct ModifierNode {
 };
 
 struct FfishData {
-    uint32_t id;
+    uint32_t id = 0u;
     std::string name;
     std::string description;
-    std::string thumbnail;
-    float probability;
-    float fishingPower;
-    float fishSpeed;
-    float greenDifficulty;
-    float yellowDifficulty;
-    double basePrice;
-    uint32_t worldId;
+    float probability = 0.f;
+    float fishingPower = 0.f;
+    float fishSpeed = 0.f;
+    float greenDifficulty = 0.f;
+    float yellowDifficulty = 0.f;
+    double basePrice = 0.0;
+    uint32_t worldId = 0u;
     int minSize = 1;
     int maxSize = 1;
-    bool isRareFish = 0;
+    bool isRareFish = false;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, thumbnail, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, basePrice, worldId, minSize, maxSize, isRareFish);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(FfishData, id, name, description, probability, fishingPower, fishSpeed, greenDifficulty, yellowDifficulty, basePrice, worldId, minSize, maxSize, isRareFish);
 
     void parseData(std::vector<std::string> row) {
         id = std::stoul(row[0]);
         name = row[1];
         description = row[2];
-        thumbnail = row[3];
-        probability = std::stof(row[4]);
-        fishingPower = std::stof(row[5]);
-        fishSpeed = std::stof(row[6]);
-        greenDifficulty = std::stof(row[7]);
-        yellowDifficulty = std::stof(row[8]);
-        basePrice = std::stod(row[9]);
-        worldId = std::stoul(row[10]);
-        minSize = std::stoi(row[11]);
-        maxSize = std::stoi(row[12]);
-        isRareFish = std::stoi(row[13]);
+        probability = std::stof(row[3]);
+        fishingPower = std::stof(row[4]);
+        fishSpeed = std::stof(row[5]);
+        greenDifficulty = std::stof(row[6]);
+        yellowDifficulty = std::stof(row[7]);
+        basePrice = std::stod(row[8]);
+        worldId = std::stoul(row[9]);
+        minSize = std::stoi(row[10]);
+        maxSize = std::stoi(row[11]);
+        isRareFish = std::stoi(row[12]);
     }
 
     static FfishData GetCheapestFishInWorld(uint32_t worldId = 0);

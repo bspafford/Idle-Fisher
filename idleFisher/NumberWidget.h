@@ -22,6 +22,7 @@ enum class NumberType {
 	Recast,
 	PremiumCash, // if got the instant cash
 	PremiumBuff, // if got the x10 or x100
+	Size, // biggest catch
 };
 
 struct NumberData {

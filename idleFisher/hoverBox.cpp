@@ -8,7 +8,7 @@
 UhoverBox::UhoverBox(widget* parent) : widget(parent) {
 	float lineLength = 125.f;
 
-	background = std::make_unique<Background>(this, "widget/background", glm::vec4(224.f / 255.f, 188.f / 255.f, 145.f / 255.f, 1.f));
+	background = std::make_unique<Background>(this, "widget/background/background", glm::vec4(224.f / 255.f, 188.f / 255.f, 145.f / 255.f, 1.f));
 	background->SetPivot({ 0.f, 1.f });
 	name = std::make_unique<text>(this, " ", "biggerStraight", vector{0, 0});
 	name->setLineLength(lineLength);

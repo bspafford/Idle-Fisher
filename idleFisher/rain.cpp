@@ -37,6 +37,7 @@ void Arain::draw(Shader* shaderProgram) {
 void Arain::start() {
 	return; // to do
 
+	raining = true;
 	isStopped = false;
 
 	for (int i = 0; i < 50; i++) {
@@ -57,6 +58,7 @@ void Arain::start() {
 }
 
 void Arain::stop() {
+	raining = false;
 	isStopped = true;
 }
 
@@ -108,4 +110,8 @@ void Arain::removeAnimList() {
 			animList.erase(animList.begin() + i); // causes memory corruption, can't delete animation (self) while inside one of your own callbacks
 		}
 	}
+}
+
+bool Arain::IsRaining() {
+	return raining;
 }
