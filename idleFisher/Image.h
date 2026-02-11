@@ -10,8 +10,8 @@ class textureStruct;
 
 class Image {
 public:
-	Image(std::string image, vector loc, bool useWorldPos);
-	Image(std::shared_ptr<Image> image, std::shared_ptr<Rect>, vector loc, bool useWorldPos);
+	Image(std::string image, vector loc, bool useWorldPos, bool useDepth = true);
+	Image(std::shared_ptr<Image> image, std::shared_ptr<Rect>, vector loc, bool useWorldPos, bool useDepth = true);
 
 	~Image();
 
@@ -67,4 +67,5 @@ private:
 	glm::vec4 colorMod = glm::vec4(1.f);
 
 	bool flipHoriz = false;
+	bool useDepth = false;
 };

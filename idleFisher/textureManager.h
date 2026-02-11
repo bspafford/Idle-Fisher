@@ -17,9 +17,13 @@ class Shader;
 
 struct InstanceData {
 	glm::vec4 color;
+	
 	glm::vec2 position;
 	int useWorldPos;
 	int hasTexture;
+
+	int useDepth;
+	int pad[3];
 
 	GLuint64 tex;
 	glm::vec2 size;
@@ -27,8 +31,8 @@ struct InstanceData {
 	glm::vec4 source;
 
 	// tex == 0 means object doesn't have texture
-	InstanceData(glm::vec2 _position, glm::vec2 _size, glm::vec4 _source, int _useWorldPos, glm::vec4 _color, uint64_t _tex)
-		: position(_position), size(_size), source(_source), useWorldPos(_useWorldPos), color(_color), tex(_tex), hasTexture(_tex != 0) {}
+	InstanceData(glm::vec2 _position, glm::vec2 _size, glm::vec4 _source, int _useWorldPos, glm::vec4 _color, uint64_t _tex, int _depth)
+		: position(_position), size(_size), source(_source), useWorldPos(_useWorldPos), color(_color), tex(_tex), hasTexture(_tex != 0), useDepth(_depth) {}
 };
 
 struct textureStruct {
@@ -71,9 +75,9 @@ public:
 
 	static void StartFrame();
 	// Adds the Image into a draw queue to render at end of frame or when shader is swapped
-	static void DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& texHandle);
+	static void DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& texHandle, const bool& useDepth);
 	// Instantly draws the image, used for things like FBOs
-	static void DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color);
+	static void DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color, const bool& useDepth);
 	static void EndFrame();
 	// Uploads data to GPU when called
 	// Used for things like FBO changes or with something like the blur box

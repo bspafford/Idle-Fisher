@@ -165,6 +165,8 @@ Acharacter::Acharacter() {
 	recastTimer->addCallback(this, &Acharacter::Recast);
 	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX);
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
+
+	maxReach = 100.f;
 }
 
 void Acharacter::animFinished() {
@@ -897,4 +899,8 @@ void Acharacter::FootHitFloor() {
 
 bool Acharacter::IsBobberInRiver() {
 	return isBobberInRiver;
+}
+
+bool Acharacter::CanPlayerReach(vector loc) {
+	return math::distance(loc, getCharLoc()) <= maxReach;
 }

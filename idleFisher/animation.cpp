@@ -10,11 +10,11 @@
 
 #include "debugger.h"
 
-animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc) {
+animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc, bool useDepth) {
 	this->cellSize = { static_cast<float>(cellWidth), static_cast<float>(cellHeight) };
 	this->animData = animData;
 
-	spriteSheet = std::make_shared<Image>("images/" + spriteSheetPath, loc, useWorldLoc);
+	spriteSheet = std::make_shared<Image>("images/" + spriteSheetPath, loc, useWorldLoc, useDepth);
 	cellNum.x = round(spriteSheet->getSize().x / static_cast<float>(cellWidth));
 	cellNum.y = round(spriteSheet->getSize().y / static_cast<float>(cellHeight));
 
@@ -22,12 +22,12 @@ animation::animation(std::string spriteSheetPath, int cellWidth, int cellHeight,
 	animTimer->addCallback(this, &animation::animCallBack);
 }
 
-animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc) {
+animation::animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc, vector loc, bool useDepth) {
 	this->cellSize = { static_cast<float>(cellWidth), static_cast<float>(cellHeight) };
 	this->animData = animData;
 
 	std::shared_ptr<Rect> source = std::make_shared<Rect>(0.f, 0.f, spriteSheetImg->getSize().x, spriteSheetImg->getSize().y);
-	spriteSheet = std::make_shared<Image>(spriteSheetImg, source, loc, useWorldLoc); // create own instance of image
+	spriteSheet = std::make_shared<Image>(spriteSheetImg, source, loc, useWorldLoc, useDepth); // create own instance of image
 
 	cellNum.x = round(spriteSheet->getSize().x / static_cast<float>(cellWidth));
 	cellNum.y = round(spriteSheet->getSize().y / static_cast<float>(cellHeight));

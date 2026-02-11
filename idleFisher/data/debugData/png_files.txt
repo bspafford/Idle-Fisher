@@ -9,6 +9,7 @@ images/cursor3.png|rgba
 images/cursor4.png|rgba
 images/cursor5.png|rgba
 images/fishBin.png|a
+images/fishBinOutline.png
 images/icon.png
 images/rain.png
 images/sailormap.png

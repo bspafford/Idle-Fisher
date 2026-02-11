@@ -6,12 +6,13 @@
 
 #include "debugger.h"
 
-Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector loc, bool useWorldPos) {
+Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector loc, bool useWorldPos, bool useDepth) {
 	handle = image->handle;
 	
 	path = image->path;
 	this->source = source;
 	this->useWorldPos = useWorldPos;
+	this->useDepth = useDepth;
 
 	textureStructPtr = image->textureStructPtr;
 	if (!handle || !textureStructPtr)
@@ -27,9 +28,10 @@ Image::Image(std::shared_ptr<Image> image, std::shared_ptr<Rect> source, vector 
 	setLoc(loc);
 }
 
-Image::Image(std::string image, vector loc, bool useWorldPos) {
+Image::Image(std::string image, vector loc, bool useWorldPos, bool useDepth) {
 	path = image;
 	this->useWorldPos = useWorldPos;
+	this->useDepth = useDepth;
 
 	normalizedSource = { 0, 0, 1, 1 };
 
@@ -59,7 +61,7 @@ void Image::LoadGPU() {
 
 void Image::draw(Shader* shader) {
 	absoluteLoc = GetAbsoluteLoc(loc, getSize(), useWorldPos, pivot, xAnchor, yAnchor);
-	textureManager::DrawImage(shader, absoluteLoc, vector{w, h}, normalizedSource, useWorldPos, colorMod, handle);
+	textureManager::DrawImage(shader, absoluteLoc, vector{w, h}, normalizedSource, useWorldPos, colorMod, handle, useDepth);
 }
 
 void Image::setSourceRect(std::shared_ptr<Rect> source) {

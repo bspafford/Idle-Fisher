@@ -28,7 +28,7 @@ public:
 	static void Init();
 	static void Shutdown();
 
-	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, TextAlign alignment = TEXT_ALIGN_LEFT);
+	text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos = false, bool isometric = false, TextAlign alignment = TEXT_ALIGN_LEFT, bool useDepth = true);
 	~text();
 	void LoadGPU();
 	void setText(std::string text);
@@ -94,6 +94,8 @@ private:
 	std::unique_ptr<FBO> fbo;
 
 	bool hasDropChar = false;
+
+	bool useDepth = false;
 
 	// index, color
 	std::vector<std::pair<int, glm::vec4>> colorList;

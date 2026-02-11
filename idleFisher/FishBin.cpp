@@ -19,10 +19,15 @@ FishBin::FishBin(vector loc) {
 	bin = std::make_unique<Ubutton>(nullptr, "fishBin.png", 54, 66, 1, loc, true, true);
 	bin->addCallback(this, &FishBin::sellFish);
 	bin->SetClickAudio("temp/sellFish/fishSlap1.wav");
+	binOutline = std::make_unique<Image>("images/fishBinOutline.png", loc, true, false);
 }
 
 void FishBin::draw(Shader* shaderProgram) {
 	bin->draw(shaderProgram);
+	
+	bool canReach = GetCharacter()->CanPlayerReach(bin->getLoc() + bin->getSize() / 2.f);
+	if (canReach && bin->isMouseOver())
+		binOutline->draw(shaderProgram);
 }
 
 void FishBin::sellFish() {

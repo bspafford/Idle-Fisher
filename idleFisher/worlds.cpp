@@ -528,12 +528,12 @@ void world::sortDraw(Shader* shaderProgram) {
 			dockPoleBehind.push_back(dockPole.get());
 	}
 
+	for (int i = 0; i < buildingBehind.size(); i++)
+		buildingBehind[i]->draw(shaderProgram);
+
 	bool fishBinInBehind = fishBin->calcIfPlayerInfront();
 	if (fishBin && fishBinInBehind)
 		fishBin->draw(shaderProgram);
-
-	for (int i = 0; i < buildingBehind.size(); i++)
-		buildingBehind[i]->draw(shaderProgram);
 
 	// draw npcs behind
 	for (int i = 0; i < npcBehind.size(); i++)

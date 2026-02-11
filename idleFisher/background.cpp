@@ -24,7 +24,7 @@ Background::Background(widget* parent, std::string path, glm::vec4 fillColor) : 
 }
 
 void Background::draw(Shader* shaderProgram) {
-	fbo->Draw(shaderProgram, absoluteLoc, Rect{ 0.f, 0.f, 1.f, 1.f, }, false, glm::vec4(1));
+	fbo->Draw(shaderProgram, absoluteLoc, Rect{ 0.f, 0.f, 1.f, 1.f, }, false, glm::vec4(1), true);
 }
 
 void Background::setLoc(vector loc) {

@@ -3,6 +3,7 @@
 #include "animation.h"
 #include "Audio.h"
 #include "background.h"
+#include "character.h"
 
 #include "debugger.h"
 
@@ -56,7 +57,10 @@ void Ubutton::onHover(Shader* shaderProgram) {
 	}
 
 	prevMouseOver = mouseOver;
+
 	mouseOver = isMouseOver();
+	if (useWorldLoc)
+		mouseOver = mouseOver && GetCharacter()->CanPlayerReach(loc);
 
 	if (mouseOver) {
 		IHoverable::setHoveredItem(this);

@@ -156,6 +156,9 @@ std::vector<uint8_t>* AudioSystem::GetAudioData(const std::string& path) {
 }
 
 void AudioSystem::ApplyPendingChanges() {
+	for (auto& [audio, path] : pendingChange)
+		audio->AudioSystemSetAudio(path);
+
 	for (Audio* audio : pendingAdd)
 		audioList.insert(audio);
 
@@ -164,6 +167,7 @@ void AudioSystem::ApplyPendingChanges() {
 
 	pendingAdd.clear();
 	pendingRemove.clear();
+	pendingChange.clear();
 }
 
 void AudioSystem::Add(Audio* audio) {
@@ -172,6 +176,10 @@ void AudioSystem::Add(Audio* audio) {
 
 void AudioSystem::Remove(Audio* audio) {
 	pendingRemove.insert(audio);
+}
+
+void AudioSystem::ChangeAudio(Audio* audio, const std::string& path) {
+	pendingChange.insert(std::pair(audio, path));
 }
 
 ma_device* AudioSystem::GetDevice() {

@@ -39,7 +39,7 @@ void BlurBox::draw() {
 	// need to render everything first
 	textureManager::ForceGPUUpload();
 	GenerateSubTexture(texture.get());
-	textureManager::DrawImage(Scene::blurShader, loc, size, { 0.f, 0.f, 1.f, 1.f }, useWorldPos, glm::vec4(1), texture->GetHandle());
+	textureManager::DrawImage(Scene::blurShader, loc, size, { 0.f, 0.f, 1.f, 1.f }, useWorldPos, glm::vec4(1), texture->GetHandle(), true);
 }
 
 void BlurBox::GenerateSubTexture(Texture* texture) {
@@ -55,7 +55,7 @@ void BlurBox::Init() {
 
 void BlurBox::DrawFinal(Shader* shader) {
 	shader->Activate();
-	sceneFBO->Draw(shader, {0, 0}, {0, 0, 1, 1}, false, glm::vec4(1));
+	sceneFBO->Draw(shader, {0, 0}, {0, 0, 1, 1}, false, glm::vec4(1), true);
 }
 
 void BlurBox::BindFramebuffer() {

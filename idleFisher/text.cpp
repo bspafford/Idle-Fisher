@@ -19,7 +19,7 @@ void text::Shutdown() {
 	PakReader::ClearTextData();
 }
 
-text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, TextAlign alignment) : widget(parent) {
+text::text(widget* parent, std::string text, std::string font, vector loc, bool useWorldPos, bool isometric, TextAlign alignment, bool useDepth) : widget(parent) {
 	instances.push_back(this);
 
 	this->alignment = alignment;
@@ -27,6 +27,7 @@ text::text(widget* parent, std::string text, std::string font, vector loc, bool 
 	this->loc = loc.floor();
 	this->isometric = isometric;
 	this->useWorldPos = useWorldPos;
+	this->useDepth = useDepth;
 
 	textImg = std::make_shared<Image>("fonts/" + font + "/" + font + ".png", vector{ 0, 0 }, useWorldPos);
 	fontInfo = PakReader::GetFontData(font);
@@ -271,7 +272,7 @@ void text::draw(Shader* shader) {
 	if (!fbo || textString == "")
 		return;
 
-	fbo->Draw(shader, absoluteLoc, Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod);
+	fbo->Draw(shader, absoluteLoc, Rect{ 0, 0, 1, 1 }, useWorldPos, colorMod, useDepth);
 }
 
 void text::setLocAndSize(vector loc, vector size) {

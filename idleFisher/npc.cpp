@@ -13,7 +13,7 @@ npc::npc(vector loc) {
 
 	std::unordered_map<std::string, animDataStruct> exclamationPointAnimData;
 	exclamationPointAnimData.insert({ "anim", animDataStruct({0, 0}, {4, 0}, true) });
-	exclamationPointAnim = std::make_unique<animation>("widget/npcButtons/exclamationPoint.png", 5, 13, exclamationPointAnimData, true, loc);
+	exclamationPointAnim = std::make_unique<animation>("widget/npcButtons/exclamationPoint.png", 5, 13, exclamationPointAnimData, true, loc, false);
 	exclamationPointAnim->setAnimation("anim");
 	exclamationPointAnim->start();
 
@@ -63,7 +63,8 @@ void npc::setupCollision() {
 
 void npc::draw(Shader* shaderProgram) {
 	bool prevMouseOver = bMouseOver;
-	bool bMouseOver = npcAnim->IsMouseOver(true);
+	bool canReach = GetCharacter()->CanPlayerReach(loc);
+	bool bMouseOver = canReach && npcAnim->IsMouseOver(true);
 	if (bMouseOver && Input::getMouseButtonDown(MOUSE_BUTTON_LEFT))
 		Input::setLeftClick(this, &npc::click);
 	if (bMouseOver)

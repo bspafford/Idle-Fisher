@@ -43,8 +43,8 @@ FBO::~FBO() {
 		glDeleteFramebuffers(1, &ID);
 }
 
-void FBO::Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color) {
-	textureManager::DrawImage(shader, position, size, source, useWorldPos, color, texture->GetHandle());
+void FBO::Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color, bool useDepth) {
+	textureManager::DrawImage(shader, position, size, source, useWorldPos, color, texture->GetHandle(), useDepth);
 }
 
 void FBO::ResizeTexture(vector size) {

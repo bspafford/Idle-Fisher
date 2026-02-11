@@ -44,6 +44,8 @@ public:
 
 	bool IsBobberInRiver();
 
+	bool CanPlayerReach(vector loc);
+
 private:
 	void drawFishingLine(Shader* shaderProgram);
 	void leftClick();
@@ -168,6 +170,9 @@ private:
 	std::unique_ptr<NumberWidget> numberWidget;
 
 	bool isBobberInRiver = false;
+
+	// how far the player can reach to click on objects/npcs
+	float maxReach;
 };
 
 Acharacter* GetCharacter();

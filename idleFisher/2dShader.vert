@@ -13,30 +13,33 @@ uniform float pixelSize;
 uniform float mapHeight;
 
 struct InstanceData {
-    vec4 color;
-    vec2 position;
+	vec4 color;
+	
+	vec2 position;
 	int useWorldPos;
 	int hasTexture;
-    
-    sampler2D tex;
-    vec2 size;
 
-    vec4 source;
+	int useDepth;
+	int pad[3];
+	
+	sampler2D tex;
+	vec2 size;
 
+	vec4 source;
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };
 
 void main() {
-    instanceIndex = gl_InstanceID;
-    InstanceData data = instances[instanceIndex];
+	instanceIndex = gl_InstanceID;
+	InstanceData data = instances[instanceIndex];
 
-    float depth = data.useWorldPos == 1 ? 1.f - data.position.y / mapHeight : 1.f;
-    gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), depth, 1.0); // 1.f - data.position.y / mapHeight
+	float depth = (data.useWorldPos == 0 || data.useDepth == 0) ? 1.f : 1.f - data.position.y / mapHeight;
+	gl_Position = projection * vec4((aPos * data.size + data.position) * pixelSize - (playerPos * data.useWorldPos), depth, 1.0);
 
-    // if source size is 0
-    if (data.source.z == 0 || data.source.w == 0)
-        TexCoord = aTexCoord; // (0, 0, 1, 1)
-    else
-        TexCoord = data.source.xy + aTexCoord * data.source.zw;
+	// if source size is 0
+	if (data.source.z == 0 || data.source.w == 0)
+		TexCoord = aTexCoord; // (0, 0, 1, 1)
+	else
+		TexCoord = data.source.xy + aTexCoord * data.source.zw;
 }

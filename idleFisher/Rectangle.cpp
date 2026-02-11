@@ -17,7 +17,7 @@ void URectangle::draw(Shader* shaderProgram) {
 	if (blockCursor && mousePos.x >= loc.x && mousePos.x <= loc.x + size.x && mousePos.y >= loc.y && mousePos.y <= loc.y + size.y)
 		setHoveredItem(this);
 
-	textureManager::DrawRect(shaderProgram, absoluteLoc, size, useWorldLoc, color);
+	textureManager::DrawRect(shaderProgram, absoluteLoc, size, useWorldLoc, color, true);
 }
 
 void URectangle::setColor(glm::vec4 color) {

@@ -30,8 +30,8 @@ public:
 	// if usecharLoc, then object is in world space
 	// sprite sheet path already inside image folder, no need to use "images/" anymore
 	// animation sheet only works with animations being on one row at a time, cant have half an animation on the next row down
-	animation(std::string spriteSheetPath, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc = true, vector loc = { 0, 0 });
-	animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc = true, vector loc = { 0, 0 });
+	animation(std::string spriteSheetPath, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc = true, vector loc = { 0, 0 }, bool useDepth = true);
+	animation(std::shared_ptr<Image> spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc = true, vector loc = { 0, 0 }, bool useDepth = true);
 	// used for a lot of the same objects that use the same sprite sheet, for example: autoFisher, trees, bushes, leaves, etc.
 	//animation(img* spriteSheetImg, int cellWidth, int cellHeight, std::unordered_map<std::string, animDataStruct> animData, bool useWorldLoc = true, vector loc = { 0, 0 });
 	~animation();

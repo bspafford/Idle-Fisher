@@ -27,7 +27,7 @@ public:
 	FBO(vector size, bool useWorldPos, FBOType type);
 	~FBO();
 
-	void Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color);
+	void Draw(Shader* shader, const vector& position, const Rect& source, const bool& useWorldPos, const glm::vec4& color, bool useDepth);
 
 	void ResizeTexture(vector size);
 

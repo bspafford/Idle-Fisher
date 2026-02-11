@@ -10,7 +10,7 @@ NumberData::NumberData(vector loc, double value, NumberType type, bool useWorldP
 	std::string textString, font;
 	glm::vec4 color;
 	MakeNumberString(value, type, textString, font, color);
-	number = std::make_unique<text>(nullptr, textString, font, startLoc, useWorldPos, false, TEXT_ALIGN_CENTER);
+	number = std::make_unique<text>(nullptr, textString, font, startLoc, useWorldPos, false, TEXT_ALIGN_CENTER, false);
 	number->setTextColor(color);
 
 	// , NumberPrefix prefix, NumberSuffix suffix,

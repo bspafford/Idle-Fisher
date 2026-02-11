@@ -23,6 +23,7 @@ public:
 
 	static void Add(Audio* audio);
 	static void Remove(Audio* audio);
+	static void ChangeAudio(Audio* audio, const std::string& path);
 
 private:
 	static void Mix(float* out, ma_uint32 frames);
@@ -42,4 +43,5 @@ private:
 	static inline std::unordered_set<Audio*> audioList;
 	static inline std::unordered_set<Audio*> pendingAdd;
 	static inline std::unordered_set<Audio*> pendingRemove;
+	static inline std::unordered_map<Audio*, std::string> pendingChange;
 };

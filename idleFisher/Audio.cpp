@@ -93,6 +93,13 @@ void Audio::SetAudio(const std::string& path) {
 	if (this->path == path) // return if same path
 		return;
 
+	AudioSystem::ChangeAudio(this, path);
+}
+
+void Audio::AudioSystemSetAudio(const std::string& path) {
+	if (this->path == path) // return if same path
+		return;
+
 	this->path = path;
 
 	std::vector<uint8_t>* buffer = AudioSystem::GetAudioData(path);

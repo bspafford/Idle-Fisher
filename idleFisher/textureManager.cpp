@@ -205,16 +205,16 @@ void textureManager::StartFrame() {
 	currShader = NULL;
 }
 
-void textureManager::DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& texHandle) {
+void textureManager::DrawImage(Shader* shader, const vector& position, const vector& size, const Rect& source, const bool& useWorldPos, const glm::vec4& color, const uint64_t& texHandle, const bool& useDepth) {
 	currShader = shader;
 	CheckShaders();
-	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(source.x, source.y, source.w, source.h), useWorldPos, color, texHandle));
+	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(source.x, source.y, source.w, source.h), useWorldPos, color, texHandle, useDepth));
 }
 
-void textureManager::DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color) {
+void textureManager::DrawRect(Shader* shader, const vector& position, const vector& size, const bool& useWorldPos, const glm::vec4& color, const bool& useDepth) {
 	currShader = shader;
 	CheckShaders();
-	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(0), useWorldPos, color, 0));
+	gpuData.push_back(InstanceData(glm::vec2(position.x, position.y), glm::vec2(size.x, size.y), glm::vec4(0), useWorldPos, color, 0, useDepth));
 }
 
 void textureManager::EndFrame() {

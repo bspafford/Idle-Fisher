@@ -12,15 +12,18 @@ uniform float percent;
 
 struct InstanceData {
     vec4 color;
+    
     vec2 position;
 	int useWorldPos;
 	int hasTexture;
+
+    int useDepth;
+    int pad[3];
     
     sampler2D tex;
     vec2 size;
 
     vec4 source;
-
 };
 
 layout(std430, binding = 0) buffer InstanceBuffer{ InstanceData instances[]; };

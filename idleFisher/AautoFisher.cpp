@@ -116,7 +116,12 @@ AautoFisher::~AautoFisher() {
 void AautoFisher::Update(float deltaTime) {
 	calcIfPlayerInfront();
 
-	bMouseOver = anim->IsMouseOver(true);
+	bool canReach = GetCharacter()->CanPlayerReach(anim->getLoc() + vector(anim->GetCellSize().x, 0.f));
+	bMouseOver = canReach && anim->IsMouseOver(true);
+
+	if (!canReach)
+		return;
+
 	if (anim && bMouseOver)
 		IHoverable::setHoveredItem(this);
 
@@ -260,7 +265,7 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 
 	// starts at 1 to skip premium
 	for (auto& [fishId, fData] : fishData) {
-		if (fishId == 1u) // premium fish id
+		if (fishId == 1u || fData.isRareFish) // premium fish id || rare
 			continue; // dont include premium here
 
 		// see if autofisher has enough fishing power, see if theres enough room for the fish
@@ -274,7 +279,7 @@ std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const s
 
 	// starts at 1 to skip premium
 	for (auto& [fishId, fData] : fishData) {
-		if (fishId == 1u)
+		if (fishId == 1u || fData.isRareFish)
 			continue; // dont include premium here
 
 		if (fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId()) {
