@@ -17,7 +17,7 @@ npc::npc(vector loc) {
 	exclamationPointAnim->setAnimation("anim");
 	exclamationPointAnim->start();
 
-	openAudio = std::make_unique<Audio>("temp/openUI.mp3", AudioType::SFX);
+	openAudio = std::make_unique<Audio>("openUI.wav", AudioType::SFX);
 	npcAudio = std::make_unique<Audio>("npc1.wav", AudioType::SFX);
 }
 

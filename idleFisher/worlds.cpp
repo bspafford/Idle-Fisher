@@ -441,6 +441,8 @@ void world::draw(Shader* shaderProgram) {
 
 	inFront->draw(shaderProgram);
 
+	ambience->Update();
+
 	//if (rain) {
 	//	rain->draw(shaderProgram);
 	//	// makes screen darker
@@ -682,6 +684,7 @@ world1::world1(WorldLoc worldChangeLoc) {
 	inFront = std::make_unique<Image>("images/worlds/demo/inFront.png", vector(624.f, 448.f), true);
 
 	grass = std::make_unique<Grass>();
+	ambience = std::make_unique<Ambience>();
 }
 
 void world::finishedBeachAnim() {

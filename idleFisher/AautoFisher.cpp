@@ -99,10 +99,9 @@ AautoFisher::AautoFisher(uint32_t id) {
 
 	castAudio = std::make_unique<Audio>("whoosh.wav", AudioType::SFX, soundLoc);
 	steamAudio = std::make_unique<Audio>("steam.wav", AudioType::SFX, soundLoc);
-	splashAudio = std::make_unique<Audio>("splash.wav", AudioType::SFX, soundLoc);
-	reelAudio = std::make_unique<Audio>("temp/autoFisher/reel.wav", AudioType::SFX, soundLoc);
+	splashAudio = std::make_unique<Audio>("splash.wav", AudioType::SFX, soundLoc + vector(37.f, -69.f));
 	machineAudio = std::make_unique<Audio>("machineNoise.wav", AudioType::SFX, soundLoc);
-	drawerAudio = std::make_unique<Audio>("temp/autoFisher/drawer.wav", AudioType::SFX, soundLoc);
+	drawerAudio = std::make_unique<Audio>("drawer.wav", AudioType::SFX, soundLoc);
 	catchAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX, soundLoc);
 	machineAudio->Play(true);
 
@@ -439,13 +438,10 @@ void AautoFisher::OutlineUpdate(int frame) {
 		steamAudio->Play();
 	} else if (frame == 8) {
 		castAudio->SetSpeed(math::randRange(0.9f, 1.1f));
-		castAudio->Play();
+		//castAudio->Play();
 	} else if (frame == 26) {
 		drawerAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		drawerAudio->Play();
-		reelAudio->SetSpeed(math::randRange(0.9f, 1.1f));
-		reelAudio->Play();
-	} else if (frame == 29) {
 		splashAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		splashAudio->Play();
 	} else if (frame == 37) {

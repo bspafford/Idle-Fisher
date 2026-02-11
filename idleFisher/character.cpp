@@ -408,6 +408,7 @@ void Acharacter::leftClick() {
 				if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
 					StartRecast(currFish.id, caught);
 
+				catchFishAudio->SetAudio("pop.wav");
 				catchFishAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 				catchFishAudio->Play();
 				saveFishData.unlocked = true;
@@ -415,6 +416,11 @@ void Acharacter::leftClick() {
 				saveFishData.totalNumOwned[currFishQuality] += caught;
 				showFish = true;
 				Achievements::CheckGroup(AchievementTrigger::FishCaught);
+			} else {
+				// didn't catch anything
+				catchFishAudio->SetAudio("popNoneCaught.wav");
+				catchFishAudio->SetSpeed(math::randRange(0.9f, 1.1f));
+				catchFishAudio->Play();
 			}
 
 		} else { // if premium

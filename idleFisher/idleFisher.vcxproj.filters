@@ -448,6 +448,9 @@
     <ClCompile Include="grass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ambience.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -823,6 +826,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RareFish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ambience.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

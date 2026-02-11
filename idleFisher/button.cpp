@@ -60,7 +60,7 @@ void Ubutton::onHover(Shader* shaderProgram) {
 
 	mouseOver = isMouseOver();
 	if (useWorldLoc)
-		mouseOver = mouseOver && GetCharacter()->CanPlayerReach(loc);
+		mouseOver = mouseOver && GetCharacter()->CanPlayerReach(loc + buttonAnim->GetCellSize() / 2.f);
 
 	if (mouseOver) {
 		IHoverable::setHoveredItem(this);
@@ -98,6 +98,7 @@ void Ubutton::onClick() {
 		buttonAnim->start();
 	}
 
+	clickAudio->SetSpeed(math::randRange(0.9, 1.1));
 	clickAudio->Play();
 
 	if (callback_)

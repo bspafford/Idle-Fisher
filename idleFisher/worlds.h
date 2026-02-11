@@ -29,6 +29,7 @@
 #include "sailor.h"
 #include "fishSchool.h"
 #include "grass.h"
+#include "Ambience.h"
 
 class animation;
 class Timer;
@@ -214,6 +215,8 @@ public:
 	std::unique_ptr<Image> inFront;
 
 	vector bankSellLoc;
+
+	std::unique_ptr<Ambience> ambience;
 
 protected:
 	void setWorldChangeLoc(WorldLoc worldChangeLoc);

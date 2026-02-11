@@ -198,6 +198,7 @@
     <ClCompile Include="achievementBuffs.cpp" />
     <ClCompile Include="achievementWidget.cpp" />
     <ClCompile Include="AFmoreInfoUI.cpp" />
+    <ClCompile Include="Ambience.cpp" />
     <ClCompile Include="Anchor.cpp" />
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="AStar.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="achievementUnlockWidget.cpp" />
     <ClCompile Include="fps.cpp" />
     <ClCompile Include="glac.c" />
+    <ClInclude Include="Ambience.h" />
     <ClInclude Include="Anchor.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="background.h" />

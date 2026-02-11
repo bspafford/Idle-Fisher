@@ -116,7 +116,6 @@ private:
 	
 	std::unique_ptr<Model> house;
 	std::unique_ptr<Model> characterModel;
-
+	
 	std::unique_ptr<Audio> backgroundMusic;
-	std::unique_ptr<Audio> ambientAudio;
 };

@@ -124,7 +124,6 @@ private:
 	std::unique_ptr<Audio> castAudio;
 	std::unique_ptr<Audio> steamAudio;
 	std::unique_ptr<Audio> splashAudio;
-	std::unique_ptr<Audio> reelAudio;
 	std::unique_ptr<Audio> machineAudio;
 	std::unique_ptr<Audio> drawerAudio;
 	std::unique_ptr<Audio> catchAudio;
