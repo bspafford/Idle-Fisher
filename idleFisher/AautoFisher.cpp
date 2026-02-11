@@ -94,14 +94,14 @@ AautoFisher::AautoFisher(uint32_t id) {
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &AautoFisher::Recast);
-	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX, soundLoc);
+	recastAudio = std::make_unique<Audio>("recasts/1.wav", AudioType::SFX, soundLoc);
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 
-	castAudio = std::make_unique<Audio>("temp/autoFisher/whoosh.wav", AudioType::SFX, soundLoc);
-	steamAudio = std::make_unique<Audio>("temp/autoFisher/steam.wav", AudioType::SFX, soundLoc);
-	splashAudio = std::make_unique<Audio>("temp/autoFisher/splash.wav", AudioType::SFX, soundLoc);
+	castAudio = std::make_unique<Audio>("whoosh.wav", AudioType::SFX, soundLoc);
+	steamAudio = std::make_unique<Audio>("steam.wav", AudioType::SFX, soundLoc);
+	splashAudio = std::make_unique<Audio>("splash.wav", AudioType::SFX, soundLoc);
 	reelAudio = std::make_unique<Audio>("temp/autoFisher/reel.wav", AudioType::SFX, soundLoc);
-	machineAudio = std::make_unique<Audio>("temp/autoFisher/machineNoise.wav", AudioType::SFX, soundLoc);
+	machineAudio = std::make_unique<Audio>("machineNoise.wav", AudioType::SFX, soundLoc);
 	drawerAudio = std::make_unique<Audio>("temp/autoFisher/drawer.wav", AudioType::SFX, soundLoc);
 	catchAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX, soundLoc);
 	machineAudio->Play(true);
@@ -434,20 +434,27 @@ void AautoFisher::OutlineUpdate(int frame) {
 	if (fullnessLight)
 		fullnessLight->SetCurrFrameLoc(vector(frame, fullnessIndex));
 
-	if (frame == 6)
+	if (frame == 6) {
+		steamAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		steamAudio->Play();
-	else if (frame == 8)
+	} else if (frame == 8) {
+		castAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		castAudio->Play();
-	else if (frame == 26) {
+	} else if (frame == 26) {
+		drawerAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		drawerAudio->Play();
+		reelAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		reelAudio->Play();
-	}
-	else if (frame == 29)
+	} else if (frame == 29) {
+		splashAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		splashAudio->Play();
-	else if (frame == 37)
+	} else if (frame == 37) {
+		drawerAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		drawerAudio->Play();
-	else if (frame == 40)
+	} else if (frame == 40) {
+		catchAudio->SetSpeed(math::randRange(0.9f, 1.1f));
 		catchAudio->Play();
+	}
 }
 
 void AautoFisher::SetUpgradeAnim() {
@@ -475,7 +482,7 @@ void AautoFisher::Recast() {
 
 	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), recastNum, NumberType::Recast);
 
-	recastAudio->SetSpeed(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->SetAudio("recasts/" + std::to_string(std::min(recastNum, 5)) + ".wav");
 	recastAudio->Play();
 
 	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain

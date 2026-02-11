@@ -149,7 +149,7 @@ AfishTransporter::AfishTransporter(vector loc) : npc(loc) {
 	progressBar = std::make_unique<UprogressBar>(nullptr, vector{ 25, 3 }, true);
 	progressBar->setVisibility(false);
 
-	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX, loc);
+	walkSFX = std::make_unique<Audio>("grass1.wav", AudioType::SFX, loc);
 
 	setLoc(loc);
 	setupCollision();
@@ -470,18 +470,18 @@ void AfishTransporter::FootHitFloor() {
 
 		vector loc = npcAnim->getLoc() + vector(npcAnim->GetCellSize().x / 2.f, 0.f);
 
-		std::string audioPath = "temp/dirt1.wav";
+		std::string audioPath = "dirt1.wav";
 		for (Fcollision* col : collision::GetGroundCollision()) {
 			if (collision::IsPointInsidePolygon(col, loc)) {
 				float rand = math::randRange(0.f, 1.f) < 0.5f;
 				if (col->identifier == 'g') // grass
-					audioPath = rand ? "temp/grass1.mp3" : "temp/grass2.mp3";
+					audioPath = rand ? "grass1.wav" : "grass2.wav";
 				else if (col->identifier == 'o') // wood
-					audioPath = rand ? "temp/wood1.wav" : "temp/wood2.wav";
+					audioPath = rand ? "wood1.wav" : "wood2.wav";
 				else if (col->identifier == 'm') // metal
-					audioPath = "temp/metal1.wav";
+					audioPath = rand ? "metal1.wav" : "metal2.wav";
 				else // dirt
-					audioPath = rand ? "temp/dirt1.wav" : "temp/dirt2.wav";
+					audioPath = rand ? "dirt1.wav" : "dirt2.wav";
 				break;
 			}
 		}

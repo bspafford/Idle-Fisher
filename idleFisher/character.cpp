@@ -156,14 +156,14 @@ Acharacter::Acharacter() {
 	// Audio
 	catchFishAudio = std::make_unique<Audio>("pop.wav", AudioType::SFX);
 	catchPremiumAudio = std::make_unique<Audio>("holy.wav", AudioType::SFX);
-	walkSFX = std::make_unique<Audio>("temp/grass1.mp3", AudioType::SFX);
-	castAudio = std::make_unique<Audio>("temp/fishing/castFishingRod.wav", AudioType::SFX);
-	tightRopeAudio = std::make_unique<Audio>("temp/fishing/tightRope.wav", AudioType::SFX);
+	walkSFX = std::make_unique<Audio>("grass1.wav", AudioType::SFX);
+	castAudio = std::make_unique<Audio>("whoosh.wav", AudioType::SFX);
+	tightRopeAudio = std::make_unique<Audio>("tightRope.wav", AudioType::SFX);
 
 
 	recastTimer = CreateDeferred<Timer>();
 	recastTimer->addCallback(this, &Acharacter::Recast);
-	recastAudio = std::make_unique<Audio>("recasts/G2.wav", AudioType::SFX);
+	recastAudio = std::make_unique<Audio>("recasts/1.wav", AudioType::SFX);
 	numberWidget = std::make_unique<NumberWidget>(nullptr, true);
 
 	maxReach = 100.f;
@@ -861,7 +861,7 @@ void Acharacter::Recast() {
 	// final fish num should be multiplied by recast num
 		// so it would be like (fishNum * combo * upgrades * etc) * recastNum
 
-	recastAudio->SetSpeed(std::powf(2.f, recastNum / 12.f)); // increase pitch by 1 note
+	recastAudio->SetAudio("recasts/" + std::to_string(std::min(recastNum, 5)) + ".wav");
 	recastAudio->Play();
 
 	if (math::randRange(0.0, 100.0) <= chainChance) { // should continue chain
@@ -875,18 +875,18 @@ void Acharacter::Recast() {
 void Acharacter::FootHitFloor() {
 	if (anim->GetCurrAnim().starts_with("walk")) {
 
-		std::string audioPath = "temp/dirt1.wav";
+		std::string audioPath = "dirt1.wav";
 		for (Fcollision* col : collision::GetGroundCollision()) {
 			if (collision::IsPointInsidePolygon(col, getCharLoc())) {
 				float rand = math::randRange(0.f, 1.f) < 0.5f;
 				if (col->identifier == 'g') // grass
-					audioPath = rand ? "temp/grass1.mp3" : "temp/grass2.mp3";
+					audioPath = rand ? "grass1.wav" : "grass2.wav";
 				else if (col->identifier == 'o') // wood
-					audioPath = rand ? "temp/wood1.wav" : "temp/wood2.wav";
+					audioPath = rand ? "wood1.wav" : "wood2.wav";
 				else if (col->identifier == 'm') // metal
-					audioPath = "temp/metal1.wav";
+					audioPath = rand ? "metal1.wav" : "metal2.wav";
 				else // dirt
-					audioPath = rand ? "temp/dirt1.wav" : "temp/dirt2.wav";
+					audioPath = rand ? "dirt1.wav" : "dirt2.wav";
 				break;
 			}
 		}
