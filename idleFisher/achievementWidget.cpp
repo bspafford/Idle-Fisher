@@ -20,7 +20,7 @@ UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 
-	startTimeText = std::make_unique<text>(this, "", "straight", vector{ 0, 0 });
+	startTimeText = std::make_unique<text>(this, "Started", "straight", vector{ 0, 0 });
 	changeTextTimer = CreateDeferred<Timer>();
 	changeTextTimer->addCallback(this, &UachievementWidget::updateText);
 	updateText();
@@ -39,7 +39,7 @@ UachievementWidget::UachievementWidget(widget* parent) : widget(parent) {
 	xButton->addCallback(this, &UachievementWidget::closeWidget);
 	if (scrollBox) {
 		scrollBox->addChild(NULL, 2);
-		scrollBox->addChild(startTimeText.get(), 7);
+		scrollBox->addChild(startTimeText.get(), 10);
 		scrollBox->addChild(equippedWidget.get(), equippedWidget->getSize().y);
 		scrollBox->addChild(achievementText.get(), achievementText->getSize().y);
 		scrollBox->addChild(achievementHolder.get(), 5.f);
@@ -73,7 +73,6 @@ void UachievementWidget::draw(Shader* shaderProgram) {
 			}
 			break;
 		}
-
 		index++;
 	}
 
@@ -111,7 +110,7 @@ void UachievementWidget::setupLocs() {
 	__super::setupLocs();
 
 	vector scrollBoxLoc = background->getAbsoluteLoc() + vector{ 11.f, 9.f };
-	vector scrollBoxSize = vector{ 17.f * 25.f + 2.f, background->getSize().y - 19.f };
+	vector scrollBoxSize = vector{ background->getSize().x - 30.f, background->getSize().y - 19.f };
 	//scrollBox->setOgLoc(scrollBoxLoc);
 	achievementHolder->setLocAndSize(scrollBoxLoc, { scrollBoxSize.x, achievementHolder->getSize().y });
 	scrollBox->changeChildHeight(achievementHolder.get(), achievementHolder->getOverflowSize());
@@ -146,7 +145,7 @@ void UachievementWidget::updateText() {
 		timeString.append(std::to_string(minutes) + " min ");
 	timeString.append(std::to_string(seconds) + " sec");
 
-	startTimeText->setText(timeString);
+	startTimeText->setText("Started " + timeString + " ago");
 	changeTextTimer->start(1);
 }
 
@@ -155,8 +154,8 @@ void UachievementWidget::closeWidget() {
 }
 
 void UachievementWidget::updateEquipmentWidget() {
-	equippedWidget->update();
-	
+	if (equippedWidget)
+		equippedWidget->update();
 }
 
 void UachievementWidget::updateAchievementIcon(uint32_t id) {

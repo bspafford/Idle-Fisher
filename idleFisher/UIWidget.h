@@ -23,6 +23,8 @@ private:
 	std::unique_ptr<text> currRunRebirthPoints; // how many rebirth points you have for that run
 
 	std::unique_ptr<Ubutton> NPCshowButton;
+	std::unique_ptr<Ubutton> journalButton;
+	std::unique_ptr<Ubutton> achievementButton;
 
 	std::unique_ptr<Ubutton> merchantButton;
 	std::unique_ptr<Ubutton> fishermanButton;

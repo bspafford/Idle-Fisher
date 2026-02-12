@@ -44,7 +44,7 @@ void buyAutoFisher::draw(Shader* shaderProgram) {
 		return;
 
 	bool prevMouseOver = bMouseOver;
-	bMouseOver = plusAnim->IsMouseOver(false);
+	bMouseOver = plusAnim->IsMouseOver(false) && GetCharacter()->CanPlayerReach(plusAnim->getLoc() + vector(plusAnim->GetCellSize().x / 2.f, 5.f));
 	if (bMouseOver)
 		IHoverable::setHoveredItem(this);
 	if (!prevMouseOver && bMouseOver) {

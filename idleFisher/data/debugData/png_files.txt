@@ -958,9 +958,8 @@ images/widget/npcbuttons/petseller.png
 images/widget/npcbuttons/sailor.png
 images/widget/npcbuttons/scuba.png
 images/widget/npcbuttons/shopicon.png
-images/widget/npcbuttons/shopicon0.png
-images/widget/npcbuttons/shopicon1.png
-images/widget/npcbuttons/shopicon2.png
+images/widget/npcbuttons/journalButton.png
+images/widget/npcbuttons/achievementButton.png
 images/widget/pausemenu/continue.png
 images/widget/pausemenu/exit.png
 images/widget/pausemenu/exitgame.png

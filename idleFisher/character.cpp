@@ -823,6 +823,8 @@ void Acharacter::equipBait(uint32_t baitId) {
 
 	ModifierNode& newBaitData = SaveData::data.modifierData.at(SaveData::saveData.equippedBaitId);
 	Upgrades::MarkDirty(newBaitData.stats);
+
+	Main::achievementWidget->updateEquipmentWidget();
 }
 
 double Acharacter::GetCombo() {

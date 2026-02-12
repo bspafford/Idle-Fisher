@@ -64,4 +64,7 @@ void Apet::EquipPet(ModifierNode* petData) {
 	}
 
 	Upgrades::MarkDirty(petData->stats);
+
+	if (Main::achievementWidget)
+		Main::achievementWidget->updateEquipmentWidget();
 }

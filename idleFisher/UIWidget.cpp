@@ -33,6 +33,13 @@ UUIWidget::UUIWidget(widget* parent) : widget(parent) {
 	petSellerButton = std::make_unique<Ubutton>(this, "widget/npcButtons/npcButton5.png", 18, 18, 1, vector{ 0, 0 }, false, false);
 	atmButton = std::make_unique<Ubutton>(this, "widget/npcButtons/npcButton1.png", 18, 18, 1, vector{ 0, 0 }, false, false);
 
+	journalButton = std::make_unique<Ubutton>(this, "widget/npcButtons/journalButton.png", 26, 22, 1, vector{ 0, 0 }, false, false);
+	journalButton->SetAnchor(ANCHOR_RIGHT, ANCHOR_BOTTOM);
+	journalButton->SetPivot(vector(1.f, 0.f));
+	achievementButton = std::make_unique<Ubutton>(this, "widget/npcButtons/achievementButton.png", 26, 22, 1, vector{ 0, 0 }, false, false);
+	achievementButton->SetAnchor(ANCHOR_RIGHT, ANCHOR_BOTTOM);
+	achievementButton->SetPivot(vector(1.f, 0.f));
+
 	// set alpha to 0
 	if (merchantButton) {
 		merchantButton->SetColorMod(glm::vec4(0));
@@ -64,9 +71,13 @@ UUIWidget::UUIWidget(widget* parent) : widget(parent) {
 		atmButton->enable(false);
 		atmButton->addCallback(this, &UUIWidget::openAtmWidget);
 	}
-
+	
 	if (NPCshowButton)
 		NPCshowButton->addCallback(this, &UUIWidget::showNPCButtons);
+	if (journalButton)
+		journalButton->addCallback([]() { Main::journal->addToViewport(nullptr); });
+	if (achievementButton)
+		achievementButton->addCallback([]() { Main::achievementWidget->addToViewport(nullptr); });
 	buttonsTimer = CreateDeferred<Timer>();
 	buttonsTimer->addUpdateCallback(this, &UUIWidget::updateButtonsLoc);
 	buttonsTimer->addCallback(this, &UUIWidget::finishButtons);
@@ -101,6 +112,10 @@ void UUIWidget::draw(Shader* shaderProgram) {
 
 	if (NPCshowButton)
 		NPCshowButton->draw(shaderProgram);
+	if (journalButton)
+		journalButton->draw(shaderProgram);
+	if (achievementButton)
+		achievementButton->draw(shaderProgram);
 
 	for (int i = 0; i < Main::premiumBuffList.size(); i++) {
 		Main::premiumBuffList[i]->draw(shaderProgram);
@@ -141,6 +156,11 @@ void UUIWidget::setupLocs() {
 		if (atmButton)
 			atmButton->setLoc(NPCshowButton->getLoc());
 	}
+
+	if (journalButton)
+		journalButton->setLoc(vector(-4, 4));
+	if (achievementButton)
+		achievementButton->setLoc(vector(-32, 4));
 
 	float offset = stuff::screenSize.x / stuff::pixelSize;
 	for (int i = 0; i < Main::premiumBuffList.size(); i++) {
