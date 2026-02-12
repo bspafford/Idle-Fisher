@@ -56,7 +56,6 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 // audio
 	scrollBox->addChild(audioTitle.get(), audioTitle->getSize().y + 3);
 
-
 	float length = background->getSize().x - 50;
 	float sliderHeight = 3;
 	float titleSliderLength = 38;
@@ -120,12 +119,12 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	fpsLimitBlock->addCallback(Main::SetFpsLimit);
 	scrollBox->addChild(fpsLimitBlock.get(), fpsLimitBlock->getSize().y);
 
-	pixelFontBlock = std::make_unique<UsettingsBlock>(this, "Pixel Font", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.pixelFont);
-	pixelFontBlock->addCallback(text::changeFontAll);
-	scrollBox->addChild(pixelFontBlock.get(), pixelFontBlock->getSize().y);
+	//pixelFontBlock = std::make_unique<UsettingsBlock>(this, "Pixel Font", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.pixelFont);
+	//pixelFontBlock->addCallback(text::changeFontAll);
+	//scrollBox->addChild(pixelFontBlock.get(), pixelFontBlock->getSize().y);
 
-	shortNumBlock = std::make_unique<UsettingsBlock>(this, "Enable Short Numbers", length, std::vector<std::string>{ "Long", "Short" }, &SaveData::settingsData.shortNumbers);
-	scrollBox->addChild(shortNumBlock.get(), shortNumBlock->getSize().y);
+	//shortNumBlock = std::make_unique<UsettingsBlock>(this, "Enable Short Numbers", length, std::vector<std::string>{ "Long", "Short" }, &SaveData::settingsData.shortNumbers);
+	//scrollBox->addChild(shortNumBlock.get(), shortNumBlock->getSize().y);
 
 	petBlock = std::make_unique<UsettingsBlock>(this, "Show Pets", length, std::vector<std::string>{ "Off", "On" }, &SaveData::settingsData.showPets);
 	scrollBox->addChild(petBlock.get(), petBlock->getSize().y);
@@ -145,9 +144,9 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	movementBlock = std::make_unique<UsettingsBlock>(this, "Movement", length, std::vector<std::string>{ "Isometric", "Normal" }, & SaveData::settingsData.movement);
 	scrollBox->addChild(movementBlock.get(), movementBlock->getSize().y);
 
-	interpMethodBlock = std::make_unique<UsettingsBlock>(this, "Interpolation", length, std::vector<std::string>{ "Nearest", "Linear" }, &SaveData::settingsData.interpMethod);
-	interpMethodBlock->addCallback(this, &Usettings::SetInterpMethod);
-	scrollBox->addChild(interpMethodBlock.get(), interpMethodBlock->getSize().y);
+	//interpMethodBlock = std::make_unique<UsettingsBlock>(this, "Interpolation", length, std::vector<std::string>{ "Nearest", "Linear" }, &SaveData::settingsData.interpMethod);
+	//interpMethodBlock->addCallback(this, &Usettings::SetInterpMethod);
+	//scrollBox->addChild(interpMethodBlock.get(), interpMethodBlock->getSize().y);
 	
 	// add bottom padding
 	scrollBox->addChild(nullptr, 20);
@@ -158,6 +157,8 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	confirmWidget->AddCancelCallback(this, &Usettings::cancelConfirm);
 
 	setupLocs();
+	
+	CheckSettings();
 }
 
 Usettings::~Usettings() {
@@ -165,6 +166,8 @@ Usettings::~Usettings() {
 }
 
 void Usettings::draw(Shader* shaderProgram) {
+	CheckSettings();
+
 	background->draw(shaderProgram);
 	backButton->draw(shaderProgram);
 
@@ -196,6 +199,11 @@ void Usettings::SaveSettings() {
 	SaveData::saveSettings();
 }
 
+void Usettings::CheckSettings() {
+	resolutionBlock->SetEnabled(SaveData::settingsData.fullScreen == 2); // only enable resolution setting if windowed
+	fpsLimitBlock->SetEnabled(SaveData::settingsData.vsync == 0); // only allow fps limit if vsync is off
+}
+
 void Usettings::UpdateData() {
 	// audio
 	masterVolumeSlider->UpdateValue();
@@ -208,11 +216,12 @@ void Usettings::UpdateData() {
 	vsyncBlock->UpdateValue();
 	resolutionBlock->UpdateValue();
 	fpsLimitBlock->UpdateValue();
-	pixelFontBlock->UpdateValue();
-	shortNumBlock->UpdateValue();
+	//pixelFontBlock->UpdateValue();
+	//shortNumBlock->UpdateValue();
 	petBlock->UpdateValue();
 	rainBlock->UpdateValue();
 	cursorBlock->UpdateValue();
+	//interpMethodBlock->UpdateValue();
 }
 
 void Usettings::removeFromViewport() {

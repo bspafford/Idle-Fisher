@@ -90,27 +90,27 @@ Acharacter::Acharacter() {
 	// SE
 	fishingRodData.insert({ "castSE", animDataStruct({0, 0}, {17, 0}, false) });
 	fishingRodData.insert({ "idleFishingSE", animDataStruct({18, 0}, {31, 0}, true) });
-	fishingRodData.insert({ "transitionSE", animDataStruct({32, 0}, {34, 0}, false) });
-	fishingRodData.insert({ "waitSE", animDataStruct({35, 0}, {38, 0}, true) });
-	fishingRodData.insert({ "pullSE", animDataStruct({39, 0}, {51, 0}, false) });
+	fishingRodData.insert({ "transitionSE", animDataStruct({0, 1}, {2, 1}, false) });
+	fishingRodData.insert({ "waitSE", animDataStruct({3, 1}, {6, 1}, true) });
+	fishingRodData.insert({ "pullSE", animDataStruct({7, 1}, {19, 1}, false) });
 	// SW
-	fishingRodData.insert({ "castSW", animDataStruct({0, 1}, {17, 1}, false) });
-	fishingRodData.insert({ "idleFishingSW", animDataStruct({18, 1}, {31, 1}, true) });
-	fishingRodData.insert({ "transitionSW", animDataStruct({32, 1}, {34, 1}, false) });
-	fishingRodData.insert({ "waitSW", animDataStruct({35, 1}, {38, 1}, true) });
-	fishingRodData.insert({ "pullSW", animDataStruct({39, 1}, {51, 1}, false) });
+	fishingRodData.insert({ "castSW", animDataStruct({0, 2}, {17, 2}, false) });
+	fishingRodData.insert({ "idleFishingSW", animDataStruct({18, 2}, {31, 2}, true) });
+	fishingRodData.insert({ "transitionSW", animDataStruct({0, 3}, {2, 3}, false) });
+	fishingRodData.insert({ "waitSW", animDataStruct({3, 3}, {6, 3}, true) });
+	fishingRodData.insert({ "pullSW", animDataStruct({7, 3}, {19, 3}, false) });
 	// NE
-	fishingRodData.insert({ "castNE", animDataStruct({0, 2}, {17, 2}, false) });
-	fishingRodData.insert({ "idleFishingNE", animDataStruct({18, 2}, {31, 2}, true) });
-	fishingRodData.insert({ "transitionNE", animDataStruct({32, 2}, {34, 2}, false) });
-	fishingRodData.insert({ "waitNE", animDataStruct({35, 2}, {38, 2}, true) });
-	fishingRodData.insert({ "pullNE", animDataStruct({39, 2}, {51, 2}, false) });
+	fishingRodData.insert({ "castNE", animDataStruct({0, 4}, {17, 4}, false) });
+	fishingRodData.insert({ "idleFishingNE", animDataStruct({18, 4}, {31, 42}, true) });
+	fishingRodData.insert({ "transitionNE", animDataStruct({0, 5}, {2, 5}, false) });
+	fishingRodData.insert({ "waitNE", animDataStruct({3, 5}, {6, 5}, true) });
+	fishingRodData.insert({ "pullNE", animDataStruct({7, 5}, {19, 5}, false) });
 	// NW
-	fishingRodData.insert({ "castNW", animDataStruct({0, 3}, {17, 3}, false) });
-	fishingRodData.insert({ "idleFishingNW", animDataStruct({18, 3}, {31, 3}, true) });
-	fishingRodData.insert({ "transitionNW", animDataStruct({32, 3}, {34, 3}, false) });
-	fishingRodData.insert({ "waitNW", animDataStruct({35, 3}, {38, 3}, true) });
-	fishingRodData.insert({ "pullNW", animDataStruct({39, 3}, {51, 3}, false) });
+	fishingRodData.insert({ "castNW", animDataStruct({0, 6}, {17, 6}, false) });
+	fishingRodData.insert({ "idleFishingNW", animDataStruct({18, 6}, {31, 6}, true) });
+	fishingRodData.insert({ "transitionNW", animDataStruct({0, 7}, {2, 7}, false) });
+	fishingRodData.insert({ "waitNW", animDataStruct({3, 7}, {6, 7}, true) });
+	fishingRodData.insert({ "pullNW", animDataStruct({7, 7}, {19, 7}, false) });
 
 	fishingRod = std::make_unique<animation>("character/fishingRod.png", 108, 83, fishingRodData, true);
 	
@@ -143,7 +143,7 @@ Acharacter::Acharacter() {
 	bobberWaterAnimBack->setAnimation("water");
 	bobberWaterAnimBack->start();
 
-	fishingLineRect = std::make_unique<URectangle>(nullptr, vector(0, 0), vector(1, 1), false, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
+	fishingLineRect = std::make_unique<URectangle>(nullptr, vector(0, 0), vector(1, 1), true, glm::vec4(242.f / 255.f, 233.f / 255.f, 211.f / 255.f, 1.f));
 
 	setPlayerColPoints();
 
@@ -176,23 +176,22 @@ void Acharacter::animFinished() {
 		anim->setAnimation("idleFishing" + dir);
 		anim->start();
 		fishingRod->setAnimation("idleFishing" + dir);
-		fishingRod->start();
 	} else if (anim->GetCurrAnim().starts_with("transition")) {
 		anim->setAnimation("wait" + dir);
 		anim->start();
 		fishingRod->setAnimation("wait" + dir);
-		fishingRod->start();
 	} else if (anim->GetCurrAnim().starts_with("pull")) {
 		anim->setAnimation("cast" + dir);
 		anim->start();
 		fishingRod->setAnimation("cast" + dir);
-		fishingRod->start();
 	}
 }
 
 void Acharacter::setFishingTipLoc(int frame) {
 	float fishingRodImgSize = fishingRod->GetCellSize().x;
 	bool onLeft = GetFishingDirection()[1] == 'W';
+
+	fishingRod->SetCurrFrameLoc(anim->GetCurrFrameLoc() - vector(0, 6));
 
 	vector loc = anim->getAbsoluteLoc() - anim->GetCellSize() / 2.f + vector{ -34.f, 11.f };
 	if (anim->GetCurrAnim().starts_with("cast")) {
@@ -276,6 +275,8 @@ void Acharacter::draw(Shader* shaderProgram) {
 	}
 
 	vector animLoc = SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f;
+
+	std::cout << "frame loc: " << fishingRod->GetCurrFrameLoc() << ", frame: " << fishingRod->calcFrameDistance(true) << "\n";
 
 	std::string fishingDir = GetFishingDirection();
 	anim->setLoc(animLoc);
@@ -370,7 +371,6 @@ void Acharacter::leftClick() {
 		anim->setAnimation("pull" + fishingDir);
 		anim->start();
 		fishingRod->setAnimation("pull" + fishingDir);
-		fishingRod->start();
 
 		// set fish image
 		if (!fishImg) {
@@ -469,7 +469,6 @@ void Acharacter::fishing() {
 	anim->setAnimation("transition" + fishingDir);
 	anim->start();
 	fishingRod->setAnimation("transition" + fishingDir);
-	fishingRod->start();
 }
 
 FfishData Acharacter::calcFish(int& quality, int& fishSize) {
@@ -583,7 +582,6 @@ void Acharacter::StartFishing() {
 		anim->setAnimation("cast" + fishingDir);
 		anim->start();
 		fishingRod->setAnimation("cast" + fishingDir);
-		fishingRod->start();
 	}
 }
 
@@ -781,15 +779,14 @@ void Acharacter::drawFishingLine(Shader* shaderProgram) {
 	if (!isFishing || !showFishingLine)
 		return;
 
-	vector start = math::worldToScreen(fishingTipLoc).ToPixel();
-	vector end = math::worldToScreen(bobberLoc).ToPixel();
+	vector start = fishingTipLoc.ToPixel();
+	vector end = bobberLoc.ToPixel();
 
 	vector min = vector::min(start, end);
 	vector max = vector::max(start, end);
 	vector size = max - min;
 
 	Scene::fishingLineShader->Activate();
-
 	Scene::fishingLineShader->setVec2("start", glm::vec2(start.x, start.y));
 	Scene::fishingLineShader->setVec2("end", glm::vec2(end.x, end.y));
 	bool tight = anim->GetCurrAnim().find("wait") != std::string::npos || anim->GetCurrAnim().find("pull") != std::string::npos;

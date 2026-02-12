@@ -47,6 +47,9 @@ private:
 	void revertConfirm();
 	void cancelConfirm();
 
+	// will disabled certian settings if other settings override them
+	void CheckSettings();
+
 	bool showingConfirmationBox = false;
 
 	// keeps track of which data was changed

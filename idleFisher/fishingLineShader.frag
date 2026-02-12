@@ -6,6 +6,8 @@ out vec4 FragColor;
 in vec2 TexCoord;
 flat in uint instanceIndex;
 
+uniform vec2 playerPos;
+
 struct InstanceData {
     vec4 color;
     
@@ -75,26 +77,21 @@ bool sqrtCurveX(vec2 p, vec2 p1, vec2 p2, float width) {
 void main() {
     InstanceData data = instances[instanceIndex];
 
-    vec2 p1 = start * pixelSize;
-    vec2 p2 = end * pixelSize;
+    vec2 worldLoc = floor((playerPos + gl_FragCoord.xy) / pixelSize);
     vec2 size = abs(end - start);
 
     bool lineAlpha = false;
-    
-    float blockSize = pixelSize;
 
-    vec2 roundedLoc = floor(gl_FragCoord.xy / blockSize) * blockSize;
-
-    float width = 1.499f;
+    float width = .49f;
     
     if (tight) // Linear
-        lineAlpha = line(roundedLoc, p1, p2, width);
+        lineAlpha = line(worldLoc, start, end, width);
     else {// Parabola / sqrt
         // using || to account for the steepness, prolly a more optimal solution but this works for now
-        if (p2.y > p1.y)
-            lineAlpha = parabola(roundedLoc, p1, p2, width) || parabolaX(roundedLoc, p1, p2, width);
+        if (end.y > start.y)
+            lineAlpha = parabola(worldLoc, start, end, width) || parabolaX(worldLoc, start, end, width);
         else
-            lineAlpha = sqrtCurve(roundedLoc, p1, p2, width) || sqrtCurveX(roundedLoc, p1, p2, width);
+            lineAlpha = sqrtCurve(worldLoc, start, end, width) || sqrtCurveX(worldLoc, start, end, width);
     }
 
     FragColor = vec4(data.color.xyz, lineAlpha);

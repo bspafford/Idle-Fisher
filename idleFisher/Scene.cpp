@@ -284,6 +284,7 @@ void Scene::updateShaders(float deltaTime) {
 	fishingLineShader->setMat4("projection", camProj);
 	fishingLineShader->setVec2("playerPos", camPos);
 	fishingLineShader->setFloat("pixelSize", stuff::pixelSize);
+	fishingLineShader->setFloat("mapHeight", 1185.f);
 
 	twoDWaterShader->Activate();
 	twoDWaterShader->setFloat("moveFactor", waveFactor);

@@ -76,6 +76,9 @@ int Main::createWindow() {
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	// only show decoration on windowed
+	glfwWindowHint(GLFW_DECORATED, SaveData::settingsData.fullScreen == 2);
+
 	SetResolution();
 
 	window = glfwCreateWindow(static_cast<int>(stuff::screenSize.x), static_cast<int>(stuff::screenSize.y), "Idle Fisher", NULL, NULL);
@@ -91,7 +94,10 @@ int Main::createWindow() {
 
 	// set window pos based on saved monitor
 	Rect monitorRect = GetMonitorRect();
-	glfwSetWindowPos(window, monitorRect.x, monitorRect.y);
+	if (SaveData::settingsData.fullScreen == 2) // if windowed, give space on y for the decoration
+		glfwSetWindowPos(window, monitorRect.x, monitorRect.y + 30);
+	else
+		glfwSetWindowPos(window, monitorRect.x, monitorRect.y);
 
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
@@ -480,11 +486,16 @@ GLFWmonitor* Main::GetCurrentMonitor() {
 Rect Main::GetMonitorRect() {
 	int xPos, yPos, width, height;
 	int count;
-	GLFWmonitor* monitors = GetCurrentMonitor();
-	glfwGetMonitorPos(monitors, &xPos, &yPos);
-	const GLFWvidmode* mode = glfwGetVideoMode(monitors);
-	stuff::screenSize = { static_cast<float>(mode->width), static_cast<float>(mode->height) };
-	return Rect{ static_cast<float>(xPos), static_cast<float>(yPos), stuff::screenSize.x, stuff::screenSize.y };
+	GLFWmonitor* monitor = GetCurrentMonitor();
+	glfwGetMonitorPos(monitor, &xPos, &yPos);
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	int x, y, w, h;
+	glfwGetMonitorWorkarea(monitor, &x, &y, &w, &h);
+	
+	//stuff::screenSize = { static_cast<float>(mode->width), static_cast<float>(mode->height) };
+	//return Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
+	return Rect{ static_cast<float>(xPos), static_cast<float>(yPos), static_cast<float>(mode->width), static_cast<float>(mode->height) };
 }
 
 void Main::SetFullScreen() {
@@ -494,13 +505,18 @@ void Main::SetFullScreen() {
 
 	switch (SaveData::settingsData.fullScreen) {
 		case 0: // fullscreen
+			glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 			glfwSetWindowMonitor(window, monitor, monitorRect.x, monitorRect.y, monitorRect.w, monitorRect.h, GLFW_DONT_CARE);
 			break;
 		case 1: // borderless
+			glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 			glfwSetWindowMonitor(window, NULL, monitorRect.x, monitorRect.y, monitorRect.w, monitorRect.h, GLFW_DONT_CARE);
 			break;
 		case 2: // windowed
-			glfwSetWindowMonitor(window, NULL, monitorRect.x + 20, monitorRect.y + 20, 800, 600, GLFW_DONT_CARE);
+			glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_TRUE);
+			int x, y, w, h;
+			glfwGetMonitorWorkarea(monitor, &x, &y, &w, &h);
+			glfwSetWindowMonitor(window, NULL, x, y, w, h, GLFW_DONT_CARE);
 			break;
 	}
 }
@@ -510,6 +526,12 @@ void Main::SetVsync() {
 }
 
 void Main::SetResolution() {
+	if (SaveData::settingsData.fullScreen == 1) { // if borderless
+		Rect monitorRect = GetMonitorRect();
+		stuff::screenSize = { monitorRect.w, monitorRect.h };
+		return;
+	}
+
 	switch(SaveData::settingsData.resolution) {
 		case RES_NATIVE: {
 			Rect monitorRect = GetMonitorRect();

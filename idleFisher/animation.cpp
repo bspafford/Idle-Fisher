@@ -154,7 +154,7 @@ int animation::calcFrameDistance(bool getFrameNum) {
 	else
 		end = animData[currAnim].end;
 
-	return end.x - start.x;
+	return math::max(end.x - start.x, 0); // clamp at 0
 }
 
 void animation::setLoc(vector loc) {

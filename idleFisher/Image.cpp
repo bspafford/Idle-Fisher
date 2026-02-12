@@ -92,6 +92,7 @@ void Image::setRotation(float rot) {
 
 bool Image::isMouseOver(bool ignoreTransparent) {
 	vector mousePos = Input::getMousePos();
+	std::cout << "mouse pos: " << mousePos << "\n";
 	vector imgLoc = absoluteLoc;
 	if (useWorldPos) // converts to screen position
 		imgLoc = math::worldToScreen(absoluteLoc);

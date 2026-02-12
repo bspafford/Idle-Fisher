@@ -29,6 +29,9 @@ public:
 	void AddOption(std::string option);
 	void ClearOptions();
 
+	bool IsEnabled();
+	void SetEnabled(bool enabled);
+
 private:
 	void SetValue(int value);
 
@@ -43,4 +46,6 @@ private:
 	int currOptionsIdx = 0;
 
 	int* settingsValue;
+
+	bool enabled = true;
 };

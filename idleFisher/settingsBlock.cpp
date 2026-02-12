@@ -23,7 +23,8 @@ void UsettingsBlock::draw(Shader* shaderProgram) {
 	__super::draw(shaderProgram);
 
 	optionsTitle->draw(shaderProgram);
-	optionsButton->draw(shaderProgram);
+	if (enabled)
+		optionsButton->draw(shaderProgram);
 	selectedOptionText->draw(shaderProgram);
 }
 
@@ -74,4 +75,12 @@ void UsettingsBlock::AddOption(std::string option) {
 
 void UsettingsBlock::ClearOptions() {
 	options.clear();
+}
+
+bool UsettingsBlock::IsEnabled() {
+	return enabled;
+}
+
+void UsettingsBlock::SetEnabled(bool enabled) {
+	this->enabled = enabled;
 }
