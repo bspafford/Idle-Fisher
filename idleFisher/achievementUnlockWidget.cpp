@@ -78,7 +78,7 @@ void UachievementUnlockWidget::setupLocs() {
 	if (thumbnail)
 		thumbnail->setLoc(bannerImg->getAbsoluteLoc() + vector(25, centerY));
 	if (name)
-		name->setLoc(bannerImg->getAbsoluteLoc() + vector(54, centerY));
+		name->setLoc(bannerImg->getAbsoluteLoc() + vector(54, centerY - name->getSize().y / 2.f));
 }
 
 void UachievementUnlockWidget::reverse() {

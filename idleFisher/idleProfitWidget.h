@@ -27,8 +27,7 @@ private:
 
 	std::unique_ptr<UwrapBox> fishWrapBox;
 	std::unique_ptr<URectangle> line;
-	std::unique_ptr<UwrapBox> currencyWrapBox;
+	std::unique_ptr<UfishNumWidget> currencyNumWidget;
 
 	std::vector<std::unique_ptr<UfishNumWidget>> fishNumList;
-	std::vector<std::unique_ptr<UfishNumWidget>> currencyNumList;
 };

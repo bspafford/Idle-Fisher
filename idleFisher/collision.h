@@ -88,8 +88,8 @@ public:
 private:
 	// used for low fps, just clamps move dir
 	static float TestCCD(Fcollision* playerCol, vector move);
-	// returns minimum translation vector (mtv)
-	static vector TestSAT(Fcollision* playerCol);
+	// resolves collision using SAT
+	static void ResolveCollisions();
 
 	static inline std::mutex mutex;
 

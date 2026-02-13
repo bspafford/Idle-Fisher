@@ -60,8 +60,10 @@ enum class Stat {
 	MinFishSchoolSpawnInterval = 16,
 
 // Rain
-	MaxRainSpawnInterval = 17,
-	MinRainSpawnInterval = 18,
+	MaxRainSpawnInterval = 17, // max time it takes to rain again
+	MinRainSpawnInterval = 18, // min time it takes to rain again
+	MaxRainTime = 30, // max length it rains for
+	MinRainTime = 31, // max length it rains for
 };
 
 enum class ModifierType {

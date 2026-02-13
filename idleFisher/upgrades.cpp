@@ -108,6 +108,14 @@ double Upgrades::Get(const StatContext& statCtx) {
 		int roundedLevel = (SaveData::saveData.progressionData.at(statCtx.id).level / 10) * 10; // only upgrade speed every 10 levels
 		return -0.040404f * roundedLevel + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
 
+	} case Stat::MinRainSpawnInterval: {
+		return 30.f * 60.f;
+	} case Stat::MaxRainSpawnInterval: {
+		return 45.f * 60.f;
+	} case Stat::MinRainTime: {
+		return 15.f * 60.f;
+	} case Stat::MaxRainTime: {
+		return 20.f * 60.f;
 	} default:
 		return GetBaseStat(statCtx.stat);
 	}

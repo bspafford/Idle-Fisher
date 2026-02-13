@@ -227,6 +227,8 @@ void AudioSystem::HandleCommand(const AudioCommand& cmd) {
 		AudioObject* audioObject = audioInstances.at(cmd.id).get();
 		audioObject->loc = cmd.loc;
 		break;
+	} case AudioCmdType::Create: {
+
 	}
 	}
 }
@@ -244,12 +246,15 @@ bool AudioSystem::IsValid(uint32_t id) {
 }
 
 uint32_t AudioSystem::CreateAudioObject(std::string path, AudioType type, bool useWorldSpace, vector loc) {
-	uint32_t id = TakeID();
+	uint32_t id = TakeID(); // problem since mutating audio data on the main thread
 	audioInstances[id] = std::make_unique<AudioObject>(id, path, type, useWorldSpace, loc);
 	return id;
+
+	// could make it a command, but then i would need to do something like a callback maybe?
 }
 
 uint32_t AudioSystem::TakeID() {
+	std::lock_guard<std::mutex> lock(mutex);
 	uint32_t id = 0u;
 	if (!freeIDs.empty()) { // there are free IDs
 		id = freeIDs.back();
@@ -274,6 +279,8 @@ void AudioSystem::Destroy(uint32_t id) {
 		slots[GetIndex(it->second->playId)].state.playing.store(false);
 
 	audioInstances.erase(it);
+
+	std::lock_guard<std::mutex> lock(mutex);
 	freeIDs.push_back(id);
 }
 

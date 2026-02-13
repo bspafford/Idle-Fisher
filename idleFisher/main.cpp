@@ -118,7 +118,7 @@ int Main::createWindow() {
 	Start();
 
 	auto lastTime = std::chrono::steady_clock::now();
-	
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
 		auto currentTime = std::chrono::steady_clock::now();
@@ -383,6 +383,14 @@ void Main::checkInputs() {
 		}*/
 		currencyWidget->updateList();
 	}
+	if (Input::getKeyDown(GLFW_KEY_T)) { // start rain
+		world::currWorld->rainStartTimer->stop();
+		world::currWorld->startRain();
+	}
+	if (Input::getKeyDown(GLFW_KEY_Y)) { // stop rain
+		world::currWorld->rainDurationTimer->stop();
+		world::currWorld->stopRain();
+	}
 	if (Input::getKeyDown(GLFW_KEY_L)) {
 		SaveData::saveData.currencyList.at(53u).numOwned = 0;
 		SaveData::saveData.currencyList.at(53u).totalNumOwned = 0;
@@ -556,18 +564,15 @@ void Main::SetFpsLimit() {
 		fpsCap = 0;
 		break;
 	case 1:
-		fpsCap = 1;
-		break;
-	case 2:
 		fpsCap = 30;
 		break;
-	case 3:
+	case 2:
 		fpsCap = 60;
 		break;
-	case 4:
+	case 3:
 		fpsCap = 120;
 		break;
-	case 5:
+	case 4:
 		fpsCap = 240;
 		break;
 	}

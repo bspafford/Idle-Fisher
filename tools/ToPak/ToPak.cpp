@@ -253,7 +253,7 @@ void InputCol(const std::string& pakPath) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	colInput.seekg(0);
 	colInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -262,7 +262,7 @@ void InputCol(const std::string& pakPath) {
 
 	// load directory
 	uint32_t dirSize = colHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	colInput.seekg(sizeof(PakHeader));
 	colInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -357,7 +357,7 @@ void InputText(const std::string& pakPath) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	textInput.seekg(0);
 	textInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -366,7 +366,7 @@ void InputText(const std::string& pakPath) {
 
 	// load directory
 	uint32_t dirSize = textHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	textInput.seekg(sizeof(PakHeader));
 	textInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -421,7 +421,7 @@ void InputShaders(const std::string& pakPath) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	shaderInput.seekg(0);
 	shaderInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -430,7 +430,7 @@ void InputShaders(const std::string& pakPath) {
 
 	// load directory
 	uint32_t dirSize = shaderHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	shaderInput.seekg(sizeof(PakHeader));
 	shaderInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 

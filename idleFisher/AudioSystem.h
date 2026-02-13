@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
-#include <unordered_set>
 #include <miniaudio.h>
 #include <atomic>
+#include <mutex>
 
 #include "AudioObject.h"
 
@@ -30,6 +30,7 @@ enum class AudioCmdType {
 	SetAudio,
 	SetSpeed,
 	SetLoc,
+	Create,
 };
 
 struct AudioCommand {
@@ -117,4 +118,6 @@ private:
 	static inline const int maxSlots = 128;
 	static inline std::array<Slot, maxSlots> slots; // only active currently playing audio
 	static inline std::vector<uint16_t> freeIndices;
+
+	static inline std::mutex mutex;
 };

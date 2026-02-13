@@ -1,6 +1,6 @@
 #include "rock.h"
 
-Arock::Arock(vector loc) : Abuilding("images/landscape/rock.png", loc, vector(0, 0), vector(0, 0)) {
+Arock::Arock(vector loc) : Abuilding("images/landscape/rock.png", loc, vector(1, 6), vector(45, 7)) {
 	buildingImg = std::make_unique<Image>("images/landscape/rock.png", loc, true);
 
 	//setupCollision({ loc + vector{ 0, 5 }, loc + vector{ 11, 2 }, loc + vector{ 20, 6 }, loc + vector{ 10, 10 } }); // small rock

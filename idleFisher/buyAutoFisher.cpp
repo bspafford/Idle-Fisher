@@ -74,7 +74,6 @@ void buyAutoFisher::spawnAutoFisher() {
 	if (!hasCurrency())
 		return;
 
-
 	price = calcPrice();
 	SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned -= price;
 	Main::currencyWidget->updateList();

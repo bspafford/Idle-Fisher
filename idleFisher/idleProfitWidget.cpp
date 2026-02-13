@@ -31,9 +31,6 @@ UidleProfitWidget::UidleProfitWidget(widget* parent) : widget(parent) {
 	line->SetAnchor(ANCHOR_CENTER, ANCHOR_BOTTOM);
 	line->SetPivot(vector(0.5f, 0.5f));
 
-	currencyWrapBox = std::make_unique<UwrapBox>(this, vector(0, 0), vector(0, 0));
-	currencyWrapBox->SetPivot(vector(0.f, 1.f));
-
 	setupLocs();
 }
 
@@ -51,7 +48,7 @@ void UidleProfitWidget::draw(Shader* shaderProgram) {
 
 	fishWrapBox->draw(shaderProgram);
 	line->draw(shaderProgram);
-	currencyWrapBox->draw(shaderProgram);
+	currencyNumWidget->draw(shaderProgram);
 }
 
 void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishList) {
@@ -69,7 +66,7 @@ void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishLi
 		fishWrapBox->addChild(fishBox.get());
 		fishNumList.push_back(std::move(fishBox));
 
-		double currency = Upgrades::Get(StatContext(Stat::FishPrice, id, 0));
+		double currency = Upgrades::Get(StatContext(Stat::FishPrice, id, 0)) * saveFishData.numOwned[0];
 		currencyList[fishData.worldId] += currency;
 	}
 
@@ -78,11 +75,13 @@ void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishLi
 		if (it == currencyList.end())
 			continue; // currency not in list
 		
+		// since it will be a single currency for now
 		FcurrencyStruct& currencyData = SaveData::data.currencyData.at(id);
-		std::unique_ptr<UfishNumWidget> currencyBox = std::make_unique<UfishNumWidget>(this);
-		currencyBox->setup(&currencyData, it->second);
-		currencyWrapBox->addChild(currencyBox.get());
-		currencyNumList.push_back(std::move(currencyBox));
+		currencyNumWidget = std::make_unique<UfishNumWidget>(this);
+		currencyNumWidget->setup(&currencyData, it->second);
+		currencyNumWidget->SetAnchor(ANCHOR_CENTER, ANCHOR_BOTTOM);
+		currencyNumWidget->SetPivot(vector(0.5f, 0.5f));
+		//currencyNumList.push_back(std::move(currencyBox));
 	}
 
 	fishWrapBox->SetPadding(vector(10.f, 10.f));
@@ -91,7 +90,7 @@ void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishLi
 	float yLoc = fishWrapBox->getAbsoluteLoc().y + fishWrapBox->getSize().y - fishWrapBox->getOverflowSize();
 
 	line->setLoc(vector(0.f, yLoc - 5));
-	currencyWrapBox->setLocAndSize(vector(fishWrapBox->getAbsoluteLoc().x, yLoc - 11), fishWrapBox->getSize());
+	currencyNumWidget->setLoc(vector(0.f, yLoc - 16));
 }
 
 void UidleProfitWidget::setupLocs() {

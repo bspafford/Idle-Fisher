@@ -303,36 +303,19 @@ world::world() {
 	rainStartTimer->addCallback(this, &world::startRain);
 	rainDurationTimer = CreateDeferred<Timer>();
 	rainDurationTimer->addCallback(this, &world::stopRain);
-	darkenScreenTimer = CreateDeferred<Timer>();
-	darkenScreenTimer->addUpdateCallback(this, &world::darkenScreen);
-	darkenValue = 0;
-	isRaining = false;
 	circleAnim = std::make_unique<CircleLoad>();
 
 	rainStartTimer->start(math::randRange(Upgrades::Get(Stat::MinRainSpawnInterval), Upgrades::Get(Stat::MaxRainSpawnInterval)));
 }
 
 void world::startRain() {
-	isRaining = true;
-	darkenScreenTimer->start(1);
-	rain->start();
-
-	rainDurationTimer->start(math::randRange(minRainDurationTime, maxRainDurationTime));
+	rain->Start();
+	rainDurationTimer->start(math::randRange(Upgrades::Get(Stat::MinRainTime), Upgrades::Get(Stat::MaxRainTime)));
 }
 
 void world::stopRain() {
-	isRaining = false;
-	darkenScreenTimer->start(1);
-	rain->stop();
-
+	rain->Stop();
 	rainStartTimer->start(math::randRange(Upgrades::Get(Stat::MinRainSpawnInterval), Upgrades::Get(Stat::MaxRainSpawnInterval)));
-}
-
-void world::darkenScreen() {
-	if (isRaining) // get darker
-		darkenValue = darkenScreenTimer->getTime() / darkenScreenTimer->getMaxTime() * 100;
-	else // brighten up
-		darkenValue = (1 - darkenScreenTimer->getTime() / darkenScreenTimer->getMaxTime()) * 100;
 }
 
 void world::start() {
@@ -429,6 +412,7 @@ void world::makeDrawLists() {
 }
 
 void world::draw(Shader* shaderProgram) {
+	std::cout << "charloc: " << GetCharacter()->getCharLoc() << "\n";
 	renderWater();
 
 	for (int i = 0; i < fishSchoolList.size(); i++)
@@ -443,13 +427,8 @@ void world::draw(Shader* shaderProgram) {
 
 	ambience->Update();
 
-	//if (rain) {
-	//	rain->draw(shaderProgram);
-	//	// makes screen darker
-	//	SDL_SetRenderDrawColor(shaderProgram, 0, 0, 0, darkenValue);
-	//	SDL_Rect rect = { 0, 0, stuff::screenSize.x, stuff::screenSize.y };
-	//	SDL_RenderFillRect(shaderProgram, &rect);
-	//}
+	if (rain)
+		rain->Draw(shaderProgram);
 
 	Main::drawWidgets(shaderProgram);
 
@@ -635,9 +614,9 @@ world1::world1(WorldLoc worldChangeLoc) {
 	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/picnicTable.png", vector(1284, 515), vector(0, 23), vector(97, 18)));
 	buildingList.push_back(std::make_unique<Abuilding>("images/worlds/Demo/bridgePole.png", vector(801, 731), vector(0, 9), vector(20, 0)));
 
-	std::vector<vector> rockLocs = {};
+	std::vector<vector> rockLocs = { { 962.f, 744.f }, { 1509.f, 601.f } };
 	for (int i = 0; i < rockLocs.size(); i++)
-		buildingList.push_back(std::make_unique<Arock>(rockLocs[i]));
+		buildingList.push_back(std::make_unique<Abuilding>("images/landscape/rock.png", rockLocs[i], vector(1, 6), vector(45, 7)));
 
 	// make trees
 	std::vector<vector> treeLocs = { { 611, 1183 }, { 702, 1182 }, { 492, 1163 }, { 649, 1149 }, { 394, 1143 }, { 750, 1138 }, { 561, 1138 }, { 822, 1115 }, { 466, 1094 },

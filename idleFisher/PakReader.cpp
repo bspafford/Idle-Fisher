@@ -15,7 +15,7 @@ void PakReader::ParseImages(const std::string& path) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	imgInput.seekg(0);
 	imgInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -24,7 +24,7 @@ void PakReader::ParseImages(const std::string& path) {
 
 	// load directory
 	uint32_t dirSize = imgHeader->dirCount * sizeof(TextureEntry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	imgInput.seekg(sizeof(PakHeader));
 	imgInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -91,7 +91,7 @@ void PakReader::ParseShaders(const std::string& path) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	shaderInput.seekg(0);
 	shaderInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -100,7 +100,7 @@ void PakReader::ParseShaders(const std::string& path) {
 
 	// load directory
 	uint32_t dirSize = shaderHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	shaderInput.seekg(sizeof(PakHeader));
 	shaderInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -144,7 +144,7 @@ void PakReader::ParseFonts(const std::string& path) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	fontInput.seekg(0);
 	fontInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -153,7 +153,7 @@ void PakReader::ParseFonts(const std::string& path) {
 
 	// load directory
 	uint32_t dirSize = fontHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	fontInput.seekg(sizeof(PakHeader));
 	fontInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -209,7 +209,7 @@ void PakReader::ParseAudio(const std::string& path) {
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	audioInput.seekg(0);
 	audioInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -218,7 +218,7 @@ void PakReader::ParseAudio(const std::string& path) {
 
 	// load directory
 	uint32_t dirSize = audioHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	audioInput.seekg(sizeof(PakHeader));
 	audioInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 
@@ -289,7 +289,7 @@ void PakReader::ParseCollision(const std::string& path, std::unordered_map<uint3
 
 	// load header
 	uint32_t headerSize = sizeof(PakHeader);
-	std::vector<unsigned char*> headerBuffer(headerSize);
+	std::vector<unsigned char> headerBuffer(headerSize);
 	colInput.seekg(0);
 	colInput.read(reinterpret_cast<char*>(headerBuffer.data()), headerSize);
 
@@ -298,7 +298,7 @@ void PakReader::ParseCollision(const std::string& path, std::unordered_map<uint3
 
 	// load directory
 	uint32_t dirSize = colHeader->dirCount * sizeof(Entry);
-	std::vector<unsigned char*> dirBuffer(dirSize);
+	std::vector<unsigned char> dirBuffer(dirSize);
 	colInput.seekg(sizeof(PakHeader));
 	colInput.read(reinterpret_cast<char*>(dirBuffer.data()), dirSize);
 

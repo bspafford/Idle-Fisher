@@ -262,7 +262,6 @@ void Acharacter::move(float deltaTime) {
 void Acharacter::setPlayerColPoints() {
 	float radius = 5;
 	vector loc = getCharLoc();
-
 	col = std::make_unique<Fcollision>(loc, radius, ' ');
 }
 
@@ -500,43 +499,69 @@ FfishData Acharacter::calcFish(int& quality, int& fishSize) {
 // if its chance is .05 its always .05 even if another fish is 45% chance
 // old method: premium = 1%, fish = 49%, actual premium chance = 2%, actual fish = 98%
 // this method: premium = 1%, fish = 49%, actual premium chance = 1% actual fish = 99%
-std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData) {
+std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData) {	
+	// get all fish the player can catch
+	std::vector<uint32_t> fishCanCatch;
+	for (auto id : SaveData::orderedData.fishData) { // loop through ordered to keep fishCanCatch in ordered
+		if (id == 1u) // if premium
+			continue; // skip
+
+		auto it = fishData.find(id);
+		if (it == fishData.end())
+			continue;
+
+		FfishData fishData = it->second;
+
+		// (fishing power is enough && in the same world) || premium
+		bool baseRequirements = fishData.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (fishData.worldId == Scene::GetCurrWorldId() || fishData.worldId == 1u);
+		// if rare fish, need to check the other requiremetns, returns true if not a rare fish
+		bool rareRequirements = RareFish::MetRequirements(fishData);
+
+		if (baseRequirements && rareRequirements) {
+			fishCanCatch.push_back(fishData.id);
+		}
+	}
+
+
+	// figure out probabilities
+	float totalProb = 0.0;
+	bool isRaining = world::currWorld && world::currWorld->rain && world::currWorld->rain->IsRaining();
+	float rainIncrease = 2; // multiplies rarest fish by this number, hardcoded for now
+	for (int i = 0; i < fishCanCatch.size(); ++i) {
+		uint32_t id = fishCanCatch[i];
+		
+		// if raining
+		// incrase fish probability
+		float multiplier = 1.f;
+		if (isRaining && fishCanCatch.size() >= 2) { // if raining
+			// then somehow increase probability
+			// maybe do like 2x height and 1x lowest
+			// so if i can catch 5 fish it would look like 1x, 1.25x, 1.5x, 1.75x, 2x, 
+			
+			// i = 0: 1x, i = size() - 1: 2x
+			multiplier = (i / static_cast<float>(fishCanCatch.size() - 1.f)) + 1.f;
+		}
+
+		totalProb += fishData.at(id).probability * multiplier;
+	}
+
 	// get premium currency chance
 	// then do (100 - premium chance) / 100
 	// calc fish chance and multuply by that number
 	// then add the premium chance at the end
 	double premiumChance = canCatchPremium ? Upgrades::Get(Stat::PremiumCatchChance) : 0.0;
-	float totalProb = 0; // premiumChance;
-	for (auto [id, fishData] : fishData) {
-		// (fishing power is enough && in the same world) || premium
-		bool baseRequirements = fishData.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (fishData.worldId == Scene::GetCurrWorldId() || fishData.worldId == 1u);
-		// if rare fish, need to check the other requiremetns, returns true if not a rare fish
-		bool rareRequirements = RareFish::MetRequirements(fishData);
-
-		if (baseRequirements && rareRequirements) {
-			float val = fishData.probability;
-			totalProb += val;
-		}
-	}
-
 	double multiplier = (1.0 - (premiumChance / 100.0));
 
 	std::vector<std::pair<uint32_t, double>> probList;
 	double percent = 0.0;
-	for (auto [id, fishData] : fishData) {
-		// (fishing power is enough && in the same world) || premium
-		bool baseRequirements = fishData.fishingPower <= Upgrades::Get(StatContext(Stat::Power)) && (fishData.worldId == Scene::GetCurrWorldId() || fishData.worldId == 1u);
-		// if rare fish, need to check the other requiremetns, returns true if not a rare fish
-		bool rareRequirements = RareFish::MetRequirements(fishData);
-
-		if (baseRequirements && rareRequirements) {
-			percent += fishData.probability / totalProb * multiplier;
-			probList.push_back(std::pair<uint32_t, double>{fishData.id, percent});
-		}
+	for (uint32_t id : fishCanCatch) {
+		FfishData fish = fishData.at(id);
+		percent += fish.probability / totalProb * multiplier;
+		probList.push_back(std::pair<uint32_t, double>(fish.id, percent));
 	}
 
 	if (canCatchPremium)
-		probList.push_back({ std::pair<uint32_t, double>{ 1u, 1.0 } }); // premium
+		probList.push_back(std::pair<uint32_t, double>(1u, 1.0)); // premium
 
 	return probList;
 }

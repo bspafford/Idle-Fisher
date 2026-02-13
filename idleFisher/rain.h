@@ -6,24 +6,29 @@
 class Timer;
 class animation;
 class Shader;
+class URectangle;
 
 class Arain {
 public:
 	Arain();
-	~Arain();
-	void draw(Shader* shaderProgram);
-	void start();
-	void stop();
+
+	void Draw(Shader* shaderProgram);
+	void Start();
+	void Stop();
 	bool IsRaining();
 private:
-	void updateRain();
-	void removeAnimList();
+	void UpdateRain();
+	void DarkenScreen();
 
 	std::vector<std::string> animImgList;
+
+	std::unique_ptr<URectangle> darkBackground;
 
 	std::unique_ptr<Image> rainDrop;
 	DeferredPtr<Timer> rainTimer;
 	std::vector<std::unique_ptr<animation>> animList;
+
+	DeferredPtr<Timer> darkenScreenTimer;
 
 	// temp
 	std::vector<vector> locs;

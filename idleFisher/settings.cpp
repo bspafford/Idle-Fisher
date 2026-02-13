@@ -115,7 +115,7 @@ Usettings::Usettings(widget* parent) : widget(parent) {
 	vsyncBlock->addCallback(Main::SetVsync);
 	scrollBox->addChild(vsyncBlock.get(), vsyncBlock->getSize().y);
 	// drop down
-	fpsLimitBlock = std::make_unique<UsettingsBlock>(this, "Limit FPS", length, std::vector<std::string>{ "Off", "1", "30", "60", "120", "240" }, & SaveData::settingsData.fpsLimit);
+	fpsLimitBlock = std::make_unique<UsettingsBlock>(this, "Limit FPS", length, std::vector<std::string>{ "Off", "30", "60", "120", "240" }, & SaveData::settingsData.fpsLimit);
 	fpsLimitBlock->addCallback(Main::SetFpsLimit);
 	scrollBox->addChild(fpsLimitBlock.get(), fpsLimitBlock->getSize().y);
 

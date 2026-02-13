@@ -194,11 +194,6 @@ public:
 	std::unique_ptr<Arain> rain;
 	DeferredPtr<Timer> rainStartTimer;
 	DeferredPtr<Timer> rainDurationTimer;
-	DeferredPtr<Timer> darkenScreenTimer;
-	float darkenValue = 0;
-	bool isRaining = false;
-	float minRainStartTime = 30*60, maxRainStartTime = 60*60;
-	float minRainDurationTime = 5*60, maxRainDurationTime = 10*60;
 
 	// water stuff
 	void renderWater();

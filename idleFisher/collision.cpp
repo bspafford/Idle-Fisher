@@ -135,7 +135,7 @@ bool collision::intersectCirclePolygon(vector circleCenter, float circleRadius, 
 
 	vector polygonCenter = findArithmeticMean(vertices);
 	vector direction = polygonCenter - circleCenter;
-	if (math::dot(direction, normal) < 0.f)
+	if (math::dot(direction, normal) > 0.f)
 		normal = -normal;
 
 	return true;
@@ -232,8 +232,8 @@ bool collision::intersectPolygons(const std::vector<vector>& verticesA, const st
 
 	vector direction = centerB - centerA;
 
-	if (math::dot(direction, normal) < 0) // its the wrong direction
-		normal = { -normal.x, -normal.y };
+	if (math::dot(direction, normal) > 0) // its the wrong direction
+		normal = -normal;
 
 	return true;
 }
@@ -272,7 +272,7 @@ bool collision::intersectCircles(vector centerA, float radiusA, vector centerB, 
 	if (distance >= radii)
 		return false;
 
-	normal = math::normalize(centerB - centerA);
+	normal = -math::normalize(centerB - centerA);
 	depth = radii - distance;
 
 	return true;
@@ -536,7 +536,7 @@ bool collision::sweepPointVsEdge(vector p0, vector v, vector edgeStart, vector e
 	float tOnEdge = math::dot(hitPoint - a, edgeDir) / math::dot(edgeDir, edgeDir);
 	if (tOnEdge < 0 || tOnEdge > 1) return false;
 
-	toi /= stuff::pixelSize;
+	//toi /= stuff::pixelSize;
 
 	toiOut = toi;
 	normalOut = edgeNormal;
@@ -559,8 +559,8 @@ bool collision::sweepPointVsCircle(vector p0, vector v, vector center, float rad
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
-	t0 /= stuff::pixelSize;
-	t1 /= stuff::pixelSize;
+	//t0 /= stuff::pixelSize;
+	//t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;
@@ -613,24 +613,17 @@ void collision::TestCollision(Fcollision* playerCol, vector move, float deltaTim
 	// only test CCD when the object is moving faster than its half size
 	// half size, so SAT won't push the object to the other size if its too far
 	vector clampedMove = v;
-	if (v.length() >= playerCol->radius / 2.f) { // player is moving too fast for SAT to work properly
-		// CCD clamp movement
-		float allowedFraction = TestCCD(playerCol, v);
-		clampedMove *= allowedFraction;
-	}
+	//if (false/*v.length() >= playerCol->radius / 2.f*/) { // player is moving too fast for SAT to work properly
+	//	// CCD clamp movement
+	//	std::cout << "testing ccd\n";
+	//	float allowedFraction = TestCCD(playerCol, v);
+	//	clampedMove *= allowedFraction;
+	//}
 
 	// move player by clamped
 	SaveData::saveData.playerLoc += clampedMove;
-
 	// SAT for overlap resolution
-	vector mtv = TestSAT(playerCol);
-	SaveData::saveData.playerLoc += mtv;
-
-	// slide along wall
-	vector normal = math::normalize(mtv);
-	vector remainingVelocity = v - clampedMove;
-	vector slide = remainingVelocity - normal * math::dot(remainingVelocity, normal);
-	SaveData::saveData.playerLoc += slide;
+	ResolveCollisions();
 }
 
 float collision::TestCCD(Fcollision* playerCol, vector move) {
@@ -664,22 +657,46 @@ float collision::TestCCD(Fcollision* playerCol, vector move) {
 	}
 
 	// Subtract small epsilon so player doesn’t overlap
-	return std::max(0.0f, minTOI - 0.01f);
+	return std::max(0.0f, minTOI - 0.001f);
 }
 
-vector collision::TestSAT(Fcollision* playerCol) {
-	vector mtv(0, 0);
-	for (Fcollision* col : allCollision) {
-		vector normal = vector(0, 0);
-		float depth = 0;
-		if (isCloseEnough(playerCol, col)) {
-			if ((col->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, col->points[0], col->radius, normal, depth)) || intersectCirclePolygon(playerCol->points[0], playerCol->radius, col->GetPoints(), normal, depth)) {
-				// pushes back player from collision
-				mtv += -normal * depth;
+void collision::ResolveCollisions() {
+	const int maxIterations = 4;
+
+	for (int i = 0; i < maxIterations; i++) {
+		float maxDepth = 0.0f;
+		vector bestNormal(0, 0);
+		bool found = false;
+
+		// get player collision with correct location
+		GetCharacter()->setPlayerColPoints();
+		Fcollision* playerCol = GetCharacter()->col.get();
+
+		for (Fcollision* col : allCollision) {
+			vector normal;
+			float depth;
+
+			if (isCloseEnough(playerCol, col)) {
+			if ((col->isCircle && intersectCircles(playerCol->points[0], playerCol->radius, col->points[0], col->radius, normal, depth))
+					|| intersectCirclePolygon(playerCol->points[0], playerCol->radius, col->GetPoints(), normal, depth)) {
+					if (depth > 0.0001f && depth > maxDepth) {
+						maxDepth = depth;
+						bestNormal = normal;
+						found = true;
+					}
+				}
 			}
 		}
+
+		if (!found)
+			break;
+
+		// push out ONLY along deepest penetration
+		SaveData::saveData.playerLoc += bestNormal * maxDepth;
 	}
-	return mtv;
+
+	// one last player col update
+	GetCharacter()->setPlayerColPoints();
 }
 
 bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circleCol, float& toiOut, vector& normalOut) {
@@ -702,8 +719,8 @@ bool collision::circleVsCircle(Fcollision* playerCol, vector v, Fcollision* circ
 	float sqrtDisc = sqrt(discriminant);
 	float t0 = (-b - sqrtDisc) / (2 * a);
 	float t1 = (-b + sqrtDisc) / (2 * a);
-	t0 /= stuff::pixelSize;
-	t1 /= stuff::pixelSize;
+	//t0 /= stuff::pixelSize;
+	//t1 /= stuff::pixelSize;
 
 	// We want the first positive root
 	if (t1 < 0) return false;

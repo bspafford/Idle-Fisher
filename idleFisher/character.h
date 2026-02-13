@@ -46,6 +46,9 @@ public:
 
 	bool CanPlayerReach(vector loc);
 
+	void setPlayerColPoints();
+	static inline std::unique_ptr<Fcollision> col;
+
 private:
 	void drawFishingLine(Shader* shaderProgram);
 	void leftClick();
@@ -65,7 +68,6 @@ private:
 
 	void comboOvertimeFinished();
 
-	void setPlayerColPoints();
 
 	// returns false if the player doesn't have a strong enough fishing rod for the world
 	// so if world 2 requires 60 power for first fish but you only have a 50 power fishing rod, then it will return false
@@ -120,8 +122,6 @@ private:
 	std::vector<vector> fishLineTipLocs;
 	// stops player from moving if they start fishing
 	bool fishingStop = false;
-
-	static inline std::unique_ptr<Fcollision> col;
 
 	// fishing line stuff
 	static inline vector fishingTipLoc = { 69, 60 };
