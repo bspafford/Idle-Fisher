@@ -15,7 +15,6 @@ enum class AudioType;
 struct AudioState {
 	std::atomic<bool> playing = false;
 	std::atomic<bool> looping = false;
-	//vector loc;
 };
 
 struct Slot {
@@ -29,6 +28,8 @@ enum class AudioCmdType {
 	Stop,
 	Destroy,
 	SetAudio,
+	SetSpeed,
+	SetLoc,
 };
 
 struct AudioCommand {
@@ -36,6 +37,7 @@ struct AudioCommand {
 	uint32_t id;
 	float fltValue; // optional for some commands
 	std::string strValue; // optional for some commands
+	vector loc; // optional for some commands
 };
 
 template <typename T, size_t N>
@@ -81,17 +83,12 @@ public:
 
 	static uint32_t CreateAudioObject(std::string path, AudioType type, bool useWorldSpace, vector loc = vector(0, 0));
 
-	static bool IsPlaying(uint32_t id);
-	static void SetSpeed(uint32_t id, float speed);
-
 	static void QueueCommand(const AudioCommand&);
 
 	static inline RingBuffer<AudioCommand, 256> commandQueue;
 private:
-	static void Mix(float* out, ma_uint32 frames);
-
 	static void DataCallback(ma_device* device, void* output, const void* input, ma_uint32 frameCount);
-	static void ProcessAudio(float* out, ma_uint32 frames);
+	static void Mix(float* out, ma_uint32 frames);
 
 	static bool IsValid(uint32_t id);
 	static uint16_t GetIndex(uint32_t id);

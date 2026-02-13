@@ -77,7 +77,7 @@ void AudioSystem::Mix(float* out, ma_uint32 frameCount32) {
 		if (framesRead < inFramesNeeded) { // audio has finished
 			ma_decoder_seek_to_pcm_frame(audio->decoder, 0);
 			ma_resampler_reset(audio->resampler);
-			if (audio->loop) {
+			if (slot.state.looping) {
 				ma_uint64 moreRead = 0;
 				ma_decoder_read_pcm_frames(
 					audio->decoder,
@@ -167,15 +167,12 @@ void AudioSystem::QueueCommand(const AudioCommand& cmd) {
 }
 
 void AudioSystem::HandleCommand(const AudioCommand& cmd) {
-	std::cout << "running command: " << static_cast<int>(cmd.type) << "\n";
-
 	switch (cmd.type) {
 	case AudioCmdType::Play: {
 		uint16_t index;
 		Slot* slot = nullptr;
-		// what if i play then play again while still playing, its going to take up 2 slots. I need to see if its playing, then 
 		AudioObject* audioObject = audioInstances.at(cmd.id).get();
-		if (IsValid(audioObject->playId)) {
+		if (IsValid(audioObject->playId)) { // if audio is already playing and called play again, just reuse the same slot
 			index = GetIndex(audioObject->playId);
 			slot = &slots[index];
 		} else if (!freeIndices.empty()) { // if there is a free indice
@@ -218,6 +215,17 @@ void AudioSystem::HandleCommand(const AudioCommand& cmd) {
 	} case AudioCmdType::SetAudio: {
 		AudioObject* audioObject = audioInstances.at(cmd.id).get();
 		audioObject->AudioSystemSetAudio(cmd.strValue);
+		break;
+	} case AudioCmdType::SetSpeed: {
+		AudioObject* audioObject = audioInstances.at(cmd.id).get();
+		ma_uint32 baseRate = audioObject->decoder->outputSampleRate;
+		ma_uint32 inRate = baseRate;
+		ma_uint32 outRate = (ma_uint32)(baseRate * cmd.fltValue + 0.5f);
+		ma_resampler_set_rate(audioObject->resampler, inRate, outRate);
+		break;
+	} case AudioCmdType::SetLoc: {
+		AudioObject* audioObject = audioInstances.at(cmd.id).get();
+		audioObject->loc = cmd.loc;
 		break;
 	}
 	}
@@ -269,21 +277,6 @@ void AudioSystem::Destroy(uint32_t id) {
 	freeIDs.push_back(id);
 }
 
-/*AudioSystem::Get(uint32_t id) {
-	uint16_t index = GetIndex(id);
-	uint16_t gen = GetGeneration(id);
-
-	if (index >= slots.size())
-		return nullptr;
-
-	Slot& slot = slots[index];
-
-	if (slot.generation != gen)
-		return nullptr;
-
-	return slot.object.get();
-}*/
-
 uint16_t AudioSystem::GetIndex(uint32_t id) {
 	return (uint16_t)id;
 }
@@ -294,19 +287,4 @@ uint16_t AudioSystem::GetGeneration(uint32_t id) {
 
 uint32_t AudioSystem::GetPlayIdFrom(uint16_t generation, uint16_t index) {
 	return (uint32_t(generation) << 16) | uint32_t(index);
-}
-
-bool AudioSystem::IsPlaying(uint32_t id) {
-	return false;
-	//return audioInstances.at(id)->isPlaying;
-}
-
-void AudioSystem::SetSpeed(uint32_t id, float speed) {
-	
-	//ma_uint32 baseRate = decoder->outputSampleRate;
-
-	//ma_uint32 inRate = baseRate;
-	//ma_uint32 outRate = (ma_uint32)(baseRate * speed + 0.5f);
-
-	//ma_resampler_set_rate(resampler, inRate, outRate);
 }

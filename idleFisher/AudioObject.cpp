@@ -51,9 +51,8 @@ void AudioObject::AudioSystemSetAudio(const std::string& path) {
 
 void AudioObject::Started(uint32_t playId) {
 	this->playId = playId;
-	isPlaying = true;
 }
 
 void AudioObject::Finished() {
-	isPlaying = false;
+
 }

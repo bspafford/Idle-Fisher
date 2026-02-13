@@ -30,14 +30,7 @@ public:
 	// 1 is default, 2 doubles making it an octave higher, 0.5 halves it making it one octave lower
 	void SetSpeed(float speed);
 
-	vector GetLoc();
 	void SetLoc(vector loc);
-	bool GetUseWorldPos();
-
-	AudioType GetType();
-	bool ShouldLoop();
-
-	bool IsPlaying();
 
 private:
 	static inline std::recursive_mutex mutex;

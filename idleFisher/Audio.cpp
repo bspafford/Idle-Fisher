@@ -29,40 +29,14 @@ void Audio::Stop() {
 	AudioSystem::QueueCommand({ AudioCmdType::Stop, audioId, 0.0f });
 }
 
-bool Audio::IsPlaying() {
-	return false;
-	//return AudioSystem::IsPlaying(audioId);
-}
-
 void Audio::SetAudio(const std::string& path) {
 	AudioSystem::QueueCommand({ AudioCmdType::SetAudio, audioId, 0.0f, path });
 }
 
 void Audio::SetSpeed(float speed) {
-	AudioSystem::SetSpeed(audioId, speed);
-}
-
-vector Audio::GetLoc() {
-	return vector(0, 0);
-	//return loc;
+	AudioSystem::QueueCommand({ AudioCmdType::SetSpeed, audioId, speed });
 }
 
 void Audio::SetLoc(vector loc) {
-
-	//this->loc = loc;
-}
-
-bool Audio::GetUseWorldPos() {
-	return false;
-	//return useWorldPos;
-}
-
-AudioType Audio::GetType() {
-	return AudioType::SFX;
-	//return type;
-}
-
-bool Audio::ShouldLoop() {
-	return false;
-	//return loop;
+	AudioSystem::QueueCommand({ AudioCmdType::SetLoc, audioId, 0.f, "", loc });
 }

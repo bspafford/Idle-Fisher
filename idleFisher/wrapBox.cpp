@@ -1,5 +1,5 @@
 #include "wrapBox.h"
-
+#include "Rectangle.h"
 #include "debugger.h"
 
 UwrapBox::UwrapBox(widget* parent, vector loc, vector size) : widget(parent) {
@@ -7,6 +7,10 @@ UwrapBox::UwrapBox(widget* parent, vector loc, vector size) : widget(parent) {
 }
 
 void UwrapBox::draw(Shader* shaderProgram) {
+	URectangle* rect = new URectangle(nullptr, loc, size, false, glm::vec4(0, 0, 0, 1));
+	//rect->draw(shaderProgram);
+	delete rect;
+
 	for (widget* child : childrenList)
 		if (child)
 			child->draw(shaderProgram);

@@ -24,12 +24,15 @@ UidleProfitWidget::UidleProfitWidget(widget* parent) : widget(parent) {
 	collectText = std::make_unique<text>(this, "Collect", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	collectText->SetPivot({ 0.f, 0.5f });
 
-	fishWrapBox = std::make_unique<UwrapBox>(this, background->getAbsoluteLoc(), vector(160.f, background->getSize().y - 60));
-	line = std::make_unique<URectangle>(this, vector(0, 0), vector(100.f, 2.f), false);
+	fishWrapBox = std::make_unique<UwrapBox>(this, background->getLoc(), vector(160.f, background->getSize().y - 60));
+	fishWrapBox->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
+	fishWrapBox->SetPivot(vector(0.5f, 0.5f));
+	line = std::make_unique<URectangle>(this, vector(0, 0), vector(100.f, 1.f), false);
 	line->SetAnchor(ANCHOR_CENTER, ANCHOR_BOTTOM);
-	line->SetPivot(vector(0.5f, 0.5));
+	line->SetPivot(vector(0.5f, 0.5f));
 
 	currencyWrapBox = std::make_unique<UwrapBox>(this, vector(0, 0), vector(0, 0));
+	currencyWrapBox->SetPivot(vector(0.f, 1.f));
 
 	setupLocs();
 }
@@ -82,11 +85,13 @@ void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishLi
 		currencyNumList.push_back(std::move(currencyBox));
 	}
 
-	line->setLoc(vector(0.f, fishWrapBox->getAbsoluteLoc().y + fishWrapBox->getOverflowSize()));
-	currencyWrapBox->setLocAndSize(fishWrapBox->getAbsoluteLoc() + vector(0, fishWrapBox->getOverflowSize() + 3), fishWrapBox->getSize());
-
 	fishWrapBox->SetPadding(vector(10.f, 10.f));
 	fishWrapBox->UpdateChildren();
+	
+	float yLoc = fishWrapBox->getAbsoluteLoc().y + fishWrapBox->getSize().y - fishWrapBox->getOverflowSize();
+
+	line->setLoc(vector(0.f, yLoc - 5));
+	currencyWrapBox->setLocAndSize(vector(fishWrapBox->getAbsoluteLoc().x, yLoc - 11), fishWrapBox->getSize());
 }
 
 void UidleProfitWidget::setupLocs() {

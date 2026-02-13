@@ -36,9 +36,6 @@ private:
 	// world stuff
 	vector loc;
 	bool useWorldPos = false;
-	std::atomic<bool> loop;
 
-	std::atomic<bool> isPlaying = false;
-	
 	uint32_t playId;
 };
