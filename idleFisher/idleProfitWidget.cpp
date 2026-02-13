@@ -3,8 +3,9 @@
 #include "button.h"
 #include "text.h"
 #include "heldFishWidget.h"
-#include "scrollBox.h"
 #include "Rectangle.h"
+#include "wrapBox.h"
+#include "Upgrades.h"
 
 #include "debugger.h"
 
@@ -13,7 +14,7 @@ UidleProfitWidget::UidleProfitWidget(widget* parent) : widget(parent) {
 	background->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
 	background->SetPivot({ 0.5f, 0.5f });
 
-	title = std::make_unique<text>(this, "Idle Profit", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
+	title = std::make_unique<text>(this, "Idle Profit", "biggerStraight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	title->SetPivot({ 0.f, 1.f });
 
 	collectButton = std::make_unique<Ubutton>(this, "widget/biggerButton.png", 31, 15, 1, vector{ 0, 0 }, false, false);
@@ -23,9 +24,12 @@ UidleProfitWidget::UidleProfitWidget(widget* parent) : widget(parent) {
 	collectText = std::make_unique<text>(this, "Collect", "straight", vector{ 0, 0 }, false, false, TEXT_ALIGN_CENTER);
 	collectText->SetPivot({ 0.f, 0.5f });
 
-	heldFishWidget = std::make_unique<UheldFishWidget>(this);
-	heldFishWidget->SetAnchor(ANCHOR_CENTER, ANCHOR_CENTER);
-	heldFishWidget->SetPivot({ 0.5f, 0.5f });
+	fishWrapBox = std::make_unique<UwrapBox>(this, background->getAbsoluteLoc(), vector(160.f, background->getSize().y - 60));
+	line = std::make_unique<URectangle>(this, vector(0, 0), vector(100.f, 2.f), false);
+	line->SetAnchor(ANCHOR_CENTER, ANCHOR_BOTTOM);
+	line->SetPivot(vector(0.5f, 0.5));
+
+	currencyWrapBox = std::make_unique<UwrapBox>(this, vector(0, 0), vector(0, 0));
 
 	setupLocs();
 }
@@ -42,11 +46,47 @@ void UidleProfitWidget::draw(Shader* shaderProgram) {
 	collectButton->draw(shaderProgram);
 	collectText->draw(shaderProgram);
 
-	heldFishWidget->draw(shaderProgram);
+	fishWrapBox->draw(shaderProgram);
+	line->draw(shaderProgram);
+	currencyWrapBox->draw(shaderProgram);
 }
 
 void UidleProfitWidget::setup(std::unordered_map<uint32_t, FsaveFishData> fishList) {
-	heldFishWidget->updateList(false, fishList);
+	std::unordered_map<uint32_t, double> currencyList;
+
+	for (uint32_t id : SaveData::orderedData.fishData) {
+		auto it = fishList.find(id);
+		if (it == fishList.end())
+			continue; // fish not in list
+
+		FsaveFishData& saveFishData = it->second;
+		FfishData& fishData = SaveData::data.fishData.at(id);
+		std::unique_ptr<UfishNumWidget> fishBox = std::make_unique<UfishNumWidget>(this);
+		fishBox->setup(&fishData, &saveFishData, 0);
+		fishWrapBox->addChild(fishBox.get());
+		fishNumList.push_back(std::move(fishBox));
+
+		double currency = Upgrades::Get(StatContext(Stat::FishPrice, id, 0));
+		currencyList[fishData.worldId] += currency;
+	}
+
+	for (uint32_t id : SaveData::orderedData.currencyData) {
+		auto it = currencyList.find(id);
+		if (it == currencyList.end())
+			continue; // currency not in list
+		
+		FcurrencyStruct& currencyData = SaveData::data.currencyData.at(id);
+		std::unique_ptr<UfishNumWidget> currencyBox = std::make_unique<UfishNumWidget>(this);
+		currencyBox->setup(&currencyData, it->second);
+		currencyWrapBox->addChild(currencyBox.get());
+		currencyNumList.push_back(std::move(currencyBox));
+	}
+
+	line->setLoc(vector(0.f, fishWrapBox->getAbsoluteLoc().y + fishWrapBox->getOverflowSize()));
+	currencyWrapBox->setLocAndSize(fishWrapBox->getAbsoluteLoc() + vector(0, fishWrapBox->getOverflowSize() + 3), fishWrapBox->getSize());
+
+	fishWrapBox->SetPadding(vector(10.f, 10.f));
+	fishWrapBox->UpdateChildren();
 }
 
 void UidleProfitWidget::setupLocs() {

@@ -41,14 +41,13 @@ void UwrapBox::UpdateChildren() {
 			continue;
 
 		childSize = child->getSize();
-		child->setLoc(offset - vector{ 0.f, childSize.y });
-
 		if (offset.x + childSize.x > initialOffset.x + size.x) { // wrap to next line
 			offset.x = initialOffset.x;
-			offset.y -= childSize.y;
-		} else
-			offset.x += childSize.x;
+			offset.y -= childSize.y + padding.y;
+		}
 		
+		child->setLoc(offset - vector{ 0.f, childSize.y });
+		offset.x += childSize.x + padding.x;
 	}
 
 	offset.y -= childSize.y; // account for last row height
@@ -62,4 +61,8 @@ void UwrapBox::setLoc(vector loc) {
 
 float UwrapBox::getOverflowSize() {
 	return std::abs(overflowSizeY);
+}
+
+void UwrapBox::SetPadding(vector padding) {
+	this->padding = padding;
 }

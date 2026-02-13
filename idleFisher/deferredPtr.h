@@ -62,6 +62,7 @@ private:
 	}
 
 	void DeferredDelete(T* obj) {
+		std::lock_guard<std::mutex> lock(staticMutex);
 		if (!shuttingDown) {
 			if constexpr (requires(T* t) { t->GoingToDelete(); })
 				obj->GoingToDelete(); // only compiled if it exists

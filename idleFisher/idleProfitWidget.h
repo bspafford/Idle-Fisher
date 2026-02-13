@@ -5,8 +5,10 @@
 
 class Ubutton;
 class text;
-class UheldFishWidget;
+class UwrapBox;
 class UscrollBox;
+class UfishNumWidget;
+class URectangle;
 
 class UidleProfitWidget : public widget {
 public:
@@ -23,5 +25,10 @@ private:
 	std::unique_ptr<text> title;
 	std::unique_ptr<text> collectText;
 
-	std::unique_ptr<UheldFishWidget> heldFishWidget;
+	std::unique_ptr<UwrapBox> fishWrapBox;
+	std::unique_ptr<URectangle> line;
+	std::unique_ptr<UwrapBox> currencyWrapBox;
+
+	std::vector<std::unique_ptr<UfishNumWidget>> fishNumList;
+	std::vector<std::unique_ptr<UfishNumWidget>> currencyNumList;
 };

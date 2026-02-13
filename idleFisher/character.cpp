@@ -276,8 +276,6 @@ void Acharacter::draw(Shader* shaderProgram) {
 
 	vector animLoc = SaveData::saveData.playerLoc - anim->GetCellSize() / 2.f;
 
-	std::cout << "frame loc: " << fishingRod->GetCurrFrameLoc() << ", frame: " << fishingRod->calcFrameDistance(true) << "\n";
-
 	std::string fishingDir = GetFishingDirection();
 	anim->setLoc(animLoc);
 	fishingRod->setLoc(animLoc + vector{ -44.f, 0.f });

@@ -451,6 +451,9 @@
     <ClCompile Include="Ambience.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AudioObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -829,6 +832,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ambience.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

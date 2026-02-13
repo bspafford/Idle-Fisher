@@ -45,7 +45,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -53,7 +53,7 @@
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -204,6 +204,7 @@
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="atm.cpp" />
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="AudioObject.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="autoFisherUI.cpp" />
     <ClCompile Include="background.cpp" />
@@ -242,6 +243,7 @@
     <ClCompile Include="glac.c" />
     <ClInclude Include="Ambience.h" />
     <ClInclude Include="Anchor.h" />
+    <ClInclude Include="AudioObject.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="blurBox.h" />

@@ -162,10 +162,12 @@ void UUIWidget::setupLocs() {
 	if (achievementButton)
 		achievementButton->setLoc(vector(-32, 4));
 
-	float offset = stuff::screenSize.x / stuff::pixelSize;
-	for (int i = 0; i < Main::premiumBuffList.size(); i++) {
-		Main::premiumBuffList[i]->setLoc(vector(offset - Main::premiumBuffList[i]->getSize().x, 3.f));
-		offset -= Main::premiumBuffList[i]->getSize().x;
+	if (!Main::premiumBuffList.empty()) {
+		vector offset(50, stuff::screenSize.y / stuff::pixelSize - (Main::premiumBuffList[0]->getSize().y + 5));
+		for (int i = 0; i < Main::premiumBuffList.size(); i++) {
+			Main::premiumBuffList[i]->setLoc(offset);
+			offset += vector(Main::premiumBuffList[i]->getSize().x + 2.f, 0.f);
+		}
 	}
 }
 

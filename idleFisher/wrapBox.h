@@ -15,10 +15,14 @@ public:
 
 	float getOverflowSize();
 
-private:
 	void UpdateChildren();
 
+	void SetPadding(vector padding);
+
+private:
 	std::vector<widget*> childrenList;
 
 	float overflowSizeY = 0.f;
+
+	vector padding = 0.f;
 };

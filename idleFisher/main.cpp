@@ -489,12 +489,6 @@ Rect Main::GetMonitorRect() {
 	GLFWmonitor* monitor = GetCurrentMonitor();
 	glfwGetMonitorPos(monitor, &xPos, &yPos);
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-	int x, y, w, h;
-	glfwGetMonitorWorkarea(monitor, &x, &y, &w, &h);
-	
-	//stuff::screenSize = { static_cast<float>(mode->width), static_cast<float>(mode->height) };
-	//return Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
 	return Rect{ static_cast<float>(xPos), static_cast<float>(yPos), static_cast<float>(mode->width), static_cast<float>(mode->height) };
 }
 
