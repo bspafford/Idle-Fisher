@@ -12,16 +12,16 @@
 enum class Stat {
 	None = 0, // no stat
 
-// Fish
+	// Fish
 	FishPrice = 1, // how much fish sell for
-	
-// Recast
+
+	// Recast
 	RecastProcChance = 21, // Chance for the recast to start
 	RecastChainChance = 22, // the initial chance the recast has to proc again
 	RecastFalloff = 23, // reduces the chainChance by (next chain chance = chaincChance * chainReduce)
 
 
-// Fish Combo Widget
+	// Fish Combo Widget
 	FishComboSpeed = 2, // how fast the fish moves back and forth
 
 	GreenComboSize = 3, // how big green zone is
@@ -35,35 +35,39 @@ enum class Stat {
 	ComboReset = 10, // the min combo when clicking blue zone
 
 	ShouldResetCombo = 20, // whether the combo should reset on a miss
-	
-// Fishing Rod
+
+	// Fishing Rod
 	Power = 11, // how strong the fishing rod is
 	CatchNum = 12, // how many fish the player catches per cast
 
-// Premium Fish
+	// Premium Fish
 	PremiumCatchChance = 13, // how common it is to catch the premium fish
 	PremiumCoolDownTime = 14, // how long it takes until you can catch another premium fish
 	PremiumBuff = 19, // calculates all active premium fish buffs
 
-// Auto Fisher
+	// Auto Fisher
 	AutoFisherSpeed = 24,
 	AutoFisherMaxCapacity = 25,
 	AutoFisherPower = 26,
 
-// Mechanic Data
+	// Mechanic Data
 	FishTransporterSpeed = 27,
 	FishTransporterMaxCapacity = 28,
 	FishTransporterCollectSpeed = 29,
 
-// Fish School
-	MaxFishSchoolSpawnInterval = 15,
-	MinFishSchoolSpawnInterval = 16,
+	// Fish School
+	MaxFishSchoolSpawnInterval = 15, // max spawn time
+	MinFishSchoolSpawnInterval = 16, // min spawn time
+	MaxFishSchoolLifetime = 32, // max time its active for
+	MinFishSchoolLifetime = 33, // min time its active for
+	FishSchoolMultiplier = 35, // how many more fish the player catches while in fish school
 
-// Rain
+	// Rain
 	MaxRainSpawnInterval = 17, // max time it takes to rain again
 	MinRainSpawnInterval = 18, // min time it takes to rain again
 	MaxRainTime = 30, // max length it rains for
 	MinRainTime = 31, // max length it rains for
+	RainMultiplier = 34, // how much the rain increases the heighest catchable fish probability
 };
 
 enum class ModifierType {

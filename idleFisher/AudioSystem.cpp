@@ -246,7 +246,7 @@ bool AudioSystem::IsValid(uint32_t id) {
 }
 
 uint32_t AudioSystem::CreateAudioObject(std::string path, AudioType type, bool useWorldSpace, vector loc) {
-	uint32_t id = TakeID(); // problem since mutating audio data on the main thread
+	uint32_t id = TakeID();
 	audioInstances[id] = std::make_unique<AudioObject>(id, path, type, useWorldSpace, loc);
 	return id;
 

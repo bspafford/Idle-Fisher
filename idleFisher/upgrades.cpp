@@ -60,12 +60,8 @@ double Upgrades::Get(const StatContext& statCtx) {
 
 	} case Stat::CatchNum: {
 		double goldenFishVal = Get(Stat::PremiumBuff);
-
-		double multiplier = 1.f;
-		if (GetCharacter()->IsFishingInSchool())
-			multiplier *= 1.25f;
-
-		return GetBaseStat(statCtx.stat) * goldenFishVal * GetCharacter()->GetCombo() * multiplier;
+		double fishSchoolmultiplier = Get(Stat::FishSchoolMultiplier);
+		return GetBaseStat(statCtx.stat) * GetCharacter()->GetCombo() * goldenFishVal * fishSchoolmultiplier;
 
 	} case Stat::PremiumBuff: {
 		// calc all active premium buffs
@@ -109,13 +105,35 @@ double Upgrades::Get(const StatContext& statCtx) {
 		return -0.040404f * roundedLevel + 5.0404f; // level 1 = 5 sec, level 100 = 1 sec
 
 	} case Stat::MinRainSpawnInterval: {
-		return 30.f * 60.f;
+		return 30.f * 60.f * (Upgrades::GetBaseStat(statCtx.stat) + 1);
+
 	} case Stat::MaxRainSpawnInterval: {
-		return 45.f * 60.f;
+		return 45.f * 60.f * (Upgrades::GetBaseStat(statCtx.stat) + 1);
+
 	} case Stat::MinRainTime: {
 		return 15.f * 60.f;
+
 	} case Stat::MaxRainTime: {
 		return 20.f * 60.f;
+
+	} case Stat::RainMultiplier: {
+		return 3.f; // heighest fish is 3x probability
+
+	} case Stat::MinFishSchoolSpawnInterval: {
+		return 5.f * 60.f * (Upgrades::GetBaseStat(statCtx.stat) + 1);
+
+	} case Stat::MaxFishSchoolSpawnInterval: {
+		return 10.f * 60.f * (Upgrades::GetBaseStat(statCtx.stat) + 1);
+
+	} case Stat::MinFishSchoolLifetime: {
+		return 1.f * 60.f;
+
+	} case Stat::MaxFishSchoolLifetime: {
+		return 3.f * 60.f;
+
+	} case Stat::FishSchoolMultiplier: {
+		return GetCharacter()->IsFishingInSchool() ? 1.5f : 1.f; // +50% increase if in fish school
+
 	} default:
 		return GetBaseStat(statCtx.stat);
 	}

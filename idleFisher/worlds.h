@@ -149,7 +149,7 @@ public:
 	std::vector<std::string> mapAnimList;
 	std::unique_ptr<Aship> ship;
 
-	std::vector<std::unique_ptr<AfishSchool>> fishSchoolList;
+	std::unique_ptr<AfishSchool> fishSchool;
 
 	void makeDrawLists();
 	// npcs
@@ -181,11 +181,6 @@ public:
 
 	vector spawnLoc;
 	vector houseLoc;
-
-	void spawnFishSchool();
-	void removeFishSchool(AfishSchool* fishSchool);
-	DeferredPtr<Timer> fishSchoolSpawnTimer;
-	int maxFishSchoolNum = 5;
 
 	// rain
 	void startRain();

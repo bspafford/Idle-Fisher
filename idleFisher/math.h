@@ -33,6 +33,7 @@ struct Rect {
 class math {
 public:
 	static float dot(vector a, vector b);
+	static float cross(vector a, vector b);
 	static vector normalize(vector a);
 	static float length(vector value);
 	static float distance(float x1, float y1, float x2, float y2);

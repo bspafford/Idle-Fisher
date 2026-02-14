@@ -79,9 +79,7 @@ private:
 
 	friend Acharacter* GetCharacter(); // get a reference to the character
 
-	void calcFishSchool();
-	AfishSchool* bobberInFishSchool();
-	AfishSchool* currFishSchool; // if cast in a fishSchool
+	void CalcFishSchool();
 
 	// fish stuff
 	FfishData calcFish(int& quality, int& fishSize);

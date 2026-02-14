@@ -249,7 +249,7 @@ void Acharacter::move(float deltaTime) {
 		return;
 
 	// if should use collision // debugging
-	if (true)
+	if (false)
 		collision::TestCollision(col.get(), moveDir, deltaTime);
 	else {
 		vector normDir = math::normalize(moveDir);
@@ -443,7 +443,7 @@ void Acharacter::leftClick() {
 		Main::heldFishWidget->updateList(true);
 
 		// check if fishing rod is inside a fishSchool or not!
-		calcFishSchool();
+		CalcFishSchool();
 
 		// start up fishing again
 		fishing();
@@ -522,11 +522,10 @@ std::vector<std::pair<uint32_t, double>> Acharacter::calcFishProbability(const s
 		}
 	}
 
-
 	// figure out probabilities
 	float totalProb = 0.0;
 	bool isRaining = world::currWorld && world::currWorld->rain && world::currWorld->rain->IsRaining();
-	float rainIncrease = 2; // multiplies rarest fish by this number, hardcoded for now
+	float rainIncrease = Upgrades::Get(Stat::RainMultiplier); // multiplies rarest fish by this number
 	for (int i = 0; i < fishCanCatch.size(); ++i) {
 		uint32_t id = fishCanCatch[i];
 		
@@ -582,9 +581,6 @@ void Acharacter::StartFishing() {
 
 	castAudio->Play();
 	tightRopeAudio->Play(true);
-
-	// check if fishing rod is inside a fishSchool or not!
-	calcFishSchool();
 
 	Main::fishComboWidget->Start();
 
@@ -763,28 +759,18 @@ void Acharacter::bobberBobAnim() {
 	}
 }
 
-AfishSchool* Acharacter::bobberInFishSchool() {
-	if (!world::currWorld)
-		return nullptr;
-
-	for (std::unique_ptr<AfishSchool>& fishSchool : world::currWorld->fishSchoolList) {
-		// check if bobber is inside of fish school
-		// if it is then return true
-		// otherwise keep looking
-		if (fishSchool->pointInSchool(bobberLoc))
-			return fishSchool.get();
-	}
-	return nullptr;
+bool Acharacter::IsFishingInSchool() {
+	// check if bobber is inside of fish school
+	// if it is then return true
+	// otherwise keep looking
+	return world::currWorld && world::currWorld->fishSchool && world::currWorld->fishSchool->PointInSchool(bobberLoc);
 }
 
-void Acharacter::calcFishSchool() {
-	if (currFishSchool) {
-		currFishSchool->removeFishNum();
+void Acharacter::CalcFishSchool() {
+	if (IsFishingInSchool()) {
 		SaveData::saveData.fishFromSchools++;
 		Achievements::CheckGroup(AchievementTrigger::FishSchool);
 	}
-
-	currFishSchool = bobberInFishSchool();
 }
 
 bool Acharacter::canCatchWorldFish() {
@@ -852,10 +838,6 @@ void Acharacter::equipBait(uint32_t baitId) {
 
 double Acharacter::GetCombo() {
 	return comboNum;
-}
-
-bool Acharacter::IsFishingInSchool() {
-	return currFishSchool != nullptr;
 }
 
 void Acharacter::IncreaseCombo(double comboChange) {

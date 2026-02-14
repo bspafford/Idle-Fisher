@@ -58,7 +58,7 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 101,53,1,Carb,Increase Max Combo,1000,0,1,1
 106,53,1,Chase,Increase Golden Fish Buff,100000000,0,1,1
 110,53,1,Earl,Increase Combo Increase,100000000000,0,1,1
-112,53,1,Herding Fish,Increase Fish Schools,100000000000000,0,1,1
+112,53,1,Herding Fish,Decrease Fish School Intervals,100000000000000,0,1,1
 113,53,1,Sad White Bush,Decrease Rain Intervals,100000000000000,0,1,1
 // fishing rod,,,,,,,,
 114,53,0,Power,What Level Of Fish You Can Catch,100,2,3,1

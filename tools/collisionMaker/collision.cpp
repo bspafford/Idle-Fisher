@@ -143,6 +143,8 @@ void collision::showCollisionBoxes(SDL_Renderer* renderer, std::vector<SDL_Point
 					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 				else if (collisionIdentifier[i] == "r") // river
 					SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+				else if (collisionIdentifier[i] == "f") // fish school
+					SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
 				else if (collisionIdentifier[i] == "s") // stair
 					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 				else if (collisionIdentifier[i] == "g") // grass
@@ -431,8 +433,8 @@ void collision::changeIdentifier() {
 		return;
 
 	// list
-	// "" default, "w" water, "r" river, "s" stairs, "g" grass, "d" dirt, "o" wood, "m" metal
-	std::vector<std::string> identifiers = { "", "w", "r", "s", "g", "d", "o", "m"};
+	// "" default, "w" water, "r" river, "f" fish school, "s" stairs, "g" grass, "d" dirt, "o" wood, "m" metal
+	std::vector<std::string> identifiers = { "", "w", "r", "f", "s", "g", "d", "o", "m"};
 
 	// get current index of current identifier
 	auto it = std::find(identifiers.begin(), identifiers.end(), Main::collisionIdentifier[mouseOver]);

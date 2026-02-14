@@ -10,21 +10,20 @@ class Image;
 
 class AfishSchool {
 public:
-	AfishSchool(vector loc);
-	~AfishSchool();
-	void draw(Shader* shaderProgram);
-	void setLoc(vector loc);
-	AfishSchool* pointInSchool(vector worldPoint);
-	void removeFishNum();
-private:
-	void remove();
+	AfishSchool();
 
-	vector loc;
+	void Draw(Shader* shaderProgram);
+	bool PointInSchool(vector worldPoint);
+
+private:
+	void Start();
+	void Finished();
+
+	vector GetRandomLoc();
 
 	std::unique_ptr<animation> anim;
-
-	// amount of times you can fish from, random
-	// alive time, random
+	DeferredPtr<Timer> spawnTimer;
 	DeferredPtr<Timer> lifeTimer;
-	float fishNum;
+
+	bool isAlive = false; // if the fish school is actually active
 };

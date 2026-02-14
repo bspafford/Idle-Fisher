@@ -10,6 +10,10 @@ float math::dot(vector a, vector b) {
 	return a.x * b.x + a.y * b.y;
 }
 
+float math::cross(vector a, vector b) {
+	return a.x * b.y - a.y * b.x;
+}
+
 // normalizes the vector
 vector math::normalize(vector a) {
 	float invLen = Q_rsqrt(a.x * a.x + a.y * a.y);

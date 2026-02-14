@@ -319,11 +319,6 @@ void world::stopRain() {
 }
 
 void world::start() {
-	// on init make the circle appear
-	fishSchoolSpawnTimer = CreateDeferred<Timer>();
-	fishSchoolSpawnTimer->addCallback(this, &world::spawnFishSchool);
-	fishSchoolSpawnTimer->start(math::randRange(Upgrades::Get(Stat::MinFishSchoolSpawnInterval), Upgrades::Get(Stat::MaxFishSchoolSpawnInterval)));
-
 	// bind texture stuff for water
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/water/waterDUDV.png", "dudvMap");
 	Texture::bindTextureToShader(Scene::twoDWaterShader, "images/worlds/demo/seaFloor.png", "underwaterTexture");
@@ -352,6 +347,8 @@ void world::start() {
 
 	if (fishTransporter)
 		fishTransporter->startPathFinding();
+
+	fishSchool = std::make_unique<AfishSchool>();
 }
 
 void world::loadIdleProfits() {
@@ -361,26 +358,6 @@ void world::loadIdleProfits() {
 	float timeDiff = static_cast<float>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - SaveData::lastPlayed).count());
 
 	IdleProfits::calcIdleProfits(timeDiff);
-}
-
-void world::spawnFishSchool() {
-	if (fishSchoolList.size() < maxFishSchoolNum) { // only spawn school if less than max
-		float x = math::randRange(-200.f, 450.f);
-		float y = math::randRange(-200.f, 150.f);
-		std::unique_ptr<AfishSchool> fishSchool = std::make_unique<AfishSchool>(vector{ x, y });
-		fishSchoolList.push_back(std::move(fishSchool));
-	}
-	fishSchoolSpawnTimer->start(math::randRange(Upgrades::Get(Stat::MinFishSchoolSpawnInterval), Upgrades::Get(Stat::MaxFishSchoolSpawnInterval)));
-}
-
-void world::removeFishSchool(AfishSchool* fishSchool) {
-	auto it = std::find_if(fishSchoolList.begin(), fishSchoolList.end(),
-		[fishSchool](const std::unique_ptr<AfishSchool>& ptr) {
-			return ptr.get() == fishSchool;
-		});
-
-	if (it != fishSchoolList.end())
-		fishSchoolList.erase(it);
 }
 
 void world::spawnFishTransporter() {
@@ -412,11 +389,7 @@ void world::makeDrawLists() {
 }
 
 void world::draw(Shader* shaderProgram) {
-	std::cout << "charloc: " << GetCharacter()->getCharLoc() << "\n";
 	renderWater();
-
-	for (int i = 0; i < fishSchoolList.size(); i++)
-		fishSchoolList[i]->draw(shaderProgram);
 	
 	if (Scene::pet)
 		Scene::pet->draw(shaderProgram);
@@ -453,6 +426,9 @@ void world::renderWater() {
 	
 	//if (beachAnim)
 		//beachAnim->draw(Scene::twoDShader);
+
+	if (fishSchool)
+		fishSchool->Draw(Scene::twoDShader);
 
 	if (mapImg)
 		mapImg->draw(Scene::twoDShader);
