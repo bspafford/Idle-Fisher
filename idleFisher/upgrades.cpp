@@ -50,6 +50,9 @@ double Upgrades::Get(const StatContext& statCtx) {
 		double comboMax = GetBaseStat(Stat::ComboMax);
 		return math::clamp(comboMax * GetBaseStat(statCtx.stat), 1.0, comboMax);
 
+	} case Stat::ComboDecreaseOnBounce: {
+		return 1.f; // temp
+
 	} case Stat::PremiumCatchChance: {
 		FfishData& fishData = SaveData::data.fishData.at(1u); // get premium fish data
 		return fishData.probability * (GetBaseStat(statCtx.stat) + 1); // increases chance to catch premium fish based on premium fish probability
@@ -90,8 +93,15 @@ double Upgrades::Get(const StatContext& statCtx) {
 	} case Stat::AutoFisherMaxCapacity: {
 		return SaveData::saveData.progressionData.at(statCtx.id).level * 100; // default
 
-	} case Stat::AutoFisherPower: {
-		return (SaveData::saveData.progressionData.at(statCtx.id).level / 10 + 1) * 10; // every ten levels increase power by 10
+	} case Stat::AutoFisherMultiplier: {
+		// just gets the base value for this stat, since this stat isn't effected by level or anything
+		double base = SaveData::data.modifierData.at(statCtx.id).stats.at(statCtx.stat).effect.base;
+		std::cout << base << "\n";
+		return base;
+
+	} case Stat::AutoFisherCatchNum: {
+		double goldenFishVal = Get(Stat::PremiumBuff);
+		return GetBaseStat(Stat::CatchNum) * Get(StatContext(Stat::AutoFisherMultiplier, statCtx.id)) * goldenFishVal;
 
 	} case Stat::FishTransporterSpeed: {
 		int roundedLevel = (SaveData::saveData.progressionData.at(statCtx.id).level / 10) * 10; // only upgrade speed every 10 levels

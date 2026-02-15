@@ -35,9 +35,9 @@ public:
 	// returns false if the auto fisher had no room to catch fish
 	//	happens when every fish is more expensive the the maxCapacity
 	bool calcFish(FfishData* fishData);
-	// customCurrency is used for idle profits, instead of calculating what the autofisher is currently holding, it just takes in a double instead
-	std::vector<std::pair<uint32_t, float>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>&, bool isCurrencyAFactor = true, double customCurrency = -1);
-	double calcCurrencyHeld();
+	// customCapactiy is used for idle profits, instead of calculating what the autofisher is currently holding, it just takes in a double instead
+	std::vector<std::pair<uint32_t, float>> calcFishProbability(const std::unordered_map<uint32_t, FfishData>&, bool isCapacityAFactor = true, double customCapacity = -1);
+	double CalcCapacity();
 	// gets the autofisher to start fishing again once it is no longer full
 	void startFishing();
 
@@ -49,14 +49,16 @@ public:
 	// fills held fish with random fish (currency comes from save data fullness), based on their probability
 	void FillWithRandomFish();
 	// fishId, fishNum
-	std::vector<std::pair<uint32_t, double>> calcAutoFishList(int fishNum);
 	std::unordered_map<uint32_t, float> calcIdleFishChance(std::unordered_map<uint32_t, FfishData> fishList);
 
 	// fish per second
 	double calcFPS();
 	// money per second
-	// custom currency will replace calcHeldCurrency if not -1
-	double calcMPS(double customCurrency = -1);
+	// customCapacity will replace CalcCapacity if not -1
+	double calcMPS();
+	// capacity per second
+	// how fast the auto fisher fills up
+	double CalcCPS();
 
 	bool bMouseOver = false;
 

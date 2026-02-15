@@ -200,42 +200,46 @@ void AautoFisher::catchFish() {
 		return;
 	}
 
-	SetFullnessIndex();
-
-	double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0;
+	double catchNum = Upgrades::Get(StatContext(Stat::AutoFisherCatchNum, id)) / 100.0;
 	double caught = floor(catchNum); // guarenteed caught
 	double remainder = catchNum - caught; // percent remainder
 	if (math::randRange(0.0, 1.0) < remainder) // random check to see if player got rolled over value
 		caught++;
 
+	double maxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
+	double capacity = CalcCapacity();
+	// if capacity + caught capacity is too much, need to clamp caught num
+	// but shouldn't be clamped to 0, as that should be handled elsewhere
+	if (caught > 0 && capacity + caught * currFish.basePrice > maxCapacity) {
+		double remainingSpace = maxCapacity - capacity;
+		caught = floor(remainingSpace / currFish.basePrice);
+	}
+
 	numberWidget->Start(anim->getLoc() + anim->GetCellSize() / vector(2.f, 1.f), Upgrades::Get(StatContext(Stat::FishPrice, currFish.id)) * caught, NumberType::FishCaught);
 	
 	// if there is enough room for the fish
-	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
-	if (calcCurrencyHeld() + Upgrades::Get(StatContext(Stat::FishPrice, currFish.id, 0)) * caught <= maxCurrency) {
-		if (caught > 0) {
-			double recast = Upgrades::Get(Stat::RecastProcChance);
-			if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
-				StartRecast(currFish.id, caught);
+	if (caught > 0) {
+		double recast = Upgrades::Get(Stat::RecastProcChance);
+		if (!recastActive && math::randRange(0.0, 100.0) <= recast) // recast not active && should recast
+			StartRecast(currFish.id, caught);
 
-			FsaveFishData& saveFishData = heldFish[currFish.id];
-			saveFishData.id = currFish.id;
-			saveFishData.numOwned[0] += caught;
-			saveFishData.totalNumOwned[0] += caught;
+		FsaveFishData& saveFishData = heldFish[currFish.id];
+		saveFishData.id = currFish.id;
+		saveFishData.numOwned[0] += caught;
+		saveFishData.totalNumOwned[0] += caught;
 
-		}
 
-		double currencyHeld = calcCurrencyHeld();
-		SaveData::saveData.autoFisherList.at(id).fullness = currencyHeld;
-		if (anim && currencyHeld >= maxCurrency) {
+		double updatedCapacity = CalcCapacity();
+		SaveData::saveData.autoFisherList.at(id).fullness = updatedCapacity;
+		if (anim && updatedCapacity + FfishData::GetCheapestFishInWorld(Scene::GetCurrWorldId()).basePrice >= maxCapacity) // too full to catch any more fish
 			anim->stop();
-		}
-	} else if (anim) {
-		anim->stop();
+		
+		if (afMoreInfoUI && afMoreInfoUI->isVisible())
+			afMoreInfoUI->updateUI();
+
+		SetFullnessIndex();
 	}
 
-	if (afMoreInfoUI && afMoreInfoUI->isVisible())
-		afMoreInfoUI->updateUI();
 }
 
 bool AautoFisher::calcFish(FfishData* fishData) {
@@ -253,40 +257,35 @@ bool AautoFisher::calcFish(FfishData* fishData) {
 	return false;
 }
 
-std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData, bool isCurrencyAFactor, double customCurrency) {
-	double fishingPower = Upgrades::Get(StatContext(Stat::AutoFisherPower, id));
+std::vector<std::pair<uint32_t, float>> AautoFisher::calcFishProbability(const std::unordered_map<uint32_t, FfishData>& fishData, bool isCapacityAFactor, double customCapacity) {
+	double fishingPower = Upgrades::Get(StatContext(Stat::Power, id));
+	double maxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
 
 	float totalProb = 0;
-	double heldCurrency = customCurrency;
-	if (customCurrency == -1)
-		heldCurrency = calcCurrencyHeld();
-	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
+	double capacity = customCapacity;
+	if (customCapacity == -1)
+		capacity = CalcCapacity();
 
-	// starts at 1 to skip premium
+	std::vector<FfishData> fishCanCatch;
 	for (auto& [fishId, fData] : fishData) {
 		if (fishId == 1u || fData.isRareFish) // premium fish id || rare
 			continue; // dont include premium here
 
 		// see if autofisher has enough fishing power, see if theres enough room for the fish
-		if (fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId()) {
-			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor)
+		bool baseRequirements = fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId();
+		if (baseRequirements) {
+			if (!isCapacityAFactor || (isCapacityAFactor && capacity + fData.basePrice <= maxCapacity)) {
 				totalProb += float(fData.probability);
-		}
-	}
-	std::vector<std::pair<uint32_t, float>> probList;
-	float test = 0;
-
-	// starts at 1 to skip premium
-	for (auto& [fishId, fData] : fishData) {
-		if (fishId == 1u || fData.isRareFish)
-			continue; // dont include premium here
-
-		if (fData.fishingPower <= fishingPower && fData.worldId == Scene::GetCurrWorldId()) {
-			if ((isCurrencyAFactor && heldCurrency + Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0)) <= maxCurrency) || !isCurrencyAFactor) {
-				test += fData.probability / totalProb;
-				probList.push_back(std::pair{ fishId, test});
+				fishCanCatch.push_back(fData);
 			}
 		}
+	}
+
+	float cumulativeProb = 0;
+	std::vector<std::pair<uint32_t, float>> probList;
+	for (FfishData& fData : fishCanCatch) {
+		cumulativeProb += fData.probability / totalProb;
+		probList.push_back(std::pair{ fData.id, cumulativeProb });
 	}
 
 	return probList;
@@ -314,16 +313,15 @@ void AautoFisher::setStats() {
 	anim->SetCurrAnimDuration(animSpeed);
 }
 
-// takes input if the list isn't heldFish
-double AautoFisher::calcCurrencyHeld() {
-	double currency = 0;
+double AautoFisher::CalcCapacity() {
+	double capacity = 0.0;
 	for (auto& [fishId, saveFishData] : heldFish) {
-		currency += saveFishData.numOwned[0] * Upgrades::Get(StatContext(Stat::FishPrice, fishId, 0));
+		FfishData& fishData = SaveData::data.fishData.at(fishId);
+		capacity += saveFishData.numOwned[0] * fishData.basePrice;
 	}
 
-	SaveData::saveData.autoFisherList.at(id).fullness = currency; // update fullness for save data
-
-	return currency;
+	SaveData::saveData.autoFisherList.at(id).fullness = capacity; // update fullness for save data
+	return capacity;
 }
 
 void AautoFisher::upgrade() {
@@ -334,8 +332,8 @@ void AautoFisher::upgrade() {
 	setStats();
 
 	// if auto fisher was full, see if it now has enough space to start again
-	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
-	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
+	double maxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
+	if (anim && CalcCapacity() < maxCapacity && anim->IsStopped())
 		anim->start();
 
 	if (afMoreInfoUI && afMoreInfoUI->isVisible())
@@ -349,29 +347,6 @@ float AautoFisher::getCatchTime() {
 	if (anim)
 		return anim->GetCellNum().x * anim->GetCurrAnimDuration();
 	return 4;
-}
-
-std::vector<std::pair<uint32_t, double>> AautoFisher::calcAutoFishList(int fishNum) {
-	std::unordered_map<uint32_t, FfishData> fishList;
-	std::vector<std::pair<uint32_t, double>> fishNumList;
-
-	// calc all fish in world
-	double fishingPower = Upgrades::Get(StatContext(Stat::AutoFisherPower, id));
-	for (auto& [key, value] : SaveData::data.fishData) {
-		if (value.worldId == Scene::GetCurrWorldId() && fishingPower >= value.fishingPower) {
-			fishList.insert({key, value});
-		}
-	}
-
-	std::unordered_map<uint32_t, float> fishChance = calcIdleFishChance(fishList);
-
-	for (auto& [key, value] : fishList) {
-		int prob = fishChance.at(key) * (float)fishNum;
-		std::pair<uint32_t, double> fishPair(key, prob);
-		fishNumList.push_back(fishPair);
-	}
-
-	return fishNumList;
 }
 
 // calculates what fish the auto fisher can catch
@@ -388,25 +363,24 @@ std::unordered_map<uint32_t, float> AautoFisher::calcIdleFishChance(std::unorder
 }
 
 void AautoFisher::startFishing() {
-	double maxCurrency = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
-
 	SetFullnessIndex();
 
-	if (anim && calcCurrencyHeld() < maxCurrency && anim->IsStopped())
+	double maxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
+	if (anim && CalcCapacity() < maxCapacity && anim->IsStopped())
 		anim->start();
 }
 
 double AautoFisher::calcFPS() {
-	double catchNum = Upgrades::Get(Stat::CatchNum) / 100.0;
+	double catchNum = Upgrades::Get(StatContext(Stat::AutoFisherCatchNum, id)) / 100.0;
 	return 1 / math::max(getCatchTime(), 0.00001f) * catchNum;
 }
 
-double AautoFisher::calcMPS(double customCurrency) {
+double AautoFisher::calcMPS() {
 	// fps
 	// avg currency
 	// avg fish cought
 
-	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData, false, customCurrency);
+	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData, false);
 
 	// total
 	// price * percent
@@ -423,6 +397,21 @@ double AautoFisher::calcMPS(double customCurrency) {
 	}
 
 	return totalPrice * calcFPS();
+}
+
+double AautoFisher::CalcCPS() {
+	std::vector<std::pair<uint32_t, float>> probList = calcFishProbability(SaveData::data.fishData, false);
+	float prevPercent = 0;
+	float totalBasePrice = 0;
+	for (int i = 0; i < probList.size(); i++) {
+		uint32_t id = probList[i].first;
+		float percent = probList[i].second;
+
+		totalBasePrice += (percent - prevPercent) * SaveData::data.fishData.at(id).basePrice;
+		prevPercent = percent;
+	}
+
+	return totalBasePrice * calcFPS();
 }
 
 void AautoFisher::OutlineUpdate(int frame) {
@@ -506,9 +495,9 @@ void AautoFisher::FillWithRandomFish() {
 
 	// calculate fish
 	for (auto& [id, prob] : probabilities) {
-		double fishPrice = Upgrades::Get(StatContext(Stat::FishPrice, id));
+		double fishCapacity = SaveData::data.fishData.at(id).basePrice;
 		float percent = prob / totalProb;
-		double fishNum = percent * (fullness / fishPrice);
+		double fishNum = percent * (fullness / fishCapacity);
 
 		if (fishNum < 1.0)
 			continue;
@@ -533,7 +522,7 @@ void AautoFisher::SetFullnessIndex() {
 	// 75-95% = orange
 	// 95%+   = red
 	double maxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, id));
-	double percent = calcCurrencyHeld() / maxCapacity;
+	double percent = CalcCapacity() / maxCapacity;
 	if (percent <= 0.75f) // green
 		fullnessIndex = 0;
 	else if (percent <= 0.95) // orange

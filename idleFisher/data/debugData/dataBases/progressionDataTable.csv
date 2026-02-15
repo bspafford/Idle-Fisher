@@ -12,15 +12,6 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 51,0,0,Vault,,0,0,0,0
 52,0,0,Rebirth,,0,0,0,0
 53,0,0,Forest,This is your starting spot the middle of nowhere,0,0,1,1
-54,53,1,Deep Ocean,You got stranded out in the middle of the ocean,10000,0,1,1
-55,54,1,Tropical Island,So tropical,10000,0,1,1
-56,55,1,Desert,So hot,10000,0,1,1
-57,56,1,Swamp,Nasty,10000,0,1,1
-58,57,1,Cherry Blossom,Wow so pretty,10000,0,1,1
-59,58,1,Snowy Village,Its a little chilly,10000,0,1,1
-60,59,1,Volcano,Its hot down here,10000,0,1,1
-61,60,1,Cloudy Sky,Did I die,10000,0,1,1
-62,61,1,Space,How did I get out here,10000,0,1,1
 // auto fishers,,,,,,,,
 63,53,100,Auto Fisher #1,,1,0,2,1
 64,53,100,Auto Fisher #2,,2,0,3,1
@@ -44,15 +35,6 @@ id,worldId,maxLevel,name,description,costBase,costAdd,costMul,costExp
 73,53,1,Pepper,<red>Increase Fish Speed</red>,1,0,1,1
 // mechanic data,,,,,,,,
 90,53,100,George,,1000,0,1,1
-91,54,100,,,10000,0,1,1
-92,55,100,,,100000,0,1,1
-93,56,100,,,1000000,0,1,1
-94,57,100,,,10000000,0,1,1
-95,58,100,,,100000000,0,1,1
-96,59,100,,,1000000000,0,1,1
-97,60,100,,,10000000000,0,1,1
-98,61,100,,,100000000000,0,1,1
-99,62,100,,,1000000000000,0,1,1
 // pet data,,,,,,,,
 100,53,1,Golden Otter,Knows which fish look expensive\nIncrease Fish Price,100,0,1,1
 101,53,1,Carb,Increase Max Combo,1000,0,1,1

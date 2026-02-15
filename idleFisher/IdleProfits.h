@@ -9,18 +9,25 @@
 
 class IdleProfits {
 private:
+	// Auto Fisher fullness is stored as fish base price
+	// so this function converts the base price into actual fish prices
+	static double FullnessToPrice(double fullness) {
+		// just does fullness * base stat since all fish scale the same, and all quality will be 0
+		return fullness * Upgrades::GetBaseStat(Stat::FishPrice);
+	}
+
 	// sets up things like the fish transporter location
-	// fills the fish transporter with currency left over from the calcIdleProfits
+	// fills the fish transporter with capacity left over from the calcIdleProfits
 	// refills the auto fishers based on their fullness
-	static void setup(double fishTransporterCurrency, double currencyMade) {
+	static void setup(double fishTransporterCapacity, double capacityMade) {
 		for (auto& autoFisher : world::currWorld->autoFisherList)
 			autoFisher->FillWithRandomFish();
 
 		if (world::currWorld->fishTransporter) {
-			world::currWorld->fishTransporter->FillWithRandomFish(fishTransporterCurrency, true);
+			world::currWorld->fishTransporter->FillWithRandomFish(FullnessToPrice(fishTransporterCapacity), true);
 
 			// calculate random fish here based on fish the autofishers can catch
-			std::unordered_map<uint32_t, FsaveFishData> fishList = world::currWorld->fishTransporter->FillWithRandomFish(currencyMade, false);
+			std::unordered_map<uint32_t, FsaveFishData> fishList = world::currWorld->fishTransporter->FillWithRandomFish(FullnessToPrice(capacityMade), false);
 			Main::idleProfitWidget->setup(fishList);
 		}
 
@@ -43,8 +50,8 @@ public:
 				uint32_t afId = autoFisher->id;
 				FsaveAutoFisherStruct& saveData = SaveData::saveData.autoFisherList.at(afId);
 				
-				double currency = saveData.fullness + autoFisher->calcMPS(saveData.fullness) * timeDiff; // previously held + how much money per second * how many seconds since last save
-				saveData.fullness = math::min(currency, Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId))); // clamp at capacity
+				double capacity = saveData.fullness + autoFisher->CalcCPS() * timeDiff; // previously held + how much money per second * how many seconds since last save
+				saveData.fullness = math::min(capacity, Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId))); // clamp at capacity
 			}
 			setup(0, 0);
 			return;
@@ -69,10 +76,10 @@ public:
 		int currAfIndex = 0; // start at 0 because thats where im going to
 		// keep track of the last time i visited the autofisher (id, last time: using time since start)
 		std::unordered_map<uint32_t, float> lastVisited;
-		// keep track of how much currency the fish transporter is holding
-		double heldCurrency = 0.0;
-		// keep track of how much currency the fish transporter has sold
-		double currencyMade = 0.0;
+		// keep track of how much capacity the fish transporter is holding
+		double transporterCapacity = 0.0;
+		// keep track of how much capacity the fish transporter has sold
+		double capacityMade = 0.0;
 		// keep track of time
 		float timeSinceStart = 0.f;
 		// start at start
@@ -97,25 +104,25 @@ public:
 				if (it != lastVisited.end())
 					lastVisitTime = it->second;
 				double autoFisherMaxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId));
-				// how much currency the auto fisher has made since last visit including any additional from when saved, now - last visit to get difference
+				// how much capacity the auto fisher has made since last visit including any additional from when saved, now - last visit to get difference
 				// used min to clamp at max capcity so it doesn't go over
-				double mps = world::currWorld->autoFisherList[currAfIndex]->calcMPS(saveAutoFisherStruct.fullness);
+				double cps = world::currWorld->autoFisherList[currAfIndex]->CalcCPS();
 				float diff = math::max(timeSinceStart - lastVisitTime, 0); // cant go below 0
-				saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + mps * diff, autoFisherMaxCapacity);
+				saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + cps * diff, autoFisherMaxCapacity);
 				// calculate how long it will take for the fish transporter to collect
-				double collectTime = fishTransporter->calcCollectTimer(heldCurrency, saveAutoFisherStruct.fullness, true);
+				double collectTime = fishTransporter->calcCollectTimer(transporterCapacity, saveAutoFisherStruct.fullness, true);
 				// then add the additional fish the auto fisher has collected since the start of the collect time, since this is how i have it programmed now
-				saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + mps * collectTime, autoFisherMaxCapacity);
+				saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + cps * collectTime, autoFisherMaxCapacity);
 				// add collection time to time
 				timeSinceStart += collectTime;
 
 				// give the fish transporter the auto fishers fish
 				// 1 of 2 things can happen: either it has enough space to collect all || there's some remainders that are left inside of the auto fisher
-				if (heldCurrency + saveAutoFisherStruct.fullness > maxCapacity) {
-					saveAutoFisherStruct.fullness -= maxCapacity - heldCurrency;
-					heldCurrency = maxCapacity;
+				if (transporterCapacity + saveAutoFisherStruct.fullness > maxCapacity) {
+					saveAutoFisherStruct.fullness -= maxCapacity - transporterCapacity;
+					transporterCapacity = maxCapacity;
 				} else {
-					heldCurrency += saveAutoFisherStruct.fullness;
+					transporterCapacity += saveAutoFisherStruct.fullness;
 					saveAutoFisherStruct.fullness = 0;
 				}
 
@@ -124,15 +131,15 @@ public:
 
 			} else { // at fish bin to sell fish
 				// get how long it takes to sell the fish
-				timeSinceStart += fishTransporter->calcCollectTimer(heldCurrency, 0, false);
-				currencyMade += heldCurrency;
-				heldCurrency = 0.0;
+				timeSinceStart += fishTransporter->calcCollectTimer(transporterCapacity, 0, false);
+				capacityMade += transporterCapacity;
+				transporterCapacity = 0.0;
 			}
 
 			// now if the fish transporter is full, then need to go back to start (-1)
 			// if it isn't full then can continue onto next auto fisher
 				// but if next auto fisher is past size() then go to -1
-			if (heldCurrency >= maxCapacity || currAfIndex + 1 >= autoFisherList.size()) { // fish transporter too full, or looping back around
+			if (transporterCapacity >= maxCapacity || currAfIndex + 1 >= autoFisherList.size()) { // fish transporter too full, or looping back around
 				start = fishTransporter->calcGoTo(currAfIndex); // update start
 				currAfIndex = -1;
 				destination = fishTransporter->calcGoTo(currAfIndex); // update new destination to sell
@@ -149,9 +156,9 @@ public:
 			FsaveAutoFisherStruct& saveAutoFisherStruct = SaveData::saveData.autoFisherList.at(afId);
 			double autoFisherMaxCapacity = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, afId));
 			float diff = math::max(timeDiff - lastVisited[afId], 0); // cant go negative
-			saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + autoFisher->calcMPS(saveAutoFisherStruct.fullness) * diff, autoFisherMaxCapacity);
+			saveAutoFisherStruct.fullness = math::min(saveAutoFisherStruct.fullness + autoFisher->CalcCPS() * diff, autoFisherMaxCapacity);
 		}
 
-		setup(heldCurrency, currencyMade);
+		setup(transporterCapacity, capacityMade);
 	}
 };

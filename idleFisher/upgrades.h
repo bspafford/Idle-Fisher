@@ -48,7 +48,8 @@ enum class Stat {
 	// Auto Fisher
 	AutoFisherSpeed = 24,
 	AutoFisherMaxCapacity = 25,
-	AutoFisherPower = 26,
+	AutoFisherMultiplier = 26, // how strong each auto fisher is, since each one gets better than the previous
+	AutoFisherCatchNum = 36, // calculates how many fish the auto fisher catches, no combo
 
 	// Mechanic Data
 	FishTransporterSpeed = 27,

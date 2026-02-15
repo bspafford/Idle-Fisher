@@ -262,12 +262,13 @@ void AfishTransporter::finishCollectTimer() {
 	autoFisherIndex++;
 	progressBar->setVisibility(false);
 	double maxCapacity = Upgrades::Get(StatContext(Stat::FishTransporterMaxCapacity, id));
-	if (autoFisherIndex >= world::currWorld->autoFisherList.size() || calcCurrencyHeld() >= maxCapacity) {
+	double capacity = CalcCapacity();
+	if (autoFisherIndex >= world::currWorld->autoFisherList.size() || capacity >= maxCapacity) {
 		autoFisherIndex = -1;
 	}
 
 	// check if fish transporter has enough space for even the smallest fish
-	if (maxCapacity - calcCurrencyHeld() < Upgrades::Get(StatContext(Stat::FishPrice, FfishData::GetCheapestFishInWorld().id, 0)))
+	if (maxCapacity - capacity < FfishData::GetCheapestFishInWorld().basePrice)
 		autoFisherIndex = -1;
 
 	vector goTo = calcGoTo(autoFisherIndex);
@@ -280,7 +281,7 @@ void AfishTransporter::collectTimerUpdate() {
 
 float AfishTransporter::calcCollectTimer(AautoFisher* autoFisher, bool getMaxTime) {
 	if (!getMaxTime)
-		return calcCollectTimer(calcCurrencyHeld(), autoFisher ? autoFisher->calcCurrencyHeld() : 0.0, autoFisher != nullptr);
+		return calcCollectTimer(CalcCapacity(), autoFisher ? autoFisher->CalcCapacity() : 0.0, autoFisher != nullptr);
 	return Upgrades::Get(StatContext(Stat::FishTransporterCollectSpeed, id)); // returns the full time no matter what
 }
 
@@ -301,9 +302,10 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 	if (autoFisher) {
 		std::vector<uint32_t> afHeldFishId = sortFishList(autoFisher->heldFish);
 		for (int i = 0; i < afHeldFishId.size(); i++) {
+			FfishData* currFish = &SaveData::data.fishData.at(afHeldFishId[i]);
 			FsaveFishData* saveCurrFish = &autoFisher->heldFish.at(afHeldFishId[i]);
 			// max amount of fish the transporter can carry before full
-			int fishMax = (maxCapacity - calcCurrencyHeld()) / Upgrades::Get(StatContext(Stat::FishPrice, saveCurrFish->id, 0));
+			int fishMax = (maxCapacity - CalcCapacity()) / currFish->basePrice;
 			if (saveCurrFish->numOwned[0] <= fishMax) { // if can hold all fish
 				addFishtoHeld(saveCurrFish, saveCurrFish->numOwned[0]);
 				saveCurrFish->numOwned[0] = 0;
@@ -312,13 +314,13 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 				saveCurrFish->numOwned[0] -= fishMax;
 			}
 		}
-		SaveData::saveData.autoFisherList.at(autoFisher->id).fullness = autoFisher->calcCurrencyHeld(); // update fullness for save data
+		SaveData::saveData.autoFisherList.at(autoFisher->id).fullness = autoFisher->CalcCapacity(); // update fullness for save data
 		autoFisher->startFishing();
 		autoFisher->afMoreInfoUI->updateUI();
 	} else { // sell fish
 		// give player currency
 		FsaveCurrencyStruct& currencyData = SaveData::saveData.currencyList.at(Scene::GetCurrWorldId());
-		double currencyHeld = calcCurrencyHeld();
+		double currencyHeld = CalcCapacity() * Upgrades::GetBaseStat(Stat::FishPrice);
 		currencyData.numOwned += currencyHeld;
 		currencyData.totalNumOwned += currencyHeld;
 		holding.clear();
@@ -332,7 +334,7 @@ void AfishTransporter::collectFish(AautoFisher* autoFisher) {
 	}
 
 	// calc fullnessString
-	double currency = calcCurrencyHeld();
+	double currency = CalcCapacity();
 	float percent = currency / maxCapacity;
 	// 0 - 25
 	// 25 - 50
@@ -392,13 +394,13 @@ std::vector<uint32_t> AfishTransporter::sortFishList(const std::unordered_map<ui
 	return sortedList;
 }
 
-double AfishTransporter::calcCurrencyHeld() {
-	double currency = 0;
-	for (auto saveFishData : holding) {
-		FfishData fish = SaveData::data.fishData[saveFishData.second.id];
-		currency += Upgrades::Get(StatContext(Stat::FishPrice, fish.id, 0)) * saveFishData.second.numOwned[0];
+double AfishTransporter::CalcCapacity() {
+	double capacity = 0.0;
+	for (auto& [fishId, saveFishData] : holding) {
+		FfishData& fishData = SaveData::data.fishData.at(fishId);
+		capacity += saveFishData.numOwned[0] * fishData.basePrice;
 	}
-	return currency;
+	return capacity;
 }
 
 void AfishTransporter::setLoc(vector loc) {
@@ -413,7 +415,7 @@ void AfishTransporter::SetStats() {
 	SaveEntry* mechanicStruct = &SaveData::saveData.progressionData.at(Scene::GetCurrWorldId());
 
 	double maxCapacity = Upgrades::Get(StatContext(Stat::FishTransporterMaxCapacity, id));
-	fullnessText->setText(shortNumbers::convert2Short(calcCurrencyHeld()) + "/" + shortNumbers::convert2Short(maxCapacity));
+	fullnessText->setText(shortNumbers::convert2Short(CalcCapacity()) + "/" + shortNumbers::convert2Short(maxCapacity));
 }
 
 bool AfishTransporter::calcIfPlayerInfront() {

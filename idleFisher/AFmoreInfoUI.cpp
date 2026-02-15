@@ -85,7 +85,7 @@ void AFmoreInfoUI::updateUI() {
 	levelText->setText(std::to_string(level));
 	levelBar->setImage("images/autoFisher/moreUI/level/level" + std::to_string(levelPercent + 1) + ".png");
 
-	double fullness = autoFisher->calcCurrencyHeld();
+	double fullness = autoFisher->CalcCapacity();
 	double maxFullness = Upgrades::Get(StatContext(Stat::AutoFisherMaxCapacity, autoFisher->id));
 	int fullnessPercent = int(math::clamp(roundf(fullness / maxFullness * 100.f), 0.f, 100.f));
 	fullnessText->setText(shortNumbers::convert2Short(fullness) + "/" + shortNumbers::convert2Short(maxFullness));

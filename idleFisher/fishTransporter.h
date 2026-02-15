@@ -43,7 +43,7 @@ private:
 	void finishCollectTimer();
 	void collectTimerUpdate();
 	void collectFish(AautoFisher* autoFisher);
-	double calcCurrencyHeld();
+	double CalcCapacity();
 	// takes in auto fisher map and returns a sorted list of IDs
 	// sorts list from biggest to smallest
 	std::vector<uint32_t> sortFishList(const std::unordered_map<uint32_t, FsaveFishData>& map);

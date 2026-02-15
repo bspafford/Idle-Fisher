@@ -60,7 +60,7 @@ void Ubutton::onHover(Shader* shaderProgram) {
 
 	mouseOver = isMouseOver();
 	if (useWorldLoc)
-		mouseOver = mouseOver && GetCharacter()->CanPlayerReach(loc + buttonAnim->GetCellSize() / 2.f);
+		mouseOver = mouseOver && (!distanceCheck || GetCharacter()->CanPlayerReach(loc + buttonAnim->GetCellSize() / 2.f));
 
 	if (mouseOver) {
 		IHoverable::setHoveredItem(this);
@@ -135,4 +135,8 @@ void Ubutton::SetColorMod(glm::vec4 colorMod) {
 
 void Ubutton::SetClickAudio(std::string path) {
 	clickAudio->SetAudio(path);
+}
+
+void Ubutton::DisableDistanceCheck(bool disable) {
+	this->distanceCheck = !disable;
 }

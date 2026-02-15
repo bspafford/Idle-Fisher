@@ -23,20 +23,25 @@ autoFisherUI::autoFisherUI(widget* parent, AautoFisher* autoFisherRef, vector lo
 	// button
 	upgradeButton = std::make_unique<Ubutton>(this, "autoFisher/UI/button.png", 36, 66, 4, UILoc, true, true);
 	upgradeButton->addCallback(this, &autoFisherUI::upgrade);
+	upgradeButton->DisableDistanceCheck(true);
 	upgradeButton->buttonAnim->addFrameCallback(this, &autoFisherUI::moveButtonText);
 
 	// multipliers
 	multi1 = std::make_unique<Ubutton>(this, "autoFisher/UI/multipliers/multi1.png", 36, 66, 3, UILoc, true, true);
-	multi10 = std::make_unique<Ubutton>(this, "autoFisher/UI/multipliers/multi10.png", 36, 66, 3, UILoc, true, true);
-	multiMax = std::make_unique<Ubutton>(this, "autoFisher/UI/multipliers/multiMax.png", 36, 66, 3, UILoc, true, true);
 	multi1->addCallback(this, &autoFisherUI::setMulti1);
+	multi1->DisableDistanceCheck(true);
+	multi10 = std::make_unique<Ubutton>(this, "autoFisher/UI/multipliers/multi10.png", 36, 66, 3, UILoc, true, true);
 	multi10->addCallback(this, &autoFisherUI::setMulti10);
+	multi10->DisableDistanceCheck(true);
+	multiMax = std::make_unique<Ubutton>(this, "autoFisher/UI/multipliers/multiMax.png", 36, 66, 3, UILoc, true, true);
 	multiMax->addCallback(this, &autoFisherUI::setMultiMax);
+	multiMax->DisableDistanceCheck(true);
 
 	pressTest = std::make_unique<Image>("images/autoFisher/UI/multipliers/multi3.png", UILoc, true);
 
 	menuButton = std::make_unique<Ubutton>(this, "autoFisher/UI/menu.png", 5, 10, 1, UILoc + vector{ 0.f, 37.f }, true, false);
 	menuButton->addCallback(this, &autoFisherUI::openMenu);
+	menuButton->DisableDistanceCheck(true);
 
 	// level
 	levelBar = std::make_unique<Image>("images/autoFisher/UI/level1.png", UILoc, true);
@@ -71,30 +76,37 @@ void autoFisherUI::draw(Shader* shaderProgram) {
 	if (closing || opening) {
 		openAnimation->draw(shaderProgram);
 	} else {
+		bool canReach = GetCharacter()->CanPlayerReach(autoFisher->anim->getLoc() + vector(autoFisher->anim->GetCellSize().x, 0.f));
 		if (upgradeButton) {
-			upgradeButton->draw(shaderProgram);
 			// if has enough currency to upgrade it
-			upgradeButton->enable(upgradeCost <= SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned);
+			upgradeButton->enable(canReach && upgradeCost <= SaveData::saveData.currencyList.at(Scene::GetCurrWorldId()).numOwned);
+			upgradeButton->draw(shaderProgram);
 		}
 		levelBar->draw(shaderProgram);
 
-
 		if (pressTest && autoFisher->upgradeAmount == 1)
 			pressTest->draw(shaderProgram);
-		if (multiMax && autoFisher->upgradeAmount != -1) // max
+		if (multiMax && autoFisher->upgradeAmount != -1) { // max
+			multiMax->enable(canReach);
 			multiMax->draw(shaderProgram);
-		if (multi10 && autoFisher->upgradeAmount != 10)
+		}
+		if (multi10 && autoFisher->upgradeAmount != 10) {
+			multi10->enable(canReach);
 			multi10->draw(shaderProgram);
-		else if (pressTest && autoFisher->upgradeAmount == 10)
+		} else if (pressTest && autoFisher->upgradeAmount == 10)
 			pressTest->draw(shaderProgram);
-		if (multi1 && autoFisher->upgradeAmount != 1)
+		if (multi1 && autoFisher->upgradeAmount != 1) {
+			multi1->enable(canReach);
 			multi1->draw(shaderProgram);
+		}
 		if (pressTest && autoFisher->upgradeAmount == -1) // max
 			pressTest->draw(shaderProgram);
 		
 			
-		if (menuButton)
+		if (menuButton) {
+			menuButton->enable(canReach);
 			menuButton->draw(shaderProgram);
+		}
 
 		// text
 		levelText->draw(shaderProgram);

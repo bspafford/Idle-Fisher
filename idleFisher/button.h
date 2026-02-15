@@ -45,6 +45,8 @@ public:
 
 	void SetClickAudio(std::string path);
 
+	void DisableDistanceCheck(bool disable);
+
 private:
 	std::function<void()> callback_;
 
@@ -65,6 +67,9 @@ private:
 
 	std::unique_ptr<Audio> clickAudio;
 	std::unique_ptr<Background> background;
+
+	// whether to check if the character is close enough for world space buttons
+	bool distanceCheck = true;
 
 public:
 	std::shared_ptr<animation> buttonAnim;
